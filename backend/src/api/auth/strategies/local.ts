@@ -42,9 +42,12 @@ passport.use(
                     joinRequests: []
                 });
 
+                logger.debug(user);
+
                 logger.info(req.body.callsign + " signed up!");
                 return done(null, user);
             } catch (err) {
+                logger.debug(err);
                 done(err);
             }
         }
@@ -76,6 +79,7 @@ passport.use(
 
                 return done(null, user, { message: "Logged in successfully" });
             } catch (err) {
+                logger.debug(err);
                 return done(err);
             }
         }

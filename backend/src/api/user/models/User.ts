@@ -42,8 +42,10 @@ import { JoinRequestClass } from "../../joinRequest/models";
  *            example: alessandro@iu4qsg.it
  *          password:
  *            type: string
+ *            minLength: 1
+ *            maxLength: 64
  *            format: password
- *            description: Hashed password
+ *            description: Hashed password (must be strong password)
  *          isAdmin:
  *            type: boolean
  *            description: If user is admin
@@ -65,7 +67,7 @@ import { JoinRequestClass } from "../../joinRequest/models";
     options: { customName: "User" }
 })
 export class UserClass {
-    @prop({ required: true, minlength: 1, maxlength: 10 })
+    @prop({ required: true, minlength: 1, maxlength: 10, uppercase: true })
     public callsign!: string; // without prefix or suffix
 
     @prop({ required: true, minlength: 1, maxlength: 50 })

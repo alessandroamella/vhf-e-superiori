@@ -1,6 +1,10 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import { OK } from "http-status";
 import passport from "passport";
+import { checkSchema } from "express-validator";
+import createSchema from "../schemas/createSchema";
+import { validate } from "../../helpers";
+import User, { UserDoc } from "../../user/models";
 
 const router = Router();
 
@@ -18,10 +22,16 @@ const router = Router();
  *            properties:
  *              callsign:
  *                type: string
+ *                minLength: 1
+ *                maxLength: 10
  *              name:
  *                type: string
+ *                minLength: 1
+ *                maxLength: 50
  *              password:
  *                type: string
+ *                minLength: 8
+ *                maxLength: 64
  *                format: password
  *              email:
  *                type: string
@@ -29,13 +39,17 @@ const router = Router();
  *            required:
  *              - callsign
  *              - name
- *              - email
  *              - password
+ *              - email
  *    tags:
  *      - auth
  *    responses:
  *      '200':
  *        description: Signed up successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/User'
  *      '400':
  *        description: Data validation failed
  *        content:
@@ -51,9 +65,17 @@ const router = Router();
  */
 router.post(
     "/",
+    checkSchema(createSchema),
+    validate,
     passport.authenticate("signup", { session: false }),
-    (req, res, next) => {
-        res.sendStatus(OK);
+    async (req: Request, res: Response) => {
+        console.log(req.user);
+        res.json(
+            await User.findOne(
+                { _id: (req.user as UserDoc)._id },
+                { _id: 0, password: 0 }
+            )
+        );
     }
 );
 

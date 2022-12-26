@@ -17,11 +17,11 @@ import { modelOptions, prop, Ref } from "@typegoose/typegoose";
  *            description: Name of the event
  *          date:
  *            type: string
- *            format: date
+ *            format: date-time
  *            description: Date of the event
  *          joinDeadline:
  *            type: string
- *            format: date
+ *            format: date-time
  *            description: Deadline to join the event
  *          joinRequests:
  *            type: array
