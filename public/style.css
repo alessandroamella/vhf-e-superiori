@@ -24,9 +24,21 @@ body * {
 h1 {
     padding-top: 1rem;
     text-align: center;
-    font-size: 4rem;
     text-transform: uppercase;
-    max-width: 80vw;
+}
+
+@media only screen and (max-width: 500px) {
+    h1 {
+        font-size: 2rem;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
+}
+
+@media only screen and (min-width: 500px) {
+    h1 {
+        font-size: 4rem;
+    }
 }
 
 img {
