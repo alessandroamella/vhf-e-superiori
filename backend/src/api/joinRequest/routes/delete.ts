@@ -24,7 +24,7 @@ const router = Router();
  *        required: true
  *        description: ObjectId of the join request to delete
  *    tags:
- *      - event
+ *      - joinrequest
  *    responses:
  *      '200':
  *        description: Join request deleted successfully
