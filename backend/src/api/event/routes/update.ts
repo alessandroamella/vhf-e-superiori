@@ -78,10 +78,10 @@ router.put(
     validate,
     async (req: Request, res: Response) => {
         try {
-            const { name, date, joinDeadline } = req.body;
+            const { name, date, logoUrl, joinDeadline } = req.body;
             const event = await EventModel.findOneAndUpdate(
                 { _id: req.params._id },
-                { name, date, joinDeadline },
+                { name, date, logoUrl, joinDeadline },
                 { new: true }
             );
             res.json(event);

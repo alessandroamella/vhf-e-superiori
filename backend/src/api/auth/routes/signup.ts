@@ -1,10 +1,12 @@
-import { Request, Response, Router } from "express";
-import { OK } from "http-status";
+import { NextFunction, Request, Response, Router } from "express";
+import { BAD_REQUEST, OK } from "http-status";
 import passport from "passport";
 import { checkSchema } from "express-validator";
 import createSchema from "../schemas/createSchema";
-import { validate } from "../../helpers";
+import { createError, validate } from "../../helpers";
 import User, { UserDoc } from "../../user/models";
+import { logger } from "../../../shared";
+import { Errors } from "../../errors";
 
 const router = Router();
 
@@ -67,15 +69,35 @@ router.post(
     "/",
     checkSchema(createSchema),
     validate,
-    passport.authenticate("signup", { session: false }),
-    async (req: Request, res: Response) => {
-        console.log(req.user);
-        res.json(
-            await User.findOne(
-                { _id: (req.user as UserDoc)._id },
-                { _id: 0, password: 0 }
-            )
-        );
+    async (req: Request, res: Response, next: NextFunction) => {
+        passport.authenticate(
+            "signup",
+            { session: false },
+            async (_err, user, info) => {
+                if (_err || !user) {
+                    logger.debug("_err");
+                    logger.debug(_err);
+                    logger.debug("user");
+                    logger.debug(user);
+                    return res
+                        .status(BAD_REQUEST)
+                        .json(
+                            createError(
+                                (_err as Error)?.message || Errors.UNKNOWN_ERROR
+                            )
+                        );
+                }
+                logger.debug("user");
+                logger.debug(user);
+
+                return res.json(
+                    await User.findOne(
+                        { _id: user._id },
+                        { _id: 0, password: 0, __v: 0 }
+                    )
+                );
+            }
+        )(req, res, next);
     }
 );
 

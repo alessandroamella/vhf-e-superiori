@@ -3,7 +3,10 @@ import loginRoute from "./login";
 import signupRoute from "./signup";
 import logoutRoute from "./logout";
 import { AuthOptions } from "../shared";
+import { logger } from "../../../shared";
 const router = Router();
+
+logger.debug("Using auth routes");
 
 export const saveToken = (res: Response, token: string) => {
     res.cookie(AuthOptions.AUTH_COOKIE_NAME, token, {

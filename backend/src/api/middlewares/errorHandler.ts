@@ -4,11 +4,12 @@ import { logger } from "../../shared/logger";
 import { Errors } from "../errors";
 import { createError } from "../helpers";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     logger.error("Express request handler error");
 
     const isUserError =
-        err instanceof (Error as any) &&
+        err instanceof (Error as never) &&
         err.message in Errors &&
         ![Errors.SERVER_ERROR, Errors.UNKNOWN_ERROR].includes(err.message);
     if (isUserError) {

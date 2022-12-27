@@ -28,7 +28,7 @@ passport.use(
                         email +
                         " already exists"
                 );
-                const exists = await User.findOne({
+                const exists = await User.exists({
                     $or: [{ callsign }, { email }]
                 });
                 if (exists) return done(new Error(Errors.ALREADY_REGISTERED));

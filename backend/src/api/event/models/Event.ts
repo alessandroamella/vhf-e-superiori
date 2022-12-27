@@ -23,6 +23,10 @@ import { modelOptions, prop, Ref } from "@typegoose/typegoose";
  *            type: string
  *            format: date-time
  *            description: Deadline to join the event
+ *          logoUrl:
+ *            type: string
+ *            format: uri
+ *            description: URL of the logo of this event
  *          joinRequests:
  *            type: array
  *            items:
@@ -42,6 +46,9 @@ export class EventClass {
 
     @prop({ required: true })
     public joinDeadline!: Date;
+
+    @prop({ required: false })
+    public logoUrl?: string;
 
     @prop({ required: true, default: [], ref: "JoinRequestClass" })
     public joinRequests!: Ref<"JoinRequestClass">[];

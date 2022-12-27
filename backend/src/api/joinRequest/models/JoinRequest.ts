@@ -1,6 +1,5 @@
 import { modelOptions, prop, Ref } from "@typegoose/typegoose";
 import { EventClass } from "../../event/models";
-import { UserClass } from "../../user/models";
 
 /**
  * @swagger

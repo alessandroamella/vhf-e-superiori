@@ -1,23 +1,14 @@
 import { Schema } from "express-validator";
 
 const createSchema: Schema = {
-    name: {
+    antenna: {
         isString: { options: [] },
         trim: { options: [] },
         isLength: { options: { min: 1 } }
     },
-    date: {
-        isISO8601: { options: [] },
-        trim: { options: [] }
-    },
-    logoUrl: {
+    forEvent: {
         trim: { options: [] },
-        isURL: { options: [] },
-        optional: true
-    },
-    joinDeadline: {
-        isISO8601: { options: [] },
-        trim: { options: [] }
+        isMongoId: { options: [] }
     }
 };
 export default createSchema;

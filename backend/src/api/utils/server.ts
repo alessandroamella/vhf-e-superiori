@@ -21,8 +21,6 @@ export function createServer() {
 
     app.use(cookieParser(envs.COOKIE_SECRET));
 
-    app.use(passport.initialize());
-
     if (process.env.NODE_ENV !== "production") {
         app.use(
             "/api-docs",
