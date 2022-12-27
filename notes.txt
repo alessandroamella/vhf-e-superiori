@@ -1,2 +1,9 @@
 utente si vuole cancellare dal sito: deve inviare una email
 fai privacy policy / tos
+delete: checka che evento non sia già finito (o deadline)
+crea: checka evento no deadline
+privacy policy eqsl
+checka join request non esista già
+invia mail con registrazione avvenuta (join request create)
+invia mail con cancellazione registrazione avvenuta (join request delete)
+privacy policy non si può cancellare da evento dopo deadline
