@@ -6,6 +6,12 @@ const createSchema: Schema = {
         trim: { options: [] },
         isLength: { options: { min: 1 } }
     },
+    description: {
+        isString: { options: [] },
+        trim: { options: [] },
+        isLength: { options: { min: 1 } },
+        optional: true
+    },
     date: {
         isISO8601: { options: [] },
         trim: { options: [] }

@@ -34,6 +34,10 @@ const router = Router();
  *                type: string
  *                minLength: 1
  *                description: Name of the event
+ *              description:
+ *                type: string
+ *                minLength: 1
+ *                description: Description of the event
  *              date:
  *                type: string
  *                format: date-time
@@ -78,10 +82,10 @@ router.put(
     validate,
     async (req: Request, res: Response) => {
         try {
-            const { name, date, logoUrl, joinDeadline } = req.body;
+            const { name, description, date, logoUrl, joinDeadline } = req.body;
             const event = await EventModel.findOneAndUpdate(
                 { _id: req.params._id },
-                { name, date, logoUrl, joinDeadline },
+                { name, description, date, logoUrl, joinDeadline },
                 { new: true }
             );
             res.json(event);

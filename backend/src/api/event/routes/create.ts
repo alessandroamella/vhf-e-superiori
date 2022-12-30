@@ -25,6 +25,10 @@ const router = Router();
  *                type: string
  *                minLength: 1
  *                description: Name of the event
+ *              description:
+ *                type: string
+ *                minLength: 1
+ *                description: Description of the event
  *              date:
  *                type: string
  *                format: date-time
@@ -76,9 +80,10 @@ router.post(
     validate,
     async (req: Request, res: Response) => {
         try {
-            const { name, date, logoUrl, joinDeadline } = req.body;
+            const { name, description, date, logoUrl, joinDeadline } = req.body;
             const event = await EventModel.create({
                 name,
+                description,
                 date,
                 logoUrl,
                 joinDeadline

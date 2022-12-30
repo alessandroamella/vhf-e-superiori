@@ -3,6 +3,7 @@ import { logger } from ".";
 
 const requiredEnvs = [
     "NODE_ENV",
+    "PORT",
     "JWT_SECRET",
     "COOKIE_SECRET",
     "MONGODB_URI",
@@ -22,4 +23,4 @@ type Envs = {
     [env in Env]: string;
 };
 
-export const envs: Envs = process.env as any;
+export const envs: Envs = process.env as never;

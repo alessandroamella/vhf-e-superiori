@@ -15,6 +15,10 @@ import { modelOptions, prop, Ref } from "@typegoose/typegoose";
  *            type: string
  *            minLength: 1
  *            description: Name of the event
+ *          description:
+ *            type: string
+ *            minLength: 1
+ *            description: Description of the event
  *          date:
  *            type: string
  *            format: date-time
@@ -40,6 +44,9 @@ import { modelOptions, prop, Ref } from "@typegoose/typegoose";
 export class EventClass {
     @prop({ required: true, minlength: 1 })
     public name!: string;
+
+    @prop({ required: false, minlength: 1 })
+    public description?: string;
 
     @prop({ required: true })
     public date!: Date;
