@@ -1,9 +1,8 @@
 import { Request, Response, Router } from "express";
 import EventModel from "../models";
 import { createError, validate } from "../../helpers";
-import isAdmin from "../../middlewares/isAdmin";
 import { logger } from "../../../shared";
-import { INTERNAL_SERVER_ERROR, OK } from "http-status";
+import { INTERNAL_SERVER_ERROR } from "http-status";
 import { param } from "express-validator";
 
 const router = Router();
@@ -11,8 +10,8 @@ const router = Router();
 /**
  * @openapi
  * /event/{id}:
- *  delete:
- *    summary: Deletes an existing event
+ *  get:
+ *    summary: Gets an existing event
  *    parameters:
  *      - in: path
  *        name: id
@@ -20,18 +19,16 @@ const router = Router();
  *          type: string
  *          format: ObjectId
  *        required: true
- *        description: ObjectId of the event to delete
+ *        description: ObjectId of the event to fetch
  *    tags:
  *      - event
  *    responses:
  *      '200':
- *        description: Event deleted successfully
- *      '401':
- *        description: Not logged in or not an admin
+ *        description: Event
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/ResErr'
+ *              $ref: '#/components/schemas/Event'
  *      '500':
  *        description: Server error
  *        content:
@@ -39,17 +36,16 @@ const router = Router();
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  */
-router.delete(
+router.get(
     "/:_id",
-    isAdmin,
     param("_id").isMongoId(),
     validate,
     async (req: Request, res: Response) => {
         try {
-            await EventModel.deleteOne({ _id: req.params._id });
-            res.sendStatus(OK);
+            const event = await EventModel.findOne({ _id: req.params._id });
+            res.json(event);
         } catch (err) {
-            logger.error("Error while deleting event");
+            logger.error("Error while finding event");
             logger.error(err);
             res.status(INTERNAL_SERVER_ERROR).json(createError());
         }

@@ -4,12 +4,12 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import authRoutes from "../auth/routes";
-import passport from "passport";
 import { LoggerStream } from "../../shared/logger";
 import { envs } from "../../shared/envs";
 import { specs } from "../docs/specs";
 import checkMalformedBody from "../middlewares/checkMalformedBody";
 import errorHandler from "../middlewares/errorHandler";
+import { NOT_FOUND } from "http-status";
 
 export function createServer() {
     const app = express();
@@ -45,6 +45,8 @@ export function createServer() {
 
     app.use(checkMalformedBody);
     app.use(errorHandler);
+
+    app.use("*", (req, res) => res.sendStatus(NOT_FOUND));
 
     return app;
 }

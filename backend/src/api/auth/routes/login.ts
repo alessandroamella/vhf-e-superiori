@@ -5,6 +5,8 @@ import jwt from "jsonwebtoken";
 import { envs } from "../../../shared/envs";
 import { AuthOptions } from "../shared";
 import { logger } from "../../../shared/logger";
+import { body } from "express-validator";
+import { validate } from "../../helpers";
 
 const router = Router();
 
@@ -47,41 +49,48 @@ const router = Router();
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  */
-router.post("/", async (req, res, next) => {
-    passport.authenticate("login", async (_err, user, info) => {
-        logger.debug("Logging in callsign " + user?.callsign);
-        try {
-            if (_err || !user) {
-                const err = new Error(
-                    _err ? Errors.UNKNOWN_ERROR : Errors.USER_NOT_FOUND
-                );
+router.post(
+    "/",
+    body("callsign").isString().trim(),
+    body("password").isString().trim(),
+    validate,
+    async (req, res, next) => {
+        passport.authenticate("login", async (_err, user, info) => {
+            logger.debug("Logging in callsign " + user?.callsign);
+            try {
+                if (_err || !user) {
+                    const err = new Error(
+                        _err ? Errors.UNKNOWN_ERROR : Errors.USER_NOT_FOUND
+                    );
+                    return next(err);
+                }
+
+                req.login(user, { session: false }, err => {
+                    if (err) return next(err);
+
+                    const body = {
+                        _id: user._id,
+                        callsign: user.callsign,
+                        expiration:
+                            Date.now() + AuthOptions.AUTH_COOKIE_DURATION_MS
+                    };
+                    const token = jwt.sign(body, envs.JWT_SECRET);
+
+                    logger.debug("Created new JWT token");
+                    logger.debug(body);
+
+                    res.cookie(AuthOptions.AUTH_COOKIE_NAME, token, {
+                        httpOnly: true,
+                        signed: true
+                    });
+
+                    return res.json({ token });
+                });
+            } catch (err) {
                 return next(err);
             }
-
-            req.login(user, { session: false }, err => {
-                if (err) return next(err);
-
-                const body = {
-                    _id: user._id,
-                    callsign: user.callsign,
-                    expiration: Date.now() + AuthOptions.AUTH_COOKIE_DURATION_MS
-                };
-                const token = jwt.sign(body, envs.JWT_SECRET);
-
-                logger.debug("Created new JWT token");
-                logger.debug(body);
-
-                res.cookie(AuthOptions.AUTH_COOKIE_NAME, token, {
-                    httpOnly: true,
-                    signed: true
-                });
-
-                return res.json({ token });
-            });
-        } catch (err) {
-            return next(err);
-        }
-    })(req, res, next);
-});
+        })(req, res, next);
+    }
+);
 
 export default router;

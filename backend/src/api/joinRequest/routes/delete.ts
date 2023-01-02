@@ -47,7 +47,7 @@ const router = Router();
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  */
-router.put(
+router.delete(
     "/:_id",
     param("_id").isMongoId(),
     validate,
