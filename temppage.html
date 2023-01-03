@@ -115,16 +115,101 @@
         <link rel="stylesheet" href="/style.css" />
     </head>
     <body>
-        <h1>Sito in costruzione</h1>
-        <img
-            src="/img/VHF e superiori solo Europa.png"
-            alt="Logo"
-            loading="lazy"
-        />
-        <p>vhfesuperiori.eu</p>
+        <div
+            style="display: flex; align-items: center; justify-content: center"
+        >
+            <img
+                src="/img/VHF e superiori solo Europa.png"
+                alt="Logo"
+                loading="lazy"
+                style="width: 5rem; height: 5rem; margin-right: 2rem"
+            />
+            <h1>Sito in costruzione</h1>
+        </div>
 
-        <div id="stars"></div>
-        <div id="stars2"></div>
-        <div id="stars3"></div>
+        <h1 style="margin-bottom: 1rem; font-size: 2rem; font-weight: 600">
+            Prossimi eventi
+        </h1>
+        <!-- <p>vhfesuperiori.eu</p> -->
+
+        <div style="width: 100vw; height: 100vh">
+            <div id="calendar"></div>
+        </div>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/fullcalendar@6.0.2/index.global.min.js"
+            integrity="sha256-6XCj3LkKsl7TSl5Ico36HM7UTtf14UXhwbMRtlNKeo0="
+            crossorigin="anonymous"
+        ></script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var calendarEl = document.getElementById("calendar");
+
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: "listYear",
+                    initialDate: "2023-01-01",
+                    height: "100%",
+                    headerToolbar: {
+                        left: "prev,next today",
+                        center: "title",
+                        right: "listYear,dayGridMonth"
+                    },
+                    events: [
+                        {
+                            title: "Radio Flash Mob",
+                            start: "2023-01-29"
+                        },
+                        {
+                            title: "Radio Flash Mob",
+                            start: "2023-02-26"
+                        },
+                        {
+                            title: "Radio Flash Mob",
+                            start: "2023-03-26"
+                        },
+                        {
+                            title: "Radio Flash Mob",
+                            start: "2023-04-30"
+                        },
+                        {
+                            title: "Radio Flash Mob",
+                            start: "2023-05-28"
+                        },
+                        {
+                            title: "Radio Flash Mob",
+                            start: "2023-06-25"
+                        },
+                        {
+                            title: "Radio Flash Mob",
+                            start: "2023-07-30"
+                        },
+                        {
+                            title: "Radio Flash Mob",
+                            start: "2023-08-27"
+                        },
+                        {
+                            title: "Radio Flash Mob",
+                            start: "2023-09-24"
+                        },
+                        {
+                            title: "Radio Flash Mob",
+                            start: "2023-10-29"
+                        },
+                        {
+                            title: "Radio Flash Mob",
+                            start: "2023-11-26"
+                        },
+                        {
+                            title: "Radio Flash Mob",
+                            start: "2023-12-31"
+                        }
+                    ]
+                });
+
+                console.log(calendar);
+                calendar.render();
+            });
+        </script>
     </body>
 </html>
