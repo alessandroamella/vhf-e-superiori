@@ -29,7 +29,7 @@ export function createServer() {
         );
     }
 
-    app.use("/auth", authRoutes);
+    app.use("/api/auth", authRoutes);
     // app.use(
     //     "/qsl",
     //     passport.authenticate("jwt", { session: false }),

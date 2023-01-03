@@ -4,16 +4,20 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../Layout";
 
-const Login = () => {
+const Signup = () => {
     const [callsign, setCallsign] = useState("");
+    const [name, setName] = useState("");
     const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("");
 
-    async function login(e) {
+    async function signup(e) {
         e.preventDefault();
         try {
-            const { data } = await axios.post("/api/auth/login", {
+            const { data } = await axios.post("/api/auth/signup", {
                 callsign,
-                password
+                name,
+                password,
+                email
             });
             console.log(data);
             alert("ok");
@@ -26,19 +30,28 @@ const Login = () => {
         <Layout>
             <div className="mx-auto px-2 w-full md:w-2/3 mt-12">
                 <Typography variant="h1" className="mb-2">
-                    Login
+                    Registrazione
                 </Typography>
 
                 <Typography variant="small" className="mb-6">
-                    Non hai un account? <Link to="/signup">Registrati qui</Link>
+                    Hai già un account?{" "}
+                    <Link to="/signup">Fai il login qui</Link>
                 </Typography>
-                <form action="#" method="post" onSubmit={login}>
+                <form action="#" method="post" onSubmit={signup}>
                     <Input
                         type="text"
                         name="callsign"
                         label="Nominativo"
                         value={callsign}
                         onChange={e => setCallsign(e.target.value)}
+                    />
+                    <div className="my-4" />
+                    <Input
+                        type="text"
+                        name="name"
+                        label="Nome"
+                        value={name}
+                        onChange={e => setName(e.target.value)}
                     />
                     <div className="my-4" />
                     <Input
@@ -49,11 +62,19 @@ const Login = () => {
                         onChange={e => setPassword(e.target.value)}
                     />
                     <div className="my-4" />
-                    <Button type="submit">Login</Button>
+                    <Input
+                        type="email"
+                        name="email"
+                        label="Email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                    />
+                    <div className="my-4" />
+                    <Button type="submit">Registrati</Button>
                 </form>
             </div>
         </Layout>
     );
 };
 
-export default Login;
+export default Signup;

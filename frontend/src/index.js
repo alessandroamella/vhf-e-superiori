@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@material-tailwind/react";
 import Homepage from "./homepage";
 import Login from "./auth/Login";
+import Signup from "./auth/Signup";
 import reportWebVitals from "./reportWebVitals";
 import axios, { isAxiosError } from "axios";
 
@@ -20,7 +21,8 @@ const router = createBrowserRouter([
         element: <Homepage />
         // errorElement: <ErrorPage />,
     },
-    { path: "/login", element: <Login /> }
+    { path: "/login", element: <Login /> },
+    { path: "/signup", element: <Signup /> }
     // {
     //   path: "contacts/:contactId",
     //   element: <Contact />,

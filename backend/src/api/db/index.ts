@@ -6,16 +6,16 @@ mongoose.set("strictQuery", false);
 
 (async function () {
     // Attempt connection 3 times
-    for (let i = 0; i < 3; i++) {
-        try {
-            await mongoose.connect(envs.MONGODB_URI);
-            break;
-        } catch (err) {
-            logger.error("Error while connecting to MongoDB");
-            logger.error(err);
-            if (i === 2) process.exit(1);
-        }
+    // for (let i = 0; i < 3; i++) {
+    try {
+        await mongoose.connect(envs.MONGODB_URI);
+        // break;
+    } catch (err) {
+        logger.error("Error while connecting to MongoDB");
+        logger.error(err);
+        // if (i === 2) process.exit(1);
     }
+    // }
 })();
 
 mongoose.connection.on("error", err => {
