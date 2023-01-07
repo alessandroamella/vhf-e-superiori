@@ -9,6 +9,7 @@ import Login from "./auth/Login";
 import Signup from "./auth/Signup";
 import reportWebVitals from "./reportWebVitals";
 import axios, { isAxiosError } from "axios";
+import Profile from "./profile";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
@@ -16,13 +17,10 @@ export const EventsContext = createContext(null);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <Homepage />
-        // errorElement: <ErrorPage />,
-    },
+    { path: "/", element: <Homepage /> },
     { path: "/login", element: <Login /> },
-    { path: "/signup", element: <Signup /> }
+    { path: "/signup", element: <Signup /> },
+    { path: "/profile", element: <Profile /> }
     // {
     //   path: "contacts/:contactId",
     //   element: <Contact />,
@@ -32,28 +30,28 @@ const router = createBrowserRouter([
 const App = () => {
     // eslint-disable-next-line no-unused-vars
     const [alert, setAlert] = useState(null);
-    const [user, setUser] = useState(null);
-
-    const userDoesntExist = !user;
+    const [user, setUser] = useState(false);
 
     useEffect(() => {
         async function fetchUser() {
             try {
-                const { data } = await axios.get("/auth");
+                const { data } = await axios.get("/api/auth");
+                console.log("user", data);
                 setUser(data);
             } catch (err) {
+                console.log("no user");
                 if (!isAxiosError(err)) return console.error(err);
                 setAlert(err.response?.data || "Errore sconosciuto");
             }
         }
 
-        fetchUser();
-    }, [userDoesntExist]);
+        if (!user) fetchUser();
+    }, [user]);
 
     return (
         <React.StrictMode>
             <ThemeProvider>
-                <UserContext.Provider value={user}>
+                <UserContext.Provider value={{ user, setUser }}>
                     <RouterProvider router={router} />
                 </UserContext.Provider>
             </ThemeProvider>

@@ -20,6 +20,7 @@ const Signup = () => {
                 email
             });
             console.log(data);
+            // DEBUG
             alert("ok");
         } catch (err) {
             alert((isAxiosError(err) && err.response?.data) || "non va");

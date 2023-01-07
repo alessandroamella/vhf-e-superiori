@@ -1,9 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserAlt } from "react-icons/fa";
 import { Button, Typography } from "@material-tailwind/react";
+import { useContext } from "react";
+import { UserContext } from ".";
+import { Spinner } from "flowbite-react";
 
-const Header = ({ user }) => {
+const Header = () => {
     const navigate = useNavigate();
+
+    const { user } = useContext(UserContext);
 
     return (
         <header className="bg-black py-4 px-8 text-white flex items-center">
@@ -13,17 +18,19 @@ const Header = ({ user }) => {
                     vhfesuperiori
                 </Typography>
             </Link>
-            <div className="ml-auto p-2 rounded cursor-pointer flex items-center">
-                {user ? (
-                    <>
+            <div className="ml-auto p-2 rounded flex items-center">
+                {user !== null ? (
+                    <Link to="/profile" className="flex items-center">
                         <FaUserAlt className="mr-1" />
-                        <span>ciao</span>
-                    </>
-                ) : (
+                        <span className="font-medium">{user.callsign}</span>
+                    </Link>
+                ) : user ? (
                     <Button onClick={() => navigate("/login")}>Login</Button>
+                ) : (
                     // <button className="bg-white text-black py-1 px-2 rounded">
                     //     Login
                     // </button>
+                    <Spinner />
                 )}
             </div>
         </header>

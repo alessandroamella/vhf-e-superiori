@@ -8,6 +8,7 @@ import { logger } from "../../../shared/logger";
 import { body } from "express-validator";
 import { validate } from "../../helpers";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
+import User from "../../user/models";
 
 const router = Router();
 
@@ -71,7 +72,7 @@ router.post(
                         );
                 }
 
-                req.login(user, { session: false }, err => {
+                req.login(user, { session: false }, async err => {
                     if (err) {
                         logger.error("Error in req.login");
                         logger.error(err);
@@ -96,7 +97,12 @@ router.post(
                         signed: true
                     });
 
-                    return res.json({ token });
+                    return res.json(
+                        await User.findOne(
+                            { _id: user._id },
+                            { password: 0, joinRequests: 0, __v: 0 }
+                        )
+                    );
                 });
             } catch (err) {
                 logger.error("Error catch in login");

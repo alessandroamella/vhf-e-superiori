@@ -37,7 +37,7 @@ const Homepage = () => {
     useEffect(() => {
         async function fetchEvents() {
             try {
-                const { data } = await axios.get("/events");
+                const { data } = await axios.get("/api/events");
                 setEvents(data);
             } catch (err) {}
         }
@@ -51,7 +51,13 @@ const Homepage = () => {
                     Prossimi eventi
                 </Typography>
 
-                <Carousel autoPlay centerMode emulateTouch infiniteLoop>
+                <Carousel
+                    showThumbs={false}
+                    autoPlay
+                    centerMode
+                    emulateTouch
+                    infiniteLoop
+                >
                     {events.map((e, i) => (
                         <EventPreview event={e} key={i} />
                     ))}
