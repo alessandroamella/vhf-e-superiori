@@ -18,18 +18,23 @@ const Header = () => {
                     vhfesuperiori
                 </Typography>
             </Link>
+            {user?.isAdmin && (
+                <Link
+                    to="/event"
+                    className="bg-red-600 text-white p-2 ml-6 rounded font-medium"
+                >
+                    Gestione eventi (admin)
+                </Link>
+            )}
             <div className="ml-auto p-2 rounded flex items-center">
-                {user !== null ? (
+                {user === null ? (
+                    <Button onClick={() => navigate("/login")}>Login</Button>
+                ) : user ? (
                     <Link to="/profile" className="flex items-center">
                         <FaUserAlt className="mr-1" />
                         <span className="font-medium">{user.callsign}</span>
                     </Link>
-                ) : user ? (
-                    <Button onClick={() => navigate("/login")}>Login</Button>
                 ) : (
-                    // <button className="bg-white text-black py-1 px-2 rounded">
-                    //     Login
-                    // </button>
                     <Spinner />
                 )}
             </div>

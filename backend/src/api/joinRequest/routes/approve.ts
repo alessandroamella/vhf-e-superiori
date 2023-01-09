@@ -2,7 +2,6 @@ import { Request, Response, Router } from "express";
 import JoinRequest from "../models";
 import { param } from "express-validator";
 import { createError, validate } from "../../helpers";
-import isAdmin from "../../middlewares/isAdmin";
 import { logger } from "../../../shared";
 import { INTERNAL_SERVER_ERROR, OK } from "http-status";
 
@@ -41,7 +40,6 @@ const router = Router();
  */
 router.post(
     "/:_id",
-    isAdmin,
     param("_id").isMongoId(),
     validate,
     async (req: Request, res: Response) => {

@@ -1,7 +1,7 @@
 import Layout from "../Layout";
 import { Typography } from "@material-tailwind/react";
 import { useContext } from "react";
-import { UserContext } from "..";
+import { getErrorStr, UserContext } from "..";
 import {
     Alert,
     Button,
@@ -13,6 +13,7 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
     const { user, setUser } = useContext(UserContext);
@@ -35,7 +36,8 @@ const Profile = () => {
     useEffect(() => {
         console.log({ name, email, user });
         setChangeDataBtnDisabled(
-            !user || (name.trim() === user.name && email.trim() === user.email)
+            !user ||
+                (name?.trim() === user.name && email?.trim() === user.email)
         );
     }, [name, email, user]);
 
@@ -56,13 +58,24 @@ const Profile = () => {
         } catch (err) {
             setAlert({
                 color: "failure",
-                msg: err?.response?.data?.err
-                    ? "Dati non validi: " + err?.response?.data?.err
-                    : "Errore sconosciuto"
+                msg: getErrorStr(err?.response?.data?.err)
             });
         }
 
         setChangeDataBtnDisabled(false);
+    }
+
+    async function logout() {
+        try {
+            await axios.post("/api/auth/logout");
+            setAlert({ color: "success", msg: "Logout avvenuto con successo" });
+            setUser(null);
+        } catch (err) {
+            setAlert({
+                color: "failure",
+                msg: getErrorStr(err?.response?.data?.err)
+            });
+        }
     }
 
     return (
@@ -97,7 +110,7 @@ const Profile = () => {
                                     type="password"
                                     autoComplete="current-password"
                                     required={true}
-                                    disabled={changePwBtnDisabled}
+                                    disabled={!user || changePwBtnDisabled}
                                 />
                             </div>
                             <div>
@@ -112,7 +125,7 @@ const Profile = () => {
                                     type="password"
                                     autoComplete="new-password"
                                     required={true}
-                                    disabled={changePwBtnDisabled}
+                                    disabled={!user || changePwBtnDisabled}
                                 />
                             </div>
                         </div>
@@ -120,16 +133,16 @@ const Profile = () => {
                     <Modal.Footer>
                         <div className="w-full flex justify-center gap-2">
                             <Button
-                                color="light"
+                                color="gray"
                                 type="button"
-                                disabled={changePwBtnDisabled}
+                                disabled={!user || changePwBtnDisabled}
                                 onClick={() => setShowChangePwModal(false)}
                             >
                                 Chiudi
                             </Button>
                             <Button
                                 type="submit"
-                                disabled={changePwBtnDisabled}
+                                disabled={!user || changePwBtnDisabled}
                             >
                                 Cambia password
                             </Button>
@@ -144,19 +157,32 @@ const Profile = () => {
                 </Typography>
                 <Typography variant="h1" className="mb-8">
                     {user === null ? (
-                        "Accedi per visualizzare il profilo"
+                        <Link to="/login" className="underline">
+                            Accedi per visualizzare il profilo
+                        </Link>
                     ) : user ? (
-                        <div className="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                className="scale-150"
+                        <div className="flex flex-col md:flex-row md:items-center">
+                            <div className="flex items-center">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    className="scale-150"
+                                >
+                                    <path d="M22 8h-20c-1.104 0-2 .896-2 2v12c0 1.104.896 2 2 2h20c1.104 0 2-.896 2-2v-12c0-1.104-.896-2-2-2zm-19 3h11v2h-11v-2zm14 5v1h-10v-1h10zm0 5h-10v-1h10v1zm2-2h-14v-1h14v1zm2-6h-6v-2h6v2zm-14-6h-4v-1h4v1zm4.421-4.448l-2.18-1.567c-.244-.178-.297-.519-.12-.762.178-.243.518-.296.761-.119l2.186 1.569-.647.879zm8.246 4.448h-2.442l-5.099-3.677.891-1.219 6.65 4.896z" />
+                                </svg>
+                                <span className="ml-4">{user.callsign}</span>
+                            </div>
+
+                            <Button
+                                className="md: ml-4"
+                                type="button"
+                                color="gray"
+                                onClick={logout}
                             >
-                                <path d="M22 8h-20c-1.104 0-2 .896-2 2v12c0 1.104.896 2 2 2h20c1.104 0 2-.896 2-2v-12c0-1.104-.896-2-2-2zm-19 3h11v2h-11v-2zm14 5v1h-10v-1h10zm0 5h-10v-1h10v1zm2-2h-14v-1h14v1zm2-6h-6v-2h6v2zm-14-6h-4v-1h4v1zm4.421-4.448l-2.18-1.567c-.244-.178-.297-.519-.12-.762.178-.243.518-.296.761-.119l2.186 1.569-.647.879zm8.246 4.448h-2.442l-5.099-3.677.891-1.219 6.65 4.896z" />
-                            </svg>
-                            <span className="ml-4">{user.callsign}</span>
+                                Logout
+                            </Button>
                         </div>
                     ) : (
                         <Spinner />
@@ -184,6 +210,7 @@ const Profile = () => {
                             required={true}
                             value={name}
                             onChange={e => setName(e.target.value)}
+                            disabled={!user}
                         />
                     </div>
                     <div>
@@ -197,13 +224,14 @@ const Profile = () => {
                             required={true}
                             value={email}
                             onChange={e => setEmail(e.target.value)}
+                            disabled={!user}
                         />
                     </div>
 
                     <Button
                         className="mt-2"
                         type="submit"
-                        disabled={changeDataBtnDisabled}
+                        disabled={!user || changeDataBtnDisabled}
                     >
                         Modifica dati
                     </Button>

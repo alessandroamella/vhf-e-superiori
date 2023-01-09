@@ -1,10 +1,9 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { BAD_REQUEST, OK } from "http-status";
 import passport from "passport";
 import { checkSchema } from "express-validator";
 import createSchema from "../schemas/createSchema";
-import { createError, validate } from "../../helpers";
-import User, { UserDoc } from "../../user/models";
+import { validate } from "../../helpers";
+import User from "../models";
 import { logger } from "../../../shared";
 import { Errors } from "../../errors";
 
@@ -73,28 +72,24 @@ router.post(
         passport.authenticate(
             "signup",
             { session: false },
-            async (_err, user, info) => {
+            async (_err, user) => {
                 if (_err || !user) {
                     logger.debug("_err");
                     logger.debug(_err);
                     logger.debug("user");
                     logger.debug(user);
-                    return res
-                        .status(BAD_REQUEST)
-                        .json(
-                            createError(
-                                (_err as Error)?.message || Errors.UNKNOWN_ERROR
-                            )
-                        );
+                    return next(_err || new Error(Errors.UNKNOWN_ERROR));
                 }
                 logger.debug("user");
                 logger.debug(user);
 
                 return res.json(
-                    await User.findOne(
-                        { _id: user._id },
-                        { password: 0, joinRequests: 0, __v: 0 }
-                    )
+                    (
+                        await User.findOne(
+                            { _id: user._id },
+                            { password: 0, joinRequests: 0, __v: 0 }
+                        )
+                    )?.toObject()
                 );
             }
         )(req, res, next);

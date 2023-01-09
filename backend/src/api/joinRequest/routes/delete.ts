@@ -76,9 +76,7 @@ router.delete(
                         " pointing to non-existing event" +
                         joinRequest.forEvent
                 );
-                return res
-                    .status(INTERNAL_SERVER_ERROR)
-                    .json(createError(Errors.UNKNOWN_ERROR));
+                return res.status(INTERNAL_SERVER_ERROR).json(createError());
             } else if (moment().isAfter(moment(event.joinDeadline))) {
                 return res
                     .status(BAD_REQUEST)

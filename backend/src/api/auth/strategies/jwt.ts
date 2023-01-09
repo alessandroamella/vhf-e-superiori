@@ -4,7 +4,7 @@ import { logger } from "../../../shared";
 // import jwt from "jsonwebtoken";
 import { envs } from "../../../shared/envs";
 import { Errors } from "../../errors";
-import User from "../../user/models";
+import User from "../models";
 import { AuthOptions } from "../shared";
 
 const cookieExtractor: JwtFromRequestFunction = req => {
@@ -33,6 +33,7 @@ passport.use(
             const { expiration } = token;
 
             if (Date.now() > expiration) {
+                logger.debug("JWT error " + Errors.LOGIN_TOKEN_EXPIRED);
                 done(new Error(Errors.LOGIN_TOKEN_EXPIRED), false);
             }
 

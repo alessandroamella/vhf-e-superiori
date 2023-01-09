@@ -6,7 +6,7 @@ import viewRoute from "./view";
 import updateRoute from "./update";
 import { AuthOptions } from "../shared";
 import { logger } from "../../../shared";
-import passport from "passport";
+import isLoggedIn from "../../middlewares/isLoggedIn";
 const router = Router();
 
 logger.debug("Using auth routes");
@@ -22,7 +22,7 @@ export const saveToken = (res: Response, token: string) => {
 router.use("/login", loginRoute);
 router.use("/signup", signupRoute);
 router.use("/logout", logoutRoute);
-router.use("/", passport.authenticate("jwt", { session: false }), viewRoute);
-router.use("/", passport.authenticate("jwt", { session: false }), updateRoute);
+router.use("/", isLoggedIn, viewRoute);
+router.use("/", isLoggedIn, updateRoute);
 
 export default router;

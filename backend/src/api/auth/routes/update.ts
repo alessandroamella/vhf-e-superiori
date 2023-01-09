@@ -4,7 +4,7 @@ import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import updateSchema from "../schemas/updateSchema";
-import User from "../../user/models";
+import User from "../models";
 
 const router = Router();
 
@@ -66,6 +66,7 @@ router.put(
         try {
             const { name, email } = req.body;
             const user = await User.findOneAndUpdate(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 { _id: (req.user as any)._id },
                 { name, email },
                 {
@@ -73,7 +74,7 @@ router.put(
                     projection: { password: 0, joinRequests: 0, __v: 0 }
                 }
             );
-            res.json(user);
+            res.json(user?.toObject());
         } catch (err) {
             logger.error("Error while updating user");
             logger.error(err);

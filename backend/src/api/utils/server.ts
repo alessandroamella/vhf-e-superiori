@@ -3,13 +3,14 @@ import morgan from "morgan";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
-import authRoutes from "../auth/routes";
+import apiRoutes from "./apiRoutes";
 import { LoggerStream } from "../../shared/logger";
 import { envs } from "../../shared/envs";
 import { specs } from "../docs/specs";
 import checkMalformedBody from "../middlewares/checkMalformedBody";
 import errorHandler from "../middlewares/errorHandler";
 import { NOT_FOUND } from "http-status";
+import populateUser from "../middlewares/populateUser";
 
 export function createServer() {
     const app = express();
@@ -29,7 +30,9 @@ export function createServer() {
         );
     }
 
-    app.use("/api/auth", authRoutes);
+    app.use(populateUser);
+
+    app.use("/api", apiRoutes);
     // app.use(
     //     "/qsl",
     //     passport.authenticate("jwt", { session: false }),

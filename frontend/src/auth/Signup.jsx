@@ -1,7 +1,8 @@
 import { Button, Input, Typography } from "@material-tailwind/react";
-import axios, { isAxiosError } from "axios";
+import axios from "axios";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { getErrorStr } from "..";
 import Layout from "../Layout";
 
 const Signup = () => {
@@ -23,7 +24,7 @@ const Signup = () => {
             // DEBUG
             alert("ok");
         } catch (err) {
-            alert((isAxiosError(err) && err.response?.data) || "non va");
+            alert(getErrorStr(err.response?.data));
         }
     }
 

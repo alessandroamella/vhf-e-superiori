@@ -89,7 +89,7 @@
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://metatags.io/" />
+        <meta property="og:url" content="https://www.vhfesuperiori.eu/" />
         <meta property="og:title" content="VHF e superiori" />
         <meta
             property="og:description"
@@ -97,12 +97,12 @@
         />
         <meta
             property="og:image"
-            content="https://metatags.io/assets/meta-tags-16a33a6a8531e519cc0936fbba0ad904e52d35f34a46c97a2c9f6f7dd7d336f2.png"
+            content="https://www.vhfesuperiori.eu/img/logo-min.png"
         />
 
         <!-- Twitter -->
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://metatags.io/" />
+        <meta property="twitter:url" content="https://www.vhfesuperiori.eu/" />
         <meta property="twitter:title" content="VHF e superiori" />
         <meta
             property="twitter:description"
@@ -110,12 +110,22 @@
         />
         <meta
             property="twitter:image"
-            content="https://metatags.io/assets/meta-tags-16a33a6a8531e519cc0936fbba0ad904e52d35f34a46c97a2c9f6f7dd7d336f2.png"
+            content="https://www.vhfesuperiori.eu/img/logo-min.png"
         />
         <link rel="stylesheet" href="/style.css" />
     </head>
     <body>
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <span class="close" style="align-self: flex-end">&times;</span>
+                <!-- <img id="modal-img" loading="lazy" alt="Locandina" /> -->
+                <p id="event-info"></p>
+            </div>
+        </div>
+
         <div
+            id="header"
             style="display: flex; align-items: center; justify-content: center"
         >
             <img
@@ -127,12 +137,10 @@
             <h1>Sito in costruzione</h1>
         </div>
 
-        <h1 style="margin-bottom: 1rem; font-size: 2rem; font-weight: 600">
-            Prossimi eventi
-        </h1>
+        <h1 id="main-h">Prossimi eventi</h1>
         <!-- <p>vhfesuperiori.eu</p> -->
 
-        <div style="width: 100vw; height: 60vh">
+        <div style="width: 100vw; height: 60vh; max-width: 100%">
             <div id="calendar"></div>
         </div>
 
@@ -145,6 +153,9 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
+                // Get the modal
+                var modal = document.getElementById("myModal");
+
                 var calendarEl = document.getElementById("calendar");
 
                 var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -159,58 +170,96 @@
                     locale: "it",
                     events: [
                         {
-                            title: "Radio Flash Mob",
-                            start: "2023-01-29"
+                            title: "1° Flash Mob VHF 2m",
+                            start: "2023-01-29 10:00",
+                            end: "2023-01-29 12:00"
                         },
                         {
-                            title: "Radio Flash Mob",
-                            start: "2023-02-26"
+                            title: "2° Flash Mob UHF 70cm",
+                            start: "2023-02-26 10:00",
+                            end: "2023-02-26 12:00"
                         },
                         {
-                            title: "Radio Flash Mob",
-                            start: "2023-03-26"
+                            title: "3° Flash Mob UHF 23cm",
+                            start: "2023-03-26 10:00",
+                            end: "2023-03-26 12:00"
                         },
                         {
-                            title: "Radio Flash Mob",
-                            start: "2023-04-30"
+                            title: "4° Flash Mob VHF 2m",
+                            start: "2023-04-30 10:00",
+                            end: "2023-04-30 12:00"
                         },
                         {
-                            title: "Radio Flash Mob",
-                            start: "2023-05-28"
+                            title: "5° Flash Mob UHF 70cm",
+                            start: "2023-05-28 10:00",
+                            end: "2023-05-28 12:00"
                         },
                         {
-                            title: "Radio Flash Mob",
-                            start: "2023-06-25"
+                            title: "6° Flash Mob UHF 23cm",
+                            start: "2023-06-25 10:00",
+                            end: "2023-06-25 12:00"
                         },
                         {
-                            title: "Radio Flash Mob",
-                            start: "2023-07-30"
+                            title: "7° Flash Mob VHF 2m",
+                            start: "2023-07-30 10:00",
+                            end: "2023-07-30 12:00"
                         },
                         {
-                            title: "Radio Flash Mob",
-                            start: "2023-08-27"
+                            title: "8° Flash Mob UHF 70cm",
+                            start: "2023-08-27 10:00",
+                            end: "2023-08-27 12:00"
                         },
                         {
-                            title: "Radio Flash Mob",
-                            start: "2023-09-24"
+                            title: "9° Flash Mob UHF 23cm",
+                            start: "2023-09-24 10:00",
+                            end: "2023-09-24 12:00"
                         },
                         {
-                            title: "Radio Flash Mob",
-                            start: "2023-10-29"
+                            title: "10° Flash Mob VHF 2m",
+                            start: "2023-10-29 10:00",
+                            end: "2023-10-29 12:00"
                         },
                         {
-                            title: "Radio Flash Mob",
-                            start: "2023-11-26"
+                            title: "11° Flash Mob UHF 70cm",
+                            start: "2023-11-26 10:00",
+                            end: "2023-11-26 12:00"
                         },
                         {
-                            title: "Radio Flash Mob",
-                            start: "2023-12-31"
+                            title: "12° Flash Mob UHF 23cm",
+                            start: "2023-12-31 10:00",
+                            end: "2023-12-31 12:00"
                         }
-                    ]
+                    ],
+                    eventClick: function (info) {
+                        const n = parseInt(info.event.title.slice(0, 2));
+                        // if (n > 10)
+                        // return;
+                        // document.getElementById(
+                        //     "modal-img"
+                        // ).src = `/locandine/${n}.png`;
+                        document.getElementById("event-info").textContent =
+                            info.event.title;
+                        modal.style.display = "block";
+                    }
                 });
 
                 console.log(calendar);
                 calendar.render();
+
+                // Get the <span> element that closes the modal
+                var span = document.getElementsByClassName("close")[0];
+
+                // When the user clicks on <span> (x), close the modal
+                span.onclick = function () {
+                    modal.style.display = "none";
+                };
+
+                // When the user clicks anywhere outside of the modal, close it
+                window.onclick = function (event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                };
             });
         </script>
     </body>

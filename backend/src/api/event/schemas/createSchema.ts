@@ -1,4 +1,5 @@
 import { Schema } from "express-validator";
+import DOMPurify from "dompurify";
 
 const createSchema: Schema = {
     name: {
@@ -10,7 +11,11 @@ const createSchema: Schema = {
         isString: { options: [] },
         trim: { options: [] },
         isLength: { options: { min: 1 } },
-        optional: true
+        optional: true,
+        customSanitizer: {
+            options: v =>
+                DOMPurify.sanitize(v, { USE_PROFILES: { html: true } })
+        }
     },
     date: {
         isISO8601: { options: [] },
@@ -18,7 +23,7 @@ const createSchema: Schema = {
     },
     logoUrl: {
         trim: { options: [] },
-        isURL: { options: [] },
+        // isURL: { options: [] },
         optional: true
     },
     joinDeadline: {

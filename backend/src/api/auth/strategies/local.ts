@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy as localStrategy } from "passport-local";
 import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
-import User from "../../user/models";
+import User from "../models";
 
 passport.use(
     "signup",

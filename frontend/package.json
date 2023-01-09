@@ -11,6 +11,7 @@
         "@testing-library/react": "^13.4.0",
         "@testing-library/user-event": "^13.5.0",
         "axios": "^1.2.1",
+        "date-fns": "^2.29.3",
         "flowbite": "^1.6.0",
         "flowbite-react": "^0.3.7",
         "http-proxy-middleware": "^2.0.6",
@@ -20,6 +21,7 @@
         "react-responsive-carousel": "^3.2.23",
         "react-router-dom": "^6.6.1",
         "react-scripts": "5.0.1",
+        "react-simple-wysiwyg": "^2.1.4",
         "react-star-sky": "^1.0.3",
         "web-vitals": "^2.1.4"
     },

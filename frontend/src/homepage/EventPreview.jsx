@@ -20,7 +20,7 @@ const EventPreview = ({ event }) => {
                 <h3 className="font-medium tracking-tight text-xl uppercase">
                     {event.name}
                 </h3>
-                <p>{event.description}</p>
+                <div dangerouslySetInnerHTML={{ __html: event.description }} />
             </div>
         </div>
     );

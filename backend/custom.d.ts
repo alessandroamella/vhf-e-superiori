@@ -1,5 +1,5 @@
 import { FlattenMaps, LeanDocument } from "mongoose";
-import { UserDoc } from "./src/api/user/models";
+import { UserDoc } from "./src/api/auth/models";
 
 declare module "express-serve-static-core" {
     export interface Request {

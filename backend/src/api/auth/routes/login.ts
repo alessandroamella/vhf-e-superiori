@@ -7,8 +7,7 @@ import { AuthOptions } from "../shared";
 import { logger } from "../../../shared/logger";
 import { body } from "express-validator";
 import { validate } from "../../helpers";
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
-import User from "../../user/models";
+import User from "../models";
 
 const router = Router();
 
@@ -57,7 +56,8 @@ router.post(
     body("password").isString().trim(),
     validate,
     async (req, res, next) => {
-        passport.authenticate("login", async (_err, user) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        passport.authenticate("login", async (_err, user, info) => {
             logger.debug("Logging in callsign " + user?.callsign);
             try {
                 if (_err || !user) {
@@ -65,20 +65,14 @@ router.post(
                         logger.error("Error while logging in");
                         logger.error(_err);
                     }
-                    return res
-                        .status(_err ? INTERNAL_SERVER_ERROR : BAD_REQUEST)
-                        .json(
-                            _err ? Errors.UNKNOWN_ERROR : Errors.USER_NOT_FOUND
-                        );
+                    return next(_err || new Error(Errors.USER_NOT_FOUND));
                 }
 
                 req.login(user, { session: false }, async err => {
                     if (err) {
                         logger.error("Error in req.login");
                         logger.error(err);
-                        return res
-                            .status(INTERNAL_SERVER_ERROR)
-                            .json(Errors.UNKNOWN_ERROR);
+                        return next(err);
                     }
 
                     const body = {
@@ -98,18 +92,18 @@ router.post(
                     });
 
                     return res.json(
-                        await User.findOne(
-                            { _id: user._id },
-                            { password: 0, joinRequests: 0, __v: 0 }
-                        )
+                        (
+                            await User.findOne(
+                                { _id: user._id },
+                                { password: 0, joinRequests: 0, __v: 0 }
+                            )
+                        )?.toObject()
                     );
                 });
             } catch (err) {
                 logger.error("Error catch in login");
                 logger.error(err);
-                return res
-                    .status(INTERNAL_SERVER_ERROR)
-                    .json(Errors.UNKNOWN_ERROR);
+                return next(new Error(Errors.UNKNOWN_ERROR));
             }
         })(req, res, next);
     }

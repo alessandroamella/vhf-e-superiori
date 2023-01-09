@@ -43,7 +43,7 @@ router.get(
     async (req: Request, res: Response) => {
         try {
             const event = await EventModel.findOne({ _id: req.params._id });
-            res.json(event);
+            res.json(event?.toObject());
         } catch (err) {
             logger.error("Error while finding event");
             logger.error(err);

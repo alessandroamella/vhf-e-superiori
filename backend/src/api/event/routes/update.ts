@@ -2,7 +2,6 @@ import { Request, Response, Router } from "express";
 import EventModel from "../models";
 import { checkSchema } from "express-validator";
 import { createError, validate } from "../../helpers";
-import isAdmin from "../../middlewares/isAdmin";
 import { logger } from "../../../shared";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { param } from "express-validator";
@@ -76,7 +75,6 @@ const router = Router();
  */
 router.put(
     "/:_id",
-    isAdmin,
     param("_id").isMongoId(),
     checkSchema(updateSchema),
     validate,
@@ -88,7 +86,7 @@ router.put(
                 { name, description, date, logoUrl, joinDeadline },
                 { new: true }
             );
-            res.json(event);
+            res.json(event?.toObject());
         } catch (err) {
             logger.error("Error while updating event");
             logger.error(err);
