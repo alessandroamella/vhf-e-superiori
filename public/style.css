@@ -25,7 +25,8 @@ body {
     background-size: cover; */
     /* width: 100vw;
     height: 100vh; */
-    height: 150vh;
+    height: 100vh;
+    overflow-y: auto;
     margin-top: auto;
     margin-bottom: auto;
 }
@@ -48,6 +49,7 @@ h1 {
         font-size: 2rem;
         padding-top: 2rem;
         padding-bottom: 3rem;
+        
     }
 }
 
@@ -62,10 +64,20 @@ h1 {
     #header h1 {
         margin-bottom: 0;
         padding-bottom: 0;
+        margin-top: 0;
+        padding-top: 0;
     }
+    #header {
+        margin-top: 1rem;
+        padding-top: 2rem;
+    }
+    #header img {
+        margin-left: 1rem;
+    }
+
     #main-h {
         margin-bottom: 0;
-        padding-bottom: 0.5rem;
+        padding-bottom: 1rem;
     }
 }
 
