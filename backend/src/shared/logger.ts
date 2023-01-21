@@ -85,7 +85,7 @@ export const logger = createLogger({
 });
 
 export class LoggerStream {
-    public write(message: string, encoding?: string) {
+    public write(message: string) {
         logger.info(message);
     }
 }

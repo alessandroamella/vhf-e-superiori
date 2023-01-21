@@ -12,7 +12,7 @@ async function populateUser(req: Request, res: Response, next: NextFunction) {
         if (_err) {
             logger.error("Error while authenticating in populateUser");
             logger.error(_err);
-
+            req.user = undefined;
             return next(_err);
         }
 
@@ -28,9 +28,12 @@ async function populateUser(req: Request, res: Response, next: NextFunction) {
                     httpOnly: true,
                     signed: true
                 });
-                return next(new Error(Errors.UNKNOWN_ERROR));
+                return next(new Error(Errors.SERVER_ERROR));
             }
             req.user = foundUser.toObject();
+            logger.debug(
+                "populateUser successful for user " + foundUser.callsign
+            );
         } else req.user = undefined;
         next();
     })(req, res, next);
