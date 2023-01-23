@@ -9,7 +9,7 @@ const router = Router();
 
 /**
  * @openapi
- * /joinrequests:
+ * /joinrequest:
  *  get:
  *    summary: Gets all joinRequests for logged in user
  *    tags:
@@ -47,7 +47,7 @@ router.get("/", async (req: Request, res: Response) => {
         );
         res.json(joinRequests);
     } catch (err) {
-        logger.error("Error while finding joinRequests");
+        logger.error("Error while finding all joinRequests");
         logger.error(err);
         res.status(INTERNAL_SERVER_ERROR).json(createError());
     }

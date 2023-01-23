@@ -80,7 +80,7 @@ const ViewEvent = () => {
             if (!event) return;
 
             try {
-                await axios.get("/api/joinrequest/" + event._id);
+                await axios.get("/api/joinrequest/event/" + event._id);
                 setAlreadyJoined(true);
             } catch (err) {
                 console.log("checkIfJoined error", err);

@@ -1,0 +1,12 @@
+{
+    "trailingComma": "none",
+    "tabWidth": 4,
+    "semi": true,
+    "singleQuote": false,
+    "arrowParens": "avoid",
+    "htmlWhitespaceSensitivity": "ignore",
+    "endOfLine": "lf",
+    "jsxSingleQuote": false,
+    "useTabs": false,
+    "overrides": [{ "files": "*.jsx", "options": { "tabWidth": 2 } }]
+}

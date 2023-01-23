@@ -35,8 +35,8 @@ import { EventClass } from "../../event/models";
     options: { customName: "JoinRequest" }
 })
 export class JoinRequestClass {
-    @prop({ required: true, ref: "UserClass" })
-    public fromUser!: Ref<"UserClass">;
+    @prop({ required: true, ref: "User" })
+    public fromUser!: Ref<"User">;
 
     @prop({ required: true, minlength: 1, maxlength: 300 })
     public antenna!: string; // info about the antenna

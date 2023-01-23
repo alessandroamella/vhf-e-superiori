@@ -1,19 +1,17 @@
 import { Request, Response, Router } from "express";
 import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
-import { INTERNAL_SERVER_ERROR, NOT_FOUND } from "http-status";
+import { INTERNAL_SERVER_ERROR } from "http-status";
 import JoinRequest from "../models";
-import { UserDoc } from "../../auth/models";
 import { param } from "express-validator";
-import { Errors } from "../../errors";
 
 const router = Router();
 
 /**
  * @openapi
- * /joinrequest/event/{id}:
+ * /joinrequest/eventadmin/{id}:
  *  get:
- *    summary: Gets a joinRequest for a specific event (for a logged in user)
+ *    summary: Gets all joinRequests for a specific event, user must be admin
  *    parameters:
  *      - in: path
  *        name: id
@@ -26,19 +24,15 @@ const router = Router();
  *      - joinrequest
  *    responses:
  *      '200':
- *        description: joinRequest
+ *        description: joinRequests with populated fromUser
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/JoinRequest'
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/JoinRequest'
  *      '401':
- *        description: Not logged in
- *        content:
- *          application/json:
- *            schema:
- *              $ref: '#/components/schemas/ResErr'
- *      '404':
- *        description: Not found
+ *        description: Not logged in or not an admin
  *        content:
  *          application/json:
  *            schema:
@@ -55,25 +49,15 @@ router.get(
     param("id").isMongoId(),
     validate,
     async (req: Request, res: Response) => {
-        if (!req.user) {
-            throw new Error("No req.user in joinRequest get event");
-        }
         try {
-            const joinRequest = await JoinRequest.findOne(
-                {
-                    forEvent: req.params.id,
-                    fromUser: (req.user as unknown as UserDoc)._id
-                },
-                { fromUser: 0 }
-            );
-            if (!joinRequest) {
-                return res
-                    .status(NOT_FOUND)
-                    .json(createError(Errors.EVENT_NOT_FOUND));
-            }
-            res.json(joinRequest);
+            const joinRequests = await JoinRequest.find({
+                forEvent: req.params.id
+            })
+                .populate("fromUser")
+                .sort({ createdAt: -1 });
+            res.json(joinRequests);
         } catch (err) {
-            logger.error("Error while finding joinRequests for event");
+            logger.error("Error while finding joinRequests for eventAdmin");
             logger.error(err);
             res.status(INTERNAL_SERVER_ERROR).json(createError());
         }

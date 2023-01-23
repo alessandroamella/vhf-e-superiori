@@ -57,6 +57,6 @@ export class EventClass {
     @prop({ required: false })
     public logoUrl?: string;
 
-    @prop({ required: true, default: [], ref: "JoinRequestClass" })
-    public joinRequests!: Ref<"JoinRequestClass">[];
+    @prop({ required: true, default: [], ref: "JoinRequest" })
+    public joinRequests!: Ref<"JoinRequest">[];
 }
