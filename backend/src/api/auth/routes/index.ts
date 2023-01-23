@@ -4,6 +4,7 @@ import signupRoute from "./signup";
 import logoutRoute from "./logout";
 import viewRoute from "./view";
 import updateRoute from "./update";
+import changePwRoute from "./changePw";
 import { AuthOptions } from "../shared";
 import { logger } from "../../../shared";
 import isLoggedIn from "../../middlewares/isLoggedIn";
@@ -24,5 +25,6 @@ router.use("/signup", signupRoute);
 router.use("/logout", logoutRoute);
 router.use("/", isLoggedIn, viewRoute);
 router.use("/", isLoggedIn, updateRoute);
+router.use("/changepw", isLoggedIn, changePwRoute);
 
 export default router;

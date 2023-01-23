@@ -11,6 +11,7 @@ import reportWebVitals from "./reportWebVitals";
 import axios, { isAxiosError } from "axios";
 import Profile from "./profile";
 import Event from "./admin/Event";
+import ViewEvent from "./event/ViewEvent";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
@@ -21,7 +22,8 @@ const router = createBrowserRouter([
     { path: "/login", element: <Login /> },
     { path: "/signup", element: <Signup /> },
     { path: "/profile", element: <Profile /> },
-    { path: "/event", element: <Event /> }
+    { path: "/eventmanager", element: <Event /> },
+    { path: "/event/:id", element: <ViewEvent /> }
     // {
     //   path: "contacts/:contactId",
     //   element: <Contact />,
@@ -53,6 +55,7 @@ export const errors = {
     JOIN_REQUEST_NOT_FOUND: "Richiesta di partecipazione non trovata"
 };
 export function getErrorStr(str) {
+    console.log("Stringa errore:", str);
     return str && str in errors
         ? errors[str]
         : typeof str === "string"
@@ -89,7 +92,7 @@ const App = () => {
                 console.log("events", data);
                 setEvents(data);
             } catch (err) {
-                console.log("no events");
+                console.log("Errore nel caricamento degli eventi");
                 if (!isAxiosError(err)) return console.error(err);
                 setEvents(null);
             }

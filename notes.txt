@@ -8,3 +8,4 @@ invia mail con registrazione avvenuta (join request create)
 invia mail con cancellazione registrazione avvenuta (join request delete)
 privacy policy non si può cancellare da evento dopo deadline
 sanitizza html descrizione!!
+aggiunugi nodemailer

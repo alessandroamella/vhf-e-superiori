@@ -1,4 +1,5 @@
 import { Schema } from "express-validator";
+import { JSDOM } from "jsdom";
 import DOMPurify from "dompurify";
 
 const createSchema: Schema = {
@@ -13,8 +14,11 @@ const createSchema: Schema = {
         isLength: { options: { min: 1 } },
         optional: true,
         customSanitizer: {
-            options: v =>
-                DOMPurify.sanitize(v, { USE_PROFILES: { html: true } })
+            options: v => {
+                const window = new JSDOM("").window;
+                const purify = DOMPurify(window as unknown as Window);
+                return purify.sanitize(v, { USE_PROFILES: { html: true } });
+            }
         }
     },
     date: {

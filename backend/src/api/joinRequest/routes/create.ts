@@ -8,6 +8,7 @@ import { logger } from "../../../shared";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { Errors } from "../../errors";
 import moment from "moment";
+import User, { UserDoc } from "../../auth/models";
 
 const router = Router();
 
@@ -69,6 +70,13 @@ router.post(
             throw new Error("No req.user in join request create");
         }
         try {
+            const user = await User.findOne({
+                _id: (req.user as unknown as UserDoc)._id
+            });
+            if (!user) {
+                throw new Error("Can't find user in joinRequest create");
+            }
+
             const { antenna, forEvent } = req.body;
 
             const event = await EventModel.findOne({ _id: forEvent });
@@ -83,7 +91,7 @@ router.post(
             }
 
             const alreadyJoined = await JoinRequest.exists({
-                fromUser: req.user._id,
+                fromUser: (req.user as unknown as UserDoc)._id,
                 forEvent: event._id
             });
             if (alreadyJoined) {
@@ -95,19 +103,19 @@ router.post(
             const joinRequest = await JoinRequest.create({
                 antenna,
                 forEvent: event._id,
-                fromUser: req.user._id,
+                fromUser: (req.user as unknown as UserDoc)._id,
                 isApproved: false
             });
 
             event.joinRequests.push(joinRequest._id);
             await event.save();
 
-            req.user.joinRequests.push(joinRequest._id);
-            await req.user.save();
+            user.joinRequests.push(joinRequest._id);
+            await user.save();
 
             // DEBUG send mail
 
-            return res.sendStatus(OK);
+            return res.json(OK);
         } catch (err) {
             logger.error("Error while creating join request");
             logger.error(err);

@@ -12,10 +12,11 @@ import {
 import React, { useContext, useState } from "react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
-import { EventsContext, getErrorStr, UserContext } from "..";
+import { EventsContext, getErrorStr } from "..";
 import Layout from "../Layout";
 import { DefaultEditor } from "react-simple-wysiwyg";
 import { FaPlusCircle } from "react-icons/fa";
+import { useEffect } from "react";
 
 const Event = () => {
     const { events, setEvents } = useContext(EventsContext);
@@ -32,6 +33,20 @@ const Event = () => {
         new Date().toISOString().slice(0, -8)
     );
     const [logoUrl, setLogoUrl] = useState("/logo-min.png");
+
+    function sortEvents() {
+        const _events = [...events];
+        _events.sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        setEvents(_events);
+    }
+
+    useEffect(() => {
+        if (!events) return;
+        sortEvents();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     async function createEvent(e) {
         e.preventDefault();
@@ -64,9 +79,14 @@ const Event = () => {
             const i = _events.findIndex(e => e._id === data._id);
             if (_events[i]) _events[i] = data;
             else _events.push(data);
-            setEvents(_events);
 
-            window.scrollTo(0, 0);
+            setEvents(_events);
+            sortEvents();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
 
             // setUser(data);
             // navigate("/");
@@ -307,9 +327,6 @@ const Event = () => {
                                             { locale: it }
                                         )}
                                     </strong>
-                                </p>
-                                <p className="font-normal text-gray-700 dark:text-gray-400">
-                                    {e.joinRequests.join(",")}
                                 </p>
                             </Card>
                         ))}

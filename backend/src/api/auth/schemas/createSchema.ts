@@ -5,7 +5,8 @@ const createSchema: Schema = {
         isString: { options: [] },
         trim: { options: [] },
         isLength: { options: { min: 1, max: 10 } },
-        toUpperCase: { options: [] }
+        toUpperCase: { options: [] },
+        isAlphanumeric: { options: [] }
     },
     name: {
         isString: { options: [] },

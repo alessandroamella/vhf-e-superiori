@@ -2,9 +2,10 @@ import { Request, Response, Router } from "express";
 import { checkSchema } from "express-validator";
 import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
-import { INTERNAL_SERVER_ERROR } from "http-status";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import updateSchema from "../schemas/updateSchema";
 import User from "../models";
+import { Errors } from "../../errors";
 
 const router = Router();
 
@@ -65,6 +66,14 @@ router.put(
         }
         try {
             const { name, email } = req.body;
+            if (email) {
+                const exists = await User.exists({ email });
+                if (exists) {
+                    return res
+                        .status(BAD_REQUEST)
+                        .json(createError(Errors.EMAIL_ALREADY_IN_USE));
+                }
+            }
             const user = await User.findOneAndUpdate(
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 { _id: (req.user as any)._id },

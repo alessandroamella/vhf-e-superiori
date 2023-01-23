@@ -1,8 +1,8 @@
 import React from "react";
 
-const EventPreview = ({ event }) => {
+const EventPreview = ({ event, ...props }) => {
     return (
-        <div className="border rounded p-4 min-h-[24rem] flex">
+        <div {...props} className="border rounded p-4 min-h-[24rem] flex">
             {/* *          - name
              *          - description
              *          - date

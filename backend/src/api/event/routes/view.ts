@@ -42,7 +42,10 @@ router.get(
     validate,
     async (req: Request, res: Response) => {
         try {
-            const event = await EventModel.findOne({ _id: req.params._id });
+            const event = await EventModel.findOne(
+                { _id: req.params._id },
+                { joinRequests: 0, __v: 0, createdAt: 0, updatedAt: 0 }
+            );
             res.json(event?.toObject());
         } catch (err) {
             logger.error("Error while finding event");

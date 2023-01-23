@@ -20,7 +20,7 @@ const Header = () => {
             </Link>
             {user?.isAdmin && (
                 <Link
-                    to="/event"
+                    to="/eventmanager"
                     className="bg-red-600 text-white p-2 ml-6 rounded font-medium"
                 >
                     Gestione eventi (admin)

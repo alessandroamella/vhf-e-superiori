@@ -1,27 +1,34 @@
 import { Request, Response, Router } from "express";
-import EventModel from "../models";
 import { createError } from "../../helpers";
 import { logger } from "../../../shared";
 import { INTERNAL_SERVER_ERROR } from "http-status";
+import JoinRequest from "../models";
+import { UserDoc } from "../../auth/models";
 
 const router = Router();
 
 /**
  * @openapi
- * /event:
+ * /joinrequests:
  *  get:
- *    summary: Gets all existing events
+ *    summary: Gets all joinRequests for logged in user
  *    tags:
- *      - event
+ *      - joinrequest
  *    responses:
  *      '200':
- *        description: Events
+ *        description: joinRequests
  *        content:
  *          application/json:
  *            schema:
  *              type: array
  *              items:
- *                $ref: '#/components/schemas/Event'
+ *                $ref: '#/components/schemas/JoinRequest'
+ *      '401':
+ *        description: Not logged in
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ResErr'
  *      '500':
  *        description: Server error
  *        content:
@@ -30,14 +37,17 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get("/", async (req: Request, res: Response) => {
+    if (!req.user) {
+        throw new Error("No req.user in joinRequest get all");
+    }
     try {
-        const events = await EventModel.find(
-            {},
-            { joinRequests: 0, __v: 0, createdAt: 0, updatedAt: 0 }
+        const joinRequests = await JoinRequest.find(
+            { fromUser: (req.user as unknown as UserDoc)._id },
+            { fromUser: 0 }
         );
-        res.json(events);
+        res.json(joinRequests);
     } catch (err) {
-        logger.error("Error while finding events");
+        logger.error("Error while finding joinRequests");
         logger.error(err);
         res.status(INTERNAL_SERVER_ERROR).json(createError());
     }

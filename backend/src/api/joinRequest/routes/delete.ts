@@ -7,6 +7,7 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { param } from "express-validator";
 import { Errors } from "../../errors";
 import moment from "moment";
+import User, { UserDoc } from "../../auth/models";
 
 const router = Router();
 
@@ -56,9 +57,16 @@ router.delete(
             throw new Error("No req.user in join request delete");
         }
         try {
+            const user = await User.findOne({
+                _id: (req.user as unknown as UserDoc)._id
+            });
+            if (!user) {
+                throw new Error("Can't find user in join request delete");
+            }
+
             const joinRequest = await JoinRequest.findOne({
                 _id: req.params._id,
-                fromUser: req.user?._id
+                fromUser: user._id
             });
             if (!joinRequest) {
                 return res
@@ -85,7 +93,7 @@ router.delete(
 
             await event.updateOne({ $pull: { joinRequests: joinRequest._id } });
 
-            await req.user.updateOne({
+            await user.updateOne({
                 $pull: { joinRequests: joinRequest._id }
             });
 

@@ -1,6 +1,6 @@
-import { Button, Input, Typography } from "@material-tailwind/react";
+import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
-import { Alert } from "flowbite-react";
+import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
 import React, { useRef, useState } from "react";
 import { useEffect } from "react";
 import { useContext } from "react";
@@ -55,8 +55,13 @@ const Login = () => {
                     Login
                 </Typography>
 
-                <Typography variant="small" className="mb-6">
-                    Non hai un account? <Link to="/signup">Registrati qui</Link>
+                <Typography variant="small" className="mb-6 flex">
+                    <span className="mr-1">Non hai un account? </span>
+                    <Tooltip content="Naviga alla pagina di registrazione">
+                        <Link to="/signup" className="underline">
+                            Registrati qui
+                        </Link>
+                    </Tooltip>
                 </Typography>
 
                 {alert && (
@@ -70,20 +75,33 @@ const Login = () => {
                 )}
 
                 <form action="#" method="post" onSubmit={login}>
-                    <Input
+                    <div className="mb-2 block">
+                        <Label htmlFor="callsign" value="Nominativo" />
+                    </div>
+                    <TextInput
                         type="text"
+                        id="callsign"
                         name="callsign"
                         label="Nominativo"
+                        minLength={1}
+                        maxLength={10}
                         value={callsign}
-                        onChange={e => setCallsign(e.target.value)}
+                        onChange={e =>
+                            setCallsign(e.target.value.toUpperCase())
+                        }
                         disabled={disabled}
                         ref={loginInput}
                         autoComplete="callsign"
                         autoFocus
                     />
                     <div className="my-4" />
-                    <Input
+
+                    <div className="mb-2 block">
+                        <Label htmlFor="password" value="Password" />
+                    </div>
+                    <TextInput
                         type="password"
+                        id="password"
                         name="password"
                         label="Password"
                         autoComplete="current-password"

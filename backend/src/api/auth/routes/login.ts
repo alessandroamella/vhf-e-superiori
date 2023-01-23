@@ -52,8 +52,18 @@ const router = Router();
  */
 router.post(
     "/",
-    body("callsign").isString().trim(),
-    body("password").isString().trim(),
+    body("callsign")
+        .isString()
+        .isLength({ min: 1, max: 10 })
+        .isAlphanumeric()
+        .trim()
+        .toUpperCase(),
+    body("password")
+        .isString()
+        .trim()
+        .isLength({ min: 8, max: 64 })
+        .isStrongPassword({ minLength: 8 }),
+
     validate,
     async (req, res, next) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

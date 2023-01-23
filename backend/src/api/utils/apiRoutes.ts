@@ -2,6 +2,9 @@ import { Router } from "express";
 
 import authRoutes from "../auth/routes";
 import eventRoutes from "../event/routes";
+import joinRequestRoutes from "../joinRequest/routes";
+import qrzRoutes from "../qrz/routes";
+
 import errorHandler from "../middlewares/errorHandler";
 import populateUser from "../middlewares/populateUser";
 
@@ -24,6 +27,8 @@ router.use(populateUser);
 
 router.use("/auth", authRoutes);
 router.use("/event", eventRoutes);
+router.use("/joinrequest", joinRequestRoutes);
+router.use("/qrz", qrzRoutes);
 
 router.use(errorHandler);
 

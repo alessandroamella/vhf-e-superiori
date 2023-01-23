@@ -19,10 +19,10 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     }
 
     if (isUserError) {
-        logger.debug("Express request handler error");
+        logger.debug("Express request handler user error");
         logger.debug(err);
     } else {
-        logger.error("Express request handler error");
+        logger.error("Express request handler server error");
         logger.error(err);
     }
 
