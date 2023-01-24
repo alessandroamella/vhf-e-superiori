@@ -1,10 +1,11 @@
 import { Router } from "express";
+import bcrypt from "bcrypt";
+import { INTERNAL_SERVER_ERROR, OK, UNAUTHORIZED } from "http-status";
 import { Errors } from "../../errors";
 import { logger } from "../../../shared/logger";
 import { body } from "express-validator";
 import { createError, validate } from "../../helpers";
 import User, { UserDoc } from "../models";
-import { INTERNAL_SERVER_ERROR, OK, UNAUTHORIZED } from "http-status";
 
 const router = Router();
 
@@ -72,7 +73,10 @@ router.post(
                     .json(createError(Errors.INVALID_PW));
             }
 
-            user.password = req.body.newPassword;
+            const plainPw = req.body.newPassword;
+            const salt = await bcrypt.genSalt(10);
+
+            user.password = await bcrypt.hash(plainPw, salt);
             await user.save();
 
             logger.debug("User " + user.callsign + " changed password");

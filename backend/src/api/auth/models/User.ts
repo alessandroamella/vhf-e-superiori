@@ -1,10 +1,4 @@
-import {
-    DocumentType,
-    modelOptions,
-    pre,
-    prop,
-    Ref
-} from "@typegoose/typegoose";
+import { DocumentType, modelOptions, prop, Ref } from "@typegoose/typegoose";
 import IsEmail from "isemail";
 import bcrypt from "bcrypt";
 import { JoinRequestClass } from "../../joinRequest/models";
@@ -56,12 +50,6 @@ import { JoinRequestClass } from "../../joinRequest/models";
  *            description: ObjectIds of the join requests
  */
 
-@pre<UserClass>("save", async function (next) {
-    const plainPw = this.password;
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(plainPw, salt);
-    next();
-})
 @modelOptions({
     schemaOptions: { timestamps: true },
     options: { customName: "User" }

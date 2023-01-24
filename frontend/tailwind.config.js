@@ -8,7 +8,13 @@ module.exports = withMT({
         "node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}"
     ],
     theme: {
-        extend: {}
+        extend: {
+            colors: {
+                materialBlue: {
+                    normal: "rgb(63 131 248)"
+                }
+            }
+        }
     },
-    plugins: [require("flowbite/plugin")]
+    plugins: [require("flowbite/plugin"), require("@tailwindcss/line-clamp")]
 });

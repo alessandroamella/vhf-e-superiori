@@ -1,5 +1,6 @@
 import passport from "passport";
 import { Strategy as localStrategy } from "passport-local";
+import bcrypt from "bcrypt";
 import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
 import User from "../models";
@@ -18,9 +19,7 @@ passport.use(
                 const callsign = (req.body.callsign as string)
                     .trim()
                     .toUpperCase();
-                email = email.trim().toLowerCase();
-                password = password.trim();
-                logger.debug("Signing up " + callsign + " with email " + email);
+                logger.info("Signing up " + callsign + " with email " + email);
                 logger.debug(
                     "Checking if callsign " +
                         callsign +
@@ -28,16 +27,20 @@ passport.use(
                         email +
                         " already exists"
                 );
+                logger.debug("Password = " + password);
                 const exists = await User.exists({
                     $or: [{ callsign }, { email }]
                 });
                 if (exists) return done(new Error(Errors.ALREADY_REGISTERED));
 
+                const plainPw = password;
+                const salt = await bcrypt.genSalt(10);
+
                 const user = await User.create({
                     callsign: req.body.callsign,
                     name: req.body.name,
                     email,
-                    password,
+                    password: await bcrypt.hash(plainPw, salt),
                     isAdmin: false,
                     joinRequests: []
                 });

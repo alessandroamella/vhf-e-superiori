@@ -34,7 +34,7 @@ router.get("/", async (req: Request, res: Response) => {
         const events = await EventModel.find(
             {},
             { joinRequests: 0, __v: 0, createdAt: 0, updatedAt: 0 }
-        );
+        ).sort({ date: 1 });
         res.json(events);
     } catch (err) {
         logger.error("Error while finding events");

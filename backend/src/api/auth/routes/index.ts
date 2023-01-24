@@ -23,8 +23,8 @@ export const saveToken = (res: Response, token: string) => {
 router.use("/login", loginRoute);
 router.use("/signup", signupRoute);
 router.use("/logout", logoutRoute);
+router.use("/changepw", isLoggedIn, changePwRoute);
 router.use("/", isLoggedIn, viewRoute);
 router.use("/", isLoggedIn, updateRoute);
-router.use("/changepw", isLoggedIn, changePwRoute);
 
 export default router;

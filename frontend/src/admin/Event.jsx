@@ -15,12 +15,14 @@ import {
 import React, { useContext, useState } from "react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
+import { formatInTimeZone } from "date-fns-tz";
 import { EventsContext, getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
 import { DefaultEditor } from "react-simple-wysiwyg";
-import { FaPlusCircle } from "react-icons/fa";
+import { FaDownload, FaPlusCircle } from "react-icons/fa";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import ReactHTMLTableToExcel from "react-html-table-to-excel";
 
 const Event = () => {
   const { user } = useContext(UserContext);
@@ -40,20 +42,6 @@ const Event = () => {
   const [logoUrl, setLogoUrl] = useState("/logo-min.png");
 
   const [joinRequests, setJoinRequests] = useState(null);
-
-  function sortEvents() {
-    const _events = [...events];
-    _events.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-    setEvents(_events);
-  }
-
-  useEffect(() => {
-    if (!events) return;
-    sortEvents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   async function createEvent(e) {
     e.preventDefault();
@@ -77,16 +65,23 @@ const Event = () => {
 
       setAlert({
         color: "success",
-        msg: `Evento ${!eventEditing ? "creato" : "modificato"} con successo`
+        msg: `Evento "${name}" ${
+          !eventEditing ? "creato" : "modificato"
+        } con successo`
       });
 
-      const _events = [...events];
-      const i = _events.findIndex(e => e._id === data._id);
-      if (_events[i]) _events[i] = data;
-      else _events.push(data);
-
-      setEvents(_events);
-      sortEvents();
+      try {
+        const { data } = await axios.get("/api/event");
+        console.log("events", data);
+        setEvents(data);
+      } catch (err) {
+        console.log("Errore nel caricamento degli eventi", err);
+        setAlert({
+          color: "failure",
+          msg: getErrorStr(err?.response?.data?.err)
+        });
+        setEvents(null);
+      }
 
       window.scrollTo({
         top: 0,
@@ -113,12 +108,15 @@ const Event = () => {
   }
 
   function editEventModal(e) {
+    console.log("edit event:", e);
     if (eventEditing?._id !== e._id) fetchJoinRequests(e._id);
     setEventEditing(e._id);
     setName(e.name);
     setDescription(e.description);
-    setDate(e.date.slice(0, -8));
-    setJoinDeadline(e.joinDeadline.slice(0, -8));
+    setDate(formatInTimeZone(e.date, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"));
+    setJoinDeadline(
+      formatInTimeZone(e.joinDeadline, "Europe/Rome", "yyyy-MM-dd'T'HH:mm")
+    );
     setLogoUrl(e.logoUrl);
     setShowModal(true);
   }
@@ -177,7 +175,12 @@ const Event = () => {
           <Modal.Body>
             <div className="space-y-2 flex flex-col gap-4 overflow-y-auto max-h-[60vh] pr-4">
               <div className="grid grid-cols-1 md:grid-cols-2 md:gap-2">
-                <img src={logoUrl} alt="Logo URL" className="w-96 max-w-full" />
+                <img
+                  loading="lazy"
+                  src={logoUrl}
+                  alt="Logo URL"
+                  className="w-96 max-w-full max-h-96 object-contain mx-auto"
+                />
                 <div className="my-auto">
                   <div className="mb-2 block">
                     <Label htmlFor="event-logo-url" value="URL logo" />
@@ -273,7 +276,7 @@ const Event = () => {
               </Button>
 
               {eventEditing && (
-                <div className="min-h-screen overflow-auto">
+                <div className="min-h-[60vh] overflow-auto">
                   <Typography variant="h4" className="pb-2">
                     Richieste di partecipazione
                   </Typography>
@@ -282,85 +285,101 @@ const Event = () => {
                   ) : joinRequests === false ? (
                     <p>Errore nel caricamento</p>
                   ) : joinRequests.length > 0 ? (
-                    <Table id="join-requests-list" striped>
-                      <Table.Head>
-                        <Table.HeadCell>Nominativo</Table.HeadCell>
-                        <Table.HeadCell>Nome</Table.HeadCell>
-                        <Table.HeadCell>Stato richiesta</Table.HeadCell>
-                        <Table.HeadCell>Data creazione</Table.HeadCell>
-                        <Table.HeadCell>Antenna</Table.HeadCell>
-                        <Table.HeadCell>
-                          <span className="sr-only">Azioni</span>
-                        </Table.HeadCell>
-                      </Table.Head>
-                      <Table.Body className="divide-y">
-                        {joinRequests.map(j => (
-                          <Table.Row key={j._id}>
-                            <Table.Cell className="whitespace-nowrap font-medium">
-                              {j.fromUser.callsign}
-                            </Table.Cell>
-                            <Table.Cell>
-                              <Tooltip content={j.fromUser.email}>
-                                <a
-                                  href={"mailto:" + j.fromUser.email}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="hover:text-black transition-colors"
-                                >
-                                  {j.fromUser.name}
-                                </a>
-                              </Tooltip>
-                            </Table.Cell>
-                            <Table.Cell>
-                              {j.isApproved ? (
-                                <span className="ml-1 font-medium">
-                                  ✅ Approvata
-                                </span>
-                              ) : (
-                                <span className="ml-1 font-medium">
-                                  ❌ Non approvata
-                                </span>
-                              )}
-                            </Table.Cell>
-                            <Table.Cell>
-                              {format(
-                                new Date(j.updatedAt),
-                                "dd/MM/yyyy 'alle' HH:mm",
-                                {
-                                  locale: it
-                                }
-                              )}
-                            </Table.Cell>
-                            <Table.Cell className="max-w-xs">
-                              <Tooltip content={j.antenna}>
-                                <p className="whitespace-nowrap overflow-hidden text-ellipsis">
-                                  {j.antenna}
-                                </p>
-                              </Tooltip>
-                            </Table.Cell>
-                            <Table.Cell className="max-w-[10rem]">
-                              {j.isApproved ? (
-                                <Button
-                                  color="failure"
-                                  onClick={() => approveJoinRequests(j)}
-                                  disabled={disabled}
-                                >
-                                  Annulla approvazione
-                                </Button>
-                              ) : (
-                                <Button
-                                  color="success"
-                                  onClick={() => approveJoinRequests(j)}
-                                  disabled={disabled}
-                                >
-                                  Approva richiesta
-                                </Button>
-                              )}
-                            </Table.Cell>
-                          </Table.Row>
-                        ))}
-                      </Table.Body>
-                    </Table>
+                    <>
+                      <Button className="mx-auto mb-2 flex items-center">
+                        <FaDownload className="mr-1" />
+                        <ReactHTMLTableToExcel
+                          className="download-table-xls-button"
+                          table="join-requests-list"
+                          filename={
+                            "lista-richieste-" + name.replace(/\W/g, "")
+                          }
+                          sheet="lista"
+                          buttonText="Scarica come Excel"
+                        />
+                      </Button>
+                      <Table id="join-requests-list" striped>
+                        <Table.Head>
+                          <Table.HeadCell>Nominativo</Table.HeadCell>
+                          <Table.HeadCell>Nome</Table.HeadCell>
+                          <Table.HeadCell>Stato richiesta</Table.HeadCell>
+                          <Table.HeadCell>Data creazione</Table.HeadCell>
+                          <Table.HeadCell>Antenna</Table.HeadCell>
+                          <Table.HeadCell>
+                            <span className="sr-only">Azioni</span>
+                          </Table.HeadCell>
+                        </Table.Head>
+                        <Table.Body className="divide-y">
+                          {(console.log(joinRequests), null)}
+                          {joinRequests.map(j => (
+                            <Table.Row key={j._id}>
+                              <Table.Cell className="whitespace-nowrap font-medium">
+                                {j.fromUser.callsign}
+                              </Table.Cell>
+                              <Table.Cell>
+                                <Tooltip content={j.fromUser.email}>
+                                  <a
+                                    href={"mailto:" + j.fromUser.email}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:text-black transition-colors"
+                                  >
+                                    {j.fromUser.name}
+                                  </a>
+                                </Tooltip>
+                              </Table.Cell>
+                              <Table.Cell>
+                                {j.isApproved ? (
+                                  <span className="ml-1 font-medium">
+                                    ✅ Approvata
+                                  </span>
+                                ) : (
+                                  <span className="ml-1 font-medium">
+                                    ❌ Non approvata
+                                  </span>
+                                )}
+                              </Table.Cell>
+                              <Table.Cell>
+                                {formatInTimeZone(
+                                  new Date(j.updatedAt),
+                                  "Europe/Rome",
+                                  "dd/MM/yyyy 'alle' HH:mm",
+                                  {
+                                    locale: it
+                                  }
+                                )}
+                              </Table.Cell>
+                              <Table.Cell className="max-w-xs">
+                                <Tooltip content={j.antenna}>
+                                  <p className="whitespace-nowrap overflow-hidden text-ellipsis">
+                                    {j.antenna}
+                                  </p>
+                                </Tooltip>
+                              </Table.Cell>
+                              <Table.Cell className="max-w-[10rem]">
+                                {j.isApproved ? (
+                                  <Button
+                                    color="failure"
+                                    onClick={() => approveJoinRequests(j)}
+                                    disabled={disabled}
+                                  >
+                                    Annulla approvazione
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    color="success"
+                                    onClick={() => approveJoinRequests(j)}
+                                    disabled={disabled}
+                                  >
+                                    Approva richiesta
+                                  </Button>
+                                )}
+                              </Table.Cell>
+                            </Table.Row>
+                          ))}
+                        </Table.Body>
+                      </Table>
+                    </>
                   ) : (
                     <p>Ancora nessuna richiesta</p>
                   )}
@@ -395,9 +414,6 @@ const Event = () => {
           </Alert>
         )}
 
-        <p className="bg-red-600 font-semibold w-fit text-white text-2xl p-3">
-          DEBUG rendi pagina accessibile solo agli admin
-        </p>
         <Typography variant="h1" className="mb-12 flex items-center">
           <Badge size="lg" color="info" className="mr-2">
             Admin
@@ -421,6 +437,7 @@ const Event = () => {
                 </h5>
                 {e.description ? (
                   <div
+                    className="line-clamp-3"
                     dangerouslySetInnerHTML={{
                       __html: e.description
                     }}
@@ -433,27 +450,37 @@ const Event = () => {
                 <p className="font-normal text-gray-700 dark:text-gray-400">
                   Data{" "}
                   <strong>
-                    {format(new Date(e.date), "eee d MMMM Y", {
-                      locale: it
-                    })}
+                    {formatInTimeZone(
+                      new Date(e.date),
+                      "Europe/Rome",
+                      "eee d MMMM Y",
+                      {
+                        locale: it
+                      }
+                    )}
                   </strong>
                 </p>
                 <p className="font-normal text-gray-700 dark:text-gray-400">
                   Scadenza per partecipare{" "}
                   <strong>
-                    {format(new Date(e.joinDeadline), "eee d MMMM Y", {
-                      locale: it
-                    })}
+                    {formatInTimeZone(
+                      new Date(e.joinDeadline),
+                      "Europe/Rome",
+                      "eee d MMMM Y",
+                      {
+                        locale: it
+                      }
+                    )}
                   </strong>
                 </p>
               </Card>
             ))}
             {events.length === 0 && <p>Nessun evento salvato</p>}
             <Button
-              className="flex text-md flex-col justify-center items-center"
+              className="flex h-full text-md flex-col justify-center items-center"
               onClick={newEventModal}
             >
-              <span className="text-5xl mb-1">
+              <span className="text-5xl mb-1 mr-2">
                 <FaPlusCircle />
               </span>{" "}
               Nuovo evento

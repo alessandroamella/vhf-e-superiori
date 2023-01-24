@@ -8,7 +8,8 @@ const requiredEnvs = [
     "COOKIE_SECRET",
     "MONGODB_URI",
     "QRZ_USERNAME",
-    "QRZ_PASSWORD"
+    "QRZ_PASSWORD",
+    "RECAPTCHA_SECRET"
 ] as const;
 export type Env = typeof requiredEnvs[number];
 

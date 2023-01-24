@@ -15,6 +15,7 @@ import ViewEvent from "./event/ViewEvent";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
+export const SplashContext = createContext(false);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const router = createBrowserRouter([
@@ -67,6 +68,7 @@ const App = () => {
     // eslint-disable-next-line no-unused-vars
     const [user, setUser] = useState(false);
     const [events, setEvents] = useState(false);
+    const [splashPlayed, setSplashPlayed] = useState(false);
 
     useEffect(() => {
         async function fetchUser() {
@@ -106,7 +108,11 @@ const App = () => {
             <ThemeProvider>
                 <UserContext.Provider value={{ user, setUser }}>
                     <EventsContext.Provider value={{ events, setEvents }}>
-                        <RouterProvider router={router} />
+                        <SplashContext.Provider
+                            value={{ splashPlayed, setSplashPlayed }}
+                        >
+                            <RouterProvider router={router} />
+                        </SplashContext.Provider>
                     </EventsContext.Provider>
                 </UserContext.Provider>
             </ThemeProvider>

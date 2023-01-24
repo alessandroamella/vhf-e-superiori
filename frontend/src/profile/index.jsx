@@ -19,6 +19,7 @@ import { isAfter } from "date-fns/esm";
 import { it } from "date-fns/locale";
 import { format } from "date-fns";
 import { FaLink } from "react-icons/fa";
+import { formatInTimeZone } from "date-fns-tz";
 
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);
@@ -82,6 +83,7 @@ const Profile = () => {
     e.preventDefault();
 
     setChangeDataBtnDisabled(true);
+    setAlert(null);
 
     try {
       const { data } = await axios.put("/api/auth", { name, email });
@@ -125,8 +127,11 @@ const Profile = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
+  const [isFetchingJoinRequests, setIsFetchingJoinRequests] = useState(false);
+
   useEffect(() => {
-    if (joinRequests || !events || !user) return;
+    if (joinRequests || !events || !user || isFetchingJoinRequests) return;
+    setIsFetchingJoinRequests(true);
 
     async function fetchJoinRequests() {
       try {
@@ -148,6 +153,7 @@ const Profile = () => {
     }
 
     fetchJoinRequests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [joinRequests, events, user]);
 
   const [deleteJoinRequest, setDeleteJoinRequest] = useState(false);
@@ -383,33 +389,6 @@ const Profile = () => {
                     )}
                   </div>
 
-                  {isEditing && (
-                    <>
-                      <div className="mt-4 flex items-center gap-4">
-                        <span>
-                          Password attuale: <strong>{"*".repeat(8)}</strong>
-                        </span>
-                        <Button onClick={() => setShowChangePwModal(true)}>
-                          Cambia password
-                        </Button>
-                      </div>
-
-                      <small className="mt-4">
-                        Se hai sbagliato a inserire il nominativo o desideri
-                        eliminare il tuo account, per favore procedi a inviarci
-                        una mail ad{" "}
-                        <a
-                          href="mailto:alessandro@iu4qsg.it"
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          alessandro@iu4qsg.it
-                        </a>
-                        .
-                      </small>
-                    </>
-                  )}
-
                   <div className="flex mb-2">
                     {isEditing ? (
                       <>
@@ -418,7 +397,7 @@ const Profile = () => {
                           type="button"
                           onClick={() => setIsEditing(false)}
                         >
-                          Annulla
+                          Chiudi modifica
                         </Button>
                         <Button
                           type="submit"
@@ -440,6 +419,33 @@ const Profile = () => {
                     )}
                   </div>
                 </form>
+
+                {isEditing && (
+                  <>
+                    <div className="my-4 flex items-center gap-4">
+                      <span>
+                        Password attuale: <strong>{"*".repeat(8)}</strong>
+                      </span>
+                      <Button onClick={() => setShowChangePwModal(true)}>
+                        Cambia password
+                      </Button>
+                    </div>
+
+                    <small className="mt-4">
+                      Se hai sbagliato a inserire il nominativo o desideri
+                      eliminare il tuo account, per favore procedi a inviarci
+                      una mail ad{" "}
+                      <a
+                        href="mailto:alessandro@iu4qsg.it"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        alessandro@iu4qsg.it
+                      </a>
+                      .
+                    </small>
+                  </>
+                )}
               </>
             )}
           </div>
@@ -452,14 +458,19 @@ const Profile = () => {
             {joinRequests && events ? (
               joinRequests.length > 0 ? (
                 joinRequests.map(j => (
-                  <Card key={j._id}>
+                  <Card key={j._id} className="mb-2">
                     <h6 className="text-xl font-bold tracking-tight text-gray-900 hover:underline">
                       <Link to={"/event/" + j.event._id}>{j.event.name}</Link>
                     </h6>
                     <p className="font-normal text-gray-700 -mt-2">
-                      {format(new Date(j.event.date), "📅 dd/MM/yyyy", {
-                        locale: it
-                      })}
+                      {formatInTimeZone(
+                        new Date(j.event.date),
+                        "Europe/Rome",
+                        "📅 dd/MM/yyyy",
+                        {
+                          locale: it
+                        }
+                      )}
                     </p>
                     <p className="font-medium">
                       {j.isApproved ? (

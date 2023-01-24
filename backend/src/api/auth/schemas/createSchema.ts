@@ -16,7 +16,8 @@ const createSchema: Schema = {
     email: {
         isString: { options: [] },
         trim: { options: [] },
-        isEmail: { options: [] }
+        isEmail: { options: [] },
+        toLowerCase: { options: [] }
     },
     password: {
         isString: { options: [] },

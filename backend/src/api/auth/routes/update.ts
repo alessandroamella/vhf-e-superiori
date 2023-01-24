@@ -4,7 +4,7 @@ import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import updateSchema from "../schemas/updateSchema";
-import User from "../models";
+import User, { UserDoc } from "../models";
 import { Errors } from "../../errors";
 
 const router = Router();
@@ -67,7 +67,10 @@ router.put(
         try {
             const { name, email } = req.body;
             if (email) {
-                const exists = await User.exists({ email });
+                const exists = await User.exists({
+                    email,
+                    callsign: { $ne: (req.user as unknown as UserDoc).callsign }
+                });
                 if (exists) {
                     return res
                         .status(BAD_REQUEST)
