@@ -259,12 +259,20 @@ const Homepage = () => {
               <h2 className="font-bold mb-4 text-center text-3xl tracking-tight">
                 SE VUOI ESSERE PROSSIMA STAZIONE ATTIVATRICE:
               </h2>
-              <Button
-                className="text-xl"
+              {/* <Button
+                className="text-xl mb-4"
+                disabled
                 onClick={() => window.alert("Ancora da implementare!")}
               >
                 CLICCA QUI
-              </Button>
+              </Button> */}
+              <Alert color="info">
+                <span>
+                  <span className="font-medium">Info</span> Il modulo per
+                  registrarsi non è ancora in funzione. Nel frattempo, puoi
+                  contattarci scrivendo a uno degli amministratori.
+                </span>
+              </Alert>
             </div>
 
             <div>
@@ -390,7 +398,16 @@ const Homepage = () => {
                       className="bg-white dark:border-gray-700 dark:bg-gray-800"
                     >
                       <Table.Cell className="py-2 whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                        {e.i}° Radio Flash Mob
+                        {e.i}° Radio Flash Mob{" "}
+                        <span className="font-normal">
+                          (
+                          {e.i % 3 === 1
+                            ? "2m"
+                            : e.i % 3 === 2
+                            ? "70cm"
+                            : "23cm"}
+                          )
+                        </span>
                       </Table.Cell>
                       <Table.Cell className="py-2">
                         {formatInTimeZone(
@@ -406,6 +423,35 @@ const Homepage = () => {
                   ))}
                 </Table.Body>
               </Table>
+            </div>
+
+            <h2 className="mt-16 mb-6 font-bold text-center text-3xl tracking-tight">
+              Amministratori
+            </h2>
+
+            <div className="mx-auto">
+              {[
+                "IZ5RNF Ronca Alessandro",
+                "IZ5IOQ Metteucci Giacomo",
+                "IK7UXU Ingrosso Flavio",
+                "IZ2MHO Pinzelli Bruno",
+                "IT9DJF Casini Andrea",
+                "IU0NWJ Peruzzi Cristiano",
+                "IU4JJJ Cerrone Pietro"
+              ].map(e => (
+                <a
+                  href={"https://www.qrz.com/db/" + e.split(" ")[0]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  key={e}
+                  className="flex items-center underline decoration-dotted"
+                >
+                  <span className="text-gray-500 font-bold text-3xl">
+                    <FaAngleDoubleRight />
+                  </span>
+                  <span className="ml-1">{e}</span>
+                </a>
+              ))}
             </div>
           </div>
         </div>
