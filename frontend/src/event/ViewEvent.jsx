@@ -1,6 +1,7 @@
 import { Alert as MTAlert, Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { format, isAfter } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 import it from "date-fns/locale/it";
 import { Alert, Checkbox, Label, Modal, TextInput } from "flowbite-react";
 import React, { useContext } from "react";
@@ -188,9 +189,14 @@ const ViewEvent = () => {
           )}
 
           <div className="text-gray-600 mt-2 mb-4">
-            {format(new Date(event.date), "📅 dd/MM/yyyy  🕒 HH:mm", {
-              locale: it
-            })}
+            {formatInTimeZone(
+              new Date(event.date),
+              "Europe/Rome",
+              "📅 dd/MM/yyyy  🕒 HH:mm",
+              {
+                locale: it
+              }
+            )}
           </div>
 
           {event.description ? (
@@ -236,8 +242,9 @@ const ViewEvent = () => {
                         Hai tempo fino a{" "}
                         <span className="font-bold">
                           {" "}
-                          {format(
+                          {formatInTimeZone(
                             new Date(event.joinDeadline),
+                            "Europe/Rome",
                             "eeee d MMMM Y",
                             {
                               locale: it
@@ -247,9 +254,14 @@ const ViewEvent = () => {
                         alle ore
                         <span className="font-bold">
                           {" "}
-                          {format(new Date(event.joinDeadline), "HH:mm", {
-                            locale: it
-                          })}
+                          {formatInTimeZone(
+                            new Date(event.joinDeadline),
+                            "Europe/Rome",
+                            "HH:mm",
+                            {
+                              locale: it
+                            }
+                          )}
                         </span>{" "}
                         per prenotarti a questo evento!
                       </span>
@@ -285,8 +297,9 @@ const ViewEvent = () => {
                 <FaExclamationTriangle />
                 <span className="ml-1">
                   Il tempo per prenotarsi è scaduto{" "}
-                  {format(
+                  {formatInTimeZone(
                     new Date(event.date),
+                    "Europe/Rome",
                     "eeee d MMMM Y 'alle ore' HH:mm",
                     {
                       locale: it

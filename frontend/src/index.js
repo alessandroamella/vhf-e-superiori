@@ -12,10 +12,13 @@ import axios, { isAxiosError } from "axios";
 import Profile from "./profile";
 import Event from "./admin/Event";
 import ViewEvent from "./event/ViewEvent";
+import Regolamento from "./homepage/Regolamento";
+import Info from "./homepage/Info";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
 export const SplashContext = createContext(false);
+export const ReadyContext = createContext(false);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const router = createBrowserRouter([
@@ -24,6 +27,8 @@ const router = createBrowserRouter([
     { path: "/signup", element: <Signup /> },
     { path: "/profile", element: <Profile /> },
     { path: "/eventmanager", element: <Event /> },
+    { path: "/regolamento", element: <Regolamento /> },
+    { path: "/info", element: <Info /> },
     { path: "/event/:id", element: <ViewEvent /> }
     // {
     //   path: "contacts/:contactId",
@@ -69,6 +74,7 @@ const App = () => {
     const [user, setUser] = useState(false);
     const [events, setEvents] = useState(false);
     const [splashPlayed, setSplashPlayed] = useState(false);
+    const [ready, setReady] = useState(false);
 
     useEffect(() => {
         async function fetchUser() {
@@ -111,7 +117,9 @@ const App = () => {
                         <SplashContext.Provider
                             value={{ splashPlayed, setSplashPlayed }}
                         >
-                            <RouterProvider router={router} />
+                            <ReadyContext.Provider value={{ ready, setReady }}>
+                                <RouterProvider router={router} />
+                            </ReadyContext.Provider>
                         </SplashContext.Provider>
                     </EventsContext.Provider>
                 </UserContext.Provider>

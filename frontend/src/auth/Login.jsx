@@ -50,7 +50,7 @@ const Login = () => {
   return (
     <Layout>
       {user && navigate("/profile")}
-      <div className="mx-auto px-2 w-full md:w-2/3 mt-12 mb-24">
+      <div className="mx-auto px-8 w-full md:w-2/3 mt-12 mb-24">
         <Typography variant="h1" className="mb-2">
           Login
         </Typography>

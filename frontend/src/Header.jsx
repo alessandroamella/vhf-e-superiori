@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FaCaretDown, FaUserAlt } from "react-icons/fa";
 import {
-  Button,
   Menu,
   MenuHandler,
   MenuItem,
@@ -31,15 +30,15 @@ const Header = () => {
   }
 
   return (
-    <header className="bg-white py-4 px-8 flex items-center">
+    <header className="bg-lightGray-normal py-4 px-8 flex items-center">
       <Link
         to="/"
         className="flex items-center hover:scale-105 transition-transform"
       >
-        <img className="w-14" src="/logo-min.png" alt="Logo" loading="lazy" />
+        <img className="w-28" src="/logo-min.png" alt="Logo" loading="lazy" />
         <Typography
-          variant="h3"
-          className="font-bold ml-3 hidden md:block text-blue-500"
+          variant="h1"
+          className="font-bold ml-3 hidden md:block text-red-500"
         >
           vhfesuperiori
         </Typography>
@@ -62,7 +61,10 @@ const Header = () => {
         {user === null ? (
           <Menu>
             <MenuHandler>
-              <Button>Login</Button>
+              {/* DEBUG */}
+              <p className="hidden text-red-500 cursor-pointer font-bold">
+                Login
+              </p>
             </MenuHandler>
             <MenuList>
               <MenuItem onClick={() => navigate("/login")}>Login</MenuItem>

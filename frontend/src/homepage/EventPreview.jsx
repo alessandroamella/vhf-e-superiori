@@ -1,5 +1,6 @@
 import { Button, Typography } from "@material-tailwind/react";
 import { format } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 import { it } from "date-fns/locale";
 import React from "react";
 
@@ -28,9 +29,14 @@ const EventPreview = ({ event, ...props }) => {
         <Typography variant="h1">{event.name}</Typography>
 
         <div className="text-gray-600 mt-2 mb-4">
-          {format(new Date(event.date), "📅 dd/MM/yyyy  🕒 HH:mm", {
-            locale: it
-          })}
+          {formatInTimeZone(
+            new Date(event.date),
+            "Europe/Rome",
+            "📅 dd/MM/yyyy  🕒 HH:mm",
+            {
+              locale: it
+            }
+          )}
         </div>
 
         {event.description && (

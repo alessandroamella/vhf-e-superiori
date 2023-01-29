@@ -12,5 +12,30 @@
 
 body {
     scroll-behavior: smooth;
-    background: #f7f7f7;
+    @apply bg-lightGray-normal;
+}
+
+* {
+    max-width: 100vw !important;
+}
+
+.awssld__content img {
+    @apply object-contain max-h-full !important;
+}
+
+.awssld *:not(.awssld__bullets *) {
+    @apply max-h-[70vh] bg-inherit !important;
+}
+
+.ombra {
+    text-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000,
+        -1px -1px 0 #000;
+}
+
+.carousel__controls {
+    margin-top: 5rem !important;
+}
+
+.carousel__slide:hover .carousel__slide-overlay {
+    opacity: 0 !important;
 }
