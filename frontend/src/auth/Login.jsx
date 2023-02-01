@@ -58,7 +58,10 @@ const Login = () => {
         <Typography variant="small" className="mb-6 flex">
           <span className="mr-1">Non hai un account? </span>
           <Tooltip content="Naviga alla pagina di registrazione">
-            <Link to="/signup" className="underline">
+            <Link
+              to="/signup"
+              className="underline decoration-dotted hover:text-black transition-colors"
+            >
               Registrati qui
             </Link>
           </Tooltip>

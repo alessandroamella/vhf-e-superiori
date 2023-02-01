@@ -8,7 +8,7 @@ import {
   Typography
 } from "@material-tailwind/react";
 import { useState } from "react";
-import { EventsContext, ReadyContext, SplashContext } from "..";
+import { EventsContext, ReadyContext, SplashContext, UserContext } from "..";
 import { useContext } from "react";
 import { Accordion, Alert, Card, Spinner, Table } from "flowbite-react";
 import { differenceInDays, format, isAfter } from "date-fns";
@@ -23,8 +23,10 @@ import Zoom from "react-medium-image-zoom";
 
 import "react-medium-image-zoom/dist/styles.css";
 import "react-round-carousel/src/index.css";
+import JoinRequestModal from "./JoinRequestModal";
 
 const Homepage = () => {
+  const { user } = useContext(UserContext);
   const { events } = useContext(EventsContext);
   const { splashPlayed, setSplashPlayed } = useContext(SplashContext);
   const { ready, setReady } = useContext(ReadyContext);
@@ -66,6 +68,13 @@ const Homepage = () => {
   useEffect(() => {
     if (!events) return;
     const now = new Date();
+    const _events = [...events].filter(e => isAfter(new Date(e.date), now));
+    _events.sort(
+      (a, b) =>
+        differenceInDays(now, new Date(b.date)) -
+        differenceInDays(now, new Date(a.date))
+    );
+    if (_events.length > 0) setEventJoining(_events[0]);
     for (const e of events) {
       const diff = differenceInDays(new Date(e.date), now);
       if (
@@ -74,7 +83,6 @@ const Homepage = () => {
         e.logoUrl &&
         e.logoUrl !== "/logo-min.png"
       ) {
-        console.log({ diff });
         setShownEvent(e);
         return;
       }
@@ -92,9 +100,19 @@ const Homepage = () => {
     )
   }));
 
+  const [eventJoining, setEventJoining] = useState(null);
+  const [eventJoiningOpen, setEventJoiningOpen] = useState(false);
+
   return (
     <Layout>
       {!splashPlayed && <Splash ready={ready} />}
+
+      <JoinRequestModal
+        event={eventJoining}
+        setEvent={setEventJoining}
+        open={eventJoiningOpen}
+        setOpen={setEventJoiningOpen}
+      />
 
       {ready && (
         <div className="px-4 md:px-12 max-w-full pt-4 pb-12 min-h-[80vh] bg-white">
@@ -259,20 +277,28 @@ const Homepage = () => {
                 <h2 className="font-bold mb-4 text-center text-3xl tracking-tight">
                   SE VUOI ESSERE PROSSIMA STAZIONE ATTIVATRICE:
                 </h2>
-                {/* <Button
-                className="text-xl mb-4"
-                disabled
-                onClick={() => window.alert("Ancora da implementare!")}
-              >
-                CLICCA QUI
-              </Button> */}
-                <Alert color="info">
+                {user ? (
+                  <Button
+                    className="text-xl mb-4"
+                    onClick={() => setEventJoiningOpen(true)}
+                  >
+                    CLICCA QUI
+                  </Button>
+                ) : (
+                  <Button
+                    className="text-xl mb-4"
+                    onClick={() => navigate("/login")}
+                  >
+                    Login
+                  </Button>
+                )}
+                {/* <Alert color="info">
                   <span>
                     <span className="font-medium">Info</span> Il modulo per
                     registrarsi non è ancora in funzione. Nel frattempo, puoi
                     contattarci scrivendo a uno degli amministratori.
                   </span>
-                </Alert>
+                </Alert> */}
               </div>
 
               <Accordion alwaysOpen flush className="mt-8">

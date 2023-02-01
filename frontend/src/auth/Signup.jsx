@@ -116,7 +116,10 @@ const Signup = () => {
         <Typography variant="small" className="mb-6 flex">
           <span className="mr-1">Hai già un account? </span>
           <Tooltip content="Naviga alla pagina di login">
-            <Link to="/login" className="underline">
+            <Link
+              to="/login"
+              className="underline decoration-dotted hover:text-black transition-colors"
+            >
               Fai il login qui
             </Link>
           </Tooltip>
