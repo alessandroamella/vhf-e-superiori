@@ -37,17 +37,14 @@ const Splash = ({ ready }) => {
     >
       <div className="w-screen h-screen flex flex-col md:flex-row justify-center items-center">
         <img src="/logo-min.png" alt="Logo" className="w-96 max-w-[50vw]" />
-        {ready ? (
-          <>
+        {/* {ready ? ( */}
+        {/* <>
             <h1 className="font-bold text-3xl md:text-5xl ml-0 md:ml-12">
               vhfesuperiori.eu
             </h1>
-            {/* {shownEvent && (
-              <img className="w-96" src={shownEvent.logoUrl} alt="Next event" />
-            )} */}
-          </>
-        ) : (
-          <>
+          </> */}
+        {/* ) : ( */}
+        {/* <>
             <AnimatedText
               type="chars"
               animation={{
@@ -64,11 +61,8 @@ const Splash = ({ ready }) => {
             >
               vhfesuperiori.eu
             </AnimatedText>
-            {/* {shownEvent && (
-              <img className="w-96" src={shownEvent.logoUrl} alt="Next event" />
-            )} */}
-          </>
-        )}
+          </> */}
+        {/* )} */}
 
         {/* <h1 className="text-bold tracking-tighter text-4xl ml-5">
           

@@ -1,15 +1,8 @@
-import { Schema } from "express-validator";
+import createSchema from "./createSchema";
 
-const updateSchema: Schema = {
-    name: {
-        isString: { options: [] },
-        trim: { options: [] },
-        isLength: { options: { min: 1, max: 50 } }
-    },
-    email: {
-        isString: { options: [] },
-        trim: { options: [] },
-        isEmail: { options: [] }
-    }
-};
+const updateSchema = createSchema;
+for (const key in createSchema) {
+    updateSchema[key] = createSchema[key];
+    updateSchema[key].optional = { options: {} };
+}
 export default updateSchema;

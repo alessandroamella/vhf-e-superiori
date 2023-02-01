@@ -1,7 +1,14 @@
-import { DocumentType, modelOptions, prop, Ref } from "@typegoose/typegoose";
+import {
+    DocumentType,
+    modelOptions,
+    pre,
+    prop,
+    Ref
+} from "@typegoose/typegoose";
 import IsEmail from "isemail";
 import bcrypt from "bcrypt";
 import { JoinRequestClass } from "../../joinRequest/models";
+import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 
 /**
  * @swagger
@@ -13,6 +20,7 @@ import { JoinRequestClass } from "../../joinRequest/models";
  *          - callsign
  *          - name
  *          - email
+ *          - phoneNumber
  *          - password
  *          - isAdmin
  *          - joinRequests
@@ -54,6 +62,12 @@ import { JoinRequestClass } from "../../joinRequest/models";
     schemaOptions: { timestamps: true },
     options: { customName: "User" }
 })
+@pre<UserClass>("save", function () {
+    this.phoneNumber = parsePhoneNumber(
+        this.phoneNumber,
+        "IT"
+    ).formatInternational();
+})
 export class UserClass {
     @prop({ required: true, minlength: 1, maxlength: 10, uppercase: true })
     public callsign!: string; // without prefix or suffix
@@ -63,6 +77,9 @@ export class UserClass {
 
     @prop({ required: true, validate: IsEmail.validate })
     public email!: string;
+
+    @prop({ required: true, validate: isValidPhoneNumber })
+    public phoneNumber!: string;
 
     @prop({ required: true })
     public password!: string;

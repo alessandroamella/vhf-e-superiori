@@ -35,12 +35,17 @@ const Header = () => {
         to="/"
         className="flex items-center hover:scale-105 transition-transform"
       >
-        <img className="w-28" src="/logo-min.png" alt="Logo" loading="lazy" />
+        <img
+          className="w-28 md:w-36"
+          src="/logo-min.png"
+          alt="Logo"
+          loading="lazy"
+        />
         <Typography
           variant="h1"
           className="font-bold ml-3 hidden md:block text-red-500"
         >
-          vhfesuperiori
+          www.vhfesuperiori.eu
         </Typography>
       </Link>
       {user?.isAdmin && (
@@ -61,10 +66,7 @@ const Header = () => {
         {user === null ? (
           <Menu>
             <MenuHandler>
-              {/* DEBUG */}
-              <p className="hidden text-red-500 cursor-pointer font-bold">
-                Login
-              </p>
+              <p className="text-red-500 cursor-pointer font-bold">Login</p>
             </MenuHandler>
             <MenuList>
               <MenuItem onClick={() => navigate("/login")}>Login</MenuItem>

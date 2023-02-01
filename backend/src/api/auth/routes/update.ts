@@ -65,16 +65,28 @@ router.put(
             throw new Error("No req.user in user update");
         }
         try {
-            const { name, email } = req.body;
+            // DEBUG email conferma
+            const { name, email, phoneNumber } = req.body;
             if (email) {
-                const exists = await User.exists({
+                const emailExists = await User.exists({
                     email,
                     callsign: { $ne: (req.user as unknown as UserDoc).callsign }
                 });
-                if (exists) {
+                if (emailExists) {
                     return res
                         .status(BAD_REQUEST)
                         .json(createError(Errors.EMAIL_ALREADY_IN_USE));
+                }
+            }
+            if (phoneNumber) {
+                const phoneNumberExists = await User.exists({
+                    phoneNumber,
+                    callsign: { $ne: (req.user as unknown as UserDoc).callsign }
+                });
+                if (phoneNumberExists) {
+                    return res
+                        .status(BAD_REQUEST)
+                        .json(createError(Errors.PHONE_NUMBER_ALREADY_IN_USE));
                 }
             }
             const user = await User.findOneAndUpdate(

@@ -19,17 +19,22 @@ passport.use(
                 const callsign = (req.body.callsign as string)
                     .trim()
                     .toUpperCase();
+                const phoneNumber = (req.body.callsign as string)
+                    .trim()
+                    .toUpperCase();
                 logger.info("Signing up " + callsign + " with email " + email);
                 logger.debug(
                     "Checking if callsign " +
                         callsign +
                         " or email " +
                         email +
+                        " or phoneNumber " +
+                        phoneNumber +
                         " already exists"
                 );
                 logger.debug("Password = " + password);
                 const exists = await User.exists({
-                    $or: [{ callsign }, { email }]
+                    $or: [{ callsign }, { email }, { phoneNumber }]
                 });
                 if (exists) return done(new Error(Errors.ALREADY_REGISTERED));
 
@@ -40,6 +45,7 @@ passport.use(
                     callsign: req.body.callsign,
                     name: req.body.name,
                     email,
+                    phoneNumber,
                     password: await bcrypt.hash(plainPw, salt),
                     isAdmin: false,
                     joinRequests: []

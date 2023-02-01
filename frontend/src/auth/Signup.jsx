@@ -21,6 +21,7 @@ const Signup = () => {
   const [callsign, setCallsign] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
 
   const captchaRef = createRef();
@@ -166,6 +167,22 @@ const Signup = () => {
             onChange={e => setName(e.target.value)}
             disabled={disabled}
             ref={inputRef}
+          />
+          <div className="my-4" />
+          <div className="mb-2 block">
+            {/* DEBUG in traduzione estera, specifica di inserire il prefisso */}
+            <Label htmlFor="phoneNumber" value="Numero di telefono" />
+          </div>
+          <TextInput
+            type="tel"
+            name="phoneNumber"
+            id="phoneNumber"
+            autoComplete="tel"
+            label="Numero di telefono"
+            value={phoneNumber}
+            onChange={e => setPhoneNumber(e.target.value)}
+            helperText="In caso di candidatura ad un Radio Flash Mob, verrai ricontattato qui"
+            disabled={disabled}
           />
           <div className="my-4" />
           <div className="mb-2 block">
