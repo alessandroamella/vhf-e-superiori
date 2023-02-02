@@ -21,7 +21,7 @@ const Signup = () => {
   const [callsign, setCallsign] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("+39");
   const [email, setEmail] = useState("");
 
   const captchaRef = createRef();
@@ -75,6 +75,10 @@ const Signup = () => {
     e.preventDefault();
 
     if (!captchaRef.current.getValue()) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
       return setAlert("Verifica di non essere un robot");
     }
 
@@ -84,6 +88,7 @@ const Signup = () => {
         callsign,
         name,
         password,
+        phoneNumber,
         email,
         token: captchaRef.current.getValue()
       });
@@ -95,6 +100,10 @@ const Signup = () => {
       navigate("/");
     } catch (err) {
       console.log("signup error", err);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
       setAlert(getErrorStr(err.response?.data?.err));
       setDisabled(false);
     }
@@ -174,7 +183,10 @@ const Signup = () => {
           <div className="my-4" />
           <div className="mb-2 block">
             {/* DEBUG in traduzione estera, specifica di inserire il prefisso */}
-            <Label htmlFor="phoneNumber" value="Numero di telefono" />
+            <Label
+              htmlFor="phoneNumber"
+              value="Numero di telefono (con prefisso nazionale)"
+            />
           </div>
           <TextInput
             type="tel"

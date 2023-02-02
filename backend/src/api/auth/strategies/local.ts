@@ -19,7 +19,7 @@ passport.use(
                 const callsign = (req.body.callsign as string)
                     .trim()
                     .toUpperCase();
-                const phoneNumber = (req.body.callsign as string)
+                const phoneNumber = (req.body.phoneNumber as string)
                     .trim()
                     .toUpperCase();
                 logger.info("Signing up " + callsign + " with email " + email);

@@ -13,14 +13,12 @@ import {
   Tooltip
 } from "flowbite-react";
 import React, { useContext, useState } from "react";
-import { format } from "date-fns";
 import { it } from "date-fns/locale";
 import { formatInTimeZone } from "date-fns-tz";
 import { EventsContext, getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
 import { DefaultEditor } from "react-simple-wysiwyg";
 import { FaDownload, FaPlusCircle } from "react-icons/fa";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactHTMLTableToExcel from "react-html-table-to-excel";
 
@@ -34,8 +32,12 @@ const Event = () => {
   const [alert, setAlert] = useState(null);
 
   const [name, setName] = useState("");
+  const [band, setBand] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, -8));
+  const [joinStart, setJoinStart] = useState(
+    new Date().toISOString().slice(0, -8)
+  );
   const [joinDeadline, setJoinDeadline] = useState(
     new Date().toISOString().slice(0, -8)
   );
@@ -112,8 +114,12 @@ const Event = () => {
     if (eventEditing?._id !== e._id) fetchJoinRequests(e._id);
     setEventEditing(e._id);
     setName(e.name);
+    setBand(e.band);
     setDescription(e.description);
     setDate(formatInTimeZone(e.date, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"));
+    setJoinStart(
+      formatInTimeZone(e.joinStart, "Europe/Rome", "yyyy-MM-dd'T'HH:mm")
+    );
     setJoinDeadline(
       formatInTimeZone(e.joinDeadline, "Europe/Rome", "yyyy-MM-dd'T'HH:mm")
     );
@@ -218,6 +224,20 @@ const Event = () => {
               </div>
               <div>
                 <div className="mb-2 block">
+                  <Label htmlFor="event-band" value="Nome" />
+                </div>
+                <TextInput
+                  id="event-band"
+                  type="text"
+                  placeholder="VHF"
+                  required={true}
+                  value={band}
+                  onChange={e => setBand(e.target.value)}
+                  disabled={disabled}
+                />
+              </div>
+              <div>
+                <div className="mb-2 block">
                   <Label
                     htmlFor="event-description"
                     value="Descrizione (opzionale)"
@@ -239,7 +259,7 @@ const Event = () => {
                                 onChange={e => setDescription(e.target.value)}
                             /> */}
               </div>
-              <div className="grid grid-cols-1 md:gap-4 md:grid-cols-2">
+              <div className="grid grid-cols-1 md:gap-4 md:grid-cols-3">
                 <div>
                   <div className="mb-2 block">
                     <Label htmlFor="event-date" value="Data" />
@@ -250,6 +270,22 @@ const Event = () => {
                     required={true}
                     value={date}
                     onChange={e => setDate(e.target.value)}
+                    disabled={disabled}
+                  />
+                </div>
+                <div>
+                  <div className="mb-2 block">
+                    <Label
+                      htmlFor="event-join-start"
+                      value="Data minima richiesta di partecipazione"
+                    />
+                  </div>
+                  <TextInput
+                    id="event-join-start"
+                    type="datetime-local"
+                    required={true}
+                    value={joinStart}
+                    onChange={e => setJoinStart(e.target.value)}
                     disabled={disabled}
                   />
                 </div>

@@ -17,7 +17,6 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { isAfter } from "date-fns/esm";
 import { it } from "date-fns/locale";
-import { format } from "date-fns";
 import { FaLink } from "react-icons/fa";
 import { formatInTimeZone } from "date-fns-tz";
 
@@ -299,7 +298,7 @@ const Profile = () => {
         </form>
       </Modal>
 
-      <div className="py-3 md:py-6 px-6 md:px-12 lg:px-24">
+      <div className="bg-white py-3 md:py-6 px-6 md:px-12 lg:px-24">
         <Typography variant="h3" className="my-4">
           Profilo
         </Typography>

@@ -9,6 +9,7 @@ import IsEmail from "isemail";
 import bcrypt from "bcrypt";
 import { JoinRequestClass } from "../../joinRequest/models";
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
+import { logger } from "../../../shared";
 
 /**
  * @swagger
@@ -67,6 +68,7 @@ import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
         this.phoneNumber,
         "IT"
     ).formatInternational();
+    logger.debug("Parsed phone number: " + this.phoneNumber);
 })
 export class UserClass {
     @prop({ required: true, minlength: 1, maxlength: 10, uppercase: true })

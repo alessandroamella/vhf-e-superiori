@@ -19,10 +19,18 @@ import { modelOptions, prop, Ref } from "@typegoose/typegoose";
  *            type: string
  *            minLength: 1
  *            description: Description of the event
+ *          band:
+ *            type: string
+ *            minLength: 1
+ *            description: Radio band of the event
  *          date:
  *            type: string
  *            format: date-time
  *            description: Date of the event
+ *          joinStart:
+ *            type: string
+ *            format: date-time
+ *            description: Start date to join the event
  *          joinDeadline:
  *            type: string
  *            format: date-time
@@ -48,8 +56,14 @@ export class EventClass {
     @prop({ required: false, minlength: 1 })
     public description?: string;
 
+    @prop({ required: true, minlength: 1 })
+    public band!: string;
+
     @prop({ required: true })
     public date!: Date;
+
+    @prop({ required: true })
+    public joinStart!: Date;
 
     @prop({ required: true })
     public joinDeadline!: Date;

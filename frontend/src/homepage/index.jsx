@@ -63,7 +63,7 @@ const Homepage = () => {
   ].filter(e => isAfter(e.d, new Date()));
   // prossimiEventi.sort((a, b) => a - b);
 
-  console.log({ prossimiEventi });
+  // console.log({ prossimiEventi });
 
   useEffect(() => {
     if (!events) return;
@@ -361,76 +361,84 @@ const Homepage = () => {
                 </Accordion.Panel>
               </Accordion>
 
-              <h2 className="mt-8 mb-6 font-bold text-center text-3xl tracking-tight">
-                Prossimi eventi
-              </h2>
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-3">
+                <div className="md:col-span-2">
+                  <h2 className="mb-6 font-bold text-center text-3xl tracking-tight">
+                    Prossimi eventi
+                  </h2>
 
-              <div className="w-full md:w-2/3 mx-auto">
-                <Table>
-                  <Table.Head>
-                    <Table.HeadCell className="pr-2">Edizione</Table.HeadCell>
-                    <Table.HeadCell>Banda</Table.HeadCell>
-                    <Table.HeadCell>Data</Table.HeadCell>
-                  </Table.Head>
-                  <Table.Body className="divide-y">
-                    {prossimiEventi.map((e, i) => (
-                      <Table.Row
-                        key={e.i.toString()}
-                        className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                  <div className="w-full md:w-2/3 mx-auto">
+                    <Table>
+                      <Table.Head>
+                        <Table.HeadCell className="pr-2">
+                          Edizione
+                        </Table.HeadCell>
+                        <Table.HeadCell>Banda</Table.HeadCell>
+                        <Table.HeadCell>Data</Table.HeadCell>
+                      </Table.Head>
+                      <Table.Body className="divide-y">
+                        {prossimiEventi.map((e, i) => (
+                          <Table.Row
+                            key={e.i.toString()}
+                            className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                          >
+                            <Table.Cell className="py-2 pr-2 whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                              {e.i}°
+                            </Table.Cell>
+                            <Table.Cell className="py-2">
+                              {e.i % 3 === 1
+                                ? "2m"
+                                : e.i % 3 === 2
+                                ? "70cm"
+                                : "23cm"}
+                            </Table.Cell>
+                            <Table.Cell className="py-2">
+                              {formatInTimeZone(
+                                e.d,
+                                "Europe/Rome",
+                                "dd MMMM yyyy",
+                                {
+                                  locale: it
+                                }
+                              )}
+                            </Table.Cell>
+                          </Table.Row>
+                        ))}
+                      </Table.Body>
+                    </Table>
+                  </div>
+                </div>
+
+                <div className="w-fit">
+                  <h2 className="mt-12 md:mt-0 mb-6 font-bold text-center text-3xl tracking-tight">
+                    Amministratori
+                  </h2>
+
+                  <div className="mx-auto">
+                    {[
+                      "IZ5RNF Ronca Alessandro",
+                      "IZ5IOQ Metteucci Giacomo",
+                      "IK7UXU Ingrosso Flavio",
+                      "IZ2MHO Pinzelli Bruno",
+                      "IT9DJF Casini Andrea",
+                      "IU0NWJ Peruzzi Cristiano",
+                      "IU4JJJ Cerrone Pietro"
+                    ].map(e => (
+                      <a
+                        href={"https://www.qrz.com/db/" + e.split(" ")[0]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        key={e}
+                        className="flex items-center underline decoration-dotted"
                       >
-                        <Table.Cell className="py-2 pr-2 whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                          {e.i}°
-                        </Table.Cell>
-                        <Table.Cell className="py-2">
-                          {e.i % 3 === 1
-                            ? "2m"
-                            : e.i % 3 === 2
-                            ? "70cm"
-                            : "23cm"}
-                        </Table.Cell>
-                        <Table.Cell className="py-2">
-                          {formatInTimeZone(
-                            e.d,
-                            "Europe/Rome",
-                            "dd MMMM yyyy",
-                            {
-                              locale: it
-                            }
-                          )}
-                        </Table.Cell>
-                      </Table.Row>
+                        <span className="text-gray-500 font-bold text-3xl">
+                          <FaAngleDoubleRight />
+                        </span>
+                        <span className="ml-1">{e}</span>
+                      </a>
                     ))}
-                  </Table.Body>
-                </Table>
-              </div>
-
-              <h2 className="mt-16 mb-6 font-bold text-center text-3xl tracking-tight">
-                Amministratori
-              </h2>
-
-              <div className="mx-auto">
-                {[
-                  "IZ5RNF Ronca Alessandro",
-                  "IZ5IOQ Metteucci Giacomo",
-                  "IK7UXU Ingrosso Flavio",
-                  "IZ2MHO Pinzelli Bruno",
-                  "IT9DJF Casini Andrea",
-                  "IU0NWJ Peruzzi Cristiano",
-                  "IU4JJJ Cerrone Pietro"
-                ].map(e => (
-                  <a
-                    href={"https://www.qrz.com/db/" + e.split(" ")[0]}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    key={e}
-                    className="flex items-center underline decoration-dotted"
-                  >
-                    <span className="text-gray-500 font-bold text-3xl">
-                      <FaAngleDoubleRight />
-                    </span>
-                    <span className="ml-1">{e}</span>
-                  </a>
-                ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

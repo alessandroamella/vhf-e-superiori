@@ -21,6 +21,11 @@ const createSchema: Schema = {
             }
         }
     },
+    band: {
+        isString: { options: [] },
+        trim: { options: [] },
+        isLength: { options: { min: 1 } }
+    },
     date: {
         isISO8601: { options: [] },
         trim: { options: [] }
@@ -29,6 +34,10 @@ const createSchema: Schema = {
         trim: { options: [] },
         // isURL: { options: [] },
         optional: true
+    },
+    joinStart: {
+        isISO8601: { options: [] },
+        trim: { options: [] }
     },
     joinDeadline: {
         isISO8601: { options: [] },

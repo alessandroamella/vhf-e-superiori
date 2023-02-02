@@ -1,6 +1,8 @@
 import { Option, Select } from "@material-tailwind/react";
 import axios from "axios";
-import { isAfter } from "date-fns";
+import { isAfter, isBefore } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
+import { it } from "date-fns/locale";
 import {
   Alert,
   Button,
@@ -11,6 +13,7 @@ import {
   TextInput
 } from "flowbite-react";
 import React, { useContext, useEffect, useState } from "react";
+import { FaInfo } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { EventsContext, getErrorStr, UserContext } from "..";
 
@@ -25,11 +28,11 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
     setJoinableEvents(events.filter(e => isAfter(new Date(e.date), now)));
   }, [events]);
 
-  const [alert, setAlert] = useState(null);
-
   const [joinError, setJoinError] = useState("");
   const [disabled, setDisabled] = useState(true);
   const [antenna, setAntenna] = useState("");
+  const [closable, setClosable] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   async function sendJoinRequest(e) {
     e.preventDefault();
@@ -38,6 +41,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
 
     setJoinError(null);
     setDisabled(true);
+    setIsSending(true);
 
     try {
       await axios.post("/api/joinrequest", {
@@ -45,41 +49,62 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
         forEvent: event._id
       });
 
-      setAlert({
-        color: "success",
-        msg: "Richiesta di partecipazione inviata con successo!"
-      });
       setJoinError(null);
       setAlreadyJoined(true);
+      setClosable(true);
     } catch (err) {
       setJoinError(getErrorStr(err?.response?.data?.err));
       setDisabled(false);
+    } finally {
+      setIsSending(false);
     }
+  }
+
+  function isBetweenDates() {
+    if (
+      isBefore(new Date(), new Date(event.joinStart)) ||
+      isAfter(new Date(), new Date(event.joinDeadline))
+    ) {
+      setDisabled(true);
+      setClosable(true);
+      return false;
+    }
+    return true;
   }
 
   const [alreadyJoined, setAlreadyJoined] = useState(null);
   useEffect(() => {
+    // if (!event) return;
+
     async function checkIfJoined() {
       if (!event) return;
 
       setDisabled(true);
+      setClosable(true);
       try {
         await axios.get("/api/joinrequest/event/" + event._id);
         setAlreadyJoined(true);
       } catch (err) {
         console.log("checkIfJoined error", err);
         setAlreadyJoined(false);
-      } finally {
-        setDisabled(false);
+        if (isBetweenDates()) setDisabled(false);
       }
     }
 
     checkIfJoined();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event]);
 
   useEffect(() => {
+    if (!alreadyJoined) return;
+    setDisabled(true);
+    setClosable(true);
+  }, [alreadyJoined]);
+
+  useEffect(() => {
     if (!event) return;
-    setDisabled(false);
+    if (!isBetweenDates()) setDisabled(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event]);
 
   return (
@@ -95,7 +120,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
               <Select
                 variant="static"
                 label="Evento per cui fare richiesta"
-                disabled={!joinableEvents || disabled}
+                disabled={!joinableEvents || (disabled && !closable)}
                 value={joinableEvents && joinableEvents[0].name}
               >
                 {joinableEvents &&
@@ -111,18 +136,54 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
           {alreadyJoined === null ? (
             <Spinner />
           ) : alreadyJoined ? (
-            <Alert color="warning" className="mb-4">
+            <Alert color="info" className="mb-4">
               <span>
-                <span className="font-medium">Attenzione</span> Hai già fatto
-                richiesta di partecipare a questo evento come stazione
-                attivatrice. Puoi visualizzare le richieste di partecipazione
-                dalla pagina del{" "}
+                <span className="inline">
+                  <FaInfo className="inline" />
+                </span>{" "}
+                Hai fatto richiesta di partecipare a{" "}
+                <strong>{event.name}</strong> come stazione attivatrice. Puoi
+                visualizzare le richieste di partecipazione dalla pagina del{" "}
                 <Link
                   to="/profile"
                   className="underline decoration-dotted hover:text-black transition-colors"
                 >
                   tuo profilo
                 </Link>
+                .
+              </span>
+            </Alert>
+          ) : isAfter(new Date(), new Date(event.joinDeadline)) ? (
+            <Alert color="warning" className="mb-4">
+              <span>
+                <span className="font-medium">Attenzione</span> Il periodo per
+                fare richiesta di stazione attivatrice per questo evento è
+                scaduto il{" "}
+                {formatInTimeZone(
+                  new Date(event.joinDeadline),
+                  "Europe/Rome",
+                  "dd/MM/yyyy 'alle ore' HH:mm",
+                  {
+                    locale: it
+                  }
+                )}
+                .
+              </span>
+            </Alert>
+          ) : isBefore(new Date(), new Date(event.joinStart)) ? (
+            <Alert color="warning" className="mb-4">
+              <span>
+                <span className="font-medium">Attenzione</span> Il periodo per
+                fare richiesta di stazione attivatrice per questo evento inizia
+                il{" "}
+                {formatInTimeZone(
+                  new Date(event.joinStart),
+                  "Europe/Rome",
+                  "dd/MM/yyyy 'alle ore' HH:mm",
+                  {
+                    locale: it
+                  }
+                )}
                 .
               </span>
             </Alert>
@@ -185,13 +246,17 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
             <Button
               color="gray"
               type="button"
-              disabled={disabled}
+              disabled={disabled && !closable}
               onClick={() => setOpen(false)}
             >
               Chiudi
             </Button>
             <Button type="submit" disabled={disabled}>
-              Invia richiesta come {user?.callsign}
+              {isSending ? (
+                <Spinner />
+              ) : (
+                <span>Invia richiesta come {user?.callsign}</span>
+              )}
             </Button>
           </div>
         </Modal.Footer>

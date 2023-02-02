@@ -9,6 +9,7 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { Errors } from "../../errors";
 import moment from "moment";
 import User, { UserDoc } from "../../auth/models";
+import EmailService from "../../../email";
 
 const router = Router();
 
@@ -88,6 +89,10 @@ router.post(
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.EVENT_JOIN_TIME_EXPIRED));
+            } else if (moment().isBefore(moment(event.joinStart))) {
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.EVENT_JOIN_TIME_TOO_EARLY));
             }
 
             const alreadyJoined = await JoinRequest.exists({
@@ -113,7 +118,12 @@ router.post(
             user.joinRequests.push(joinRequest._id);
             await user.save();
 
-            // DEBUG send mail
+            await EmailService.sendJoinRequestMail(joinRequest, event, user);
+            await EmailService.sendAdminJoinRequestMail(
+                joinRequest,
+                event,
+                user
+            );
 
             return res.json(OK);
         } catch (err) {

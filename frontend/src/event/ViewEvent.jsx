@@ -192,11 +192,12 @@ const ViewEvent = () => {
             {formatInTimeZone(
               new Date(event.date),
               "Europe/Rome",
-              "📅 dd/MM/yyyy  🕒 HH:mm",
+              "📅 dd/MM/yyyy  🕒 HH:mm ",
               {
                 locale: it
               }
             )}
+            📡 {event.band}
           </div>
 
           {event.description ? (

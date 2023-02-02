@@ -4,6 +4,8 @@ import { param } from "express-validator";
 import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
 import { INTERNAL_SERVER_ERROR, OK } from "http-status";
+import EmailService from "../../../email";
+import { EventDoc } from "../../event/models";
 
 const router = Router();
 
@@ -44,9 +46,15 @@ router.post(
     validate,
     async (req: Request, res: Response) => {
         try {
-            await JoinRequest.findOneAndUpdate({ _id: req.params._id }, [
-                { $set: { isApproved: { $not: "$isApproved" } } }
-            ]);
+            const j = await JoinRequest.findOneAndUpdate(
+                { _id: req.params._id },
+                [{ $set: { isApproved: { $not: "$isApproved" } } }]
+            ).populate("forEvent");
+            await EmailService.sendAcceptJoinRequestMail(
+                j as any,
+                (j as any).forEvent,
+                (req as any).user
+            );
             return res.sendStatus(OK);
         } catch (err) {
             logger.error("Error while approving join request");

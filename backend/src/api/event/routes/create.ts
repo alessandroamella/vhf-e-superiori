@@ -28,6 +28,10 @@ const router = Router();
  *                type: string
  *                minLength: 1
  *                description: Description of the event
+ *              band:
+ *                type: string
+ *                minLength: 1
+ *                description: Radio band of the event
  *              date:
  *                type: string
  *                format: date-time
@@ -36,6 +40,10 @@ const router = Router();
  *                type: string
  *                format: uri
  *                description: URL of the logo of this event
+ *              joinStart:
+ *                type: string
+ *                format: date-time
+ *                description: Start date to join the event
  *              joinDeadline:
  *                type: string
  *                format: date-time
@@ -78,14 +86,32 @@ router.post(
     validate,
     async (req: Request, res: Response) => {
         try {
-            const { name, description, date, logoUrl, joinDeadline } = req.body;
-            logger.debug("Creating event with following params");
-            logger.debug({ name, description, date, logoUrl, joinDeadline });
-            const event = await EventModel.create({
+            const {
                 name,
+                band,
                 description,
                 date,
                 logoUrl,
+                joinStart,
+                joinDeadline
+            } = req.body;
+            logger.debug("Creating event with following params");
+            logger.debug({
+                name,
+                band,
+                description,
+                date,
+                logoUrl,
+                joinStart,
+                joinDeadline
+            });
+            const event = await EventModel.create({
+                name,
+                band,
+                description,
+                date,
+                logoUrl,
+                joinStart,
                 joinDeadline
             });
             res.json(event.toObject());
