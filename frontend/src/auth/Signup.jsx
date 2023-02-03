@@ -97,7 +97,7 @@ const Signup = () => {
         password
       });
       setUser(data);
-      navigate("/");
+      navigate("/?toconfirm=true");
     } catch (err) {
       console.log("signup error", err);
       window.scrollTo({

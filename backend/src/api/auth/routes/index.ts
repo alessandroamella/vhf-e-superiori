@@ -3,6 +3,7 @@ import loginRoute from "./login";
 import signupRoute from "./signup";
 import logoutRoute from "./logout";
 import viewRoute from "./view";
+import verifyRoute from "./verify";
 import updateRoute from "./update";
 import changePwRoute from "./changePw";
 import { AuthOptions } from "../shared";
@@ -23,6 +24,7 @@ export const saveToken = (res: Response, token: string) => {
 router.use("/login", loginRoute);
 router.use("/signup", signupRoute);
 router.use("/logout", logoutRoute);
+router.use("/verify", verifyRoute);
 router.use("/changepw", isLoggedIn, changePwRoute);
 router.use("/", isLoggedIn, viewRoute);
 router.use("/", isLoggedIn, updateRoute);

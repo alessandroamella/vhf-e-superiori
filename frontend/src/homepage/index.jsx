@@ -13,7 +13,7 @@ import { useContext } from "react";
 import { Accordion, Alert, Card, Spinner, Table } from "flowbite-react";
 import { differenceInDays, format, isAfter } from "date-fns";
 import { it } from "date-fns/locale";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
 import Splash from "../Splash";
 import { FaAngleDoubleRight, FaCalendar, FaCalendarAlt } from "react-icons/fa";
@@ -32,6 +32,28 @@ const Homepage = () => {
   const { ready, setReady } = useContext(ReadyContext);
 
   const [alert, setAlert] = useState(null);
+
+  const [searchParams] = useSearchParams();
+
+  console.log({ searchParams });
+
+  useEffect(() => {
+    if (searchParams.get("toconfirm")) {
+      setAlert({
+        color: "info",
+        msg: "Per prenotarti, verifica il tuo account cliccando il link presente all'interno della mail"
+      });
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    } else if (searchParams.get("confirmed")) {
+      setAlert({
+        color: "success",
+        msg: "Email confermata con successo"
+      });
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -118,6 +140,16 @@ const Homepage = () => {
         <div className="px-4 md:px-12 max-w-full pt-4 pb-12 min-h-[80vh] bg-white">
           <div className="flex h-full">
             <div className="flex flex-col">
+              {alert && (
+                <Alert
+                  className="mb-6"
+                  color={alert.color}
+                  onDismiss={() => setAlert(null)}
+                >
+                  <span>{alert.msg}</span>
+                </Alert>
+              )}
+
               <img
                 src="/flashmob.png"
                 alt="Flash mob"
@@ -345,10 +377,23 @@ const Homepage = () => {
                     </p>
 
                     <p>
-                      Si invita a SEGUIRE i messaggi del gruppo per non perdere
-                      richieste di altri radioamatori che vogliano partecipare e
-                      non riescano ad ottenerlo.
+                      Si invitano i partecipanti al radio flash mob di SEGUIRE I{" "}
+                      <a
+                        href="https://chat.whatsapp.com/FJ6HissbZwE47OWmpes7Pr"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline decoration-dotted text-center hover:text-black transition-colors"
+                      >
+                        MESSAGGI DELLA CHAT vhfesuperiori
+                      </a>{" "}
+                      per non perdere richieste di stazioni che stanno cercando
+                      di effettuare il collegamento e non ci riescano. Lo
+                      strumento della richiesta via messaggio sul gruppo risulta
+                      essere contributo essenziale al fine di completare il
+                      collegamento.
                     </p>
+
+                    <p>GRAZIE A TUTTI DELLA PARTECIPAZIONE.</p>
 
                     <p className="italic uppercase mt-2">
                       LA FREQUENZA ASSEGNATA È DI RIFERIMENTO MA NEI MOMENTI

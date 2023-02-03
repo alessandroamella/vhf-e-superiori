@@ -52,6 +52,9 @@ import { logger } from "../../../shared";
  *          isAdmin:
  *            type: boolean
  *            description: If user is admin
+ *          isVerified:
+ *            type: boolean
+ *            description: If user has verified email
  *          joinRequests:
  *            type: array
  *            items:
@@ -88,6 +91,12 @@ export class UserClass {
 
     @prop({ required: true, default: false })
     public isAdmin!: boolean;
+
+    @prop({ required: true, default: false })
+    public isVerified!: boolean;
+
+    @prop({ required: false, default: false })
+    public verificationCode?: string;
 
     @prop({ required: true, default: [], ref: () => JoinRequestClass })
     public joinRequests!: Ref<JoinRequestClass>[];

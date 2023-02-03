@@ -40,7 +40,12 @@ passport.use(
             try {
                 const user = await User.findOne(
                     { _id: token._id },
-                    { password: 0, joinRequests: 0, __v: 0 }
+                    {
+                        password: 0,
+                        joinRequests: 0,
+                        verificationCode: 0,
+                        __v: 0
+                    }
                 );
                 done(null, user?.toJSON() || undefined);
             } catch (err) {

@@ -1,9 +1,11 @@
 import passport from "passport";
 import { Strategy as localStrategy } from "passport-local";
 import bcrypt from "bcrypt";
+import randomstring from "randomstring";
 import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
 import User from "../models";
+import EmailService from "../../../email";
 
 passport.use(
     "signup",
@@ -41,6 +43,11 @@ passport.use(
                 const plainPw = password;
                 const salt = await bcrypt.genSalt(10);
 
+                const verificationCode = randomstring.generate({
+                    length: 12,
+                    charset: "alphanumeric"
+                });
+
                 const user = await User.create({
                     callsign: req.body.callsign,
                     name: req.body.name,
@@ -48,8 +55,12 @@ passport.use(
                     phoneNumber,
                     password: await bcrypt.hash(plainPw, salt),
                     isAdmin: false,
+                    isVerified: false,
+                    verificationCode: bcrypt.hashSync(verificationCode, 10),
                     joinRequests: []
                 });
+
+                await EmailService.sendVerifyMail(user, verificationCode);
 
                 logger.debug(user);
 

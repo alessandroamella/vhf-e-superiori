@@ -123,7 +123,12 @@ router.post(
                     (
                         await User.findOne(
                             { _id: user._id },
-                            { password: 0, joinRequests: 0, __v: 0 }
+                            {
+                                password: 0,
+                                joinRequests: 0,
+                                verificationCode: 0,
+                                __v: 0
+                            }
                         )
                     )?.toObject()
                 );

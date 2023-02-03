@@ -95,7 +95,12 @@ router.put(
                 { name, email },
                 {
                     new: true,
-                    projection: { password: 0, joinRequests: 0, __v: 0 }
+                    projection: {
+                        password: 0,
+                        joinRequests: 0,
+                        verificationCode: 0,
+                        __v: 0
+                    }
                 }
             );
             res.json(user?.toObject());

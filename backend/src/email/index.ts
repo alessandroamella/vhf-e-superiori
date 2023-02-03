@@ -54,6 +54,26 @@ export class EmailService {
         });
     }
 
+    public static async sendVerifyMail(user: UserDoc, code: string) {
+        const message: Mail.Options = {
+            from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
+            to: user.email,
+            subject: "Verifica account",
+            html:
+                "<p>Ciao " +
+                user.name +
+                ' <span style="font-weight: 600">' +
+                user.callsign +
+                "</span>, abbiamo ricevuto la tua richiesta di registrazione.<br />" +
+                'Se non sei stato tu, faccelo sapere ad <a href="mailto:alexlife@tiscali.it">alexlife@tiscali.it</a>.<br />' +
+                `Altrimenti, procedi alla verifica del tuo account <a href="https://www.vhfesuperiori.eu/api/verify/${user._id}/${code}" style="font-weight: 600">cliccando qui</a>.<br />` +
+                'Buona giornata da <a href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>'
+        };
+
+        await EmailService.sendMail(message);
+        logger.info("Verify user mail sent to user " + user.callsign);
+    }
+
     public static async sendJoinRequestMail(
         joinRequest: JoinRequestDoc,
         event: EventDoc,

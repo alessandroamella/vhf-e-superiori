@@ -93,6 +93,10 @@ router.post(
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.EVENT_JOIN_TIME_TOO_EARLY));
+            } else if (!user.isVerified) {
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.USER_NOT_VERIFIED));
             }
 
             const alreadyJoined = await JoinRequest.exists({
