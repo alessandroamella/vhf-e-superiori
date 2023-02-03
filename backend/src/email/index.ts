@@ -66,7 +66,7 @@ export class EmailService {
                 user.callsign +
                 "</span>, abbiamo ricevuto la tua richiesta di registrazione.<br />" +
                 'Se non sei stato tu, faccelo sapere ad <a href="mailto:alexlife@tiscali.it">alexlife@tiscali.it</a>.<br />' +
-                `Altrimenti, procedi alla verifica del tuo account <a href="https://www.vhfesuperiori.eu/api/verify/${user._id}/${code}" style="font-weight: 600">cliccando qui</a>.<br />` +
+                `Altrimenti, procedi alla verifica del tuo account <a href="https://www.vhfesuperiori.eu/api/auth/verify/${user._id}/${code}" style="font-weight: 600">cliccando qui</a>.<br />` +
                 'Buona giornata da <a href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>'
         };
 
