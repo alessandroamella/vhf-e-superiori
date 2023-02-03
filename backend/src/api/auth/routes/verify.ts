@@ -81,7 +81,7 @@ router.get(
                 user.isVerified = true;
                 user.verificationCode = undefined;
                 await user.save();
-                return res.redirect("/");
+                return res.redirect("/?confirmed=true");
                 // return res.json(
                 //     (
                 //         await User.findOne(
