@@ -113,7 +113,7 @@ const Homepage = () => {
 
   const items = Array.from(Array(13).keys()).map(e => ({
     alt: "Locandina " + e,
-    image: `/locandine/${e + 1}-min.png`,
+    image: `/locandine/${e + 1}-min.jpg`,
     content: (
       <div />
       // <Zoom>
