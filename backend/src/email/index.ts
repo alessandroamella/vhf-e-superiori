@@ -10,6 +10,10 @@ import { it } from "date-fns/locale";
 export class EmailService {
     private static transporter: nodemailer.Transporter | null = null;
 
+    private static adminEmails = Array.from(
+        Array(parseInt(envs.TOT_ADMIN_EMAILS)).keys()
+    ).map(i => process.env[`ADMIN_EMAIL_${i}`] as string);
+
     private static _initialize(): Promise<void> {
         return new Promise((resolve, reject) => {
             EmailService.transporter = nodemailer.createTransport({
@@ -52,6 +56,26 @@ export class EmailService {
                 return resolve();
             });
         });
+    }
+
+    public static async sendResetPwMail(user: UserDoc, code: string) {
+        const message: Mail.Options = {
+            from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
+            to: user.email,
+            subject: "Reset password",
+            html:
+                "<p>Ciao " +
+                user.name +
+                ' <span style="font-weight: 600">' +
+                user.callsign +
+                "</span>, abbiamo ricevuto la tua richiesta di reset della password.<br />" +
+                'Se non sei stato tu, faccelo sapere ad <a href="mailto:alexlife@tiscali.it">alexlife@tiscali.it</a>.<br />' +
+                `Altrimenti, procedi alla reset della tua password <a href="https://www.vhfesuperiori.eu/resetpw?user=${user._id}&code=${code}&callsign=${user.callsign}" style="font-weight: 600">cliccando qui</a>.<br />` +
+                'Buona giornata da <a href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>'
+        };
+
+        await EmailService.sendMail(message);
+        logger.info("Verify user mail sent to user " + user.callsign);
     }
 
     public static async sendVerifyMail(user: UserDoc, code: string) {
@@ -152,9 +176,12 @@ export class EmailService {
         event: EventDoc,
         user: UserDoc
     ) {
+        logger.debug("Sending emails to admins");
+        logger.debug(EmailService.adminEmails);
+
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
-            to: envs.ADMIN_EMAIL,
+            to: EmailService.adminEmails,
             subject: "Richiesta per stazione attivatrice",
             html:
                 "<p>Ciao amministratore, l'utente " +

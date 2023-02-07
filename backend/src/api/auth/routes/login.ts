@@ -109,6 +109,7 @@ router.post(
                                     password: 0,
                                     joinRequests: 0,
                                     verificationCode: 0,
+                                    passwordResetCode: 0,
                                     __v: 0
                                 }
                             )

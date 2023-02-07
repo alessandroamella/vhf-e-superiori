@@ -14,6 +14,7 @@ import Event from "./admin/Event";
 import ViewEvent from "./event/ViewEvent";
 import Regolamento from "./homepage/Regolamento";
 import Info from "./homepage/Info";
+import ResetPw from "./profile/ResetPw";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
     { path: "/eventmanager", element: <Event /> },
     { path: "/regolamento", element: <Regolamento /> },
     { path: "/info", element: <Info /> },
+    { path: "/resetpw", element: <ResetPw /> },
     { path: "/event/:id", element: <ViewEvent /> }
     // {
     //   path: "contacts/:contactId",
@@ -58,7 +60,22 @@ export const errors = {
         "Richiesta di partecipazione all'evento già effettuata",
     EVENT_JOIN_TIME_EXPIRED:
         "La data per richiedere di partecipare all'evento è già trascorsa",
-    JOIN_REQUEST_NOT_FOUND: "Richiesta di partecipazione non trovata"
+    JOIN_REQUEST_NOT_FOUND: "Richiesta di partecipazione non trovata",
+    URL_NOT_FOUND: "URL non trovato",
+    INVALID_EMAIL: "Email non valida",
+    EMAIL_ALREADY_IN_USE: "Email già in uso",
+    INVALID_PHONE_NUMBER: "Numero di telefono non valido",
+    PHONE_NUMBER_ALREADY_IN_USE: "Numero di telefono già in uso",
+    MUST_ACCEPT_SIGNUP_TOS:
+        "Per registrarti, devi accettare i termini e condizioni",
+    MUST_ACCEPT_EVENT_TOS:
+        "Per continuare, devi accettare i termini e condizioni",
+    CAPTCHA_FAILED: "ReCAPTCHA non passato",
+    WEAK_PW: "Password troppo debole",
+    USER_NOT_VERIFIED:
+        "Utente non verificato, per favore verifica il tuo account cliccando il link che hai ricevuto per email",
+    USER_ALREADY_VERIFIED: "Utente già verificato",
+    INVALID_VERIFICATION_CODE: "Codice di verifica non valido"
 };
 export function getErrorStr(str) {
     console.log("Stringa errore:", str);

@@ -437,7 +437,8 @@ const Profile = () => {
                       <a
                         href="mailto:alessandro@iu4qsg.it"
                         target="_blank"
-                        rel="noreferrer noopener"
+                        className="underline decoration-dotted text-center hover:text-black transition-colors"
+                        rel="noreferrer"
                       >
                         alessandro@iu4qsg.it
                       </a>

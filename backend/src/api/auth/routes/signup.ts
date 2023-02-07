@@ -2,12 +2,11 @@ import { NextFunction, Request, Response, Router } from "express";
 import passport from "passport";
 import { body, checkSchema } from "express-validator";
 import createSchema from "../schemas/createSchema";
-import { createError, validate } from "../../helpers";
+import { validate } from "../../helpers";
 import User from "../models";
-import { envs, logger } from "../../../shared";
+import { logger } from "../../../shared";
 import { Errors } from "../../errors";
-import axios from "axios";
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
+import checkCaptcha from "../../middlewares/checkCaptcha";
 
 const router = Router();
 
@@ -75,35 +74,7 @@ router.post(
     checkSchema(createSchema),
     body("token").isString().notEmpty(),
     validate,
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const ip = req.socket.remoteAddress;
-            logger.debug("Checking CAPTCHA to");
-            logger.debug(
-                `https://www.google.com/recaptcha/api/siteverify?secret=${
-                    envs.RECAPTCHA_SECRET
-                }&response=${req.body.token}${ip ? "&remoteip=" + ip : ""}`
-            );
-            const res = await axios.post(
-                `https://www.google.com/recaptcha/api/siteverify?secret=${
-                    envs.RECAPTCHA_SECRET
-                }&response=${req.body.token}${ip ? "&remoteip=" + ip : ""}`
-            );
-            if (res.status !== OK) throw new Error(Errors.CAPTCHA_FAILED);
-            next();
-        } catch (err) {
-            if (err instanceof Error && err.message === Errors.CAPTCHA_FAILED) {
-                logger.debug("Captcha fail");
-                logger.debug(err);
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.CAPTCHA_FAILED));
-            }
-            logger.error("Error in signup CAPTCHA verification");
-            logger.error(err);
-            return res.status(INTERNAL_SERVER_ERROR).json(createError());
-        }
-    },
+    checkCaptcha,
     async (req: Request, res: Response, next: NextFunction) => {
         passport.authenticate(
             "signup",
@@ -127,6 +98,7 @@ router.post(
                                 password: 0,
                                 joinRequests: 0,
                                 verificationCode: 0,
+                                passwordResetCode: 0,
                                 __v: 0
                             }
                         )

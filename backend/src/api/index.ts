@@ -1,3 +1,4 @@
+import "../shared";
 import "./db";
 import "./auth";
 import { logger } from "../shared/logger";

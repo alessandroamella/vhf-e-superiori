@@ -55,6 +55,12 @@ import { logger } from "../../../shared";
  *          isVerified:
  *            type: boolean
  *            description: If user has verified email
+ *          verificationCode:
+ *            type: string
+ *            description: Account verification code
+ *          passwordResetCode:
+ *            type: string
+ *            description: Password reset code
  *          joinRequests:
  *            type: array
  *            items:
@@ -95,7 +101,10 @@ export class UserClass {
     @prop({ required: true, default: false })
     public isVerified!: boolean;
 
-    @prop({ required: false, default: false })
+    @prop({ required: false })
+    public passwordResetCode?: string;
+
+    @prop({ required: false })
     public verificationCode?: string;
 
     @prop({ required: true, default: [], ref: () => JoinRequestClass })

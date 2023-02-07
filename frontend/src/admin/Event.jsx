@@ -338,6 +338,7 @@ const Event = () => {
                         <Table.Head>
                           <Table.HeadCell>Nominativo</Table.HeadCell>
                           <Table.HeadCell>Nome</Table.HeadCell>
+                          <Table.HeadCell>Telefono</Table.HeadCell>
                           <Table.HeadCell>Stato richiesta</Table.HeadCell>
                           <Table.HeadCell>Data creazione</Table.HeadCell>
                           <Table.HeadCell>Antenna</Table.HeadCell>
@@ -363,6 +364,14 @@ const Event = () => {
                                     {j.fromUser.name}
                                   </a>
                                 </Tooltip>
+                              </Table.Cell>
+                              <Table.Cell>
+                                <a
+                                  href={"tel:" + j.fromUser.phoneNumber}
+                                  className="hover:text-black transition-colors"
+                                >
+                                  {j.fromUser.phoneNumber}
+                                </a>
                               </Table.Cell>
                               <Table.Cell>
                                 {j.isApproved ? (

@@ -1,5 +1,5 @@
 import { Errors } from "../api/errors";
-import { logger } from ".";
+import { logger } from "./logger";
 
 const requiredEnvs = [
     "NODE_ENV",
@@ -14,11 +14,12 @@ const requiredEnvs = [
     "MAIL_USERNAME",
     "MAIL_PASSWORD",
     "SEND_EMAIL_FROM",
-    "ADMIN_EMAIL"
+    "TOT_ADMIN_EMAILS"
 ] as const;
 export type Env = typeof requiredEnvs[number];
 
 for (const e of requiredEnvs) {
+    logger.debug("Checking env " + e);
     if (!(e in process.env)) {
         logger.error(Errors.MISSING_ENV + ": " + e);
         process.exit(1);

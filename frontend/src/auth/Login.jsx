@@ -1,11 +1,12 @@
 import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
-import React, { useRef, useState } from "react";
+import React, { createRef, useRef, useState } from "react";
 import { useEffect } from "react";
 import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getErrorStr, UserContext } from "..";
+import ReCAPTCHA from "react-google-recaptcha";
 import Layout from "../Layout";
 
 const Login = () => {
@@ -15,7 +16,53 @@ const Login = () => {
   const [alert, setAlert] = useState(null);
   const [disabled, setDisabled] = useState(false);
 
+  const [resetPw, setResetPw] = useState(false);
+  const [email, setEmail] = useState("");
+
   const { user, setUser } = useContext(UserContext);
+
+  const captchaRef = createRef();
+
+  async function sendResetPw(e) {
+    e.preventDefault();
+
+    const token = captchaRef.current.getValue();
+    if (!token) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+      return setAlert({
+        color: "failure",
+        msg: "Verifica di non essere un robot"
+      });
+    }
+
+    setDisabled(true);
+    try {
+      await axios.post("/api/auth/sendresetpw", {
+        email,
+        token
+      });
+      setAlert({
+        color: "success",
+        msg: "Richiesta di reset della password effettuata con successo! Controlla la mail ricevuta"
+      });
+    } catch (err) {
+      console.log("pw send reset error", err);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+      setDisabled(false);
+    } finally {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+  }
 
   const navigate = useNavigate();
 
@@ -50,7 +97,7 @@ const Login = () => {
   return (
     <Layout>
       {user && navigate("/profile")}
-      <div className="mx-auto px-8 w-full md:w-2/3 mt-12 mb-24">
+      <div className="mx-auto px-8 w-full md:w-2/3 mt-12 mb-20">
         <Typography variant="h1" className="mb-2">
           Login
         </Typography>
@@ -115,6 +162,47 @@ const Login = () => {
             Login
           </Button>
         </form>
+
+        <div className="mt-4">
+          <small>
+            Ti sei scordato la password?{" "}
+            <Link
+              to="#"
+              className="underline decoration-dotted text-center hover:text-black transition-colors"
+              onClick={() => setResetPw(true)}
+            >
+              Clicca qui
+            </Link>
+            .
+          </small>
+
+          <div className={`${resetPw ? "block" : "hidden"} mt-4`}>
+            <form action="#" method="post" onSubmit={sendResetPw}>
+              <div className="mb-2 block">
+                <Label htmlFor="email" value="Email" />
+              </div>
+              <TextInput
+                type="email"
+                name="email"
+                id="email"
+                autoComplete="email"
+                label="Email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                disabled={disabled}
+              />
+              <div className="my-4" />
+              <ReCAPTCHA
+                sitekey="6LfdByQkAAAAALGExGRPnH8i16IyKNaUXurnW1rm"
+                ref={captchaRef}
+              />
+              <div className="my-4" />
+              <Button type="submit" disabled={disabled}>
+                Invia richiesta
+              </Button>
+            </form>
+          </div>
+        </div>
       </div>
     </Layout>
   );

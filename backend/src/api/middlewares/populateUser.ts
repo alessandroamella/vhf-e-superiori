@@ -19,7 +19,13 @@ async function populateUser(req: Request, res: Response, next: NextFunction) {
         if (user) {
             const foundUser = await User.findOne(
                 { _id: user._id },
-                { password: 0, joinRequests: 0, verificationCode: 0, __v: 0 }
+                {
+                    password: 0,
+                    joinRequests: 0,
+                    verificationCode: 0,
+                    passwordResetCode: 0,
+                    __v: 0
+                }
             );
             if (!foundUser) {
                 logger.error("User with valid token not found in populateUser");
