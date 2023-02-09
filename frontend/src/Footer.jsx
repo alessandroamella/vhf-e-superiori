@@ -18,7 +18,7 @@ const Footer = () => {
             IU4QSG
           </a>
         </span>
-        <FaCircle className="hidden md:block scale-[.25] text-gray-700 mx-2" />
+        {/* <FaCircle className="hidden md:block scale-[.25] text-gray-700 mx-2" />
         <span className="text-center">
           Aperto per commissioni{" "}
           <a
@@ -29,7 +29,7 @@ const Footer = () => {
           >
             info@bitrey.it
           </a>
-        </span>
+        </span> */}
       </div>
     )
   );

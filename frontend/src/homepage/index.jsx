@@ -111,7 +111,7 @@ const Homepage = () => {
     }
   }, [events]);
 
-  const items = Array.from(Array(13).keys()).map(e => ({
+  const items = Array.from(Array(14).keys()).map(e => ({
     alt: "Locandina " + e,
     image: `/locandine/${e + 1}-min.jpg`,
     content: (
