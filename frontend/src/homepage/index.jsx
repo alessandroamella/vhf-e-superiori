@@ -175,12 +175,12 @@ const Homepage = () => {
                   Accolta l'idea viene creato un gruppo di lavoro con la
                   collaborazione di
                   <a
-                    href="https://www.ft8activity.it/author/ic8tem/"
+                    href="https://www.qrz.com/db/IC8TEM"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mx-1 text-center underline decoration-dotted hover:text-black transition-colors"
                   >
-                    <strong>IC8TEM</strong> Costantino Certotta
+                    <strong>IC8TEM</strong> Costantino Cerrotta
                   </a>
                   e <strong>IU0FBK</strong> Marco Naccari creatore del sito
                   <a

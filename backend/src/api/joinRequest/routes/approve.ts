@@ -3,9 +3,11 @@ import JoinRequest from "../models";
 import { param } from "express-validator";
 import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
-import { INTERNAL_SERVER_ERROR, OK } from "http-status";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import EmailService from "../../../email";
 import { EventDoc } from "../../event/models";
+import User from "../../auth/models";
+import { Errors } from "../../errors";
 
 const router = Router();
 
@@ -50,10 +52,16 @@ router.post(
                 { _id: req.params._id },
                 [{ $set: { isApproved: { $not: "$isApproved" } } }]
             ).populate("forEvent");
+            const user = await User.findOne({ _id: j?.fromUser });
+            if (!user) {
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.USER_NOT_FOUND));
+            }
             await EmailService.sendAcceptJoinRequestMail(
                 j as any,
                 (j as any).forEvent,
-                (req as any).user
+                user
             );
             return res.sendStatus(OK);
         } catch (err) {
