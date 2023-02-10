@@ -32,6 +32,7 @@
         "react-scripts": "5.0.1",
         "react-simple-wysiwyg": "^2.1.4",
         "react-star-sky": "^1.0.3",
+        "react-zoom-pan-pinch": "^2.6.0",
         "sass": "^1.57.1",
         "web-vitals": "^2.1.4"
     },

@@ -1,5 +1,5 @@
 import Layout from "../Layout";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { EventsContext, ReadyContext, SplashContext, UserContext } from "..";
 import { useContext } from "react";
 import { Accordion, Alert, Table } from "flowbite-react";
@@ -8,10 +8,10 @@ import { it } from "date-fns/locale";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
 import Splash from "../Splash";
-import { FaAngleDoubleRight, FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "react-icons/fa";
 import { formatInTimeZone } from "date-fns-tz";
 import { Carousel } from "react-round-carousel";
-import Zoom from "react-medium-image-zoom";
+import Zoom, { Controlled as ControlledZoom } from "react-medium-image-zoom";
 import JoinRequestModal from "./JoinRequestModal";
 import { Button } from "@material-tailwind/react";
 
@@ -28,7 +28,18 @@ const Homepage = () => {
 
   const [searchParams] = useSearchParams();
 
-  console.log({ searchParams });
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomedImg, setZoomedImg] = useState(null);
+
+  const handleZoomChange = useCallback(shouldZoom => {
+    console.log({ shouldZoom, zoomedImg });
+    // setIsZoomed(shouldZoom);
+
+    if (!shouldZoom) {
+      setZoomedImg(null);
+      // setTimeout(() => setIsZoomed(false), 500);
+    }
+  }, []);
 
   useEffect(() => {
     if (searchParams.get("toconfirm")) {
@@ -108,10 +119,12 @@ const Homepage = () => {
     alt: "Locandina " + e,
     image: `/locandine/${e + 1}-min.jpg`,
     content: (
-      // <div />
-      <Zoom>
-        <img alt="Locandina" src={`/locandine/${e + 1}-min.jpg`} />
-      </Zoom>
+      <ControlledZoom
+        isZoomed={zoomedImg?.includes(`/locandine/${e + 1}-min.jpg`)}
+        onZoomChange={handleZoomChange}
+      >
+        <img src={`/locandine/${e + 1}-min.jpg`} alt={`Locandina ${e + 1}`} />
+      </ControlledZoom>
     )
   }));
 
@@ -150,15 +163,6 @@ const Homepage = () => {
                     alt="Flash mob"
                     className="w-full fit max-w-md md:max-w-xl lg:max-w-2xl py-4 mx-auto"
                   />
-                  {/* <p className="text-[#003399] uppercase tracking-tight text-4xl md:text-5xl font-bold drop-shadow-md flex items-center justify-center"> */}
-                  {/* <span className="text-green-500 ombra">Radio</span>
-              <span className="text-white mx-2 ombra">Flash</span>
-              <span className="text-red-500 ombra">Mob</span> */}
-                  {/* Radio Flash Mob */}
-                  {/* <span className="text-green-500 ombra">Radio</span>
-              <span className="text-white mx-2 ombra">Flash</span>
-              <span className="text-red-500 ombra">Mob</span> */}
-                  {/* </p> */}
                   <div className="text-gray-600 mb-8 mt-4 md:pr-4 text-justify">
                     <p>
                       Nasce da un'idea di <strong>IU4JJJ</strong> Pietro Cerrone
@@ -212,8 +216,7 @@ const Homepage = () => {
                       <figure>
                         <Zoom>
                           <img
-                            className="max-w-[15rem] object-contain w-full"
-                            // src="undraw_podcast_re_wr88.svg"
+                            className="max-w-[10rem] mx-auto object-contain w-full"
                             src="/locandine/1-min.png"
                             alt="Esempio"
                           />
@@ -259,35 +262,19 @@ const Homepage = () => {
                       con uno spirito partecipativo e non competitivo.
                     </p>
                   </div>
-
-                  {/* <div className="self-center">
-              <Button color="red" onClick={() => navigate("/regolamento")}>
-                Regolamento
-              </Button>
-              <Button className="ml-4" onClick={() => navigate("/info")}>
-                Scopri di più
-              </Button>
-            </div> */}
-
-                  {/* <div className="box-content h-[80vh] pt-8 md:pt-12 lg:pt-16 pb-32 mb-24 bg-lightGray-normal">
-        <p className="text-2xl text-center p-4 text-white bg-blue-500 mx-auto rounded mb-8 md:text-4xl w-fit font-bold tracking-tight">
-          Eventi passati
-        </p>
-
-        <AwesomeSlider
-          cssModule={[CoreStyles, AnimationStyles]}
-          play={true}
-          cancelOnInteraction
-          interval={6000}
-        >
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(e => (
-            <div key={e} data-src={`/locandine/${e}.png`} />
-          ))}
-        </AwesomeSlider>
-      </div> */}
                 </div>
-                <div>
+                <div className="md:px-4">
                   <div
+                    onClick={e => {
+                      if (e.target.dataset.rmizContent) {
+                        const img =
+                          e.target?.parentNode?.parentNode?.parentNode?.querySelector(
+                            "img"
+                          )?.src;
+                        console.log("setto zoomed img", img);
+                        if (img) setZoomedImg(img);
+                      }
+                    }}
                     onMouseEnter={e => {
                       if (
                         [...e.target.classList].includes(
@@ -314,7 +301,7 @@ const Homepage = () => {
 
                   <div className="my-12" />
 
-                  <div className="md:-mt-12 md:px-4 flex flex-col items-center justify-center">
+                  <div className="md:-mt-12 flex flex-col items-center justify-center">
                     <h2 className="font-bold mb-4 text-center text-2xl tracking-tight">
                       SE VUOI ESSERE PROSSIMA STAZIONE ATTIVATRICE:
                     </h2>
@@ -348,10 +335,16 @@ const Homepage = () => {
                         Istruzioni per partecipare
                       </Accordion.Title>
                       <Accordion.Content className="text-gray-600">
-                        <Button className="flex items-center mb-2 text-lg bg-[#2BB741]">
-                          <FaWhatsapp />{" "}
-                          <span className="ml-1">Chatta su WhatsApp</span>
-                        </Button>
+                        <a
+                          href="https://chat.whatsapp.com/FJ6HissbZwE47OWmpes7Pr"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Button className="mx-auto flex items-center mb-4 text-lg bg-[#2BB741]">
+                            <FaWhatsapp />{" "}
+                            <span className="ml-1">Chatta su WhatsApp</span>
+                          </Button>
+                        </a>
                         <p className="font-bold text-lg text-black uppercase mt-2">
                           COSA È IL RADIO FLASH MOB
                         </p>
@@ -446,7 +439,7 @@ const Homepage = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             key={e}
-                            className="flex items-center underline decoration-dotted"
+                            className="flex items-center underline decoration-dotted text-gray-900"
                           >
                             {/* <span className="text-gray-500 font-bold text-3xl">
                               <FaAngleDoubleRight />
@@ -460,7 +453,7 @@ const Homepage = () => {
                     <Accordion alwaysOpen flush className="mt-8">
                       <Accordion.Panel>
                         <Accordion.Title>Calendario</Accordion.Title>
-                        <Accordion.Content>
+                        <Accordion.Content className="px-0 py-0">
                           <Table>
                             <Table.Head>
                               <Table.HeadCell className="pr-2">
