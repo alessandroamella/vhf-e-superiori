@@ -33,7 +33,12 @@ const Homepage = () => {
 
   const handleZoomChange = useCallback(shouldZoom => {
     console.log({ shouldZoom, zoomedImg });
-    setIsZoomed(shouldZoom);
+    // setIsZoomed(shouldZoom);
+
+    if (!shouldZoom) {
+      setZoomedImg(null);
+      // setTimeout(() => setIsZoomed(false), 500);
+    }
   }, []);
 
   useEffect(() => {
@@ -113,7 +118,14 @@ const Homepage = () => {
   const items = Array.from(Array(14).keys()).map(e => ({
     alt: "Locandina " + e,
     image: `/locandine/${e + 1}-min.jpg`,
-    content: <div />
+    content: (
+      <ControlledZoom
+        isZoomed={zoomedImg?.includes(`/locandine/${e + 1}-min.jpg`)}
+        onZoomChange={handleZoomChange}
+      >
+        <img src={`/locandine/${e + 1}-min.jpg`} alt={`Locandina ${e + 1}`} />
+      </ControlledZoom>
+    )
   }));
 
   const [eventJoining, setEventJoining] = useState(null);
@@ -151,15 +163,6 @@ const Homepage = () => {
                     alt="Flash mob"
                     className="w-full fit max-w-md md:max-w-xl lg:max-w-2xl py-4 mx-auto"
                   />
-                  {/* <p className="text-[#003399] uppercase tracking-tight text-4xl md:text-5xl font-bold drop-shadow-md flex items-center justify-center"> */}
-                  {/* <span className="text-green-500 ombra">Radio</span>
-              <span className="text-white mx-2 ombra">Flash</span>
-              <span className="text-red-500 ombra">Mob</span> */}
-                  {/* Radio Flash Mob */}
-                  {/* <span className="text-green-500 ombra">Radio</span>
-              <span className="text-white mx-2 ombra">Flash</span>
-              <span className="text-red-500 ombra">Mob</span> */}
-                  {/* </p> */}
                   <div className="text-gray-600 mb-8 mt-4 md:pr-4 text-justify">
                     <p>
                       Nasce da un'idea di <strong>IU4JJJ</strong> Pietro Cerrone
@@ -214,7 +217,6 @@ const Homepage = () => {
                         <Zoom>
                           <img
                             className="max-w-[10rem] mx-auto object-contain w-full"
-                            // src="undraw_podcast_re_wr88.svg"
                             src="/locandine/1-min.png"
                             alt="Esempio"
                           />
@@ -260,50 +262,16 @@ const Homepage = () => {
                       con uno spirito partecipativo e non competitivo.
                     </p>
                   </div>
-
-                  {/* <div className="self-center">
-              <Button color="red" onClick={() => navigate("/regolamento")}>
-                Regolamento
-              </Button>
-              <Button className="ml-4" onClick={() => navigate("/info")}>
-                Scopri di più
-              </Button>
-            </div> */}
-
-                  {/* <div className="box-content h-[80vh] pt-8 md:pt-12 lg:pt-16 pb-32 mb-24 bg-lightGray-normal">
-        <p className="text-2xl text-center p-4 text-white bg-blue-500 mx-auto rounded mb-8 md:text-4xl w-fit font-bold tracking-tight">
-          Eventi passati
-        </p>
-
-        <AwesomeSlider
-          cssModule={[CoreStyles, AnimationStyles]}
-          play={true}
-          cancelOnInteraction
-          interval={6000}
-        >
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(e => (
-            <div key={e} data-src={`/locandine/${e}.png`} />
-          ))}
-        </AwesomeSlider>
-      </div> */}
                 </div>
                 <div className="md:px-4">
-                  <ControlledZoom
-                    isZoomed={isZoomed}
-                    onZoomChange={handleZoomChange}
-                  >
-                    <img
-                      // className={!isZoomed ? "hidden" : ""}
-                      alt="Evento"
-                      src={zoomedImg}
-                      width="500"
-                    />
-                  </ControlledZoom>
                   <div
                     onClick={e => {
-                      if ([...e.target.classList].includes("carousel__slide")) {
-                        const img = e.target?.querySelector("img")?.src;
-                        console.log("Setto zoomed img", img);
+                      if (e.target.dataset.rmizContent) {
+                        const img =
+                          e.target?.parentNode?.parentNode?.parentNode?.querySelector(
+                            "img"
+                          )?.src;
+                        console.log("setto zoomed img", img);
                         if (img) setZoomedImg(img);
                       }
                     }}
