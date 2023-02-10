@@ -44,7 +44,7 @@ body {
 
 @media screen and (min-width: 768px) {
     .carousel {
-        scale: 0.5!important;    
+        scale: 0.75!important;    
     }
 }
 
