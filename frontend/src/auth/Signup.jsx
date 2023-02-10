@@ -28,13 +28,19 @@ const Signup = () => {
   const [email, setEmail] = useState(cookies.email || "");
 
   useEffect(() => {
-    setCookie("callsign", callsign, { path: "/", maxAge: 60 * 5 });
-    setCookie("name", name, { path: "/", maxAge: 60 * 5 });
-    setCookie("password", password, { path: "/", maxAge: 60 * 5 });
-    setCookie("phoneNumber", phoneNumber, { path: "/", maxAge: 60 * 5 });
-    setCookie("email", email, { path: "/", maxAge: 60 * 5 });
+    console.log("set cookie", {
+      callsign,
+      name,
+      password,
+      phoneNumber,
+      email
+    });
+    setCookie("callsign", callsign, { path: "/signup", maxAge: 60 * 5 });
+    setCookie("name", name, { path: "/signup", maxAge: 60 * 5 });
+    setCookie("phoneNumber", phoneNumber, { path: "/signup", maxAge: 60 * 5 });
+    setCookie("email", email, { path: "/signup", maxAge: 60 * 5 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [callsign, name, password, phoneNumber, email]);
+  }, [callsign, name, phoneNumber, email]);
 
   const captchaRef = createRef();
 
@@ -111,6 +117,10 @@ const Signup = () => {
         email,
         token: captchaRef.current.getValue()
       });
+      removeCookie("callsign", { path: "/signup" });
+      removeCookie("name", { path: "/signup" });
+      removeCookie("phoneNumber", { path: "/signup" });
+      removeCookie("email", { path: "/signup" });
       const { data } = await axios.post("/api/auth/login", {
         callsign,
         password

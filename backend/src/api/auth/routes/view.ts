@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Router } from "express";
-import { Errors } from "../../errors";
-import { createError } from "../../helpers";
-import { UNAUTHORIZED } from "http-status";
 
 const router = Router();
 
@@ -35,7 +32,7 @@ const router = Router();
  */
 router.get("/", (req, res) => {
     if (!req.user) {
-        return res.status(UNAUTHORIZED).json(createError(Errors.NOT_LOGGED_IN));
+        throw new Error("No req.user in user view");
     }
     const copy = { ...req.user };
     (copy as any).password = undefined;

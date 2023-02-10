@@ -98,7 +98,8 @@ router.post(
 
                     res.cookie(AuthOptions.AUTH_COOKIE_NAME, token, {
                         httpOnly: true,
-                        signed: true
+                        signed: true,
+                        maxAge: 1000 * 60 * 60 * 24 * 3
                     });
 
                     return res.json(

@@ -38,6 +38,7 @@ body {
 
 .carousel__slide:hover .carousel__slide-overlay {
     opacity: 0 !important;
+    display: none!important;
 }
 
 @media screen and (min-width: 768px) {
@@ -48,4 +49,8 @@ body {
 
 a {
     @apply text-red-500
+}
+
+.carousel__slide {
+    cursor: pointer;
 }
