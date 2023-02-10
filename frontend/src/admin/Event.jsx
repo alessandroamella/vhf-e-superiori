@@ -94,7 +94,6 @@ const Event = () => {
       // navigate("/");
     } catch (err) {
       console.log(err.response?.data?.err || err);
-      window.alert(getErrorStr(err.response?.data?.err));
       // setAlert({
       //     color: "failure",
       //     msg: getErrorStr(err?.response?.data?.err)
@@ -147,6 +146,13 @@ const Event = () => {
   }
 
   async function approveJoinRequests(j) {
+    if (
+      !window.confirm(
+        "Vuoi APPROVARE la richiesta di partecipazione con ID " + j._id + "?"
+      )
+    ) {
+      return;
+    }
     setDisabled(true);
     try {
       await axios.post("/api/joinrequest/" + j._id);
@@ -156,7 +162,31 @@ const Event = () => {
         { ...j, isApproved: !j.isApproved, updatedAt: new Date() }
       ]);
     } catch (err) {
-      window.alert("Errore: " + getErrorStr(err?.response?.data?.err));
+      console.log(err.response.data);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+    } finally {
+      setDisabled(false);
+    }
+  }
+
+  async function deleteJoinRequests(j) {
+    if (
+      !window.confirm(
+        "Vuoi ELIMINARE la richiesta di partecipazione con ID " + j._id + "?"
+      )
+    ) {
+      return;
+    }
+
+    setDisabled(true);
+    try {
+      await axios.delete("/api/joinrequest/" + j._id);
+      console.log("deleted joinRequest", j);
+      setJoinRequests([...joinRequests.filter(_j => _j._id !== j._id)]);
+    } catch (err) {
       console.log(err.response.data);
       setAlert({
         color: "failure",
@@ -351,7 +381,17 @@ const Event = () => {
                           {joinRequests.map(j => (
                             <Table.Row key={j._id}>
                               <Table.Cell className="whitespace-nowrap font-medium">
-                                {j.fromUser.callsign}
+                                <a
+                                  href={
+                                    "https://www.qrz.com/db/" +
+                                    j.fromUser.callsign
+                                  }
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="hover:text-black transition-colors"
+                                >
+                                  {j.fromUser.callsign}
+                                </a>
                               </Table.Cell>
                               <Table.Cell>
                                 <Tooltip content={j.fromUser.email}>
@@ -380,7 +420,7 @@ const Event = () => {
                                   </span>
                                 ) : (
                                   <span className="ml-1 font-medium">
-                                    ❌ Non approvata
+                                    ⌛ In attesa
                                   </span>
                                 )}
                               </Table.Cell>
@@ -388,7 +428,7 @@ const Event = () => {
                                 {formatInTimeZone(
                                   new Date(j.updatedAt),
                                   "Europe/Rome",
-                                  "dd/MM/yyyy 'alle' HH:mm",
+                                  "d MMM HH:mm",
                                   {
                                     locale: it
                                   }
@@ -401,24 +441,34 @@ const Event = () => {
                                   </p>
                                 </Tooltip>
                               </Table.Cell>
-                              <Table.Cell className="max-w-[10rem]">
-                                {j.isApproved ? (
+                              <Table.Cell>
+                                <Button.Group>
+                                  {j.isApproved ? (
+                                    <Button
+                                      color="warning"
+                                      onClick={() => approveJoinRequests(j)}
+                                      disabled={disabled}
+                                    >
+                                      Annulla approvazione
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      color="success"
+                                      onClick={() => approveJoinRequests(j)}
+                                      disabled={disabled}
+                                    >
+                                      Approva richiesta
+                                    </Button>
+                                  )}
+
                                   <Button
                                     color="failure"
-                                    onClick={() => approveJoinRequests(j)}
+                                    onClick={() => deleteJoinRequests(j)}
                                     disabled={disabled}
                                   >
-                                    Annulla approvazione
+                                    Cancella richiesta
                                   </Button>
-                                ) : (
-                                  <Button
-                                    color="success"
-                                    onClick={() => approveJoinRequests(j)}
-                                    disabled={disabled}
-                                  >
-                                    Approva richiesta
-                                  </Button>
-                                )}
+                                </Button.Group>
                               </Table.Cell>
                             </Table.Row>
                           ))}

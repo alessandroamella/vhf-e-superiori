@@ -42,7 +42,6 @@ const ViewEvent = () => {
   useEffect(() => {
     if (!events) return;
     const _event = events.find(e => e._id === id);
-    if (!_event) window.alert("non trovato"); // DEBUG
     setEvent(_event);
     console.log({ _event, events });
     setDisabled(false);

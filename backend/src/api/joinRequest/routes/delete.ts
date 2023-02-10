@@ -64,10 +64,14 @@ router.delete(
                 throw new Error("Can't find user in join request delete");
             }
 
-            const joinRequest = await JoinRequest.findOne({
-                _id: req.params._id,
-                fromUser: user._id
-            });
+            const obj: { _id: string; fromUser?: string } = {
+                _id: req.params._id
+            };
+            if (!user.isAdmin) {
+                obj.fromUser = user._id;
+            }
+
+            const joinRequest = await JoinRequest.findOne(obj);
             if (!joinRequest) {
                 return res
                     .status(400)

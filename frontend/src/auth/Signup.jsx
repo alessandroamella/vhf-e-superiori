@@ -1,10 +1,11 @@
 import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
-import React, { createRef, useRef, useState } from "react";
+import React, { createRef, useEffect, useRef, useState } from "react";
 import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getErrorStr, UserContext } from "..";
+import { useCookies } from "react-cookie";
 import ReCAPTCHA from "react-google-recaptcha";
 import Layout from "../Layout";
 
@@ -18,11 +19,22 @@ const useFocus = () => {
 };
 
 const Signup = () => {
-  const [callsign, setCallsign] = useState("");
-  const [name, setName] = useState("");
+  const [cookies, setCookie, removeCookie] = useCookies(["signupcache"]);
+
+  const [callsign, setCallsign] = useState(cookies.callsign || "");
+  const [name, setName] = useState(cookies.name || "");
   const [password, setPassword] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("+39");
-  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState(cookies.phoneNumber || "+39");
+  const [email, setEmail] = useState(cookies.email || "");
+
+  useEffect(() => {
+    setCookie("callsign", callsign, { path: "/", maxAge: 60 * 5 });
+    setCookie("name", name, { path: "/", maxAge: 60 * 5 });
+    setCookie("password", password, { path: "/", maxAge: 60 * 5 });
+    setCookie("phoneNumber", phoneNumber, { path: "/", maxAge: 60 * 5 });
+    setCookie("email", email, { path: "/", maxAge: 60 * 5 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [callsign, name, password, phoneNumber, email]);
 
   const captchaRef = createRef();
 
@@ -74,12 +86,19 @@ const Signup = () => {
   async function signup(e) {
     e.preventDefault();
 
-    if (!captchaRef.current.getValue()) {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-      return setAlert("Verifica di non essere un robot");
+    try {
+      if (!captchaRef.current.getValue()) {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+        return setAlert("Verifica di non essere un robot");
+      }
+    } catch (err) {
+      console.log("ReCAPTCHA error", err);
+      return setAlert(
+        "Errore nel caricamento del ReCAPTCHA, per favore ricarica la pagina"
+      );
     }
 
     setDisabled(true);
@@ -234,7 +253,9 @@ const Signup = () => {
             ref={captchaRef}
           />
           <div className="my-4" />
-          <Button type="submit">Registrati</Button>
+          <Button type="submit" disabled={disabled}>
+            Registrati
+          </Button>
         </form>
       </div>
     </Layout>
