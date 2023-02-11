@@ -6,14 +6,14 @@ const Footer = () => {
   const { ready } = useContext(ReadyContext);
   return (
     ready && (
-      <div className="bg-lightGray-normal p-8 flex items-center flex-col md:flex-row justify-center">
+      <div className="bg-lightGray-normal dark:bg-gray-700 dark:text-white p-8 flex items-center flex-col md:flex-row justify-center">
         <span className="text-center">
           Sito sviluppato da Alessandro Amella{" "}
           <a
             href="https://www.qrz.com/db/IU4QSG"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline decoration-dotted text-center hover:text-black transition-colors"
+            className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
           >
             IU4QSG
           </a>

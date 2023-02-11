@@ -143,7 +143,7 @@ const Homepage = () => {
       />
 
       {ready && (
-        <div className="px-4 md:px-12 max-w-full pt-4 pb-12 min-h-[80vh] bg-white">
+        <div className="px-4 md:px-12 max-w-full pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
           <div className="flex h-full">
             <div className="flex flex-col">
               {alert && (
@@ -163,7 +163,7 @@ const Homepage = () => {
                     alt="Flash mob"
                     className="w-full fit max-w-md md:max-w-xl lg:max-w-2xl py-4 mx-auto"
                   />
-                  <div className="text-gray-600 mb-8 mt-4 md:pr-4 text-justify">
+                  <div className="text-gray-600 dark:text-gray-100 mb-8 mt-4 md:pr-4 text-justify">
                     <p>
                       Nasce da un'idea di <strong>IU4JJJ</strong> Pietro Cerrone
                       membro della chat VHF e superiori che la propone a{" "}
@@ -178,7 +178,7 @@ const Homepage = () => {
                         href="https://www.qrz.com/db/IC8TEM"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mx-1 text-center underline decoration-dotted hover:text-black transition-colors"
+                        className="mx-1 text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
                       >
                         <strong>IC8TEM</strong> Costantino Cerrotta
                       </a>
@@ -187,7 +187,7 @@ const Homepage = () => {
                         href="https://www.diplomiradio.it"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="ml-1 text-center underline decoration-dotted hover:text-black transition-colors"
+                        className="ml-1 text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
                       >
                         diplomiradio.it
                       </a>
@@ -334,7 +334,7 @@ const Homepage = () => {
                       <Accordion.Title>
                         Istruzioni per partecipare
                       </Accordion.Title>
-                      <Accordion.Content className="text-gray-600">
+                      <Accordion.Content className="text-gray-600 dark:text-gray-100">
                         <a
                           href="https://chat.whatsapp.com/FJ6HissbZwE47OWmpes7Pr"
                           target="_blank"
@@ -345,7 +345,7 @@ const Homepage = () => {
                             <span className="ml-1">Chatta su WhatsApp</span>
                           </Button>
                         </a>
-                        <p className="font-bold text-lg text-black uppercase mt-2">
+                        <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
                           COSA È IL RADIO FLASH MOB
                         </p>
 
@@ -375,7 +375,7 @@ const Homepage = () => {
                           per l'occasione.
                         </p>
 
-                        <p className="font-bold text-lg text-black uppercase mt-2">
+                        <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
                           RACCOMANDAZIONI
                         </p>
 
@@ -392,7 +392,7 @@ const Homepage = () => {
                             href="https://chat.whatsapp.com/FJ6HissbZwE47OWmpes7Pr"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="underline decoration-dotted text-center hover:text-black transition-colors"
+                            className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
                           >
                             MESSAGGI DELLA CHAT vhfesuperiori
                           </a>{" "}
@@ -418,13 +418,13 @@ const Homepage = () => {
                   </Accordion>
                 </div>
                 <div>
-                  <div className="mt-8 md:mt-0">
-                    <div className="w-fit mx-auto">
-                      <h2 className="md:mt-6 mb-2 font-bold text-center text-3xl tracking-tight">
+                  <div className="mt-8 md:mt-14 mb-2">
+                    <div className="w-fit mx-auto dark:bg-gray-800 dark:rounded-lg dark:items-center dark:flex dark:flex-col dark:overflow-hidden">
+                      <h2 className="font-bold text-center text-3xl tracking-tight dark:w-full dark:bg-gray-700 dark:px-4 dark:pt-4 pb-2 mb-2">
                         Amministratori
                       </h2>
 
-                      <div className="mx-auto">
+                      <div className="mx-auto dark:pb-2">
                         {[
                           "IZ5RNF Ronca Alessandro",
                           "IZ5IOQ Metteucci Giacomo",
@@ -439,7 +439,7 @@ const Homepage = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             key={e}
-                            className="flex items-center underline decoration-dotted text-gray-900"
+                            className="flex items-center underline decoration-dotted text-gray-900 dark:text-gray-200"
                           >
                             {/* <span className="text-gray-500 font-bold text-3xl">
                               <FaAngleDoubleRight />
@@ -519,7 +519,7 @@ const Homepage = () => {
               <p className="text-3xl mt-4 md:mt-8 md:text-5xl font-bold">
                 {shownEvent.name}
               </p>
-              <p className="text-xl mt-2 mb-6 text-gray-600">
+              <p className="text-xl mt-2 mb-6 text-gray-600 dark:text-gray-100">
                 {formatInTimeZone(
                   new Date(shownEvent.date),
                   "Europe/Rome",
@@ -587,7 +587,7 @@ const Homepage = () => {
                   {isAfter(new Date(e.date), new Date()) ? (
                     <Button>Prenota</Button>
                   ) : (
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-100">
                       Il tempo per prenotarsi è scaduto il{" "}
                       {format(new Date(e.date), "dd/MM/yyyy 'alle' HH:mm", {
                         locale: it

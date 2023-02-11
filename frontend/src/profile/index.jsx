@@ -250,7 +250,7 @@ const Profile = () => {
             )}
 
             <div className="flex flex-col gap-4">
-              <p className="text-base leading-relaxed -mb-2">
+              <p className="text-base leading-relaxed -mb-2 dark:text-white">
                 Sei sicuro di annullare la tua richiesta di partecipazione a:
               </p>
               <Link
@@ -298,7 +298,7 @@ const Profile = () => {
         </form>
       </Modal>
 
-      <div className="bg-white py-3 md:py-6 px-6 md:px-12 lg:px-24">
+      <div className="bg-white dark:bg-gray-900 dark:text-white py-3 md:py-6 px-6 md:px-12 lg:px-24">
         <Typography variant="h3" className="my-4">
           Profilo
         </Typography>
@@ -325,7 +325,10 @@ const Profile = () => {
                     viewBox="0 0 24 24"
                     className="scale-150"
                   >
-                    <path d="M22 8h-20c-1.104 0-2 .896-2 2v12c0 1.104.896 2 2 2h20c1.104 0 2-.896 2-2v-12c0-1.104-.896-2-2-2zm-19 3h11v2h-11v-2zm14 5v1h-10v-1h10zm0 5h-10v-1h10v1zm2-2h-14v-1h14v1zm2-6h-6v-2h6v2zm-14-6h-4v-1h4v1zm4.421-4.448l-2.18-1.567c-.244-.178-.297-.519-.12-.762.178-.243.518-.296.761-.119l2.186 1.569-.647.879zm8.246 4.448h-2.442l-5.099-3.677.891-1.219 6.65 4.896z" />
+                    <path
+                      className="dark:fill-white"
+                      d="M22 8h-20c-1.104 0-2 .896-2 2v12c0 1.104.896 2 2 2h20c1.104 0 2-.896 2-2v-12c0-1.104-.896-2-2-2zm-19 3h11v2h-11v-2zm14 5v1h-10v-1h10zm0 5h-10v-1h10v1zm2-2h-14v-1h14v1zm2-6h-6v-2h6v2zm-14-6h-4v-1h4v1zm4.421-4.448l-2.18-1.567c-.244-.178-.297-.519-.12-.762.178-.243.518-.296.761-.119l2.186 1.569-.647.879zm8.246 4.448h-2.442l-5.099-3.677.891-1.219 6.65 4.896z"
+                    />
                   </svg>
                   <span className="ml-4">{user.callsign}</span>
                 </Typography>
@@ -462,7 +465,7 @@ const Profile = () => {
                     <h6 className="text-xl font-bold tracking-tight text-gray-900 hover:underline">
                       <Link to={"/event/" + j.event._id}>{j.event.name}</Link>
                     </h6>
-                    <p className="font-normal text-gray-700 -mt-2">
+                    <p className="font-normal text-gray-700 dark:text-gray-100 -mt-2">
                       {formatInTimeZone(
                         new Date(j.event.date),
                         "Europe/Rome",

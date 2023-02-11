@@ -18,12 +18,14 @@ import Layout from "../Layout";
 
 const EventContainer = ({ event, children }) =>
   event?.logoUrl ? (
-    <div className="grid grid-cols-1 md:grid-cols-2">
+    <div className="grid grid-cols-1 md:grid-cols-2 dark:text-white dark:bg-gray-900">
       <img loading="lazy" className={event.logoUrl} alt="Logo dell'evento" />
       <div>{children}</div>
     </div>
   ) : (
-    <div className="mx-auto px-2 w-full md:w-2/3 mt-8 mb-24">{children} </div>
+    <div className="w-full h-full pt-8 pb-24 dark:text-white dark:bg-gray-900">
+      <div className="mx-auto px-2 w-full md:w-2/3">{children} </div>
+    </div>
   );
 
 const ViewEvent = () => {
@@ -106,7 +108,7 @@ const ViewEvent = () => {
             )}
 
             <div className="flex flex-col gap-4">
-              <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              <p className="text-base leading-relaxed text-gray-500 dark:text-gray-300">
                 Usa il seguente form per fare richiesta di partecipazione
                 all'evento
               </p>
@@ -187,7 +189,7 @@ const ViewEvent = () => {
             </Alert>
           )}
 
-          <div className="text-gray-600 mt-2 mb-4">
+          <div className="text-gray-600 dark:text-gray-300 mt-2 mb-4">
             {formatInTimeZone(
               new Date(event.date),
               "Europe/Rome",
@@ -214,7 +216,7 @@ const ViewEvent = () => {
 
           <div className="border-t w-full mt-12 mb-8" />
 
-          <p className="text-gray-600 mb-1 uppercase font-bold tracking-tight">
+          <p className="text-gray-600 dark:text-gray-300 mb-1 uppercase font-bold tracking-tight">
             Prenotazioni
           </p>
           {isAfter(new Date(event.date), new Date()) ? (

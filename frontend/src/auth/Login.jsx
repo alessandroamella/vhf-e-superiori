@@ -97,110 +97,112 @@ const Login = () => {
   return (
     <Layout>
       {user && navigate("/profile")}
-      <div className="mx-auto px-8 w-full md:w-2/3 mt-12 mb-20">
-        <Typography variant="h1" className="mb-2">
-          Login
-        </Typography>
-
-        <Typography variant="small" className="mb-6 flex">
-          <span className="mr-1">Non hai un account? </span>
-          <Tooltip content="Naviga alla pagina di registrazione">
-            <Link
-              to="/signup"
-              className="underline decoration-dotted hover:text-black transition-colors"
-            >
-              Registrati qui
-            </Link>
-          </Tooltip>
-        </Typography>
-
-        {alert && (
-          <Alert
-            className="mb-6"
-            color={alert.color}
-            onDismiss={() => setAlert(null)}
-          >
-            <span>{alert.msg}</span>
-          </Alert>
-        )}
-
-        <form action="#" method="post" onSubmit={login}>
-          <div className="mb-2 block">
-            <Label htmlFor="callsign" value="Nominativo" />
-          </div>
-          <TextInput
-            type="text"
-            id="callsign"
-            name="callsign"
-            label="Nominativo"
-            minLength={1}
-            maxLength={10}
-            value={callsign}
-            onChange={e => setCallsign(e.target.value.toUpperCase())}
-            disabled={disabled}
-            ref={loginInput}
-            autoComplete="callsign"
-            autoFocus
-          />
-          <div className="my-4" />
-
-          <div className="mb-2 block">
-            <Label htmlFor="password" value="Password" />
-          </div>
-          <TextInput
-            type="password"
-            id="password"
-            name="password"
-            label="Password"
-            autoComplete="current-password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            disabled={disabled}
-          />
-          <div className="my-4" />
-          <Button type="submit" disabled={disabled}>
+      <div className="w-full h-full dark:bg-gray-900 dark:text-white">
+        <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">
+          <Typography variant="h1" className="mb-2">
             Login
-          </Button>
-        </form>
+          </Typography>
 
-        <div className="mt-4">
-          <small>
-            Ti sei scordato la password?{" "}
-            <Link
-              to="#"
-              className="underline decoration-dotted text-center hover:text-black transition-colors"
-              onClick={() => setResetPw(true)}
+          <Typography variant="small" className="mb-6 flex">
+            <span className="mr-1">Non hai un account? </span>
+            <Tooltip content="Naviga alla pagina di registrazione">
+              <Link
+                to="/signup"
+                className="underline decoration-dotted hover:text-black transition-colors"
+              >
+                Registrati qui
+              </Link>
+            </Tooltip>
+          </Typography>
+
+          {alert && (
+            <Alert
+              className="mb-6"
+              color={alert.color}
+              onDismiss={() => setAlert(null)}
             >
-              Clicca qui
-            </Link>
-            .
-          </small>
+              <span>{alert.msg}</span>
+            </Alert>
+          )}
 
-          <div className={`${resetPw ? "block" : "hidden"} mt-4`}>
-            <form action="#" method="post" onSubmit={sendResetPw}>
-              <div className="mb-2 block">
-                <Label htmlFor="email" value="Email" />
-              </div>
-              <TextInput
-                type="email"
-                name="email"
-                id="email"
-                autoComplete="email"
-                label="Email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                disabled={disabled}
-              />
-              <div className="my-4" />
-              <ReCAPTCHA
-                sitekey="6LfdByQkAAAAALGExGRPnH8i16IyKNaUXurnW1rm"
-                ref={captchaRef}
-              />
-              <div className="my-4" />
-              <Button type="submit" disabled={disabled}>
-                Invia richiesta
-              </Button>
-            </form>
+          <form action="#" method="post" onSubmit={login}>
+            <div className="mb-2 block">
+              <Label htmlFor="callsign" value="Nominativo" />
+            </div>
+            <TextInput
+              type="text"
+              id="callsign"
+              name="callsign"
+              label="Nominativo"
+              minLength={1}
+              maxLength={10}
+              value={callsign}
+              onChange={e => setCallsign(e.target.value.toUpperCase())}
+              disabled={disabled}
+              ref={loginInput}
+              autoComplete="callsign"
+              autoFocus
+            />
+            <div className="my-4" />
+
+            <div className="mb-2 block">
+              <Label htmlFor="password" value="Password" />
+            </div>
+            <TextInput
+              type="password"
+              id="password"
+              name="password"
+              label="Password"
+              autoComplete="current-password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              disabled={disabled}
+            />
+            <div className="my-4" />
+            <Button type="submit" disabled={disabled}>
+              Login
+            </Button>
+          </form>
+
+          <div className="mt-4">
+            <small>
+              Ti sei scordato la password?{" "}
+              <Link
+                to="#"
+                className="underline decoration-dotted text-center hover:text-black transition-colors"
+                onClick={() => setResetPw(true)}
+              >
+                Clicca qui
+              </Link>
+              .
+            </small>
+
+            <div className={`${resetPw ? "block" : "hidden"} mt-4`}>
+              <form action="#" method="post" onSubmit={sendResetPw}>
+                <div className="mb-2 block">
+                  <Label htmlFor="email" value="Email" />
+                </div>
+                <TextInput
+                  type="email"
+                  name="email"
+                  id="email"
+                  autoComplete="email"
+                  label="Email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  disabled={disabled}
+                />
+                <div className="my-4" />
+                <ReCAPTCHA
+                  sitekey="6LfdByQkAAAAALGExGRPnH8i16IyKNaUXurnW1rm"
+                  ref={captchaRef}
+                />
+                <div className="my-4" />
+                <Button type="submit" disabled={disabled}>
+                  Invia richiesta
+                </Button>
+              </form>
+            </div>
           </div>
         </div>
       </div>

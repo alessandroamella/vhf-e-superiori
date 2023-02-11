@@ -30,7 +30,7 @@ const Header = () => {
   }
 
   return (
-    <header className="bg-lightGray-normal py-4 px-8 flex items-center">
+    <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-8 flex items-center">
       <Link
         to="/"
         className="flex items-center hover:scale-105 transition-transform"
@@ -43,7 +43,7 @@ const Header = () => {
         />
         <Typography
           variant="h1"
-          className="font-bold ml-3 hidden md:block text-red-500"
+          className="font-bold ml-3 hidden md:block text-red-500 dark:text-white"
         >
           www.vhfesuperiori.eu
         </Typography>
@@ -66,7 +66,9 @@ const Header = () => {
         {user === null ? (
           <Menu>
             <MenuHandler>
-              <p className="text-red-500 cursor-pointer font-bold">Login</p>
+              <p className="text-red-500 dark:text-gray-100 cursor-pointer font-bold">
+                Login
+              </p>
             </MenuHandler>
             <MenuList>
               <MenuItem onClick={() => navigate("/login")}>Login</MenuItem>

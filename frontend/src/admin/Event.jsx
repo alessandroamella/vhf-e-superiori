@@ -343,13 +343,13 @@ const Event = () => {
 
               {eventEditing && (
                 <div className="min-h-[60vh] overflow-auto">
-                  <Typography variant="h4" className="pb-2">
+                  <Typography variant="h4" className="pb-2 dark:text-white">
                     Richieste di partecipazione
                   </Typography>
                   {joinRequests === null ? (
                     <Spinner />
                   ) : joinRequests === false ? (
-                    <p>Errore nel caricamento</p>
+                    <p className="dark:text-gray-300">Errore nel caricamento</p>
                   ) : joinRequests.length > 0 ? (
                     <>
                       <Button className="mx-auto mb-2 flex items-center">
@@ -388,7 +388,7 @@ const Event = () => {
                                   }
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="hover:text-black transition-colors"
+                                  className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
                                 >
                                   {j.fromUser.callsign}
                                 </a>
@@ -399,7 +399,7 @@ const Event = () => {
                                     href={"mailto:" + j.fromUser.email}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="hover:text-black transition-colors"
+                                    className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
                                   >
                                     {j.fromUser.name}
                                   </a>
@@ -408,23 +408,23 @@ const Event = () => {
                               <Table.Cell>
                                 <a
                                   href={"tel:" + j.fromUser.phoneNumber}
-                                  className="hover:text-black transition-colors"
+                                  className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
                                 >
                                   {j.fromUser.phoneNumber}
                                 </a>
                               </Table.Cell>
                               <Table.Cell>
                                 {j.isApproved ? (
-                                  <span className="ml-1 font-medium">
+                                  <span className="ml-1 font-medium dark:text-gray-300">
                                     ✅ Approvata
                                   </span>
                                 ) : (
-                                  <span className="ml-1 font-medium">
+                                  <span className="ml-1 font-medium dark:text-gray-300">
                                     ⌛ In attesa
                                   </span>
                                 )}
                               </Table.Cell>
-                              <Table.Cell>
+                              <Table.Cell className="dark:text-gray-300">
                                 {formatInTimeZone(
                                   new Date(j.updatedAt),
                                   "Europe/Rome",
@@ -434,7 +434,7 @@ const Event = () => {
                                   }
                                 )}
                               </Table.Cell>
-                              <Table.Cell className="max-w-xs">
+                              <Table.Cell className="max-w-xs dark:text-gray-300">
                                 <Tooltip content={j.antenna}>
                                   <p className="whitespace-nowrap overflow-hidden text-ellipsis">
                                     {j.antenna}
@@ -476,7 +476,9 @@ const Event = () => {
                       </Table>
                     </>
                   ) : (
-                    <p>Ancora nessuna richiesta</p>
+                    <p className="dark:text-gray-300">
+                      Ancora nessuna richiesta
+                    </p>
                   )}
                 </div>
               )}
@@ -498,94 +500,95 @@ const Event = () => {
         </form>
       </Modal>
 
-      <div className="mx-auto px-2 w-full md:w-2/3 my-12">
-        {alert && (
-          <Alert
-            className="mb-6"
-            color={alert.color}
-            onDismiss={() => setAlert(null)}
-          >
-            <span>{alert.msg}</span>
-          </Alert>
-        )}
-
-        <Typography variant="h1" className="mb-12 flex items-center">
-          <Badge size="lg" color="info" className="mr-2">
-            Admin
-          </Badge>
-          <span>Manager eventi</span>
-        </Typography>
-
-        {events === null ? (
-          <p>Eventi non caricati</p>
-        ) : events ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 md:gap-4">
-            {events.map(e => (
-              <Card
-                className="cursor-pointer hover:bg-gray-100 hover:scale-105 transition-all"
-                key={e._id}
-                imgSrc={e.logoUrl || "/logo-min.png"}
-                onClick={() => editEventModal(e)}
-              >
-                <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                  {e.name}
-                </h5>
-                {e.description ? (
-                  <div
-                    className="line-clamp-3"
-                    dangerouslySetInnerHTML={{
-                      __html: e.description
-                    }}
-                  />
-                ) : (
-                  <p className="font-normal text-gray-700 dark:text-gray-400">
-                    "-- nessuna descrizione --"
-                  </p>
-                )}
-                <p className="font-normal text-gray-700 dark:text-gray-400">
-                  Data{" "}
-                  <strong>
-                    {formatInTimeZone(
-                      new Date(e.date),
-                      "Europe/Rome",
-                      "eee d MMMM Y",
-                      {
-                        locale: it
-                      }
-                    )}
-                  </strong>
-                </p>
-                <p className="font-normal text-gray-700 dark:text-gray-400">
-                  Scadenza per partecipare{" "}
-                  <strong>
-                    {formatInTimeZone(
-                      new Date(e.joinDeadline),
-                      "Europe/Rome",
-                      "eee d MMMM Y",
-                      {
-                        locale: it
-                      }
-                    )}
-                  </strong>
-                </p>
-              </Card>
-            ))}
-            {events.length === 0 && <p>Nessun evento salvato</p>}
-            <Button
-              className="flex h-full text-md flex-col justify-center items-center"
-              onClick={newEventModal}
+      <div className="w-full h-full pt-8 pb-24 dark:text-white dark:bg-gray-900">
+        <div className="mx-auto px-2 w-full md:w-2/3 my-12">
+          {alert && (
+            <Alert
+              className="mb-6"
+              color={alert.color}
+              onDismiss={() => setAlert(null)}
             >
-              <span className="text-5xl mb-1 mr-2">
-                <FaPlusCircle />
-              </span>{" "}
-              Nuovo evento
-            </Button>
-          </div>
-        ) : (
-          <Spinner />
-        )}
+              <span>{alert.msg}</span>
+            </Alert>
+          )}
 
-        {/* <form action="#" method="post" onSubmit={login}>
+          <Typography variant="h1" className="mb-12 flex items-center">
+            <Badge size="lg" color="info" className="mr-2">
+              Admin
+            </Badge>
+            <span>Manager eventi</span>
+          </Typography>
+
+          {events === null ? (
+            <p>Eventi non caricati</p>
+          ) : events ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 md:gap-4">
+              {events.map(e => (
+                <Card
+                  className="cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-700 hover:scale-105 transition-all"
+                  key={e._id}
+                  imgSrc={e.logoUrl || "/logo-min.png"}
+                  onClick={() => editEventModal(e)}
+                >
+                  <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    {e.name}
+                  </h5>
+                  {e.description ? (
+                    <div
+                      className="line-clamp-3"
+                      dangerouslySetInnerHTML={{
+                        __html: e.description
+                      }}
+                    />
+                  ) : (
+                    <p className="font-normal text-gray-700 dark:text-gray-400">
+                      "-- nessuna descrizione --"
+                    </p>
+                  )}
+                  <p className="font-normal text-gray-700 dark:text-gray-400">
+                    Data{" "}
+                    <strong>
+                      {formatInTimeZone(
+                        new Date(e.date),
+                        "Europe/Rome",
+                        "eee d MMMM Y",
+                        {
+                          locale: it
+                        }
+                      )}
+                    </strong>
+                  </p>
+                  <p className="font-normal text-gray-700 dark:text-gray-400">
+                    Scadenza per partecipare{" "}
+                    <strong>
+                      {formatInTimeZone(
+                        new Date(e.joinDeadline),
+                        "Europe/Rome",
+                        "eee d MMMM Y",
+                        {
+                          locale: it
+                        }
+                      )}
+                    </strong>
+                  </p>
+                </Card>
+              ))}
+              {events.length === 0 && <p>Nessun evento salvato</p>}
+              <Button
+                className="flex h-full text-md flex-col justify-center items-center"
+                onClick={newEventModal}
+              >
+                <span className="text-5xl mb-1 mr-2">
+                  <FaPlusCircle />
+                </span>{" "}
+                Nuovo evento
+              </Button>
+            </div>
+          ) : (
+            <Spinner />
+          )}
+
+          {/* <form action="#" method="post" onSubmit={login}>
                     <Input
                         type="text"
                         name="callsign"
@@ -612,6 +615,7 @@ const Event = () => {
                         Event
                     </Button>
                 </form> */}
+        </div>
       </div>
     </Layout>
   );
