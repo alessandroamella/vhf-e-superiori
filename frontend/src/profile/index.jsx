@@ -298,7 +298,7 @@ const Profile = () => {
         </form>
       </Modal>
 
-      <div className="bg-white dark:bg-gray-900 dark:text-white py-3 md:py-6 px-6 md:px-12 lg:px-24">
+      <div className="bg-white dark:bg-gray-900 dark:text-white py-3 md:py-6 px-6 md:px-12 lg:px-24 min-h-[69vh]">
         <Typography variant="h3" className="my-4">
           Profilo
         </Typography>
@@ -313,7 +313,7 @@ const Profile = () => {
           </Alert>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 h-full">
           <div>
             {user ? (
               <div className="flex items-center flex-col md:flex-row md:items-center mb-8">

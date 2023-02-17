@@ -2,11 +2,11 @@ import Header from "./Header";
 import Footer from "./Footer";
 
 const Layout = ({ children }) => (
-    <>
-        <Header />
-        {children}
-        <Footer />
-    </>
+  <div className="m-0 p-0 min-h-screen">
+    <Header />
+    {children}
+    <Footer />
+  </div>
 );
 
 export default Layout;

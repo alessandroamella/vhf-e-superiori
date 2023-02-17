@@ -148,7 +148,9 @@ const Event = () => {
   async function approveJoinRequests(j) {
     if (
       !window.confirm(
-        "Vuoi APPROVARE la richiesta di partecipazione con ID " + j._id + "?"
+        `Vuoi ${
+          j.isApproved ? "ANNULLARE" : "APPROVARE"
+        } la richiesta di partecipazione con ID ${j._id}?`
       )
     ) {
       return;

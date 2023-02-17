@@ -22,7 +22,7 @@ const Homepage = () => {
   const { user } = useContext(UserContext);
   const { events } = useContext(EventsContext);
   const { splashPlayed, setSplashPlayed } = useContext(SplashContext);
-  const { ready, setReady } = useContext(ReadyContext);
+  const { ready } = useContext(ReadyContext);
 
   const [alert, setAlert] = useState(null);
 
@@ -61,9 +61,8 @@ const Homepage = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      setReady(true);
-      setTimeout(() => setSplashPlayed(true), 3500);
-    }, 4000);
+      setSplashPlayed(true);
+    }, 4000 + 3500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -161,7 +160,7 @@ const Homepage = () => {
                   <img
                     src="/flashmob.png"
                     alt="Flash mob"
-                    className="w-full fit max-w-md md:max-w-xl lg:max-w-2xl py-4 mx-auto"
+                    className="dark:p-3 dark:bg-gray-100 w-full fit max-w-md md:max-w-xl lg:max-w-2xl py-4 mx-auto"
                   />
                   <div className="text-gray-600 dark:text-gray-100 mb-8 mt-4 md:pr-4 text-justify">
                     <p>
@@ -173,16 +172,34 @@ const Homepage = () => {
 
                     <p>
                       Accolta l'idea viene creato un gruppo di lavoro con la
-                      collaborazione di
+                      collaborazione di{" "}
                       <a
                         href="https://www.qrz.com/db/IC8TEM"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mx-1 text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
+                        className="text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
                       >
                         <strong>IC8TEM</strong> Costantino Cerrotta
+                      </a>{" "}
+                      (
+                      <a
+                        href="https://www.ft8activity.it/author/ic8tem/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
+                      >
+                        FT8ACTIVITY
                       </a>
-                      e <strong>IU0FBK</strong> Marco Naccari creatore del sito
+                      ) e{" "}
+                      <a
+                        href="https://www.qrz.com/db/IU0FBK"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
+                      >
+                        <strong>IU0FBK</strong> Marco Naccari
+                      </a>{" "}
+                      creatore del sito
                       <a
                         href="https://www.diplomiradio.it"
                         target="_blank"
@@ -262,6 +279,66 @@ const Homepage = () => {
                       con uno spirito partecipativo e non competitivo.
                     </p>
                   </div>
+
+                  <Accordion alwaysOpen flush className="mt-8">
+                    <Accordion.Panel>
+                      <Accordion.Title className="pt-1 pb-1">
+                        Calendario
+                      </Accordion.Title>
+                      <Accordion.Content className="px-0 py-0 pt-1 scale-90">
+                        <Table>
+                          <Table.Head>
+                            <Table.HeadCell className="pr-2">
+                              Edizione
+                            </Table.HeadCell>
+                            <Table.HeadCell>Banda</Table.HeadCell>
+                            <Table.HeadCell>Data</Table.HeadCell>
+                          </Table.Head>
+                          <Table.Body className="text-xl">
+                            {prossimiEventi.map((e, i) => (
+                              <Table.Row
+                                key={e.i.toString()}
+                                className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                              >
+                                <Table.Cell className="py-2 pr-2 whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                  {e.i}°
+                                </Table.Cell>
+                                <Table.Cell className="py-2">
+                                  {e.i % 3 === 1
+                                    ? "2m"
+                                    : e.i % 3 === 2
+                                    ? "70cm"
+                                    : "23cm"}
+                                </Table.Cell>
+                                <Table.Cell className="py-2 font-semibold">
+                                  <span className="block xl:hidden">
+                                    {formatInTimeZone(
+                                      e.d,
+                                      "Europe/Rome",
+                                      "dd/MM",
+                                      {
+                                        locale: it
+                                      }
+                                    )}
+                                  </span>
+                                  <span className="hidden xl:block">
+                                    {formatInTimeZone(
+                                      e.d,
+                                      "Europe/Rome",
+                                      "dd MMMM yyyy",
+                                      {
+                                        locale: it
+                                      }
+                                    )}
+                                  </span>
+                                </Table.Cell>
+                              </Table.Row>
+                            ))}
+                          </Table.Body>
+                        </Table>
+                      </Accordion.Content>
+                    </Accordion.Panel>
+                  </Accordion>
                 </div>
                 <div className="md:px-4">
                   <div
@@ -420,7 +497,7 @@ const Homepage = () => {
                 <div>
                   <div className="mt-8 md:mt-14 mb-2">
                     <div className="w-fit mx-auto dark:bg-gray-800 dark:rounded-lg dark:items-center dark:flex dark:flex-col dark:overflow-hidden">
-                      <h2 className="font-bold text-center text-3xl tracking-tight dark:w-full dark:bg-gray-700 dark:px-4 dark:pt-4 pb-2 mb-2">
+                      <h2 className="font-bold text-center text-3xl tracking-tight dark:w-full dark:bg-gray-700 dark:px-8 dark:pt-4 pb-2 mb-2">
                         Amministratori
                       </h2>
 
@@ -439,7 +516,7 @@ const Homepage = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             key={e}
-                            className="flex items-center underline decoration-dotted text-gray-900 dark:text-gray-200"
+                            className="flex font-bold text-lg items-center underline decoration-dotted text-gray-900 dark:text-gray-200"
                           >
                             {/* <span className="text-gray-500 font-bold text-3xl">
                               <FaAngleDoubleRight />
@@ -449,52 +526,6 @@ const Homepage = () => {
                         ))}
                       </div>
                     </div>
-
-                    <Accordion alwaysOpen flush className="mt-8">
-                      <Accordion.Panel>
-                        <Accordion.Title>Calendario</Accordion.Title>
-                        <Accordion.Content className="px-0 py-0">
-                          <Table>
-                            <Table.Head>
-                              <Table.HeadCell className="pr-2">
-                                Edizione
-                              </Table.HeadCell>
-                              <Table.HeadCell>Banda</Table.HeadCell>
-                              <Table.HeadCell>Data</Table.HeadCell>
-                            </Table.Head>
-                            <Table.Body className="divide-y">
-                              {prossimiEventi.map((e, i) => (
-                                <Table.Row
-                                  key={e.i.toString()}
-                                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
-                                >
-                                  <Table.Cell className="py-2 pr-2 whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                    {e.i}°
-                                  </Table.Cell>
-                                  <Table.Cell className="py-2">
-                                    {e.i % 3 === 1
-                                      ? "2m"
-                                      : e.i % 3 === 2
-                                      ? "70cm"
-                                      : "23cm"}
-                                  </Table.Cell>
-                                  <Table.Cell className="py-2">
-                                    {formatInTimeZone(
-                                      e.d,
-                                      "Europe/Rome",
-                                      "dd MMMM yyyy",
-                                      {
-                                        locale: it
-                                      }
-                                    )}
-                                  </Table.Cell>
-                                </Table.Row>
-                              ))}
-                            </Table.Body>
-                          </Table>
-                        </Accordion.Content>
-                      </Accordion.Panel>
-                    </Accordion>
                   </div>
                 </div>
               </div>

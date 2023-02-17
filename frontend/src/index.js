@@ -93,6 +93,16 @@ const App = () => {
     const [splashPlayed, setSplashPlayed] = useState(false);
     const [ready, setReady] = useState(false);
 
+    console.log({ a: window.location.href, b: window.location.pat });
+
+    useEffect(() => {
+        if (window.location.pathname === "/") {
+            setTimeout(() => {
+                setReady(true);
+            }, 4000);
+        } else setReady(true);
+    }, []);
+
     useEffect(() => {
         async function fetchUser() {
             try {
