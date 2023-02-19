@@ -1,6 +1,12 @@
 import Layout from "../Layout";
 import { useCallback, useState } from "react";
-import { EventsContext, ReadyContext, SplashContext, UserContext } from "..";
+import {
+  JoinOpenContext,
+  EventsContext,
+  ReadyContext,
+  SplashContext,
+  UserContext
+} from "..";
 import { useContext } from "react";
 import { Accordion, Alert, Table } from "flowbite-react";
 import { differenceInDays, isAfter } from "date-fns";
@@ -28,7 +34,7 @@ const Homepage = () => {
 
   const [searchParams] = useSearchParams();
 
-  const [isZoomed, setIsZoomed] = useState(false);
+  // const [isZoomed, setIsZoomed] = useState(false);
   const [zoomedImg, setZoomedImg] = useState(null);
 
   const handleZoomChange = useCallback(shouldZoom => {
@@ -39,6 +45,7 @@ const Homepage = () => {
       setZoomedImg(null);
       // setTimeout(() => setIsZoomed(false), 500);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -66,11 +73,9 @@ const Homepage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [accordionOpen, setAccordionOpen] = useState(false);
-
   const navigate = useNavigate();
 
-  const [shownEvent, setShownEvent] = useState(null);
+  // const [shownEvent, setShownEvent] = useState(null);
 
   const prossimiEventi = [
     { i: 13, d: new Date(2023, 1 - 1, 29) },
@@ -108,7 +113,7 @@ const Homepage = () => {
         e.logoUrl &&
         e.logoUrl !== "/logo-min.png"
       ) {
-        setShownEvent(e);
+        // setShownEvent(e);
         return;
       }
     }
@@ -128,7 +133,7 @@ const Homepage = () => {
   }));
 
   const [eventJoining, setEventJoining] = useState(null);
-  const [eventJoiningOpen, setEventJoiningOpen] = useState(false);
+  const { joinOpen, setJoinOpen } = useContext(JoinOpenContext);
 
   return (
     <Layout>
@@ -137,8 +142,8 @@ const Homepage = () => {
       <JoinRequestModal
         event={eventJoining}
         setEvent={setEventJoining}
-        open={eventJoiningOpen}
-        setOpen={setEventJoiningOpen}
+        open={joinOpen}
+        setOpen={setJoinOpen}
       />
 
       {ready && (
@@ -162,7 +167,10 @@ const Homepage = () => {
                     alt="Flash mob"
                     className="dark:p-3 dark:bg-gray-100 w-full fit max-w-md md:max-w-xl lg:max-w-2xl py-4 mx-auto"
                   />
-                  <div className="text-gray-600 dark:text-gray-100 mb-8 mt-4 md:pr-4 text-justify">
+                  <div
+                    id="storiaflashmob"
+                    className="text-gray-600 dark:text-gray-100 mb-8 mt-4 md:pr-4 text-justify"
+                  >
                     <p>
                       Nasce da un'idea di <strong>IU4JJJ</strong> Pietro Cerrone
                       membro della chat VHF e superiori che la propone a{" "}
@@ -280,7 +288,7 @@ const Homepage = () => {
                     </p>
                   </div>
 
-                  <Accordion alwaysOpen flush className="mt-8">
+                  <Accordion id="calendario" alwaysOpen flush className="mt-8">
                     <Accordion.Panel>
                       <Accordion.Title className="pt-1 pb-1">
                         Calendario
@@ -342,6 +350,7 @@ const Homepage = () => {
                 </div>
                 <div className="md:px-4">
                   <div
+                    id="eventi"
                     onClick={e => {
                       if (e.target.dataset.rmizContent) {
                         const img =
@@ -385,7 +394,7 @@ const Homepage = () => {
                     {user ? (
                       <Button
                         className="text-lg mb-4"
-                        onClick={() => setEventJoiningOpen(true)}
+                        onClick={() => setJoinOpen(true)}
                       >
                         CLICCA QUI
                       </Button>
@@ -394,7 +403,7 @@ const Homepage = () => {
                         className="text-xl mb-4"
                         onClick={() => navigate("/login")}
                       >
-                        Login
+                        CLICCA QUI
                       </Button>
                     )}
                     {/* <Alert color="info">
@@ -406,7 +415,12 @@ const Homepage = () => {
                 </Alert> */}
                   </div>
 
-                  <Accordion alwaysOpen flush className="mt-8">
+                  <Accordion
+                    id="istruzioniflashmob"
+                    alwaysOpen
+                    flush
+                    className="mt-8"
+                  >
                     <Accordion.Panel>
                       <Accordion.Title>
                         Istruzioni per partecipare
@@ -497,7 +511,10 @@ const Homepage = () => {
                 <div>
                   <div className="mt-8 md:mt-14 mb-2">
                     <div className="w-fit mx-auto dark:bg-gray-800 dark:rounded-lg dark:items-center dark:flex dark:flex-col dark:overflow-hidden">
-                      <h2 className="font-bold text-center text-3xl tracking-tight dark:w-full dark:bg-gray-700 dark:px-8 dark:pt-4 pb-2 mb-2">
+                      <h2
+                        id="amministratori"
+                        className="font-bold text-center text-3xl tracking-tight dark:w-full dark:bg-gray-700 dark:px-8 dark:pt-4 pb-2 mb-2"
+                      >
                         Amministratori
                       </h2>
 

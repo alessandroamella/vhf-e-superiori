@@ -11,12 +11,12 @@
 @tailwind utilities;
 
 body {
-    scroll-behavior: smooth;
     @apply bg-lightGray-normal;
 }
 
 * {
     max-width: 100vw !important;
+    scroll-behavior: smooth;
 }
 
 .awssld__content img {
@@ -44,14 +44,92 @@ body {
 
 @media screen and (min-width: 768px) {
     .carousel {
-        scale: 0.75!important;    
+        scale: 0.75 !important;
     }
 }
 
 a {
-    @apply text-red-500
+    @apply text-red-500;
+}
+
+a:hover {
+    @apply dark:text-white;
 }
 
 .carousel__slide {
     cursor: pointer;
+}
+
+/* Burger menu */
+
+/* Position and sizing of burger button */
+.bm-burger-button {
+    position: fixed;
+    width: 36px;
+    height: 30px;
+    right: 36px;
+    @apply top-16;
+}
+
+/* Color/shape of burger icon bars */
+.bm-burger-bars {
+    /* background: #373a47; */
+    @apply bg-[#373a47] dark:bg-white;
+    /* background: #373a47; */
+}
+
+/* Color/shape of burger icon bars on hover*/
+.bm-burger-bars-hover {
+    @apply bg-[#a90000] dark:bg-gray-100;
+}
+
+/* Position and sizing of clickable cross button */
+.bm-cross-button {
+    height: 24px;
+    width: 24px;
+}
+
+/* Color/shape of close button cross */
+.bm-cross {
+    background: #bdc3c7;
+}
+
+/*
+  Sidebar wrapper styles
+  Note: Beware of modifying this element as it can break the animations - you should not need to touch it in most cases
+  */
+.bm-menu-wrap {
+    position: fixed;
+    height: 100%;
+    /* DEBUG */
+    /* top: 0; */
+}
+
+/* General sidebar styles */
+.bm-menu {
+    background: #373a47;
+    padding: 2.5em 1.5em 0;
+    font-size: 1.15em;
+}
+
+/* Morph shape necessary with bubble or elastic */
+.bm-morph-shape {
+    fill: #373a47;
+}
+
+/* Wrapper for item list */
+.bm-item-list {
+    color: #b8b7ad;
+    padding: 0.8em;
+    @apply flex flex-col gap-3;
+}
+
+/* Individual item */
+.bm-item {
+    display: inline-block;
+}
+
+/* Styling of overlay */
+.bm-overlay {
+    background: rgba(0, 0, 0, 0.3);
 }

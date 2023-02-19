@@ -20,6 +20,7 @@
         "react": "^18.2.0",
         "react-animated-text-content": "^1.0.1",
         "react-awesome-slider": "^4.1.0",
+        "react-burger-menu": "^3.0.9",
         "react-cookie": "^4.1.1",
         "react-dom": "^18.2.0",
         "react-google-recaptcha": "^2.1.0",
@@ -59,5 +60,8 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
+    },
+    "devDependencies": {
+        "@types/react-burger-menu": "^2.8.3"
     }
 }

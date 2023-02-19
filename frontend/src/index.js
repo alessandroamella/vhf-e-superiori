@@ -20,139 +20,144 @@ export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
 export const SplashContext = createContext(false);
 export const ReadyContext = createContext(false);
+export const JoinOpenContext = createContext(false);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const router = createBrowserRouter([
-    { path: "/", element: <Homepage /> },
-    { path: "/login", element: <Login /> },
-    { path: "/signup", element: <Signup /> },
-    { path: "/profile", element: <Profile /> },
-    { path: "/eventmanager", element: <Event /> },
-    { path: "/regolamento", element: <Regolamento /> },
-    { path: "/info", element: <Info /> },
-    { path: "/resetpw", element: <ResetPw /> },
-    { path: "/event/:id", element: <ViewEvent /> }
-    // {
-    //   path: "contacts/:contactId",
-    //   element: <Contact />,
-    // },
+  { path: "/", element: <Homepage /> },
+  { path: "/login", element: <Login /> },
+  { path: "/signup", element: <Signup /> },
+  { path: "/profile", element: <Profile /> },
+  { path: "/eventmanager", element: <Event /> },
+  { path: "/regolamento", element: <Regolamento /> },
+  { path: "/info", element: <Info /> },
+  { path: "/resetpw", element: <ResetPw /> },
+  { path: "/event/:id", element: <ViewEvent /> }
+  // {
+  //   path: "contacts/:contactId",
+  //   element: <Contact />,
+  // },
 ]);
 
 export const errors = {
-    USER_NOT_FOUND: "Utente non trovato",
-    INVALID_PW: "Password non valida",
-    DOC_NOT_FOUND: "Documento non trovato",
-    SERVER_ERROR: "Errore del server",
-    LOGIN_TOKEN_EXPIRED: "Login scaduto",
-    UNKNOWN_ERROR: "Errore sconosciuto",
-    MISSING_ENV: "Variabile d'ambiente mancante (server)",
-    ALREADY_REGISTERED: "Utente già registrato (fai il login)",
-    QRZ_NO_KEY: "Chiave di QRZ non trovata (server)",
-    QRZ_OM_NOT_FOUND: "Utente non trovato su QRZ",
-    QTH_NOT_FOUND: "QTH non trovato",
-    INVALID_OBJECT_ID: "ObjectId non valido",
-    INVALID_LOGIN: "Login non valido",
-    MALFORMED_REQUEST_BODY: "Corpo della richiesta malformato",
-    NOT_LOGGED_IN: "Devi fare il login per procedere",
-    NOT_AN_ADMIN: "Devi essere un amministratore per procedere",
-    EVENT_NOT_FOUND: "Evento non trovato",
-    EVENT_JOIN_ALREADY_REQUESTED:
-        "Richiesta di partecipazione all'evento già effettuata",
-    EVENT_JOIN_TIME_EXPIRED:
-        "La data per richiedere di partecipare all'evento è già trascorsa",
-    JOIN_REQUEST_NOT_FOUND: "Richiesta di partecipazione non trovata",
-    URL_NOT_FOUND: "URL non trovato",
-    INVALID_EMAIL: "Email non valida",
-    EMAIL_ALREADY_IN_USE: "Email già in uso",
-    INVALID_PHONE_NUMBER: "Numero di telefono non valido",
-    PHONE_NUMBER_ALREADY_IN_USE: "Numero di telefono già in uso",
-    MUST_ACCEPT_SIGNUP_TOS:
-        "Per registrarti, devi accettare i termini e condizioni",
-    MUST_ACCEPT_EVENT_TOS:
-        "Per continuare, devi accettare i termini e condizioni",
-    CAPTCHA_FAILED: "ReCAPTCHA non passato",
-    WEAK_PW: "Password troppo debole",
-    USER_NOT_VERIFIED:
-        "Utente non verificato, per favore verifica il tuo account cliccando il link che hai ricevuto per email",
-    USER_ALREADY_VERIFIED: "Utente già verificato",
-    INVALID_VERIFICATION_CODE: "Codice di verifica non valido"
+  USER_NOT_FOUND: "Utente non trovato",
+  INVALID_PW: "Password non valida",
+  DOC_NOT_FOUND: "Documento non trovato",
+  SERVER_ERROR: "Errore del server",
+  LOGIN_TOKEN_EXPIRED: "Login scaduto",
+  UNKNOWN_ERROR: "Errore sconosciuto",
+  MISSING_ENV: "Variabile d'ambiente mancante (server)",
+  ALREADY_REGISTERED: "Utente già registrato (fai il login)",
+  QRZ_NO_KEY: "Chiave di QRZ non trovata (server)",
+  QRZ_OM_NOT_FOUND: "Utente non trovato su QRZ",
+  QTH_NOT_FOUND: "QTH non trovato",
+  INVALID_OBJECT_ID: "ObjectId non valido",
+  INVALID_LOGIN: "Login non valido",
+  MALFORMED_REQUEST_BODY: "Corpo della richiesta malformato",
+  NOT_LOGGED_IN: "Devi fare il login per procedere",
+  NOT_AN_ADMIN: "Devi essere un amministratore per procedere",
+  EVENT_NOT_FOUND: "Evento non trovato",
+  EVENT_JOIN_ALREADY_REQUESTED:
+    "Richiesta di partecipazione all'evento già effettuata",
+  EVENT_JOIN_TIME_EXPIRED:
+    "La data per richiedere di partecipare all'evento è già trascorsa",
+  JOIN_REQUEST_NOT_FOUND: "Richiesta di partecipazione non trovata",
+  URL_NOT_FOUND: "URL non trovato",
+  INVALID_EMAIL: "Email non valida",
+  EMAIL_ALREADY_IN_USE: "Email già in uso",
+  INVALID_PHONE_NUMBER: "Numero di telefono non valido",
+  PHONE_NUMBER_ALREADY_IN_USE: "Numero di telefono già in uso",
+  MUST_ACCEPT_SIGNUP_TOS:
+    "Per registrarti, devi accettare i termini e condizioni",
+  MUST_ACCEPT_EVENT_TOS:
+    "Per continuare, devi accettare i termini e condizioni",
+  CAPTCHA_FAILED: "ReCAPTCHA non passato",
+  WEAK_PW: "Password troppo debole",
+  USER_NOT_VERIFIED:
+    "Utente non verificato, per favore verifica il tuo account cliccando il link che hai ricevuto per email",
+  USER_ALREADY_VERIFIED: "Utente già verificato",
+  INVALID_VERIFICATION_CODE: "Codice di verifica non valido"
 };
 export function getErrorStr(str) {
-    console.log("Stringa errore:", str);
-    return str && str in errors
-        ? errors[str]
-        : typeof str === "string"
-        ? "Dati mancanti o incorretti: " + str
-        : errors.UNKNOWN_ERROR;
+  console.log("Stringa errore:", str);
+  return str && str in errors
+    ? errors[str]
+    : typeof str === "string"
+    ? "Dati mancanti o incorretti: " + str
+    : errors.UNKNOWN_ERROR;
 }
 
 const App = () => {
-    // eslint-disable-next-line no-unused-vars
-    const [user, setUser] = useState(false);
-    const [events, setEvents] = useState(false);
-    const [splashPlayed, setSplashPlayed] = useState(false);
-    const [ready, setReady] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [user, setUser] = useState(false);
+  const [events, setEvents] = useState(false);
+  const [splashPlayed, setSplashPlayed] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [joinOpen, setJoinOpen] = useState(false);
 
-    console.log({ a: window.location.href, b: window.location.pat });
+  useEffect(() => {
+    if (window.location.pathname === "/") {
+      setTimeout(() => {
+        setReady(true);
+      }, 4000);
+    } else setReady(true);
+  }, []);
 
-    useEffect(() => {
-        if (window.location.pathname === "/") {
-            setTimeout(() => {
-                setReady(true);
-            }, 4000);
-        } else setReady(true);
-    }, []);
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const { data } = await axios.get("/api/auth");
+        console.log("user", data);
+        setUser(data);
+      } catch (err) {
+        console.log("no user");
+        if (!isAxiosError(err)) return console.error(err);
+        // setAlert(err.response?.data || "Errore sconosciuto");
+        setUser(null);
+      }
+    }
 
-    useEffect(() => {
-        async function fetchUser() {
-            try {
-                const { data } = await axios.get("/api/auth");
-                console.log("user", data);
-                setUser(data);
-            } catch (err) {
-                console.log("no user");
-                if (!isAxiosError(err)) return console.error(err);
-                // setAlert(err.response?.data || "Errore sconosciuto");
-                setUser(null);
-            }
-        }
+    if (!user) fetchUser();
+  }, [user]);
 
-        if (!user) fetchUser();
-    }, [user]);
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        const { data } = await axios.get("/api/event");
+        console.log("events", data);
+        setEvents(data);
+      } catch (err) {
+        console.log("Errore nel caricamento degli eventi");
+        if (!isAxiosError(err)) return console.error(err);
+        setEvents(null);
+      }
+    }
 
-    useEffect(() => {
-        async function fetchEvents() {
-            try {
-                const { data } = await axios.get("/api/event");
-                console.log("events", data);
-                setEvents(data);
-            } catch (err) {
-                console.log("Errore nel caricamento degli eventi");
-                if (!isAxiosError(err)) return console.error(err);
-                setEvents(null);
-            }
-        }
+    if (!events) fetchEvents();
+  }, [events]);
 
-        if (!events) fetchEvents();
-    }, [events]);
-
-    return (
-        <React.StrictMode>
-            <ThemeProvider>
-                <UserContext.Provider value={{ user, setUser }}>
-                    <EventsContext.Provider value={{ events, setEvents }}>
-                        <SplashContext.Provider
-                            value={{ splashPlayed, setSplashPlayed }}
-                        >
-                            <ReadyContext.Provider value={{ ready, setReady }}>
-                                <RouterProvider router={router} />
-                            </ReadyContext.Provider>
-                        </SplashContext.Provider>
-                    </EventsContext.Provider>
-                </UserContext.Provider>
-            </ThemeProvider>
-        </React.StrictMode>
-    );
+  return (
+    <React.StrictMode>
+      <ThemeProvider>
+        <UserContext.Provider value={{ user, setUser }}>
+          <EventsContext.Provider value={{ events, setEvents }}>
+            <SplashContext.Provider value={{ splashPlayed, setSplashPlayed }}>
+              <ReadyContext.Provider value={{ ready, setReady }}>
+                <JoinOpenContext.Provider
+                  value={{
+                    joinOpen,
+                    setJoinOpen
+                  }}
+                >
+                  <RouterProvider router={router} />
+                </JoinOpenContext.Provider>
+              </ReadyContext.Provider>
+            </SplashContext.Provider>
+          </EventsContext.Provider>
+        </UserContext.Provider>
+      </ThemeProvider>
+    </React.StrictMode>
+  );
 };
 
 root.render(<App />);

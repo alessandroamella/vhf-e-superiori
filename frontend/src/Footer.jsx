@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { FaCircle, FaDotCircle } from "react-icons/fa";
+// import { FaCircle, FaDotCircle } from "react-icons/fa";
 import { ReadyContext } from ".";
 
 const Footer = () => {

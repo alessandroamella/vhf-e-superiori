@@ -8,5 +8,5 @@
     "endOfLine": "lf",
     "jsxSingleQuote": false,
     "useTabs": false,
-    "overrides": [{ "files": "*.jsx", "options": { "tabWidth": 2 } }]
+    "overrides": [{ "files": ["*.jsx", "*.js"], "options": { "tabWidth": 2 } }]
 }

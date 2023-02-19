@@ -119,6 +119,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
             <div className="mt-3 mb-4">
               <Select
                 variant="static"
+                className="dark:text-gray-300"
                 label="Evento per cui fare richiesta"
                 disabled={!joinableEvents || (disabled && !closable)}
                 value={joinableEvents && joinableEvents[0].name}
