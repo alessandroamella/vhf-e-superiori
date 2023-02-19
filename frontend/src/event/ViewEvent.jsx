@@ -1,6 +1,6 @@
 import { Alert as MTAlert, Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
-import { format, isAfter } from "date-fns";
+import { isAfter } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import it from "date-fns/locale/it";
 import { Alert, Checkbox, Label, Modal, TextInput } from "flowbite-react";
@@ -95,7 +95,11 @@ const ViewEvent = () => {
 
   return (
     <Layout>
-      <Modal show={showJoinModal} onClose={() => setShowJoinModal(false)}>
+      <Modal
+        position="center"
+        show={showJoinModal}
+        onClose={() => setShowJoinModal(false)}
+      >
         <form onSubmit={sendJoinRequest}>
           <Modal.Header>Richiesta di partecipazione {event?.name}</Modal.Header>
           <Modal.Body>

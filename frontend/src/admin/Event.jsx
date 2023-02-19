@@ -205,7 +205,12 @@ const Event = () => {
     navigate("/login")
   ) : (
     <Layout>
-      <Modal size="7xl" show={showModal} onClose={() => setShowModal(false)}>
+      <Modal
+        position="center"
+        size="7xl"
+        show={showModal}
+        onClose={() => setShowModal(false)}
+      >
         <form onSubmit={createEvent}>
           <Modal.Header>
             {!eventEditing ? "Crea" : "Modifica"} evento

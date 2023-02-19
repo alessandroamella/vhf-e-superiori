@@ -108,7 +108,12 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
   }, [event]);
 
   return (
-    <Modal dismissible="true" show={open} onClose={() => setOpen(!open)}>
+    <Modal
+      position="center"
+      dismissible="true"
+      show={open}
+      onClose={() => setOpen(!open)}
+    >
       <form onSubmit={sendJoinRequest}>
         <Modal.Header>
           Richiesta di partecipazione{" "}

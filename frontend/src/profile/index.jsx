@@ -163,6 +163,7 @@ const Profile = () => {
   return (
     <Layout>
       <Modal
+        position="center"
         show={showChangePwModal}
         onClose={() => setShowChangePwModal(false)}
       >
@@ -234,6 +235,7 @@ const Profile = () => {
       </Modal>
 
       <Modal
+        position="center"
         show={deleteJoinRequest}
         onClose={() => setDeleteJoinRequest(false)}
       >
