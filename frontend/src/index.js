@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
@@ -21,6 +21,7 @@ export const EventsContext = createContext(null);
 export const SplashContext = createContext(false);
 export const ReadyContext = createContext(false);
 export const JoinOpenContext = createContext(false);
+export const ViewsContext = createContext(false);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const router = createBrowserRouter([
@@ -94,6 +95,7 @@ const App = () => {
   const [splashPlayed, setSplashPlayed] = useState(false);
   const [ready, setReady] = useState(false);
   const [joinOpen, setJoinOpen] = useState(false);
+  const [views, setViews] = useState(false);
 
   useEffect(() => {
     if (window.location.pathname === "/") {
@@ -136,6 +138,38 @@ const App = () => {
     if (!events) fetchEvents();
   }, [events]);
 
+  const getIp = useCallback(async () => {
+    try {
+      const { data } = await axios.post("https://geolocation-db.com/json/");
+      console.log("ip:", data.IPv4);
+      return data.IPv4;
+    } catch (err) {
+      console.log("error while fetching ip");
+      if (!isAxiosError(err)) return console.error(err);
+      return null;
+    }
+  }, []);
+
+  useEffect(() => {
+    // count view
+    async function countView() {
+      try {
+        const { data } = await axios.post("/api/counter", {
+          ip: await getIp()
+        });
+        console.log("views counted, total:", data);
+        setViews(data.views);
+      } catch (err) {
+        console.log("error while conting view");
+        if (!isAxiosError(err)) return console.error(err);
+        setViews(null);
+      }
+    }
+
+    countView();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <React.StrictMode>
       <ThemeProvider>
@@ -149,7 +183,9 @@ const App = () => {
                     setJoinOpen
                   }}
                 >
-                  <RouterProvider router={router} />
+                  <ViewsContext.Provider value={{ views }}>
+                    <RouterProvider router={router} />
+                  </ViewsContext.Provider>
                 </JoinOpenContext.Provider>
               </ReadyContext.Provider>
             </SplashContext.Provider>

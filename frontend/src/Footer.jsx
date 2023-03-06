@@ -1,9 +1,13 @@
+import { Spinner } from "flowbite-react";
 import { useContext } from "react";
+import { FaCircle } from "react-icons/fa";
 // import { FaCircle, FaDotCircle } from "react-icons/fa";
-import { ReadyContext } from ".";
+import { ReadyContext, ViewsContext } from ".";
 
 const Footer = () => {
   const { ready } = useContext(ReadyContext);
+  const { views } = useContext(ViewsContext);
+
   return (
     ready && (
       <div className="bg-lightGray-normal dark:bg-gray-700 dark:text-white p-4 flex items-center flex-col md:flex-row justify-center">
@@ -17,6 +21,19 @@ const Footer = () => {
           >
             IU4QSG
           </a>
+        </span>
+
+        <FaCircle className="hidden md:block scale-[.25] text-gray-700 dark:text-gray-300 mx-2" />
+
+        <span className="text-center">
+          Contatore accessi:{" "}
+          {views ? (
+            <strong>{views}</strong>
+          ) : views === false ? (
+            <Spinner />
+          ) : (
+            <span>errore nel caricamento💀💀</span>
+          )}
         </span>
         {/* <FaCircle className="hidden md:block scale-[.25] text-gray-700 mx-2" />
         <span className="text-center">

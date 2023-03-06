@@ -15,13 +15,13 @@ import { modelOptions, prop, Ref } from "@typegoose/typegoose";
  *          ip:
  *            type: string
  *            description: IP address of the connection
- *          createdAt:
+ *          date:
  *            type: string
  *            format: date-time
  *            description: Date of the connection
  */
 @modelOptions({
-    schemaOptions: { timestamps: true },
+    schemaOptions: { timestamps: false },
     options: { customName: "CounterView" }
 })
 export class CounterViewClass {
@@ -30,4 +30,7 @@ export class CounterViewClass {
 
     @prop({ required: true })
     public ip!: string;
+
+    @prop({ required: true })
+    public date!: Date;
 }
