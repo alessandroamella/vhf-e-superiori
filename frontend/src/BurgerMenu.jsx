@@ -21,14 +21,24 @@ import { reveal as BurgerMenuComponent } from "react-burger-menu";
 
 const MenuOpenContext = createContext(false);
 
-const SectionHref = ({ href, children }) => {
+const SectionHref = ({ href, wip, children }) => {
   const { setMenuOpen } = useContext(MenuOpenContext);
+
+  const navigate = useNavigate();
 
   return (
     <a
       href={href}
-      className="flex items-center gap-2"
-      onClick={() => setMenuOpen(false)}
+      className={`flex items-center gap-2 ${
+        wip ? "text-gray-500 cursor-not-allowed" : ""
+      }`}
+      onClick={() => {
+        if (wip) return alert("Lavori in corso!");
+        setMenuOpen(false);
+        if (window.location.pathname !== "/") {
+          navigate("/" + href);
+        }
+      }}
     >
       {children}
     </a>
@@ -132,6 +142,7 @@ const BurgerMenu = () => {
           <SectionHref href="#calendario">
             <FaCalendarWeek /> Calendario eventi
           </SectionHref>
+
           <SectionTitle className="mt-4">Flash mob</SectionTitle>
           <SectionHref href="#storiaflashmob">
             <FaArchive /> Storia del flash mob
@@ -156,6 +167,28 @@ const BurgerMenu = () => {
               Partecipa
             </Button>
           )}
+
+          <SectionTitle className="mt-4">La mia area</SectionTitle>
+
+          <SectionHref wip href="#">
+            Le mie antenne
+          </SectionHref>
+          <SectionHref wip href="#">
+            I miei amplificatori lineari e preamplificatori
+          </SectionHref>
+          <SectionHref wip href="#">
+            Le mie realizzazioni
+          </SectionHref>
+          <SectionHref wip href="#">
+            Il mio radio flashmob
+          </SectionHref>
+          <a
+            href="/listabeacon20230220.pdf"
+            target="_blank"
+            className="flex items-center gap-2"
+          >
+            Beacon
+          </a>
         </BurgerMenuComponent>
       )}
     </MenuOpenContext.Provider>

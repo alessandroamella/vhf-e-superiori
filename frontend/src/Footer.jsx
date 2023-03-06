@@ -6,7 +6,7 @@ const Footer = () => {
   const { ready } = useContext(ReadyContext);
   return (
     ready && (
-      <div className="bg-lightGray-normal dark:bg-gray-700 dark:text-white p-8 flex items-center flex-col md:flex-row justify-center">
+      <div className="bg-lightGray-normal dark:bg-gray-700 dark:text-white p-4 flex items-center flex-col md:flex-row justify-center">
         <span className="text-center">
           Sito sviluppato da Alessandro Amella{" "}
           <a

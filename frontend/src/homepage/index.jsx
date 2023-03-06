@@ -509,8 +509,132 @@ const Homepage = () => {
                   </Accordion>
                 </div>
                 <div>
-                  <div className="mt-8 md:mt-14 mb-2">
-                    <div className="w-fit mx-auto dark:bg-gray-800 dark:rounded-lg dark:items-center dark:flex dark:flex-col dark:overflow-hidden">
+                  <div className="mt-4 mb-2">
+                    {/* storia flash mob */}
+                    <div className="text-justify text-gray-600 dark:text-gray-200">
+                      <h3 className="text-left text-3xl mb-2 font-bold text-black dark:text-white tracking-tight uppercase">
+                        LA CHAT VHFESUPERIORI
+                      </h3>
+
+                      <p>
+                        Fondata il 28 gennaio 2018 da Alessandro Ronca{" "}
+                        <strong>IZ5RNF</strong>, la chat vhfesuperiori ha lo
+                        scopo di essere un contenitore velocemente accessibile
+                        dove riunire tutti i radioamatori attivi sulle bande da
+                        144mhz a salire, per sapere in tempo reale chi fosse
+                        disponibile in radio in un preciso momento e verso quale
+                        direzione chiamare.
+                      </p>
+
+                      <p>
+                        Per poter creare un gruppo, WhatsApp necessita di un
+                        numero minimo di due persone. Così, Alessandro Ronca
+                        spiega a <strong>IZ5IOQ</strong> Giacomo Matteucci,
+                        amico di vecchia data, cosa ha in mente di fare e chiede
+                        se lui condivide gli intenti e se acconsente a creare il
+                        gruppo con lui. Accordato da Giacomo l’impegno, può
+                        nascere la chat.
+                      </p>
+
+                      <p>
+                        Il primo vantaggio offerto dall’utilizzo del gruppo è
+                        quello di poter orientare correttamente le antenne in
+                        direzione del corrispondente, evitando così di fare
+                        chiamate in direzioni dove non ci fossero stazioni
+                        operanti e senza quindi ricevere risposta alle chiamate.
+                      </p>
+
+                      <p>
+                        Negli ultimi anni c’è stato un tracollo nell’utilizzo di
+                        queste bande, fino a creare un vero e proprio tam tam
+                        negativo che diceva che non c’erano più operatori su
+                        queste frequenze, definite ormai “morte”. Seguendo il
+                        progetto iniziale di formare un gruppo più numeroso
+                        possibile nei primi due anni, Alessandro invita nella
+                        neonata chat tutti gli operatori di stazione che collega
+                        durante la sua attività radiantistica in SSB 144MHz e
+                        432MHz. Alcuni accettavano l’invito e altri rifiutavano.
+                      </p>
+
+                      <p>
+                        Il primo risultato che si era prefissato era quello di
+                        “interrompere” il tam tam che da tempo si sentiva
+                        ripetere: “In VHF SSB non c’è più nessuno, figuriamoci
+                        sulle bande superiori”. Lentamente gli amici collegati
+                        in radio che accettavano di essere inseriti passarono da
+                        3 a 5 a 20 a 30 a 50, ma molte zone del paese rimanevano
+                        purtroppo ancora scoperte. Fu per lui un risultato
+                        memorabile il superamento della soglia dei 100
+                        partecipanti dopo un lavoro portato avanti
+                        ininterrottamente per due anni di contatti radio, inviti
+                        e inserimenti. Così la chat inizia a essere utile e i
+                        messaggi iniziano a essere sempre più numerosi grazie al
+                        contributo di molti appassionati presenti nel gruppo.
+                      </p>
+
+                      <p>
+                        Fiero del risultato e del fatto che il gruppo iniziasse
+                        ad essere utilizzato per i fini per i quali era nato,
+                        continuò, come fa ancora oggi, ad invitare operatori nel
+                        gruppo vhfesuperiori contattando i potenziali membri
+                        personalmente uno ad uno. Giunto vicino alla soglia dei
+                        200 iscritti, la gestione della chat richiedeva sempre
+                        più tempo, diventando un impegno difficile e
+                        impegnativo.
+                      </p>
+
+                      <p>
+                        Decide così di nominare degli amministratori che fossero
+                        di supporto e sviluppo, seguendo il concetto di
+                        “copertura” territoriale, competenza, disponibilità e
+                        condivisione degli intenti del gruppo. Gli
+                        amministratori sono diventati in breve tempo
+                        indispensabili e riferimenti zonali per le stazioni di
+                        nuovo ingresso e per quelle che già facevano parte della
+                        chat. La divisione che fu fatta è quella che rimane ad
+                        oggi, e cioè in zone: nord, centro, centro-sud e sud.
+                        Entrano nel gruppo nuovi amici che iniziano la loro
+                        attività e altri che riprendono dopo periodi di pausa, e
+                        altri che sempre sono stati operativi.
+                      </p>
+
+                      <p>
+                        Nel tempo si è visto un incremento esponenziale del
+                        numero delle stazioni operative e del numero dei
+                        collegamenti, sia quotidianamente che in occasione di
+                        manifestazioni, con un trend ancora oggi in continua
+                        crescita. L’entusiasmo e la passione per questo hobby
+                        sta coinvolgendo e divertendo sempre più appassionati.
+                        Ad oggi, 27 febbraio 2023, il gruppo conta oltre 400
+                        partecipanti da tutta Italia, Spagna, Svizzera, Francia,
+                        Croazia, Malta ecc.
+                      </p>
+
+                      <p>
+                        Questa grande partecipazione ha portato alla creazione
+                        di questo sito, con lo scopo di diffondere questo
+                        entusiasmo e passione per queste bande e modi anche
+                        oltre i confini italiani, in tutta Europa. In questa
+                        sede, intendo ringraziare personalmente e singolarmente
+                        tutti, nessuno escluso, per aver accettato di far parte
+                        di questo progetto e di aver condiviso questa idea. Ogni
+                        singolo operatore, con il suo contributo e passione, sta
+                        portando sempre più radioamatori ad operare sulle VHF e
+                        superiori.
+                      </p>
+
+                      <p className="font-semibold text-lg">
+                        UN GRAZIE SENTITO DEL VOSTRO CONTRIBUTO, SENZA IL QUALE
+                        NON SAREBBE STATO POSSIBILE PORTARE COSÌ TANTE PERSONE A
+                        DIVERTIRSI IN RADIO INSIEME.
+                      </p>
+
+                      <p className="font-semibold text-xl text-black dark:text-white">
+                        IZ5RNF.ALESSANDRO
+                      </p>
+                    </div>
+
+                    <div className="mt-8 w-fit mx-auto dark:bg-gray-800 dark:rounded-lg dark:items-center dark:flex dark:flex-col dark:overflow-hidden">
                       <h2
                         id="amministratori"
                         className="font-bold text-center text-3xl tracking-tight dark:w-full dark:bg-gray-700 dark:px-8 dark:pt-4 pb-2 mb-2"
