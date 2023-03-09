@@ -12,8 +12,8 @@ import axios, { isAxiosError } from "axios";
 import Profile from "./profile";
 import Event from "./admin/Event";
 import ViewEvent from "./event/ViewEvent";
-import Regolamento from "./homepage/Regolamento";
-import Info from "./homepage/Info";
+// import Regolamento from "./homepage/Regolamento";
+// import Info from "./homepage/Info";
 import ResetPw from "./profile/ResetPw";
 
 export const UserContext = createContext(null);
@@ -30,8 +30,8 @@ const router = createBrowserRouter([
   { path: "/signup", element: <Signup /> },
   { path: "/profile", element: <Profile /> },
   { path: "/eventmanager", element: <Event /> },
-  { path: "/regolamento", element: <Regolamento /> },
-  { path: "/info", element: <Info /> },
+  // { path: "/regolamento", element: <Regolamento /> },
+  // { path: "/info", element: <Info /> },
   { path: "/resetpw", element: <ResetPw /> },
   { path: "/event/:id", element: <ViewEvent /> }
   // {
