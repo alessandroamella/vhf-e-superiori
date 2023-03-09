@@ -1,0 +1,46 @@
+Evento creato con successo
+Evento modificato con successo
+Errore nel caricamento degli eventi
+Verifica di non essere un robot
+Richiesta di reset della password effettuata con successo! Controlla la mail ricevuta
+Errore nel caricamento del ReCAPTCHA, per favore ricarica la pagina
+Richiesta di partecipazione inviata con successo!
+Per prenotarti, verifica il tuo account cliccando il link presente all'interno della mail
+Email confermata con successo
+Password modificata con successo
+Dati modificati con successo
+Partecipazione annullata con successo
+Reset della password effettuato con successo! Puoi navigare al login
+Lavori in corso!
+Utente non trovato
+Password non valida
+Documento non trovato
+Errore del server
+Login scaduto
+Errore sconosciuto
+Variabile d'ambiente mancante (server)
+Utente già registrato (fai il login)
+Chiave di QRZ non trovata (server)
+Utente non trovato su QRZ
+QTH non trovato
+ObjectId non valido
+Login non valido
+Corpo della richiesta malformato
+Devi fare il login per procedere
+Devi essere un amministratore per procedere
+Evento non trovato
+Richiesta di partecipazione all'evento già effettuata
+La data per richiedere di partecipare all'evento è già trascorsa
+Richiesta di partecipazione non trovata
+URL non trovato
+Email non valida
+Email già in uso
+Numero di telefono non valido
+Numero di telefono già in uso
+Per registrarti, devi accettare i termini e condizioni
+Per continuare, devi accettare i termini e condizioni
+ReCAPTCHA non passato
+Password troppo debole
+Utente non verificato, per favore verifica il tuo account cliccando il link che hai ricevuto per email
+Utente già verificato
+Codice di verifica non valido

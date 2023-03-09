@@ -14,7 +14,10 @@ const requiredEnvs = [
     "MAIL_USERNAME",
     "MAIL_PASSWORD",
     "SEND_EMAIL_FROM",
-    "TOT_ADMIN_EMAILS"
+    "TOT_ADMIN_EMAILS",
+    "AWS_BUCKET_NAME",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY"
 ] as const;
 export type Env = typeof requiredEnvs[number];
 

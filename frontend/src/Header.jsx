@@ -7,7 +7,7 @@ const Header = () => {
   const { user } = useContext(UserContext);
 
   return (
-    <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-8 flex items-center">
+    <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-8 flex flex-col lg:flex-row items-center">
       <Link
         to="/"
         className="flex items-center hover:scale-105 transition-transform"
@@ -25,6 +25,13 @@ const Header = () => {
           www.vhfesuperiori.eu
         </Typography>
       </Link>
+      <div className="flex mt-2 ml-4 xl:ml-8 gap-2 md:gap-4">
+        {/* <img className="w-8" src="/bandiere/italy.png" alt="Italy" /> */}
+        <img className="w-8" src="/bandiere/france.png" alt="France" />
+        <img className="w-8" src="/bandiere/germany.png" alt="Germany" />
+        <img className="w-8" src="/bandiere/malta.png" alt="Malta" />
+        <img className="w-8" src="/bandiere/spain.png" alt="Spain" />
+      </div>
       {user?.isAdmin && (
         <Link
           to="/eventmanager"

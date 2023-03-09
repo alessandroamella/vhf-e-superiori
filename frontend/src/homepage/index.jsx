@@ -455,7 +455,7 @@ const Homepage = () => {
                           ogni mese.
                         </p>
 
-                        <p className="font-bold text-lg text-black uppercase mt-2">
+                        <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
                           COME GESTIRE I COLLEGAMENTI
                         </p>
 
@@ -512,7 +512,7 @@ const Homepage = () => {
                   <div className="mt-4 mb-2">
                     {/* storia flash mob */}
                     <div className="text-justify text-gray-600 dark:text-gray-200">
-                      <h3 className="text-left text-3xl mb-2 font-bold text-black dark:text-white tracking-tight uppercase">
+                      <h3 className="text-left text-3xl mb-2 font-bold text-red-600 tracking-tight uppercase">
                         LA CHAT VHFESUPERIORI
                       </h3>
 
@@ -630,7 +630,7 @@ const Homepage = () => {
                       </p>
 
                       <p className="font-semibold text-xl text-black dark:text-white">
-                        IZ5RNF.ALESSANDRO
+                        IZ5RNF ALESSANDRO
                       </p>
                     </div>
 
