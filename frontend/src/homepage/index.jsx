@@ -23,6 +23,7 @@ import { Button } from "@material-tailwind/react";
 
 import "react-medium-image-zoom/dist/styles.css";
 import "react-round-carousel/src/index.css";
+import Bandiere from "../Bandiere";
 
 const Homepage = () => {
   const { user } = useContext(UserContext);
@@ -119,7 +120,7 @@ const Homepage = () => {
     }
   }, [events]);
 
-  const items = Array.from(Array(14).keys()).map(e => ({
+  const items = Array.from(Array(15).keys()).map(e => ({
     alt: "Locandina " + e,
     image: `/locandine/${e + 1}-min.jpg`,
     content: (
@@ -147,7 +148,7 @@ const Homepage = () => {
       />
 
       {ready && (
-        <div className="px-4 md:px-12 max-w-full pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
+        <div className="px-4 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
           <div className="flex h-full">
             <div className="flex flex-col">
               {alert && (
@@ -160,6 +161,13 @@ const Homepage = () => {
                 </Alert>
               )}
 
+              <div className="flex dark:mb-3 flex-col justify-center md:hidden">
+                <hr />
+                <div className="mx-auto">
+                  <Bandiere />
+                </div>
+                <hr />
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-3">
                 <div>
                   <img

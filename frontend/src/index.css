@@ -68,7 +68,7 @@ a:hover {
     width: 36px;
     height: 30px;
     right: 36px;
-    @apply top-16;
+    @apply top-10 md:top-16;
 }
 
 /* Color/shape of burger icon bars */
