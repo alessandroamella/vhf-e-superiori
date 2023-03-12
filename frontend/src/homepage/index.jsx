@@ -26,6 +26,8 @@ import "react-round-carousel/src/index.css";
 import Bandiere from "../Bandiere";
 
 const Homepage = () => {
+  const numLocandine = 15;
+
   const { user } = useContext(UserContext);
   const { events } = useContext(EventsContext);
   const { splashPlayed, setSplashPlayed } = useContext(SplashContext);
@@ -120,15 +122,18 @@ const Homepage = () => {
     }
   }, [events]);
 
-  const items = Array.from(Array(15).keys()).map(e => ({
+  const items = Array.from(Array(numLocandine).keys()).map(e => ({
     alt: "Locandina " + e,
-    image: `/locandine/${e + 1}-min.jpg`,
+    image: `/locandine/${numLocandine - e}-min.jpg`,
     content: (
       <ControlledZoom
-        isZoomed={zoomedImg?.includes(`/locandine/${e + 1}-min.jpg`)}
+        isZoomed={zoomedImg?.includes(`/locandine/${numLocandine - e}-min.jpg`)}
         onZoomChange={handleZoomChange}
       >
-        <img src={`/locandine/${e + 1}-min.jpg`} alt={`Locandina ${e + 1}`} />
+        <img
+          src={`/locandine/${numLocandine - e}-min.jpg`}
+          alt={`Locandina ${numLocandine - e + 1}`}
+        />
       </ControlledZoom>
     )
   }));

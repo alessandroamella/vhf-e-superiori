@@ -132,7 +132,11 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                 {joinableEvents &&
                   joinableEvents.map(e => (
                     <Option key={e._id} onClick={() => setEvent(e)}>
-                      {e.name}
+                      {e.name}{" "}
+                      <span className="text-gray-400">
+                        ({formatInTimeZone(e.date, "Europe/Rome", "dd/MM/yyyy")}
+                        )
+                      </span>
                     </Option>
                   ))}
               </Select>
