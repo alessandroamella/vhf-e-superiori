@@ -2,12 +2,12 @@ import { Schema } from "express-validator";
 import { Errors } from "../../errors";
 
 const createSchema: Schema = {
-    fromUser: {
-        isString: { options: [] },
-        isLength: { options: { min: 1 } },
-        isMongoId: { options: [] },
-        errorMessage: Errors.INVALID_OBJECT_ID
-    },
+    // fromUser: {
+    //     isString: { options: [] },
+    //     isLength: { options: { min: 1 } },
+    //     isMongoId: { options: [] },
+    //     errorMessage: Errors.INVALID_OBJECT_ID
+    // },
     description: {
         isString: { options: [] },
         isLength: { options: { min: 1 } }
@@ -51,9 +51,9 @@ const createSchema: Schema = {
     },
     "videos.*": {
         isString: { options: [] }
-    },
-    isApproved: {
-        isBoolean: { options: [] }
     }
+    // isApproved: {
+    //     isBoolean: { options: [] }
+    // }
 };
 export default createSchema;
