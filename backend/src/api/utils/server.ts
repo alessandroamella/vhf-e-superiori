@@ -2,6 +2,9 @@ import express from "express";
 import swaggerUi from "swagger-ui-express";
 import apiRoutes from "./apiRoutes";
 import { specs } from "../docs/specs";
+import { NOT_FOUND } from "http-status";
+import { createError } from "../helpers";
+import { Errors } from "../errors";
 
 export function createServer() {
     const app = express();
@@ -28,9 +31,9 @@ export function createServer() {
     //     qrzRoutes
     // );
 
-    // app.use("*", (req, res) =>
-    //     res.status(NOT_FOUND).json(createError(Errors.URL_NOT_FOUND))
-    // );
+    app.use("*", (req, res) =>
+        res.status(NOT_FOUND).json(createError(Errors.URL_NOT_FOUND))
+    );
 
     return app;
 }

@@ -1,4 +1,10 @@
-import { modelOptions, prop, Ref } from "@typegoose/typegoose";
+import {
+    modelOptions,
+    mongoose,
+    prop,
+    Ref,
+    Severity
+} from "@typegoose/typegoose";
 import { Errors } from "../../errors";
 
 /**
@@ -12,6 +18,7 @@ import { Errors } from "../../errors";
  *          - description
  *          - band
  *          - brand
+ *          - isSelfBuilt
  *          - metersFromSea
  *          - boomLengthCm
  *          - numberOfElements
@@ -20,6 +27,8 @@ import { Errors } from "../../errors";
  *          - pictures
  *          - videos
  *          - isApproved
+ *          - createdAt
+ *          - updatedAt
  *        properties:
  *          fromUser:
  *            type: string
@@ -28,7 +37,8 @@ import { Errors } from "../../errors";
  *          description:
  *            type: string
  *            minLength: 1
- *            description: Description of the event
+ *            maxLength: 30
+ *            description: Description of the post
  *          band:
  *            type: string
  *            enum: [144, 432, 1200]
@@ -93,13 +103,13 @@ import { Errors } from "../../errors";
  */
 @modelOptions({
     schemaOptions: { timestamps: true },
-    options: { customName: "Post" }
+    options: { allowMixed: Severity.ERROR, customName: "Post" }
 })
 export class PostClass {
     @prop({ required: true, ref: "User" })
     public fromUser!: Ref<"User">;
 
-    @prop({ required: true, maxlength: 30 })
+    @prop({ required: true, minlength: 1, maxlength: 30 })
     public description!: string;
 
     @prop({ required: true, enum: ["144", "432", "1200"] })
@@ -127,26 +137,24 @@ export class PostClass {
     public cable!: string;
 
     @prop({
+        type: () => [String],
         required: true,
-        minlength: 10,
-        maxlength: 1000,
         validate: [
             (v: unknown[]) => v.length > 0 && v.length <= 5,
             Errors.INVALID_PICS_NUM
         ]
     })
-    public pictures!: string[];
+    public pictures!: mongoose.Types.Array<string>;
 
     @prop({
+        type: () => [String],
         required: true,
-        minlength: 10,
-        maxlength: 1000,
         validate: [
             (v: unknown[]) => v.length >= 0 && v.length <= 2,
             Errors.INVALID_VIDS_NUM
         ]
     })
-    public videos!: string[];
+    public videos!: mongoose.Types.Array<string>;
 
     // DEBUG send email
     @prop({ required: true, default: false })

@@ -3,7 +3,8 @@ import {
     modelOptions,
     pre,
     prop,
-    Ref
+    Ref,
+    Severity
 } from "@typegoose/typegoose";
 import IsEmail from "isemail";
 import bcrypt from "bcrypt";
@@ -70,7 +71,7 @@ import { logger } from "../../../shared";
 
 @modelOptions({
     schemaOptions: { timestamps: true },
-    options: { customName: "User" }
+    options: { allowMixed: Severity.ERROR, customName: "User" }
 })
 @pre<UserClass>("save", function () {
     this.phoneNumber = parsePhoneNumber(

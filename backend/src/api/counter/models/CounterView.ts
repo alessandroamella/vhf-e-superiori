@@ -1,4 +1,4 @@
-import { modelOptions, prop, Ref } from "@typegoose/typegoose";
+import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
 /**
  * @swagger
  *  components:
@@ -22,7 +22,7 @@ import { modelOptions, prop, Ref } from "@typegoose/typegoose";
  */
 @modelOptions({
     schemaOptions: { timestamps: false },
-    options: { customName: "CounterView" }
+    options: { allowMixed: Severity.ERROR, customName: "CounterView" }
 })
 export class CounterViewClass {
     @prop({ required: false, ref: "User" })

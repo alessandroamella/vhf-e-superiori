@@ -5,6 +5,7 @@ import { S3Client } from "../../aws";
 import fileUpload from "express-fileupload";
 import { Errors } from "../../errors";
 import { createError } from "../../helpers";
+import { UserDoc } from "../../auth/models";
 
 const router = Router();
 
@@ -42,7 +43,7 @@ const s3 = new S3Client();
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  *      '401':
- *        description: Not logged in
+ *        description: Not logged in or not verified
  *        content:
  *          application/json:
  *            schema:
@@ -59,7 +60,9 @@ router.post(
     // body("pictures").isArray(),
     // validate,
     async (req: Request, res: Response) => {
-        if (!req.files) {
+        if (!req.user) {
+            throw new Error("No req.user in post file upload");
+        } else if (!req.files) {
             logger.debug("No files to upload");
             return res.sendStatus(NO_CONTENT);
         }
@@ -108,7 +111,10 @@ router.post(
             logger.debug("Uploading file: " + f.name);
             try {
                 const path = await s3.uploadFile({
-                    fileName: f.name,
+                    fileName: s3.generateFileName({
+                        userId: (req.user as unknown as UserDoc)._id,
+                        mimeType: f.mimetype
+                    }),
                     fileContent: f.data
                 });
                 pathsArr.push(path);

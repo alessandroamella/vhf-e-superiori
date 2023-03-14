@@ -1,4 +1,4 @@
-import { modelOptions, prop, Ref } from "@typegoose/typegoose";
+import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
 import { EventClass } from "../../event/models";
 
 /**
@@ -32,7 +32,7 @@ import { EventClass } from "../../event/models";
  */
 @modelOptions({
     schemaOptions: { timestamps: true },
-    options: { customName: "JoinRequest" }
+    options: { allowMixed: Severity.ERROR, customName: "JoinRequest" }
 })
 export class JoinRequestClass {
     @prop({ required: true, ref: "User" })

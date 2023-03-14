@@ -1,8 +1,10 @@
 import axios, { AxiosInstance } from "axios";
 import { parseStringPromise } from "xml2js";
+import { JSDOM } from "jsdom";
 import { envs } from "../../shared/envs";
 import { logger } from "../../shared/logger";
 import { Errors } from "../errors";
+import moment from "moment";
 
 interface _RawData {
     call: [string];
@@ -131,9 +133,18 @@ interface QrzInfo {
     // qth: Qth;
 }
 
+interface CachedPPs {
+    [callsign: string]: {
+        url: string;
+        date: Date;
+    };
+}
+
 class Qrz {
     private instance: AxiosInstance;
     private key: Promise<string | null>;
+
+    private cachedPPs: CachedPPs = {};
 
     constructor() {
         this.instance = axios.create({
@@ -250,6 +261,42 @@ class Qrz {
             // qth
         };
     }
+
+    async scrapeProfilePicture(callsign: string): Promise<string | null> {
+        if (
+            callsign in this.cachedPPs &&
+            moment().diff(moment(this.cachedPPs[callsign].date), "hours") < 3
+        ) {
+            return this.cachedPPs[callsign].url;
+        }
+        try {
+            const { data } = await axios.get(
+                "https://www.qrz.com/db/" + callsign
+            );
+            const dom = new JSDOM(data);
+
+            const pic = (
+                dom.window.document?.querySelector("#mypic") as HTMLImageElement
+            )?.src;
+
+            if (!pic) return null;
+
+            this.cachedPPs[callsign] = {
+                date: new Date(),
+                url: pic
+            };
+
+            return pic;
+        } catch (err) {
+            logger.error(
+                "Error while scraping profile picture for callsign " + callsign
+            );
+            logger.error(err);
+            return null;
+        }
+    }
 }
+
+export const qrz = new Qrz();
 
 export default Qrz;

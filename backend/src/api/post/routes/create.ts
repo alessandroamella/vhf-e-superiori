@@ -8,6 +8,7 @@ import { S3Client } from "../../aws";
 import { Errors } from "../../errors";
 import { S3 } from "aws-sdk";
 import Post from "../models";
+import { UserDoc } from "../../auth/models";
 
 const router = Router();
 
@@ -114,6 +115,9 @@ router.post(
     validate,
     async (req: Request, res: Response) => {
         // DEBUG TO IMPLEMENT!!
+        if (!req.user) {
+            throw new Error("No req.user in post create");
+        }
         try {
             const {
                 description,
@@ -121,6 +125,7 @@ router.post(
                 brand,
                 metersFromSea,
                 boomLengthCm,
+                isSelfBuilt,
                 numberOfElements,
                 numberOfAntennas,
                 cable,
@@ -179,6 +184,7 @@ router.post(
                 description,
                 band,
                 brand,
+                isSelfBuilt,
                 metersFromSea,
                 boomLengthCm,
                 numberOfElements,
@@ -188,7 +194,9 @@ router.post(
                 videos
             });
             const post = new Post({
+                fromUser: (req.user as unknown as UserDoc)._id,
                 description,
+                isSelfBuilt,
                 band,
                 brand,
                 metersFromSea,
@@ -196,6 +204,7 @@ router.post(
                 numberOfElements,
                 numberOfAntennas,
                 cable,
+                isApproved: (req.user as unknown as UserDoc).isAdmin,
                 pictures,
                 videos
             });

@@ -1,14 +1,12 @@
 import { Router } from "express";
 import { param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
-import Qrz from "..";
+import { qrz } from "..";
 import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
 import { createError } from "../../helpers";
 
 const router = Router();
-
-const qrz = new Qrz();
 
 /**
  * @openapi

@@ -1,4 +1,4 @@
-import { modelOptions, prop, Ref } from "@typegoose/typegoose";
+import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
 /**
  * @swagger
  *  components:
@@ -47,7 +47,7 @@ import { modelOptions, prop, Ref } from "@typegoose/typegoose";
  */
 @modelOptions({
     schemaOptions: { timestamps: true },
-    options: { customName: "Event" }
+    options: { allowMixed: Severity.ERROR, customName: "Event" }
 })
 export class EventClass {
     @prop({ required: true, minlength: 1 })

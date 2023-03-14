@@ -1,4 +1,6 @@
 import AWS from "aws-sdk";
+import moment from "moment";
+import mime from "mime-types";
 import { envs } from "../../shared";
 
 const s3 = new AWS.S3({
@@ -28,7 +30,21 @@ interface S3FileUpload {
     bucket?: string;
 }
 
+interface S3GenerateFileName {
+    userId: string;
+    mimeType: string;
+}
+
+interface S3FileDelete {
+    filePath: string;
+    bucket?: string;
+}
+
 export class S3Client {
+    generateFileName({ mimeType, userId }: S3GenerateFileName): string {
+        return `${userId}-${moment().valueOf()}.${mime.extension(mimeType)}`;
+    }
+
     /**
      * @param {S3FileUpload}
      * @returns {string} The location of the uploaded file
@@ -53,13 +69,7 @@ export class S3Client {
         });
     }
 
-    deleteFile({
-        filePath,
-        bucket
-    }: {
-        filePath: string;
-        bucket?: string;
-    }): Promise<void> {
+    deleteFile({ filePath, bucket }: S3FileDelete): Promise<void> {
         return new Promise((resolve, reject) => {
             s3.deleteObject(
                 {
