@@ -18,7 +18,7 @@ const FeedCard = ({ post }) => {
             </ReactPlaceholder>
           </h5>
           <p className="font-normal text-gray-200 line-clamp-2">
-            <ReactPlaceholder type="text" rows={1} ready={!!post?.description}>
+            <ReactPlaceholder type="text" rows={3} ready={!!post?.description}>
               <div className="flex items-center gap-2">
                 <span>{post?.band} MHz</span>
                 <span>{post?.brand}</span>
@@ -29,9 +29,13 @@ const FeedCard = ({ post }) => {
         </div>
         <div className="flex items-center gap-2">
           <Avatar img="https://flowbite.com/docs/images/people/profile-picture-5.jpg" />
-          <p className="uppercase tracking-tight font-semibold text-lg">
-            IU4QSG
-          </p>
+          <ReactPlaceholder type="text" rows={1} ready={!!post?.callsign}>
+            {/* <div className="flex items-center gap-2"> */}
+            <p className="uppercase tracking-tight font-semibold text-lg">
+              {post?.callsign}
+            </p>
+            {/* </div> */}
+          </ReactPlaceholder>
         </div>
       </div>
     </div>
