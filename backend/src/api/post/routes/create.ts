@@ -136,6 +136,7 @@ router.post(
 
             const metas: AWS.S3.HeadObjectOutput[] = [];
             for (const p of filesPath) {
+                logger.debug("Getting meta of file " + p);
                 try {
                     const meta = await s3.getFileMeta({ filePath: p });
                     metas.push(meta);
@@ -162,6 +163,7 @@ router.post(
                     videos.push(m);
                 } else {
                     logger.error("Error while reading meta of file");
+                    logger.error(m);
                     // DEBUG delete all other files
                     return res
                         .status(INTERNAL_SERVER_ERROR)

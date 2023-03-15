@@ -40,18 +40,24 @@ const createSchema: Schema = {
         isString: { options: [] },
         isLength: { options: { max: 100 } }
     },
-    pictures: {
-        isArray: { options: { min: 1, max: 5 } }
+    filesPath: {
+        isArray: { options: { min: 1, max: 12 } }
     },
-    "pictures.*": {
-        isString: { options: [] }
-    },
-    videos: {
-        isArray: { options: { min: 0, max: 2 } }
-    },
-    "videos.*": {
+    "filesPath.*": {
         isString: { options: [] }
     }
+    // pictures: {
+    //     isArray: { options: { min: 1, max: 5 } }
+    // },
+    // "pictures.*": {
+    //     isString: { options: [] }
+    // },
+    // videos: {
+    //     isArray: { options: { min: 0, max: 2 } }
+    // },
+    // "videos.*": {
+    //     isString: { options: [] }
+    // }
     // isApproved: {
     //     isBoolean: { options: [] }
     // }

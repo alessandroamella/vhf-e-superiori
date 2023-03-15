@@ -63,7 +63,11 @@ export class S3Client {
                 },
                 (err: Error, data: AWS.S3.ManagedUpload.SendData) => {
                     if (err) return reject(err);
-                    return resolve(data.Location);
+                    return resolve(
+                        data.Location.split("/")[
+                            data.Location.split("/").length - 1
+                        ]
+                    );
                 }
             );
         });
