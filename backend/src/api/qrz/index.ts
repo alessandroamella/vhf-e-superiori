@@ -267,6 +267,9 @@ class Qrz {
             callsign in this.cachedPPs &&
             moment().diff(moment(this.cachedPPs[callsign].date), "hours") < 3
         ) {
+            logger.debug(
+                "Returning cached QRZ pp: " + this.cachedPPs[callsign].url
+            );
             return this.cachedPPs[callsign].url;
         }
         try {
@@ -278,6 +281,8 @@ class Qrz {
             const pic = (
                 dom.window.document?.querySelector("#mypic") as HTMLImageElement
             )?.src;
+
+            logger.debug("Scraped QRZ profile pic: " + pic);
 
             if (!pic) return null;
 

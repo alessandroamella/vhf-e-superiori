@@ -11,6 +11,7 @@ import bcrypt from "bcrypt";
 import { JoinRequestClass } from "../../joinRequest/models";
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { logger } from "../../../shared";
+import { PostClass } from "../../post/models";
 
 /**
  * @swagger
@@ -66,7 +67,14 @@ import { logger } from "../../../shared";
  *            type: array
  *            items:
  *              type: string
+ *              format: ObjectId
  *            description: ObjectIds of the join requests
+ *          posts:
+ *            type: array
+ *            items:
+ *              type: string
+ *              format: ObjectId
+ *            description: ObjectIds of published posts
  */
 
 @modelOptions({
@@ -110,6 +118,9 @@ export class UserClass {
 
     @prop({ required: true, default: [], ref: () => JoinRequestClass })
     public joinRequests!: Ref<JoinRequestClass>[];
+
+    @prop({ required: true, default: [], ref: () => PostClass })
+    public posts!: Ref<PostClass>[];
 
     public async isValidPw(this: DocumentType<UserClass>, plainPw: string) {
         return await bcrypt.compare(plainPw, this.password);

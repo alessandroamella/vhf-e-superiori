@@ -23,7 +23,7 @@ const router = Router();
  *            properties:
  *              user:
  *                type: string
- *                format: ObjectId of the user
+ *                description: ObjectId of the user
  *              passwordResetCode:
  *                type: string
  *                description: New password

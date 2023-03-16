@@ -1,7 +1,8 @@
 import AWS from "aws-sdk";
 import moment from "moment";
 import mime from "mime-types";
-import { envs } from "../../shared";
+import randomstring from "randomstring";
+import { envs, logger } from "../../shared";
 
 const s3 = new AWS.S3({
     accessKeyId: envs.AWS_ACCESS_KEY_ID,
@@ -13,20 +14,10 @@ const s3 = new AWS.S3({
  * @interface S3FileUpload
  */
 interface S3FileUpload {
-    /**
-     * The name of the file.
-     * @type {string}
-     */
     fileName: string;
-    /**
-     * The contents of the file.
-     * @type {Buffer}
-     */
     fileContent: Buffer;
-    /**
-     * The name of the bucket to upload the file to.
-     * @type {string | undefined}
-     */
+    folder: string;
+    mimeType: string;
     bucket?: string;
 }
 
@@ -42,7 +33,10 @@ interface S3FileDelete {
 
 export class S3Client {
     generateFileName({ mimeType, userId }: S3GenerateFileName): string {
-        return `${userId}-${moment().valueOf()}.${mime.extension(mimeType)}`;
+        return `${userId}-${moment().valueOf()}-${randomstring.generate({
+            length: 16,
+            charset: "hex"
+        })}.${mime.extension(mimeType)}`;
     }
 
     /**
@@ -52,22 +46,22 @@ export class S3Client {
     uploadFile({
         fileName,
         fileContent,
+        folder,
+        mimeType,
         bucket
     }: S3FileUpload): Promise<string> {
         return new Promise((resolve, reject) => {
             s3.upload(
                 {
                     Bucket: bucket || envs.AWS_BUCKET_NAME,
-                    Key: fileName,
-                    Body: fileContent
+                    Key: `${folder}/${fileName}`,
+                    Body: fileContent,
+                    ContentType: mimeType
                 },
                 (err: Error, data: AWS.S3.ManagedUpload.SendData) => {
                     if (err) return reject(err);
-                    return resolve(
-                        data.Location.split("/")[
-                            data.Location.split("/").length - 1
-                        ]
-                    );
+                    logger.debug(`Uploaded file to location ${data.Location}`);
+                    return resolve(data.Location);
                 }
             );
         });
@@ -79,6 +73,32 @@ export class S3Client {
                 {
                     Bucket: bucket || envs.AWS_BUCKET_NAME,
                     Key: filePath
+                },
+                (err: Error) => {
+                    if (err) return reject(err);
+                    return resolve();
+                }
+            );
+        });
+    }
+
+    deleteMultiple({
+        filePaths,
+        bucket
+    }: {
+        filePaths: string[];
+        bucket?: string;
+    }): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const Objects = filePaths.map(fp => ({ Key: fp }));
+            logger.debug("Deleting files from S3");
+            logger.debug(Objects);
+            s3.deleteObjects(
+                {
+                    Bucket: bucket || envs.AWS_BUCKET_NAME,
+                    Delete: {
+                        Objects: filePaths.map(fp => ({ Key: fp }))
+                    }
                 },
                 (err: Error) => {
                     if (err) return reject(err);
@@ -130,4 +150,27 @@ export class S3Client {
             );
         });
     }
+
+    listFiles({
+        folder,
+        bucket
+    }: {
+        folder: string;
+        bucket?: string;
+    }): Promise<AWS.S3.ListObjectsOutput> {
+        return new Promise((resolve, reject) => {
+            s3.listObjectsV2(
+                {
+                    Bucket: bucket || envs.AWS_BUCKET_NAME,
+                    Prefix: folder
+                },
+                (err: Error, data: AWS.S3.ListObjectsOutput) => {
+                    if (err) return reject(err);
+                    return resolve(data);
+                }
+            );
+        });
+    }
 }
+
+export const s3Client = new S3Client();

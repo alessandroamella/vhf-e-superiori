@@ -21,7 +21,10 @@ const Social = () => {
 
   const [alert, setAlert] = useState(null);
 
-  const posts = useState(null);
+  const [posts, setPosts] = useState();
+  const [profilePictures, setProfilePictures] = useState();
+  const [postsLoaded, setPostsLoaded] = useState(false);
+
   const [cursor, setCursor] = useState(0);
 
   useEffect(() => {
@@ -33,11 +36,19 @@ const Social = () => {
         }
       });
       console.log("posts", data);
+      setPosts(data.posts);
+      setProfilePictures(data.pp);
     }
     fetchPosts();
-  }, []);
+  }, [cursor]);
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (posts) {
+      setPostsLoaded(true);
+    }
+  }, [posts]);
+
+  // const navigate = useNavigate();
 
   return (
     <Layout>
@@ -55,14 +66,17 @@ const Social = () => {
         )}
 
         <div className="grid md:gap-8 grid-cols-1 md:grid-cols-3">
-          <div className="hidden md:block h-full bg-gray-700 rounded-xl p-8">
+          <div className="hidden md:block h-full bg-gray-100 dark:bg-gray-700 rounded-xl p-8">
             <p>i sassi</p>
           </div>
           <div className="col-span-2">
-            <FeedCard />
-            <FeedCard />
-            <FeedCard />
-            <FeedCard />
+            {postsLoaded ? (
+              posts.map(p => (
+                <FeedCard key={p._id} post={p} pp={profilePictures} />
+              ))
+            ) : (
+              <FeedCard />
+            )}
           </div>
         </div>
       </div>

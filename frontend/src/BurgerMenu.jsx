@@ -170,9 +170,7 @@ const BurgerMenu = () => {
 
           <SectionTitle className="mt-4">La mia area</SectionTitle>
 
-          <SectionHref wip href="#">
-            Le mie antenne
-          </SectionHref>
+          <SectionLink to="/social">Le mie antenne</SectionLink>
           <SectionHref wip href="#">
             I miei amplificatori lineari e preamplificatori
           </SectionHref>

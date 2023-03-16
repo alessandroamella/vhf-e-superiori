@@ -8,7 +8,7 @@ import { S3Client } from "../../aws";
 import { Errors } from "../../errors";
 import { S3 } from "aws-sdk";
 import Post from "../models";
-import { UserDoc } from "../../auth/models";
+import User, { UserDoc } from "../../auth/models";
 
 const router = Router();
 
@@ -119,6 +119,13 @@ router.post(
             throw new Error("No req.user in post create");
         }
         try {
+            const user = User.findOne({
+                _id: (req.user as unknown as UserDoc)._id
+            });
+            if (!user) {
+                throw new Error("User not found in post create");
+            }
+
             const {
                 description,
                 band,
@@ -134,12 +141,12 @@ router.post(
 
             logger.debug("Checking files");
 
-            const metas: AWS.S3.HeadObjectOutput[] = [];
+            const metas: [path: string, meta: AWS.S3.HeadObjectOutput][] = [];
             for (const p of filesPath) {
                 logger.debug("Getting meta of file " + p);
                 try {
                     const meta = await s3.getFileMeta({ filePath: p });
-                    metas.push(meta);
+                    metas.push([p, meta]);
                 } catch (err) {
                     if ((err as Error).name === "NotFound") {
                         logger.debug("File not found");
@@ -154,16 +161,16 @@ router.post(
                 }
             }
 
-            const pictures: S3.HeadObjectOutput[] = [];
-            const videos: S3.HeadObjectOutput[] = [];
-            for (const m of metas) {
+            const pictures: string[] = [];
+            const videos: string[] = [];
+            for (const [path, m] of metas) {
                 if (m.ContentType?.includes("image")) {
-                    pictures.push(m);
+                    pictures.push(path);
                 } else if (m.ContentType?.includes("video")) {
-                    videos.push(m);
+                    videos.push(path);
                 } else {
                     logger.error("Error while reading meta of file");
-                    logger.error(m);
+                    logger.error(path);
                     // DEBUG delete all other files
                     return res
                         .status(INTERNAL_SERVER_ERROR)
@@ -196,7 +203,7 @@ router.post(
                 videos
             });
             const post = new Post({
-                fromUser: (req.user as unknown as UserDoc)._id,
+                fromUser: user._id,
                 description,
                 isSelfBuilt,
                 band,
@@ -206,7 +213,7 @@ router.post(
                 numberOfElements,
                 numberOfAntennas,
                 cable,
-                isApproved: (req.user as unknown as UserDoc).isAdmin,
+                isApproved: user.isAdmin,
                 pictures,
                 videos
             });
@@ -220,6 +227,8 @@ router.post(
                     .json(createError(Errors.INVALID_POST));
             }
 
+            user.posts.push(post._id);
+            await user.save();
             await post.save();
 
             res.json(post.toObject());

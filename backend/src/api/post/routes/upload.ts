@@ -1,15 +1,13 @@
 import { Request, Response, Router } from "express";
 import { logger } from "../../../shared";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from "http-status";
-import { S3Client } from "../../aws";
 import fileUpload from "express-fileupload";
 import { Errors } from "../../errors";
 import { createError } from "../../helpers";
 import { UserDoc } from "../../auth/models";
+import { s3Client } from "../../aws";
 
 const router = Router();
-
-const s3 = new S3Client();
 
 /**
  * @openapi
@@ -110,12 +108,14 @@ router.post(
         for (const f of fileArr) {
             logger.debug("Uploading file: " + f.name);
             try {
-                const path = await s3.uploadFile({
-                    fileName: s3.generateFileName({
+                const path = await s3Client.uploadFile({
+                    fileName: s3Client.generateFileName({
                         userId: (req.user as unknown as UserDoc)._id,
                         mimeType: f.mimetype
                     }),
-                    fileContent: f.data
+                    fileContent: f.data,
+                    mimeType: f.mimetype,
+                    folder: f.mimetype.includes("image") ? "pics" : "vids"
                 });
                 pathsArr.push(path);
                 logger.debug("File uploaded: " + f.name);
@@ -124,7 +124,7 @@ router.post(
                 logger.error(err);
                 for (const uploadFile of pathsArr) {
                     logger.debug("Deleting file: " + uploadFile);
-                    await s3.deleteFile({ filePath: uploadFile });
+                    await s3Client.deleteFile({ filePath: uploadFile });
                     logger.debug("Deleted file: " + uploadFile);
                 }
                 return res.status(INTERNAL_SERVER_ERROR).json(createError());

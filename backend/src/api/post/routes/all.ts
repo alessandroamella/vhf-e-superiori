@@ -85,13 +85,13 @@ router.get(
                         .filter(c => c)
                 )
             ];
+            const promiseUrls = callsigns.map(c => qrz.scrapeProfilePicture(c));
+            const urls = await Promise.all(promiseUrls);
 
-            const pps = callsigns.map(c => ({
+            const pps = callsigns.map((c, i) => ({
                 callsign: c,
-                url: qrz.scrapeProfilePicture(c)
+                url: urls[i]
             }));
-
-            await Promise.all(pps.map(p => p.url));
 
             res.json({
                 posts,

@@ -6,9 +6,12 @@ import joinRequestRoutes from "../joinRequest/routes";
 import qrzRoutes from "../qrz/routes";
 import counterRoutes from "../counter/routes";
 import postRoutes from "../post/routes";
+import notFound from "./notFound";
 
 import errorHandler from "../middlewares/errorHandler";
 import populateUser from "../middlewares/populateUser";
+
+import "../jobs"; // cron jobs
 
 import morgan from "morgan";
 import bodyParser from "body-parser";
@@ -31,20 +34,6 @@ router.use(cookieParser(envs.COOKIE_SECRET));
 
 router.use(populateUser);
 
-// const tempFileDir = path.join(process.cwd(), envs.TEMP_DIR_RELATIVE);
-// logger.debug("Temp file dir is " + tempFileDir);
-
-// if (!fs.existsSync(tempFileDir)) {
-//     logger.debug("Creating temp file dir");
-//     try {
-//         fs.mkdirSync(tempFileDir);
-//     } catch (err) {
-//         logger.error("Error while creating temp file dir");
-//         logger.error(err);
-//         process.exit(1);
-//     }
-// }
-// max size is 50MB
 router.use(
     fileUpload({
         limits: { fileSize: 100 * 1024 * 1024 },
@@ -86,5 +75,6 @@ router.use("/counter", counterRoutes);
 router.use("/post", postRoutes);
 
 router.use(errorHandler);
+router.use(notFound);
 
 export default router;
