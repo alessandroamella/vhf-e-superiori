@@ -11,7 +11,8 @@ import FeedCard from "./FeedCard";
 
 import "react-placeholder/lib/reactPlaceholder.css";
 import axios from "axios";
-import { Alert } from "flowbite-react";
+import { Alert, Button } from "flowbite-react";
+import { FaPlus } from "react-icons/fa";
 
 const Social = () => {
   const { user } = useContext(UserContext);
@@ -26,6 +27,8 @@ const Social = () => {
   const [postsLoaded, setPostsLoaded] = useState(false);
 
   const [cursor, setCursor] = useState(0);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchPosts() {
@@ -67,7 +70,12 @@ const Social = () => {
 
         <div className="grid md:gap-8 grid-cols-1 md:grid-cols-3">
           <div className="hidden md:block h-full bg-gray-100 dark:bg-gray-700 rounded-xl p-8">
-            <p>i sassi</p>
+            <Button
+              onClick={() => navigate("new")}
+              className="flex items-center"
+            >
+              <FaPlus /> <span className="ml-1">Nuovo post</span>
+            </Button>
           </div>
           <div className="col-span-2">
             {postsLoaded ? (

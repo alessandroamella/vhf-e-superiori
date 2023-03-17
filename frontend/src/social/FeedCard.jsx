@@ -15,7 +15,7 @@ const FeedCard = ({ post, pp }) => {
         ready={!!post}
       >
         <img
-          src={post?.pictures[0] || "/logo-min.png"}
+          src={post?.pictures[0] || "/no-image.png"}
           className="h-64 object-cover w-full"
           alt="Feed card"
         />

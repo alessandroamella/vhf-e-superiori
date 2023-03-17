@@ -16,6 +16,7 @@ import ViewEvent from "./event/ViewEvent";
 // import Info from "./homepage/Info";
 import ResetPw from "./profile/ResetPw";
 import Social from "./social";
+import NewPost from "./social/NewPost";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
   { path: "/signup", element: <Signup /> },
   { path: "/profile", element: <Profile /> },
   { path: "/social", element: <Social /> },
+  { path: "/social/new", element: <NewPost /> },
   { path: "/eventmanager", element: <Event /> },
   // { path: "/regolamento", element: <Regolamento /> },
   // { path: "/info", element: <Info /> },

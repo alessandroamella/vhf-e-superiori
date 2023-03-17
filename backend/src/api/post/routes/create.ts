@@ -142,11 +142,12 @@ router.post(
             logger.debug("Checking files");
 
             const metas: [path: string, meta: AWS.S3.HeadObjectOutput][] = [];
-            for (const p of filesPath) {
+            for (const _p of filesPath) {
+                const p = _p.split("/").slice(-2).join("/");
                 logger.debug("Getting meta of file " + p);
                 try {
                     const meta = await s3.getFileMeta({ filePath: p });
-                    metas.push([p, meta]);
+                    metas.push([_p, meta]);
                 } catch (err) {
                     if ((err as Error).name === "NotFound") {
                         logger.debug("File not found");
@@ -154,7 +155,10 @@ router.post(
                             .status(BAD_REQUEST)
                             .json(createError(Errors.FILE_NOT_FOUND));
                     }
-                    logger.error("Error while getting file meta");
+                    logger.error(
+                        "Error while getting file meta for file " + _p
+                    );
+                    logger.error(err);
                     return res
                         .status(INTERNAL_SERVER_ERROR)
                         .json(createError());
