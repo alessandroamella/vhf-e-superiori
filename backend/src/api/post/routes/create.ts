@@ -6,7 +6,6 @@ import { logger } from "../../../shared";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { S3Client } from "../../aws";
 import { Errors } from "../../errors";
-import { S3 } from "aws-sdk";
 import Post from "../models";
 import User, { UserDoc } from "../../auth/models";
 
@@ -119,7 +118,7 @@ router.post(
             throw new Error("No req.user in post create");
         }
         try {
-            const user = User.findOne({
+            const user = await User.findOne({
                 _id: (req.user as unknown as UserDoc)._id
             });
             if (!user) {
@@ -156,7 +155,7 @@ router.post(
                             .json(createError(Errors.FILE_NOT_FOUND));
                     }
                     logger.error(
-                        "Error while getting file meta for file " + _p
+                        `Error while getting file meta for file "${_p} ("${p}")`
                     );
                     logger.error(err);
                     return res
@@ -206,6 +205,8 @@ router.post(
                 pictures,
                 videos
             });
+            logger.debug("fromUser");
+            logger.debug(user);
             const post = new Post({
                 fromUser: user._id,
                 description,
@@ -231,9 +232,13 @@ router.post(
                     .json(createError(Errors.INVALID_POST));
             }
 
-            user.posts.push(post._id);
-            await user.save();
+            // user.posts.push(post._id);
+            // await user.save();
             await post.save();
+            await User.updateOne(
+                { _id: user._id },
+                { $push: { posts: post._id } }
+            );
 
             res.json(post.toObject());
         } catch (err) {

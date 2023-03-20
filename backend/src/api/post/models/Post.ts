@@ -57,7 +57,7 @@ import { Errors } from "../../errors";
  *            description: Height from sea level (in meters)
  *          boomLengthCm:
  *            type: number
- *            minimum: 0
+ *            minimum: 1
  *            maximum: 100000
  *            description: Length of the boom (in centimeters)
  *          numberOfElements:
@@ -124,7 +124,7 @@ export class PostClass {
     @prop({ required: true, max: 10000 })
     public metersFromSea!: number;
 
-    @prop({ required: true, min: 0, max: 100000 })
+    @prop({ required: true, min: 1, max: 100000 })
     public boomLengthCm!: number;
 
     @prop({ required: true, min: 1, max: 300 })
