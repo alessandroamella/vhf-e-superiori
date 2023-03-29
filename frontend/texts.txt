@@ -44,3 +44,7 @@ Password troppo debole
 Utente non verificato, per favore verifica il tuo account cliccando il link che hai ricevuto per email
 Utente già verificato
 Codice di verifica non valido
+
+Nuovo post
+Post creato con successo!
+Dovrà essere approvato prima di essere visibile pubblicamente

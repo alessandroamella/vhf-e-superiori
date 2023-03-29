@@ -2,7 +2,7 @@ import Layout from "../Layout";
 import { useEffect, useState } from "react";
 import { EventsContext, ReadyContext, SplashContext, UserContext } from "..";
 import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Splash from "../Splash";
 
 import "react-medium-image-zoom/dist/styles.css";
@@ -19,6 +19,8 @@ const Social = () => {
   const { events } = useContext(EventsContext);
   const { splashPlayed, setSplashPlayed } = useContext(SplashContext);
   const { ready } = useContext(ReadyContext);
+
+  const [searchParams] = useSearchParams();
 
   const [alert, setAlert] = useState(null);
 
@@ -65,6 +67,23 @@ const Social = () => {
             onDismiss={() => setAlert(null)}
           >
             <span>{alert.msg}</span>
+          </Alert>
+        )}
+
+        {searchParams?.get("created") && (
+          <Alert
+            className="mb-6"
+            color="success"
+            onDismiss={() => navigate("/social")}
+          >
+            <p>
+              Post{" "}
+              <span className="font-semibold">
+                {searchParams?.get("created")}
+              </span>{" "}
+              creato con successo!
+            </p>
+            <p>Dovrà essere approvato prima di essere visibile pubblicamente</p>
           </Alert>
         )}
 

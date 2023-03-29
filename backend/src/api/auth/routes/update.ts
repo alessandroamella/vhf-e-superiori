@@ -1,11 +1,14 @@
 import { Request, Response, Router } from "express";
 import { checkSchema } from "express-validator";
+import randomstring from "randomstring";
+import bcrypt from "bcrypt";
 import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import updateSchema from "../schemas/updateSchema";
 import User, { UserDoc } from "../models";
 import { Errors } from "../../errors";
+import EmailService from "../../../email";
 
 const router = Router();
 
@@ -89,6 +92,8 @@ router.put(
                         .json(createError(Errors.PHONE_NUMBER_ALREADY_IN_USE));
                 }
             }
+
+            const oldEmail = (req.user as unknown as UserDoc).email;
             const user = await User.findOneAndUpdate(
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 { _id: (req.user as any)._id },
@@ -104,7 +109,34 @@ router.put(
                     }
                 }
             );
-            res.json(user?.toObject());
+
+            if (!user) {
+                throw new Error("User in user update not found");
+            }
+
+            if (oldEmail !== email) {
+                logger.debug(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    `User ${(req.user as any).callsign} update: email was "${
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (req.user as any).email
+                    }", now is "${email}"`
+                );
+                if (!user.isVerified) {
+                    // user was not verified, create new verification code and send new verification email
+                    const newVerifCode = randomstring.generate({
+                        length: 12,
+                        charset: "alphanumeric"
+                    });
+
+                    user.verificationCode = bcrypt.hashSync(newVerifCode, 10);
+                    await user.save();
+
+                    await EmailService.sendVerifyMail(user, newVerifCode);
+                }
+            }
+
+            res.json(user.toObject());
         } catch (err) {
             logger.error("Error while updating user");
             logger.error(err);

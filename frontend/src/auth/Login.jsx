@@ -157,6 +157,7 @@ const Login = () => {
               value={password}
               onChange={e => setPassword(e.target.value)}
               disabled={disabled}
+              maxlength={100}
             />
             <div className="my-4" />
             <Button type="submit" disabled={disabled}>

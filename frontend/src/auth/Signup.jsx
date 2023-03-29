@@ -257,6 +257,7 @@ const Signup = () => {
               onChange={e => setPassword(e.target.value)}
               helperText="Minimo 8 caratteri, almeno un numero e un carattere speciale"
               disabled={disabled}
+              maxlength={100}
             />
             <div className="my-4" />
             <ReCAPTCHA

@@ -1,6 +1,6 @@
 import Layout from "../Layout";
 import { useState } from "react";
-import { getErrorStr, ReadyContext, UserContext } from "..";
+import { getErrorStr, UserContext } from "..";
 import { useContext } from "react";
 
 import "react-medium-image-zoom/dist/styles.css";
@@ -17,7 +17,7 @@ import {
   TextInput
 } from "flowbite-react";
 import { FaPlus } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router-dom";
 
 const NewPost = () => {
   const { user } = useContext(UserContext);
@@ -27,7 +27,7 @@ const NewPost = () => {
 
   const [formValues, setFormValues] = useState({
     description: "",
-    band: "",
+    band: "144",
     brand: "",
     isSelfBuilt: false,
     metersFromSea: 0,
@@ -89,7 +89,12 @@ const NewPost = () => {
       setIsSubmitting(false);
       return;
     }
-    navigate("/social");
+    navigate({
+      pathname: "/social",
+      search: createSearchParams({
+        created: formValues.description
+      }).toString()
+    });
   };
 
   const sendPicturesAndVideos = async () => {

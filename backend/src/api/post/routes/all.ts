@@ -71,7 +71,7 @@ router.get(
     async (req, res) => {
         try {
             const posts = await Post.find({ isApproved: true })
-                .sort({ date: -1 })
+                .sort({ createdAt: -1 })
                 .populate("fromUser")
                 .limit(req.query?.limit)
                 .skip(req.query?.offset);
@@ -94,7 +94,7 @@ router.get(
             }));
 
             res.json({
-                posts,
+                posts: posts.map(p => p.toObject()),
                 pp: pps.filter(p => p.url)
             });
         } catch (err) {
