@@ -17,7 +17,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { isAfter } from "date-fns/esm";
 import { it } from "date-fns/locale";
-import { FaLink } from "react-icons/fa";
+import { FaCheck, FaCross, FaExclamation, FaLink } from "react-icons/fa";
 import { formatInTimeZone } from "date-fns-tz";
 
 const Profile = () => {
@@ -86,8 +86,16 @@ const Profile = () => {
 
     try {
       const { data } = await axios.put("/api/auth", { name, email });
-      setAlert({ color: "success", msg: "Dati modificati con successo" });
+      if (data.email === user.email) {
+        setAlert({ color: "success", msg: "Dati modificati con successo" });
+      } else {
+        setAlert({
+          color: "success",
+          msg: "Verifica il nuovo indirizzo email cliccando sul link nell'email che hai ricevuto"
+        });
+      }
       setUser(data);
+      setIsEditing(false);
     } catch (err) {
       setAlert({
         color: "failure",
@@ -364,8 +372,8 @@ const Profile = () => {
                       </Typography>
                     )}
                   </div>
-                  <div className={isEditing ? "block" : "flex"}>
-                    <div className="mb-2 block">
+                  <div className="mb-2 flex items-center">
+                    <div className="block">
                       <Label htmlFor="email" value="Email" />
                     </div>
 
@@ -381,15 +389,26 @@ const Profile = () => {
                         disabled={!user}
                       />
                     ) : (
-                      <Typography variant="paragraph" className="ml-2 mb-2">
-                        <a
-                          href={"mailto:" + user?.email}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          {user?.email || <Spinner />}
-                        </a>
-                      </Typography>
+                      <div className="flex items-center gap-2">
+                        <Typography variant="paragraph" className="ml-2">
+                          <a
+                            href={"mailto:" + user?.email}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                          >
+                            {user?.email || <Spinner />}
+                          </a>
+                        </Typography>
+                        {user?.isVerified ? (
+                          <span className="flex items-center gap-1 text-green-600">
+                            <FaCheck /> Verificata
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1 bg-yellow-200 text-black p-1 rounded">
+                            <FaExclamation /> Da verificare
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
 
@@ -408,7 +427,11 @@ const Profile = () => {
                           disabled={!user || changeDataBtnDisabled}
                           className="ml-4"
                         >
-                          Modifica dati
+                          {/* {!user || changeDataBtnDisabled ? (
+                            <Spinner />
+                          ) : ( */}
+                          <span>Modifica dati</span>
+                          {/* )} */}
                         </Button>
                       </>
                     ) : (

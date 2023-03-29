@@ -36,6 +36,7 @@
         "react-star-sky": "^1.0.3",
         "react-zoom-pan-pinch": "^2.6.0",
         "sass": "^1.57.1",
+        "swiper": "^9.1.1",
         "web-vitals": "^2.1.4"
     },
     "scripts": {

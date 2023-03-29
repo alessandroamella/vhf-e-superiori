@@ -122,18 +122,17 @@ router.put(
                         (req.user as any).email
                     }", now is "${email}"`
                 );
-                if (!user.isVerified) {
-                    // user was not verified, create new verification code and send new verification email
-                    const newVerifCode = randomstring.generate({
-                        length: 12,
-                        charset: "alphanumeric"
-                    });
+                // user was not verified, create new verification code and send new verification email
+                const newVerifCode = randomstring.generate({
+                    length: 12,
+                    charset: "alphanumeric"
+                });
 
-                    user.verificationCode = bcrypt.hashSync(newVerifCode, 10);
-                    await user.save();
+                user.verificationCode = bcrypt.hashSync(newVerifCode, 10);
+                user.isVerified = false;
+                await user.save();
 
-                    await EmailService.sendVerifyMail(user, newVerifCode);
-                }
+                await EmailService.sendVerifyMail(user, newVerifCode, false);
             }
 
             res.json(user.toObject());

@@ -1,7 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@material-tailwind/react";
 import Homepage from "./homepage";

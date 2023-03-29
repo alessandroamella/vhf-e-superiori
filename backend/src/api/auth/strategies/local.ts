@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import randomstring from "randomstring";
 import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
-import User from "../models";
+import User, { UserDoc } from "../models";
 import EmailService from "../../../email";
 
 passport.use(
@@ -48,7 +48,7 @@ passport.use(
                     charset: "alphanumeric"
                 });
 
-                const user = await User.create({
+                const user = (await User.create({
                     callsign: req.body.callsign,
                     name: req.body.name,
                     email,
@@ -58,9 +58,9 @@ passport.use(
                     isVerified: false,
                     verificationCode: bcrypt.hashSync(verificationCode, 10),
                     joinRequests: []
-                });
+                })) as UserDoc;
 
-                await EmailService.sendVerifyMail(user, verificationCode);
+                await EmailService.sendVerifyMail(user, verificationCode, true);
 
                 logger.debug(user);
 

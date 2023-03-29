@@ -48,3 +48,4 @@ Codice di verifica non valido
 Nuovo post
 Post creato con successo!
 Dovrà essere approvato prima di essere visibile pubblicamente
+Siccome hai cambiato l'indirizzo email, dovrai verificare nuovamente il tuo account cliccando sul link nell'email che hai ricevuto
