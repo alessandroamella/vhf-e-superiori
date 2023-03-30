@@ -3,7 +3,7 @@ import axios from "axios";
 import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
 import React, { createRef, useEffect, useRef, useState } from "react";
 import { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getErrorStr, UserContext } from "..";
 import { useCookies } from "react-cookie";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -55,6 +55,8 @@ const Signup = () => {
   const [qrzLookups, setQrzLookups] = useState([]);
 
   const [inputRef, setInputFocus] = useFocus();
+
+  const [searchParams] = useSearchParams();
 
   async function fetchQrz() {
     if (
@@ -126,7 +128,12 @@ const Signup = () => {
         password
       });
       setUser(data);
-      navigate("/?toconfirm=true");
+      navigate({
+        pathname: searchParams.get("to") || "/",
+        search: {
+          toconfirm: true
+        }
+      });
     } catch (err) {
       console.log("signup error", err);
       window.scrollTo({

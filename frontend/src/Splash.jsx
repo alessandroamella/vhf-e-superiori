@@ -1,9 +1,5 @@
-import { differenceInDays } from "date-fns";
-import React, { useState } from "react";
-import { useEffect } from "react";
-import { useContext } from "react";
+import React from "react";
 import AnimatedText from "react-animated-text-content";
-import { EventsContext } from ".";
 
 const Splash = ({ ready }) => {
   // const { events } = useContext(EventsContext);

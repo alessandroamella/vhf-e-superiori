@@ -12,18 +12,23 @@ import {
   FaExclamationTriangle,
   FaInfoCircle
 } from "react-icons/fa";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  createSearchParams,
+  Link,
+  useNavigate,
+  useParams
+} from "react-router-dom";
 import { EventsContext, getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
 
 const EventContainer = ({ event, children }) =>
   event?.logoUrl ? (
-    <div className="grid grid-cols-1 md:grid-cols-2 dark:text-white dark:bg-gray-900">
+    <div className="grid min-h-[90vh] grid-cols-1 md:grid-cols-2 dark:text-white dark:bg-gray-900">
       <img loading="lazy" className={event.logoUrl} alt="Logo dell'evento" />
       <div>{children}</div>
     </div>
   ) : (
-    <div className="w-full h-full pt-8 pb-24 dark:text-white dark:bg-gray-900">
+    <div className="w-full min-h-[90vh] h-full pt-8 pb-24 dark:text-white dark:bg-gray-900">
       <div className="mx-auto px-2 w-full md:w-2/3">{children} </div>
     </div>
   );
@@ -293,7 +298,18 @@ const ViewEvent = () => {
                     Partecipa
                   </Button>
                 ) : (
-                  <Button onClick={() => navigate("/login")}>Login</Button>
+                  <Button
+                    onClick={() =>
+                      navigate({
+                        pathname: "/login",
+                        search: createSearchParams({
+                          to: "/social/new"
+                        }).toString()
+                      })
+                    }
+                  >
+                    Login
+                  </Button>
                 )}
               </>
             )

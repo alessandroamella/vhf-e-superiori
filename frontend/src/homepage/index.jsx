@@ -11,7 +11,11 @@ import { useContext } from "react";
 import { Accordion, Alert, Table } from "flowbite-react";
 import { differenceInDays, isAfter } from "date-fns";
 import { it } from "date-fns/locale";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  createSearchParams,
+  useNavigate,
+  useSearchParams
+} from "react-router-dom";
 import { useEffect } from "react";
 import Splash from "../Splash";
 import { FaWhatsapp } from "react-icons/fa";
@@ -414,7 +418,14 @@ const Homepage = () => {
                     ) : (
                       <Button
                         className="text-xl mb-4"
-                        onClick={() => navigate("/login")}
+                        onClick={() =>
+                          navigate({
+                            pathname: "/login",
+                            search: createSearchParams({
+                              to: "/#eventi"
+                            }).toString()
+                          })
+                        }
                       >
                         CLICCA QUI
                       </Button>

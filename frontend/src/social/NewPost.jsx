@@ -1,5 +1,5 @@
 import Layout from "../Layout";
-import { createRef, useState } from "react";
+import { createRef, useEffect, useState } from "react";
 import { getErrorStr, UserContext } from "..";
 import { useContext } from "react";
 
@@ -16,8 +16,8 @@ import {
   Spinner,
   TextInput
 } from "flowbite-react";
-import { FaPlus, FaUndo } from "react-icons/fa";
-import { createSearchParams, useNavigate } from "react-router-dom";
+import { FaBackward, FaPlus, FaUndo } from "react-icons/fa";
+import { createSearchParams, Link, useNavigate } from "react-router-dom";
 
 const NewPost = () => {
   const { user } = useContext(UserContext);
@@ -27,6 +27,17 @@ const NewPost = () => {
 
   const pictureInputRef = createRef(null);
   const videoInputRef = createRef(null);
+
+  useEffect(() => {
+    if (user === null)
+      return navigate({
+        pathname: "/login",
+        search: createSearchParams({
+          to: "/social/new"
+        }).toString()
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const [formValues, setFormValues] = useState({
     description: "",
@@ -171,6 +182,11 @@ const NewPost = () => {
   return (
     <Layout>
       <div className="px-4 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
+        <Link to={-1}>
+          <Button color="light">
+            <FaBackward />
+          </Button>
+        </Link>
         {alert && (
           <Alert
             className="mb-6"
@@ -181,9 +197,7 @@ const NewPost = () => {
           </Alert>
         )}
 
-        {user === false ? (
-          <Spinner />
-        ) : user ? (
+        {user ? (
           <form onSubmit={handleSubmit}>
             <div className="my-4">
               <Label
@@ -195,6 +209,7 @@ const NewPost = () => {
                 required
                 name="description"
                 id="description"
+                placeholder="La mia Yagi 6 elementi..."
                 disabled={disabled}
                 value={formValues.description}
                 onChange={handleChange}
@@ -245,6 +260,7 @@ const NewPost = () => {
                   id="brand"
                   value={formValues.brand}
                   onChange={handleChange}
+                  placeholder="Diamond"
                 />
               </div>
               <div className="my-4 flex gap-2 items-center">
@@ -334,6 +350,7 @@ const NewPost = () => {
                 maxLength={100}
                 value={formValues.cable}
                 onChange={handleChange}
+                placeholder="Cavo RG-58, ~10 metri"
               />
             </div>
 
@@ -397,7 +414,7 @@ const NewPost = () => {
                 {isSubmitting ? <Spinner /> : <FaPlus />}
                 <span className="ml-1 font-semibold">
                   {!isSubmitting
-                    ? "Nuovo post"
+                    ? "Crea post"
                     : isUploadingFiles
                     ? "Caricamento dei file"
                     : "Creazione post"}
@@ -406,7 +423,7 @@ const NewPost = () => {
             </div>
           </form>
         ) : (
-          navigate("/login")
+          <Spinner />
         )}
       </div>
     </Layout>

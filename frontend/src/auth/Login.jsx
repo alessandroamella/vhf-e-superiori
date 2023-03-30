@@ -4,7 +4,7 @@ import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
 import React, { createRef, useRef, useState } from "react";
 import { useEffect } from "react";
 import { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getErrorStr, UserContext } from "..";
 import ReCAPTCHA from "react-google-recaptcha";
 import Layout from "../Layout";
@@ -80,7 +80,7 @@ const Login = () => {
       });
       console.log(data);
       setUser(data);
-      navigate("/");
+      navigate(searchParams.get("to") || "/");
     } catch (err) {
       console.log(err.response.data);
       setAlert({
@@ -91,13 +91,14 @@ const Login = () => {
       setDisabled(false);
     }
   }
+  const [searchParams] = useSearchParams();
 
   const loginInput = useRef(null);
 
   return (
     <Layout>
       {user && navigate("/profile")}
-      <div className="w-full h-full dark:bg-gray-900 dark:text-white">
+      <div className="w-full h-full min-h-[70vh] dark:bg-gray-900 dark:text-white">
         <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">
           <Typography variant="h1" className="mb-2">
             Login

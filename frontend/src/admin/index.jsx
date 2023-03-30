@@ -24,11 +24,12 @@ import { EventsContext, getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
 import { DefaultEditor } from "react-simple-wysiwyg";
 import { FaCheck, FaDownload, FaPlusCircle, FaTimes } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router-dom";
 import ReactHTMLTableToExcel from "react-html-table-to-excel";
 import { Navigation, Pagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Zoom from "react-medium-image-zoom";
+import ReactPlayer from "react-player/lazy";
 
 const Event = () => {
   const { user } = useContext(UserContext);
@@ -307,7 +308,12 @@ const Event = () => {
   const navigate = useNavigate();
 
   return user === null || (user && !user.isAdmin) ? (
-    navigate("/login")
+    navigate({
+      pathname: "/login",
+      search: createSearchParams({
+        to: "/"
+      }).toString()
+    })
   ) : (
     <Layout>
       <Modal
@@ -792,7 +798,7 @@ const Event = () => {
                             <SwiperSlide key={p}>
                               <Zoom>
                                 <img
-                                  className="select-none w-full max-h-24 object-center object-contain"
+                                  className="select-none w-full max-h-32 object-center object-contain"
                                   src={p}
                                   alt="Post pic"
                                 />
@@ -802,16 +808,28 @@ const Event = () => {
                         </Swiper>
                       </Table.Cell>
                       <Table.Cell>
-                        {u.videos.map(v => (
-                          <a
-                            key={v}
-                            href={v}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <div className="w-[384px]">
+                          <Swiper
+                            spaceBetween={30}
+                            slidesPerView="auto"
+                            navigation
+                            pagination={{
+                              clickable: true
+                            }}
+                            modules={[Navigation, Pagination]}
                           >
-                            {v}
-                          </a>
-                        ))}
+                            {u.videos.map(v => (
+                              <SwiperSlide key={v}>
+                                <ReactPlayer
+                                  controls
+                                  height={128}
+                                  width={384}
+                                  url={v}
+                                />
+                              </SwiperSlide>
+                            ))}
+                          </Swiper>
+                        </div>
                       </Table.Cell>
                       <Table.Cell>
                         {u.isApproved ? (

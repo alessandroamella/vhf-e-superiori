@@ -10,7 +10,7 @@ const Header = () => {
     <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-2 md:px-8 flex flex-col lg:flex-row md:items-center">
       <Link
         to="/"
-        className="flex items-center hover:scale-105 transition-transform"
+        className="flex items-center hover:scale-105 transition-transform w-fit"
       >
         <img
           className="w-20 md:w-36"

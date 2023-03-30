@@ -4,15 +4,15 @@ import ReactPlaceholder from "react-placeholder";
 import { useNavigate } from "react-router-dom";
 
 const FeedCard = ({ post, pp }) => {
-  const pic = pp && pp.find(p => p.callsign === post.fromUser.callsign)?.url;
+  const pic = pp && pp.find(p => p.callsign === post?.fromUser?.callsign)?.url;
   console.log({ pic });
 
   const navigate = useNavigate();
 
   return (
     <div
-      onClick={() => post && navigate(post._id)}
-      className="transition-transform hover:scale-105 cursor-pointer relative max-h-[50vh] rounded-xl border border-gray-200 dark:border-gray-600 mb-4 overflow-hidden"
+      onClick={() => post && navigate(post?._id)}
+      className="transition-transform hover:scale-105 cursor-pointer relative max-h-[50vh] rounded-xl border border-gray-200 dark:border-gray-800 mb-4 overflow-hidden"
     >
       <ReactPlaceholder
         showLoadingAnimation

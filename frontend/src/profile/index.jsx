@@ -14,10 +14,10 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { createSearchParams, Link, useNavigate } from "react-router-dom";
 import { isAfter } from "date-fns/esm";
 import { it } from "date-fns/locale";
-import { FaCheck, FaCross, FaExclamation, FaLink } from "react-icons/fa";
+import { FaCheck, FaExclamation, FaLink } from "react-icons/fa";
 import { formatInTimeZone } from "date-fns-tz";
 
 const Profile = () => {
@@ -130,7 +130,13 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user === null) navigate("/login");
+    if (user === null)
+      return navigate({
+        pathname: "/login",
+        search: createSearchParams({
+          to: "/profile"
+        }).toString()
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 

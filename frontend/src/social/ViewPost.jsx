@@ -19,6 +19,7 @@ import { Navigation, Pagination } from "swiper";
 import Zoom from "react-medium-image-zoom";
 import { formatInTimeZone } from "date-fns-tz";
 import { it } from "date-fns/locale";
+import ReactPlayer from "react-player/lazy";
 
 const ViewPost = () => {
   const { id } = useParams();
@@ -89,8 +90,8 @@ const ViewPost = () => {
           </Alert>
         )}
 
-        <div className="flex justify-center">
-          <div className="w-4/5 rounded-xl border border-gray-200 dark:border-gray-600 mb-4 overflow-hidden">
+        <div className="mt-2 flex justify-center">
+          <div className="w-full px-4 md:px-0 md:w-4/5 rounded-xl border border-gray-200 dark:border-gray-800 mb-4 overflow-hidden">
             <ReactPlaceholder
               showLoadingAnimation
               type="rect"
@@ -108,7 +109,7 @@ const ViewPost = () => {
                   modules={[Navigation, Pagination]}
                 >
                   {post.pictures.map(p => (
-                    <SwiperSlide key={p}>
+                    <SwiperSlide className="my-auto" key={p}>
                       <Zoom>
                         <img
                           className="select-none w-full max-h-96 object-cover"
@@ -116,6 +117,11 @@ const ViewPost = () => {
                           alt="Post pic"
                         />
                       </Zoom>
+                    </SwiperSlide>
+                  ))}
+                  {post.videos.map(v => (
+                    <SwiperSlide className="my-auto" key={v}>
+                      <ReactPlayer controls width="100%" url={v} />
                     </SwiperSlide>
                   ))}
                 </Swiper>
@@ -135,7 +141,7 @@ const ViewPost = () => {
                     </ReactPlaceholder>
                   </h5>
                   <div className="px-2 flex flex-col justify-center gap-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center gap-2">
                       {pic && (
                         <img
                           loading="lazy"
@@ -151,7 +157,7 @@ const ViewPost = () => {
                         ready={!!post?.fromUser?.callsign}
                       >
                         <p className="uppercase tracking-tight font-semibold text-lg text-gray-700">
-                          {pic && post?.fromUser?.callsign ? (
+                          {post?.fromUser?.callsign && (
                             <a
                               href={
                                 "https://www.qrz.com/db/" +
@@ -162,20 +168,18 @@ const ViewPost = () => {
                             >
                               {post?.fromUser?.callsign}
                             </a>
-                          ) : (
-                            post?.fromUser?.callsign
                           )}
                         </p>
                       </ReactPlaceholder>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center gap-2">
                       <ReactPlaceholder
                         showLoadingAnimation
                         type="text"
                         rows={1}
                         ready={!!post?.createdAt}
                       >
-                        <span className="min-w-[12rem] text-gray-600">
+                        <span className="min-w-[12rem] text-gray-600 dark:text-gray-400">
                           {post?.createdAt &&
                             formatInTimeZone(
                               post?.createdAt,
