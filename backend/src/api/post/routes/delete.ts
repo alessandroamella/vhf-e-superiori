@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import EventModel from "../models";
 import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
 import {
@@ -9,7 +8,7 @@ import {
     UNAUTHORIZED
 } from "http-status";
 import { param } from "express-validator";
-import User, { UserDoc } from "../../auth/models";
+import { UserDoc } from "../../auth/models";
 import Post from "../models";
 import { isDocument } from "@typegoose/typegoose";
 import { Errors } from "../../errors";
@@ -69,7 +68,12 @@ router.delete(
                 const reqUser = req.user as unknown as UserDoc;
                 const user = post.fromUser as unknown as UserDoc;
 
-                if (!reqUser?.isAdmin || user._id.toString() !== reqUser?._id) {
+                logger.debug("Delete post isAdmin: " + reqUser?.isAdmin);
+                logger.debug(
+                    "Delete post _id match: " +
+                        (user._id.toString() === reqUser?._id)
+                );
+                if (!reqUser?.isAdmin && user._id.toString() !== reqUser?._id) {
                     return res
                         .status(UNAUTHORIZED)
                         .json(createError(Errors.MUST_BE_POST_OWNER));

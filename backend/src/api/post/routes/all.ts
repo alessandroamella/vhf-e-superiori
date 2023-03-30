@@ -70,7 +70,9 @@ router.get(
     query("offset").isInt({ min: 0 }),
     async (req, res) => {
         try {
-            const posts = await Post.find({ isApproved: true })
+            const user = req.user as unknown as UserDoc | undefined;
+            const query = user?.isAdmin ? {} : { isApproved: true };
+            const posts = await Post.find(query)
                 .sort({ createdAt: -1 })
                 .populate("fromUser")
                 .limit(req.query?.limit)

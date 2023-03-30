@@ -13,6 +13,10 @@ import {
   TextInput,
   Tooltip
 } from "flowbite-react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/scrollbar";
 import React, { useContext, useEffect, useState } from "react";
 import { it } from "date-fns/locale";
 import { formatInTimeZone } from "date-fns-tz";
@@ -22,6 +26,9 @@ import { DefaultEditor } from "react-simple-wysiwyg";
 import { FaCheck, FaDownload, FaPlusCircle, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ReactHTMLTableToExcel from "react-html-table-to-excel";
+import { Navigation, Pagination } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
+import Zoom from "react-medium-image-zoom";
 
 const Event = () => {
   const { user } = useContext(UserContext);
@@ -66,7 +73,9 @@ const Event = () => {
     }
     async function getPosts() {
       try {
-        const { data } = await axios.get("/api/post");
+        const { data } = await axios.get("/api/post", {
+          params: { limit: 100 }
+        });
         console.log("posts", data);
         setPosts(data.posts);
       } catch (err) {
@@ -233,6 +242,65 @@ const Event = () => {
       });
     } finally {
       setDisabled(false);
+    }
+  }
+
+  const [isApproving, setIsApproving] = useState(false);
+
+  async function setApprovePost(j) {
+    if (
+      !window.confirm(
+        `Vuoi ${j.isApproved ? "DISAPPROVARE" : "APPROVARE"} il post con ID ${
+          j._id
+        }?`
+      )
+    ) {
+      return;
+    }
+
+    console.log("approve post", j);
+    setIsApproving(true);
+    try {
+      await axios.post("/api/post/approve/" + j._id);
+      console.log("set approved post", j._id);
+      const _posts = [...posts];
+      const i = _posts.findIndex(_j => _j._id === j._id);
+      _posts[i] = { ...j, isApproved: !j.isApproved };
+      setPosts(_posts);
+    } catch (err) {
+      console.log(err?.response?.data || err);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+    } finally {
+      setIsApproving(false);
+    }
+  }
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  async function deletePost(j) {
+    if (!window.confirm("Vuoi ELIMINARE il post con ID " + j._id + "?")) {
+      return;
+    }
+
+    console.log("delete post", j);
+    setIsDeleting(true);
+    try {
+      await axios.delete("/api/post/" + j._id);
+      console.log("delete post", j._id);
+      const _posts = [...posts];
+      const i = _posts.findIndex(_j => _j._id === j._id);
+      _posts.splice(i, 1);
+      setPosts(_posts);
+    } catch (err) {
+      console.log(err?.response?.data || err);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -544,8 +612,8 @@ const Event = () => {
         </form>
       </Modal>
 
-      <div className="w-full h-full pt-8 pb-24 dark:text-white dark:bg-gray-900">
-        <div className="mx-auto px-2 w-full md:w-2/3 my-12">
+      <div className="w-full h-full pb-24 dark:text-white dark:bg-gray-900">
+        <div className="mx-auto px-2 w-full md:w-5/6 my-12">
           {alert && (
             <Alert
               className="mb-6"
@@ -626,9 +694,10 @@ const Event = () => {
             Post (ultimi 100)
           </Typography>
           <div className="mb-6">
-            {!!posts ? (
+            {posts ? (
               <Table>
                 <Table.Head>
+                  <Table.HeadCell>Azioni</Table.HeadCell>
                   <Table.HeadCell>fromUser</Table.HeadCell>
                   <Table.HeadCell>description</Table.HeadCell>
                   <Table.HeadCell>band</Table.HeadCell>
@@ -648,19 +717,102 @@ const Event = () => {
                   {posts?.map(u => (
                     <Table.Row key={u._id}>
                       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                        {u.fromUser}
+                        <div className="flex items-center gap-2">
+                          {u.isApproved ? (
+                            <>
+                              <Button
+                                color="warning"
+                                disabled={isApproving}
+                                onClick={() => setApprovePost(u)}
+                              >
+                                {isApproving ? (
+                                  <Spinner />
+                                ) : (
+                                  <span>Disapprova</span>
+                                )}
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                color="success"
+                                disabled={isApproving}
+                                onClick={() => setApprovePost(u)}
+                              >
+                                {isApproving ? (
+                                  <Spinner />
+                                ) : (
+                                  <span>Approva</span>
+                                )}
+                              </Button>
+                            </>
+                          )}
+                          <Button
+                            color="failure"
+                            disabled={isDeleting}
+                            onClick={() => deletePost(u)}
+                          >
+                            {isDeleting ? <Spinner /> : <span>Elimina</span>}
+                          </Button>
+                        </div>
                       </Table.Cell>
-                      <Table.Cell>{u.description}</Table.Cell>
+                      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                        {u.fromUser.callsign}
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Tooltip content={u.description}>
+                          <span className="line-clamp-3">{u.description}</span>
+                        </Tooltip>
+                      </Table.Cell>
                       <Table.Cell>{u.band}</Table.Cell>
                       <Table.Cell>{u.brand}</Table.Cell>
-                      <Table.Cell>{u.isSelfBuilt}</Table.Cell>
+                      <Table.Cell>
+                        {u.isSelfBuilt ? (
+                          <FaCheck className="text-green-500" />
+                        ) : (
+                          <FaTimes className="text-red-600" />
+                        )}
+                      </Table.Cell>
                       <Table.Cell>{u.metersFromSea}</Table.Cell>
                       <Table.Cell>{u.boomLengthCm}</Table.Cell>
                       <Table.Cell>{u.numberOfElements}</Table.Cell>
                       <Table.Cell>{u.numberOfAntennas}</Table.Cell>
                       <Table.Cell>{u.cable}</Table.Cell>
-                      <Table.Cell>{u.pictures}</Table.Cell>
-                      <Table.Cell>{u.videos}</Table.Cell>
+                      <Table.Cell>
+                        <Swiper
+                          spaceBetween={30}
+                          slidesPerView="auto"
+                          navigation
+                          pagination={{
+                            clickable: true
+                          }}
+                          modules={[Navigation, Pagination]}
+                        >
+                          {u.pictures.map(p => (
+                            <SwiperSlide key={p}>
+                              <Zoom>
+                                <img
+                                  className="select-none w-full max-h-24 object-center object-contain"
+                                  src={p}
+                                  alt="Post pic"
+                                />
+                              </Zoom>
+                            </SwiperSlide>
+                          ))}
+                        </Swiper>
+                      </Table.Cell>
+                      <Table.Cell>
+                        {u.videos.map(v => (
+                          <a
+                            key={v}
+                            href={v}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {v}
+                          </a>
+                        ))}
+                      </Table.Cell>
                       <Table.Cell>
                         {u.isApproved ? (
                           <FaCheck className="text-green-500" />
