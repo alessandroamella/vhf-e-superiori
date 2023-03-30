@@ -6,19 +6,20 @@ import {
   Button,
   Card,
   Label,
+  ListGroup,
   Modal,
   Spinner,
   Table,
   TextInput,
   Tooltip
 } from "flowbite-react";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { it } from "date-fns/locale";
 import { formatInTimeZone } from "date-fns-tz";
 import { EventsContext, getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
 import { DefaultEditor } from "react-simple-wysiwyg";
-import { FaDownload, FaPlusCircle } from "react-icons/fa";
+import { FaCheck, FaDownload, FaPlusCircle, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ReactHTMLTableToExcel from "react-html-table-to-excel";
 
@@ -44,6 +45,42 @@ const Event = () => {
   const [logoUrl, setLogoUrl] = useState("/logo-min.png");
 
   const [joinRequests, setJoinRequests] = useState(null);
+
+  const [users, setUsers] = useState(false);
+  const [posts, setPosts] = useState(false);
+
+  useEffect(() => {
+    async function getUsers() {
+      try {
+        const { data } = await axios.get("/api/auth/all");
+        console.log("users", data);
+        setUsers(data);
+      } catch (err) {
+        console.log("Errore nel caricamento degli utenti", err);
+        setAlert({
+          color: "failure",
+          msg: getErrorStr(err?.response?.data?.err)
+        });
+        setUsers(null);
+      }
+    }
+    async function getPosts() {
+      try {
+        const { data } = await axios.get("/api/post");
+        console.log("posts", data);
+        setPosts(data.posts);
+      } catch (err) {
+        console.log("Errore nel caricamento dei post", err);
+        setAlert({
+          color: "failure",
+          msg: getErrorStr(err?.response?.data?.err)
+        });
+        setPosts(null);
+      }
+    }
+    getUsers();
+    getPosts();
+  }, []);
 
   async function createEvent(e) {
     e.preventDefault();
@@ -519,11 +556,138 @@ const Event = () => {
             </Alert>
           )}
 
-          <Typography variant="h1" className="mb-12 flex items-center">
+          <Typography variant="h1" className="mb-6 flex items-center">
             <Badge size="lg" color="info" className="mr-2">
               Admin
             </Badge>
-            <span>Manager eventi</span>
+          </Typography>
+
+          <Typography variant="h2" className="mb-4 flex items-center">
+            Utenti
+          </Typography>
+          <div className="mb-6">
+            {users ? (
+              <Table>
+                <Table.Head>
+                  <Table.HeadCell>callsign</Table.HeadCell>
+                  <Table.HeadCell>name</Table.HeadCell>
+                  <Table.HeadCell>email</Table.HeadCell>
+                  <Table.HeadCell>phoneNumber</Table.HeadCell>
+                  <Table.HeadCell>createdAt</Table.HeadCell>
+                  <Table.HeadCell>isAdmin</Table.HeadCell>
+                  <Table.HeadCell>joinRequests</Table.HeadCell>
+                </Table.Head>
+                <Table.Body>
+                  {users?.map(u => (
+                    <Table.Row key={u._id}>
+                      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                        {u.callsign}
+                      </Table.Cell>
+                      <Table.Cell>{u.name}</Table.Cell>
+                      <Table.Cell>{u.email}</Table.Cell>
+                      <Table.Cell>{u.phoneNumber}</Table.Cell>
+                      <Table.Cell>
+                        {formatInTimeZone(
+                          u.createdAt,
+                          "Europe/Rome",
+                          "yyyy-MM-dd HH:mm:ss"
+                        )}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {u.isAdmin ? (
+                          <FaCheck className="text-green-500" />
+                        ) : (
+                          <FaTimes className="text-red-600" />
+                        )}
+                      </Table.Cell>
+                      <Table.Cell>
+                        <ListGroup>
+                          {u.joinRequests.length ? (
+                            u.joinRequests.map(j => (
+                              <ListGroup.Item>{j}</ListGroup.Item>
+                            ))
+                          ) : (
+                            <FaTimes />
+                          )}
+                        </ListGroup>
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table>
+            ) : users === false ? (
+              <Spinner />
+            ) : (
+              <p>Errore nel caricamento degli utenti</p>
+            )}
+          </div>
+
+          <Typography variant="h2" className="mb-4 flex items-center">
+            Post (ultimi 100)
+          </Typography>
+          <div className="mb-6">
+            {!!posts ? (
+              <Table>
+                <Table.Head>
+                  <Table.HeadCell>fromUser</Table.HeadCell>
+                  <Table.HeadCell>description</Table.HeadCell>
+                  <Table.HeadCell>band</Table.HeadCell>
+                  <Table.HeadCell>brand</Table.HeadCell>
+                  <Table.HeadCell>isSelfBuilt</Table.HeadCell>
+                  <Table.HeadCell>metersFromSea</Table.HeadCell>
+                  <Table.HeadCell>boomLengthCm</Table.HeadCell>
+                  <Table.HeadCell>numberOfElements</Table.HeadCell>
+                  <Table.HeadCell>numberOfAntennas</Table.HeadCell>
+                  <Table.HeadCell>cable</Table.HeadCell>
+                  <Table.HeadCell>pictures</Table.HeadCell>
+                  <Table.HeadCell>videos</Table.HeadCell>
+                  <Table.HeadCell>isApproved</Table.HeadCell>
+                  <Table.HeadCell>createdAt</Table.HeadCell>
+                </Table.Head>
+                <Table.Body>
+                  {posts?.map(u => (
+                    <Table.Row key={u._id}>
+                      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                        {u.fromUser}
+                      </Table.Cell>
+                      <Table.Cell>{u.description}</Table.Cell>
+                      <Table.Cell>{u.band}</Table.Cell>
+                      <Table.Cell>{u.brand}</Table.Cell>
+                      <Table.Cell>{u.isSelfBuilt}</Table.Cell>
+                      <Table.Cell>{u.metersFromSea}</Table.Cell>
+                      <Table.Cell>{u.boomLengthCm}</Table.Cell>
+                      <Table.Cell>{u.numberOfElements}</Table.Cell>
+                      <Table.Cell>{u.numberOfAntennas}</Table.Cell>
+                      <Table.Cell>{u.cable}</Table.Cell>
+                      <Table.Cell>{u.pictures}</Table.Cell>
+                      <Table.Cell>{u.videos}</Table.Cell>
+                      <Table.Cell>
+                        {u.isApproved ? (
+                          <FaCheck className="text-green-500" />
+                        ) : (
+                          <FaTimes className="text-red-600" />
+                        )}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {formatInTimeZone(
+                          u.createdAt,
+                          "Europe/Rome",
+                          "yyyy-MM-dd HH:mm:ss"
+                        )}
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table>
+            ) : posts === false ? (
+              <Spinner />
+            ) : (
+              <p>Errore nel caricamento degli utenti</p>
+            )}
+          </div>
+
+          <Typography variant="h2" className="mb-4 flex items-center">
+            Eventi
           </Typography>
 
           {events === null ? (

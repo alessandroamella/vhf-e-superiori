@@ -1,5 +1,5 @@
 import Layout from "../Layout";
-import { useState } from "react";
+import { createRef, useState } from "react";
 import { getErrorStr, UserContext } from "..";
 import { useContext } from "react";
 
@@ -16,7 +16,7 @@ import {
   Spinner,
   TextInput
 } from "flowbite-react";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaUndo } from "react-icons/fa";
 import { createSearchParams, useNavigate } from "react-router-dom";
 
 const NewPost = () => {
@@ -24,6 +24,9 @@ const NewPost = () => {
 
   const [alert, setAlert] = useState(null);
   const [disabled, setDisabled] = useState(false);
+
+  const pictureInputRef = createRef(null);
+  const videoInputRef = createRef(null);
 
   const [formValues, setFormValues] = useState({
     description: "",
@@ -154,6 +157,16 @@ const NewPost = () => {
       [name]: type === "checkbox" ? checked : value
     });
   };
+
+  function resetPictures() {
+    pictureInputRef.current.value = null;
+    setPictures([]);
+  }
+
+  function resetVideos() {
+    videoInputRef.current.value = null;
+    setVideos([]);
+  }
 
   return (
     <Layout>
@@ -326,27 +339,57 @@ const NewPost = () => {
 
             <div className="my-4">
               <Label htmlFor="pictures" value="Foto antenna (min. 1)" />
-              <FileInput
-                required
-                disabled={disabled}
-                id="pictures"
-                multiple
-                helperText="Foto sull'antenna"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={handlePictureChange}
-              />
+              <div className="flex items-center gap-2">
+                <FileInput
+                  required
+                  disabled={disabled}
+                  id="pictures"
+                  multiple
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handlePictureChange}
+                  className="w-full"
+                  ref={pictureInputRef}
+                />
+                <Button
+                  color="dark"
+                  onClick={resetPictures}
+                  disabled={
+                    disabled ||
+                    isUploadingFiles ||
+                    isSubmitting ||
+                    !pictures?.length
+                  }
+                >
+                  <FaUndo />
+                </Button>
+              </div>
             </div>
 
             <div className="my-4">
               <Label htmlFor="videos" value="Video antenna (max. 2)" />
-              <FileInput
-                id="videos"
-                multiple
-                helperText="Video sull'antenna"
-                disabled={disabled}
-                accept="video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv"
-                onChange={handleVideoChange}
-              />
+              <div className="flex items-center gap-2">
+                <FileInput
+                  id="videos"
+                  multiple
+                  disabled={disabled}
+                  accept="video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv"
+                  onChange={handleVideoChange}
+                  className="w-full"
+                  ref={videoInputRef}
+                />
+                <Button
+                  color="dark"
+                  onClick={resetVideos}
+                  disabled={
+                    disabled ||
+                    isUploadingFiles ||
+                    isSubmitting ||
+                    !videos?.length
+                  }
+                >
+                  <FaUndo />
+                </Button>
+              </div>
             </div>
 
             <div className="flex justify-center">

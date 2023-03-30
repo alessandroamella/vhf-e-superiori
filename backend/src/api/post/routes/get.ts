@@ -5,7 +5,7 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
 import { UserDoc } from "../../auth/models";
 import { Errors } from "../../errors";
-import { createError } from "../../helpers";
+import { createError, validate } from "../../helpers";
 import { qrz } from "../../qrz";
 import Post from "../models";
 
@@ -52,7 +52,7 @@ const router = Router();
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  */
-router.get("/:_id", param("_id").isMongoId(), async (req, res) => {
+router.get("/:_id", param("_id").isMongoId(), validate, async (req, res) => {
     try {
         const post = await Post.findOne({ _id: req.params?._id }).populate(
             "fromUser"

@@ -8,9 +8,11 @@ import updateRoute from "./update";
 import changePwRoute from "./changePw";
 import sendResetPwRoute from "./sendResetPw";
 import resetPwRoute from "./resetPw";
+import allRoute from "./all";
 import { AuthOptions } from "../shared";
 import { logger } from "../../../shared";
 import isLoggedIn from "../../middlewares/isLoggedIn";
+import isAdmin from "../../middlewares/isAdmin";
 const router = Router();
 
 logger.debug("Using auth routes");
@@ -30,6 +32,7 @@ router.use("/verify", verifyRoute);
 router.use("/sendresetpw", sendResetPwRoute);
 router.use("/resetpw", resetPwRoute);
 router.use("/changepw", isLoggedIn, changePwRoute);
+router.use("/all", isLoggedIn, isAdmin, allRoute);
 router.use("/", isLoggedIn, viewRoute);
 router.use("/", isLoggedIn, updateRoute);
 

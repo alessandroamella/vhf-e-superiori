@@ -9,7 +9,7 @@ import Signup from "./auth/Signup";
 import reportWebVitals from "./reportWebVitals";
 import axios, { isAxiosError } from "axios";
 import Profile from "./profile";
-import Event from "./admin/Event";
+import Event from "./admin";
 import ViewEvent from "./event/ViewEvent";
 // import Regolamento from "./homepage/Regolamento";
 // import Info from "./homepage/Info";

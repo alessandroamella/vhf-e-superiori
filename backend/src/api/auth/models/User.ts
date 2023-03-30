@@ -27,6 +27,7 @@ import { PostClass } from "../../post/models";
  *          - password
  *          - isAdmin
  *          - joinRequests
+ *          - posts
  *        properties:
  *          callsign:
  *            type: string
