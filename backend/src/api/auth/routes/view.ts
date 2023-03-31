@@ -48,7 +48,7 @@ router.get("/", async (req, res) => {
         })
             .populate("posts", ["description", "isApproved", "createdAt"])
             .lean();
-        user?.posts.reverse();
+        user?.posts?.reverse();
         logger.debug("User view");
         logger.debug(user);
         res.json(user);

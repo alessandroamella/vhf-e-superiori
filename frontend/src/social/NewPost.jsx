@@ -279,7 +279,7 @@ const NewPost = () => {
                       name="brand"
                       {...register("brand", {
                         maxLength: 30,
-                        required: true
+                        required: false
                       })}
                       id="brand"
                       maxLength={30}
