@@ -1,20 +1,24 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { JoinOpenContext, ReadyContext } from "..";
+import React, { useContext, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { JoinOpenContext, ReadyContext, SidebarOpenContext } from "..";
 import { reveal as BurgerMenuComponent } from "react-burger-menu";
 import MenuContent from "./MenuContent";
-
-const MenuOpenContext = createContext(false);
 
 const BurgerMenu = () => {
   const { ready } = useContext(ReadyContext);
 
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { sidebarOpen, setSidebarOpen } = useContext(SidebarOpenContext);
   const { joinOpen } = useContext(JoinOpenContext);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    console.log({ location: location });
+  }, [location]);
 
   useEffect(() => {
     if (joinOpen) {
-      setMenuOpen(false);
+      setSidebarOpen(false);
       if (window.location.pathname !== "/") navigate("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -26,19 +30,17 @@ const BurgerMenu = () => {
     <div
       className={`${window.location.pathname === "/social" ? "md:hidden" : ""}`}
     >
-      <MenuOpenContext.Provider value={{ menuOpen, setMenuOpen }}>
-        {ready && (
-          <BurgerMenuComponent
-            right
-            pageWrapId={"page-wrap"}
-            outerContainerId={"outer-container"}
-            isOpen={menuOpen}
-            onStateChange={state => setMenuOpen(state.isOpen)}
-          >
-            <MenuContent />
-          </BurgerMenuComponent>
-        )}
-      </MenuOpenContext.Provider>
+      {ready && (
+        <BurgerMenuComponent
+          right
+          pageWrapId={"page-wrap"}
+          outerContainerId={"outer-container"}
+          isOpen={sidebarOpen}
+          onStateChange={state => setSidebarOpen(state.isOpen)}
+        >
+          <MenuContent />
+        </BurgerMenuComponent>
+      )}
     </div>
   );
 };

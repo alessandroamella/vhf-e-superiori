@@ -24,6 +24,7 @@
         "react-cookie": "^4.1.1",
         "react-dom": "^18.2.0",
         "react-google-recaptcha": "^2.1.0",
+        "react-hook-form": "^7.43.9",
         "react-html-table-to-excel": "^2.0.0",
         "react-icons": "^4.7.1",
         "react-infinite-scroll-component": "^6.1.0",

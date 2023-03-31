@@ -24,6 +24,7 @@ export const SplashContext = createContext(false);
 export const ReadyContext = createContext(false);
 export const JoinOpenContext = createContext(false);
 export const ViewsContext = createContext(false);
+export const SidebarOpenContext = createContext(false);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const router = createBrowserRouter([
@@ -101,6 +102,7 @@ const App = () => {
   const [ready, setReady] = useState(false);
   const [joinOpen, setJoinOpen] = useState(false);
   const [views, setViews] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (window.location.pathname === "/") {
@@ -189,7 +191,11 @@ const App = () => {
                   }}
                 >
                   <ViewsContext.Provider value={{ views }}>
-                    <RouterProvider router={router} />
+                    <SidebarOpenContext.Provider
+                      value={{ sidebarOpen, setSidebarOpen }}
+                    >
+                      <RouterProvider router={router} />
+                    </SidebarOpenContext.Provider>
                   </ViewsContext.Provider>
                 </JoinOpenContext.Provider>
               </ReadyContext.Provider>

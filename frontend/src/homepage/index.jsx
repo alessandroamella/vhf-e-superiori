@@ -145,6 +145,16 @@ const Homepage = () => {
   const [eventJoining, setEventJoining] = useState(null);
   const { joinOpen, setJoinOpen } = useContext(JoinOpenContext);
 
+  // scroll to URL href
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const id = hash.replace("#", "");
+      const element = document.getElementById(id);
+      if (element) element.scrollIntoView();
+    }
+  }, []);
+
   return (
     <Layout>
       {!splashPlayed && <Splash ready={ready} />}

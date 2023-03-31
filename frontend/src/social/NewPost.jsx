@@ -2,6 +2,7 @@ import Layout from "../Layout";
 import { createRef, useEffect, useState } from "react";
 import { getErrorStr, UserContext } from "..";
 import { useContext } from "react";
+import { useForm } from "react-hook-form";
 
 import "react-medium-image-zoom/dist/styles.css";
 
@@ -71,13 +72,11 @@ const NewPost = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingFiles, setIsUploadingFiles] = useState(false);
 
-  const handleSubmit = async event => {
-    event.preventDefault();
-
+  const onSubmit = async data => {
     console.log(formValues);
     if (!pictures || pictures.length === 0) {
       setAlert({
-        color: "red",
+        color: "failure",
         msg: "Devi aggiungere almeno una foto"
       });
       window.scrollTo({
@@ -181,6 +180,10 @@ const NewPost = () => {
     setVideos([]);
   }
 
+  const { register, handleSubmit, formState } = useForm();
+
+  const { errors, isValid } = formState;
+
   return (
     <Layout>
       {/* {!user &&
@@ -209,7 +212,7 @@ const NewPost = () => {
 
         {user ? (
           <>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="my-4">
                 <Label
                   htmlFor="description"
@@ -217,13 +220,18 @@ const NewPost = () => {
                 />
                 <TextInput
                   type="text"
-                  required
+                  {...register("description", {
+                    required: true,
+                    maxLength: 30,
+                    minLength: 1
+                  })}
+                  minLength={1}
+                  maxLength={30}
+                  onChange={handleChange}
                   name="description"
                   id="description"
+                  color={errors.description ? "failure" : undefined}
                   placeholder="La mia Yagi 6 elementi..."
-                  disabled={disabled}
-                  value={formValues.description}
-                  onChange={handleChange}
                 />
               </div>
 
@@ -233,7 +241,7 @@ const NewPost = () => {
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1">
                       <Radio
-                        onChange={handleChange}
+                        {...register("band", { required: true })}
                         defaultChecked
                         id="144"
                         name="band"
@@ -243,7 +251,7 @@ const NewPost = () => {
                     </div>
                     <div className="flex items-center gap-1">
                       <Radio
-                        onChange={handleChange}
+                        {...register("band", { required: true })}
                         id="432"
                         name="band"
                         value="432"
@@ -252,7 +260,7 @@ const NewPost = () => {
                     </div>
                     <div className="flex items-center gap-1">
                       <Radio
-                        onChange={handleChange}
+                        {...register("band", { required: true })}
                         id="1200"
                         name="band"
                         value="1200"
@@ -260,36 +268,41 @@ const NewPost = () => {
                       <Label htmlFor="1200">1200 MHz</Label>
                     </div>
                   </div>
+                  {/* {errors.band && <span>This field is required</span>} */}
                 </div>
 
-                <div className="my-4">
-                  <Label htmlFor="brand" value="Marca" />
-                  <TextInput
-                    type="text"
-                    name="brand"
-                    disabled={disabled}
-                    id="brand"
-                    value={formValues.brand}
-                    onChange={handleChange}
-                    placeholder="Diamond"
-                  />
-                </div>
-                <div className="my-4 flex gap-2 items-center">
-                  <Label htmlFor="isSelfBuilt" value="Autocostruita?" />
-                  <Checkbox
-                    type="checkbox"
-                    name="isSelfBuilt"
-                    disabled={disabled}
-                    id="isSelfBuilt"
-                    className="checked:bg-blue-500"
-                    checked={formValues.isSelfBuilt}
-                    onChange={handleChange}
-                  />
+                <div className="my-4 flex items-center gap-4">
+                  <div>
+                    <Label htmlFor="brand" value="Marca" />
+                    <TextInput
+                      type="text"
+                      name="brand"
+                      {...register("brand", {
+                        maxLength: 30,
+                        required: true
+                      })}
+                      id="brand"
+                      maxLength={30}
+                      color={errors.brand ? "failure" : undefined}
+                      onChange={handleChange}
+                      placeholder="Diamond"
+                    />
+                  </div>
+                  <div className="flex gap-2 mt-4 items-center">
+                    <Label htmlFor="isSelfBuilt" value="Autocostruita?" />
+                    <Checkbox
+                      type="checkbox"
+                      name="isSelfBuilt"
+                      id="isSelfBuilt"
+                      className="checked:bg-blue-500"
+                      {...register("isSelfBuilt")}
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
-                <div className="my-4">
+              <div className="grid gap-4 grid-cols-2 md:grid-cols-4 items-end ">
+                <div>
                   <Label
                     htmlFor="metersFromSea"
                     value="Altezza dal mare (S.L.M.)"
@@ -297,15 +310,20 @@ const NewPost = () => {
                   <TextInput
                     type="number"
                     name="metersFromSea"
+                    {...register("metersFromSea", {
+                      required: true,
+                      max: 10000
+                    })}
+                    max={10000}
                     disabled={disabled}
                     id="metersFromSea"
-                    required
+                    color={errors.metersFromSea ? "failure" : undefined}
                     value={formValues.metersFromSea}
                     onChange={handleChange}
                   />
                 </div>
 
-                <div className="my-4">
+                <div>
                   <Label
                     htmlFor="boomLengthCm"
                     value="Lunghezza del boom (cm)"
@@ -313,16 +331,22 @@ const NewPost = () => {
                   <TextInput
                     type="number"
                     name="boomLengthCm"
-                    required
+                    color={errors.boomLengthCm ? "failure" : undefined}
+                    {...register("boomLengthCm", {
+                      required: true,
+                      min: 1,
+                      max: 100000
+                    })}
                     disabled={disabled}
                     id="boomLengthCm"
-                    min={0}
+                    min={1}
+                    max={100000}
                     value={formValues.boomLengthCm}
                     onChange={handleChange}
                   />
                 </div>
 
-                <div className="my-4">
+                <div>
                   <Label
                     htmlFor="numberOfElements"
                     value="Numero di elementi"
@@ -330,16 +354,22 @@ const NewPost = () => {
                   <TextInput
                     type="number"
                     name="numberOfElements"
+                    color={errors.numberOfElements ? "failure" : undefined}
+                    {...register("numberOfElements", {
+                      required: true,
+                      min: 1,
+                      max: 300
+                    })}
                     disabled={disabled}
-                    required
+                    min={1}
+                    max={300}
                     id="numberOfElements"
-                    min={0}
                     value={formValues.numberOfElements}
                     onChange={handleChange}
                   />
                 </div>
 
-                <div className="my-4">
+                <div>
                   <Label
                     htmlFor="numberOfAntennas"
                     value="Numero di antenne coppiate (0 se nessuna)"
@@ -347,10 +377,16 @@ const NewPost = () => {
                   <TextInput
                     type="number"
                     name="numberOfAntennas"
+                    color={errors.numberOfAntennas ? "failure" : undefined}
+                    {...register("numberOfAntennas", {
+                      required: true,
+                      min: 0,
+                      max: 100
+                    })}
                     disabled={disabled}
                     min={0}
+                    max={100}
                     id="numberOfAntennas"
-                    required
                     value={formValues.numberOfAntennas}
                     onChange={handleChange}
                   />
@@ -362,6 +398,8 @@ const NewPost = () => {
                 <TextInput
                   type="text"
                   name="cable"
+                  color={errors.cable ? "failure" : undefined}
+                  {...register("cable", { maxLength: 100, required: true })}
                   disabled={disabled}
                   id="cable"
                   maxLength={100}
@@ -375,11 +413,11 @@ const NewPost = () => {
                 <Label htmlFor="pictures" value="Foto antenna (min. 1)" />
                 <div className="flex items-center gap-2">
                   <FileInput
-                    required
                     disabled={disabled}
+                    color={!pictures.length ? "failure" : undefined}
                     id="pictures"
                     multiple
-                    accept="image/jpeg,image/png,image/webp"
+                    accept="image/*"
                     onChange={handlePictureChange}
                     className="w-full"
                     ref={pictureInputRef}
@@ -404,9 +442,10 @@ const NewPost = () => {
                 <div className="flex items-center gap-2">
                   <FileInput
                     id="videos"
+                    color={errors.videos ? "failure" : undefined}
                     multiple
                     disabled={disabled}
-                    accept="video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv"
+                    accept="video/*"
                     onChange={handleVideoChange}
                     className="w-full"
                     ref={videoInputRef}
@@ -445,10 +484,7 @@ const NewPost = () => {
                 Anteprima
               </Typography>
               <div className="flex justify-center">
-                {pictures.length &&
-                Object.values(formValues).every(v =>
-                  Number.isInteger(v) ? v >= 0 : v === false || v?.length
-                ) ? (
+                {pictures.length && isValid ? (
                   <ViewPostContent
                     post={{
                       ...formValues,

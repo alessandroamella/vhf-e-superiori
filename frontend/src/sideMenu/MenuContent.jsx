@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Button, Spinner } from "flowbite-react";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   FaArchive,
   FaCalendar,
@@ -15,12 +15,15 @@ import {
   FaWhatsapp
 } from "react-icons/fa";
 import { createSearchParams, Link, useNavigate } from "react-router-dom";
-import { getErrorStr, JoinOpenContext, UserContext } from "..";
-
-const MenuOpenContext = createContext(false);
+import {
+  getErrorStr,
+  JoinOpenContext,
+  SidebarOpenContext,
+  UserContext
+} from "..";
 
 const SectionHref = ({ href, wip, children }) => {
-  const { setMenuOpen } = useContext(MenuOpenContext);
+  const { setSidebarOpen } = useContext(SidebarOpenContext);
 
   // const navigate = useNavigate();
 
@@ -32,7 +35,7 @@ const SectionHref = ({ href, wip, children }) => {
       }`}
       onClick={() => {
         if (wip) return alert("Lavori in corso!");
-        setMenuOpen(false);
+        setSidebarOpen(false);
         // if (window.location.pathname !== "/") {
         //   navigate("/" + href);
         // }
@@ -45,9 +48,27 @@ const SectionHref = ({ href, wip, children }) => {
   );
 };
 
-const SectionLink = ({ to, children, ...rest }) => {
+const SectionLink = ({ to, children, redirectBack, ...rest }) => {
+  const { setSidebarOpen } = useContext(SidebarOpenContext);
+
   return (
-    <Link to={to} className="flex items-center gap-2" {...rest}>
+    <Link
+      to={
+        to?.includes("#")
+          ? to
+          : {
+              pathname: to,
+              search: redirectBack
+                ? createSearchParams({
+                    to: window.location.pathname
+                  }).toString()
+                : undefined
+            }
+      }
+      onClick={() => setTimeout(() => setSidebarOpen(false), 50)}
+      className="flex items-center gap-2"
+      {...rest}
+    >
       {children}
     </Link>
   );
@@ -126,7 +147,7 @@ const MenuContent = ({ isSideBar }) => {
               Account di <strong>{user.callsign}</strong>
             </span>
           </SectionLink>
-          <SectionLink to="#" onClick={logout}>
+          <SectionLink onClick={logout}>
             <FaSignOutAlt /> <span>Logout</span>
           </SectionLink>
         </>

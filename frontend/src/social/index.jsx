@@ -121,7 +121,7 @@ const Social = () => {
                   hasMore={hasMore}
                   className="overflow-hidden"
                   loader={
-                    <h4>
+                    <h4 className="w-full text-center">
                       <Spinner />
                     </h4>
                   }
