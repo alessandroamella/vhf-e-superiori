@@ -16,8 +16,10 @@ import {
   Spinner,
   TextInput
 } from "flowbite-react";
-import { FaBackward, FaPlus, FaUndo } from "react-icons/fa";
+import { FaBackward, FaInfoCircle, FaPlus, FaUndo } from "react-icons/fa";
 import { createSearchParams, Link, useNavigate } from "react-router-dom";
+import { Typography } from "@material-tailwind/react";
+import ViewPostContent from "./ViewPostContent";
 
 const NewPost = () => {
   const { user } = useContext(UserContext);
@@ -181,6 +183,14 @@ const NewPost = () => {
 
   return (
     <Layout>
+      {/* {!user &&
+        navigate({
+          pathname: "/login",
+          search: createSearchParams({
+            to: "/social/new"
+          }).toString()
+        })}
+      ) */}
       <div className="px-4 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
         <Link to={-1}>
           <Button color="light">
@@ -198,230 +208,274 @@ const NewPost = () => {
         )}
 
         {user ? (
-          <form onSubmit={handleSubmit}>
-            <div className="my-4">
-              <Label
-                htmlFor="description"
-                value="Descrizione (max 30 caratteri)"
-              />
-              <TextInput
-                type="text"
-                required
-                name="description"
-                id="description"
-                placeholder="La mia Yagi 6 elementi..."
-                disabled={disabled}
-                value={formValues.description}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="flex items-center mx-auto w-fit flex-col md:flex-row md:gap-4">
+          <>
+            <form onSubmit={handleSubmit}>
               <div className="my-4">
-                <Label htmlFor="band" value="Banda radio" />
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1">
-                    <Radio
-                      onChange={handleChange}
-                      defaultChecked
-                      id="144"
-                      name="band"
-                      value="144"
-                    />
-                    <Label htmlFor="144">144 MHz</Label>
+                <Label
+                  htmlFor="description"
+                  value="Descrizione (max 30 caratteri)"
+                />
+                <TextInput
+                  type="text"
+                  required
+                  name="description"
+                  id="description"
+                  placeholder="La mia Yagi 6 elementi..."
+                  disabled={disabled}
+                  value={formValues.description}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="flex items-center mx-auto w-fit flex-col md:flex-row md:gap-4">
+                <div className="my-4">
+                  <Label htmlFor="band" value="Banda radio" />
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1">
+                      <Radio
+                        onChange={handleChange}
+                        defaultChecked
+                        id="144"
+                        name="band"
+                        value="144"
+                      />
+                      <Label htmlFor="144">144 MHz</Label>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Radio
+                        onChange={handleChange}
+                        id="432"
+                        name="band"
+                        value="432"
+                      />
+                      <Label htmlFor="432">432 MHz</Label>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Radio
+                        onChange={handleChange}
+                        id="1200"
+                        name="band"
+                        value="1200"
+                      />
+                      <Label htmlFor="1200">1200 MHz</Label>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Radio
-                      onChange={handleChange}
-                      id="432"
-                      name="band"
-                      value="432"
-                    />
-                    <Label htmlFor="432">432 MHz</Label>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Radio
-                      onChange={handleChange}
-                      id="1200"
-                      name="band"
-                      value="1200"
-                    />
-                    <Label htmlFor="1200">1200 MHz</Label>
-                  </div>
+                </div>
+
+                <div className="my-4">
+                  <Label htmlFor="brand" value="Marca" />
+                  <TextInput
+                    type="text"
+                    name="brand"
+                    disabled={disabled}
+                    id="brand"
+                    value={formValues.brand}
+                    onChange={handleChange}
+                    placeholder="Diamond"
+                  />
+                </div>
+                <div className="my-4 flex gap-2 items-center">
+                  <Label htmlFor="isSelfBuilt" value="Autocostruita?" />
+                  <Checkbox
+                    type="checkbox"
+                    name="isSelfBuilt"
+                    disabled={disabled}
+                    id="isSelfBuilt"
+                    className="checked:bg-blue-500"
+                    checked={formValues.isSelfBuilt}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+                <div className="my-4">
+                  <Label
+                    htmlFor="metersFromSea"
+                    value="Altezza dal mare (S.L.M.)"
+                  />
+                  <TextInput
+                    type="number"
+                    name="metersFromSea"
+                    disabled={disabled}
+                    id="metersFromSea"
+                    required
+                    value={formValues.metersFromSea}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="my-4">
+                  <Label
+                    htmlFor="boomLengthCm"
+                    value="Lunghezza del boom (cm)"
+                  />
+                  <TextInput
+                    type="number"
+                    name="boomLengthCm"
+                    required
+                    disabled={disabled}
+                    id="boomLengthCm"
+                    min={0}
+                    value={formValues.boomLengthCm}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="my-4">
+                  <Label
+                    htmlFor="numberOfElements"
+                    value="Numero di elementi"
+                  />
+                  <TextInput
+                    type="number"
+                    name="numberOfElements"
+                    disabled={disabled}
+                    required
+                    id="numberOfElements"
+                    min={0}
+                    value={formValues.numberOfElements}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="my-4">
+                  <Label
+                    htmlFor="numberOfAntennas"
+                    value="Numero di antenne coppiate (0 se nessuna)"
+                  />
+                  <TextInput
+                    type="number"
+                    name="numberOfAntennas"
+                    disabled={disabled}
+                    min={0}
+                    id="numberOfAntennas"
+                    required
+                    value={formValues.numberOfAntennas}
+                    onChange={handleChange}
+                  />
                 </div>
               </div>
 
               <div className="my-4">
-                <Label htmlFor="brand" value="Marca" />
+                <Label htmlFor="cable" value="Informazioni sul cavo" />
                 <TextInput
                   type="text"
-                  name="brand"
+                  name="cable"
                   disabled={disabled}
-                  id="brand"
-                  value={formValues.brand}
+                  id="cable"
+                  maxLength={100}
+                  value={formValues.cable}
                   onChange={handleChange}
-                  placeholder="Diamond"
-                />
-              </div>
-              <div className="my-4 flex gap-2 items-center">
-                <Label htmlFor="isSelfBuilt" value="Autocostruita?" />
-                <Checkbox
-                  type="checkbox"
-                  name="isSelfBuilt"
-                  disabled={disabled}
-                  id="isSelfBuilt"
-                  className="checked:bg-blue-500"
-                  checked={formValues.isSelfBuilt}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
-              <div className="my-4">
-                <Label
-                  htmlFor="metersFromSea"
-                  value="Altezza dal mare (S.L.M.)"
-                />
-                <TextInput
-                  type="number"
-                  name="metersFromSea"
-                  disabled={disabled}
-                  id="metersFromSea"
-                  required
-                  value={formValues.metersFromSea}
-                  onChange={handleChange}
+                  placeholder="Cavo RG-58, ~10 metri"
                 />
               </div>
 
               <div className="my-4">
-                <Label htmlFor="boomLengthCm" value="Lunghezza del boom (cm)" />
-                <TextInput
-                  type="number"
-                  name="boomLengthCm"
-                  required
-                  disabled={disabled}
-                  id="boomLengthCm"
-                  min={0}
-                  value={formValues.boomLengthCm}
-                  onChange={handleChange}
-                />
+                <Label htmlFor="pictures" value="Foto antenna (min. 1)" />
+                <div className="flex items-center gap-2">
+                  <FileInput
+                    required
+                    disabled={disabled}
+                    id="pictures"
+                    multiple
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handlePictureChange}
+                    className="w-full"
+                    ref={pictureInputRef}
+                  />
+                  <Button
+                    color="dark"
+                    onClick={resetPictures}
+                    disabled={
+                      disabled ||
+                      isUploadingFiles ||
+                      isSubmitting ||
+                      !pictures?.length
+                    }
+                  >
+                    <FaUndo />
+                  </Button>
+                </div>
               </div>
 
               <div className="my-4">
-                <Label htmlFor="numberOfElements" value="Numero di elementi" />
-                <TextInput
-                  type="number"
-                  name="numberOfElements"
-                  disabled={disabled}
-                  required
-                  id="numberOfElements"
-                  min={0}
-                  value={formValues.numberOfElements}
-                  onChange={handleChange}
-                />
+                <Label htmlFor="videos" value="Video antenna (max. 2)" />
+                <div className="flex items-center gap-2">
+                  <FileInput
+                    id="videos"
+                    multiple
+                    disabled={disabled}
+                    accept="video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv"
+                    onChange={handleVideoChange}
+                    className="w-full"
+                    ref={videoInputRef}
+                  />
+                  <Button
+                    color="dark"
+                    onClick={resetVideos}
+                    disabled={
+                      disabled ||
+                      isUploadingFiles ||
+                      isSubmitting ||
+                      !videos?.length
+                    }
+                  >
+                    <FaUndo />
+                  </Button>
+                </div>
               </div>
 
-              <div className="my-4">
-                <Label
-                  htmlFor="numberOfAntennas"
-                  value="Numero di antenne coppiate (0 se nessuna)"
-                />
-                <TextInput
-                  type="number"
-                  name="numberOfAntennas"
-                  disabled={disabled}
-                  min={0}
-                  id="numberOfAntennas"
-                  required
-                  value={formValues.numberOfAntennas}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <div className="my-4">
-              <Label htmlFor="cable" value="Informazioni sul cavo" />
-              <TextInput
-                type="text"
-                name="cable"
-                disabled={disabled}
-                id="cable"
-                maxLength={100}
-                value={formValues.cable}
-                onChange={handleChange}
-                placeholder="Cavo RG-58, ~10 metri"
-              />
-            </div>
-
-            <div className="my-4">
-              <Label htmlFor="pictures" value="Foto antenna (min. 1)" />
-              <div className="flex items-center gap-2">
-                <FileInput
-                  required
-                  disabled={disabled}
-                  id="pictures"
-                  multiple
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handlePictureChange}
-                  className="w-full"
-                  ref={pictureInputRef}
-                />
-                <Button
-                  color="dark"
-                  onClick={resetPictures}
-                  disabled={
-                    disabled ||
-                    isUploadingFiles ||
-                    isSubmitting ||
-                    !pictures?.length
-                  }
-                >
-                  <FaUndo />
+              <div className="flex justify-center">
+                <Button disabled={disabled} type="submit">
+                  {isSubmitting ? <Spinner /> : <FaPlus />}
+                  <span className="ml-1 font-semibold">
+                    {!isSubmitting
+                      ? "Crea post"
+                      : isUploadingFiles
+                      ? "Caricamento dei file"
+                      : "Creazione post"}
+                  </span>
                 </Button>
               </div>
-            </div>
+            </form>
 
-            <div className="my-4">
-              <Label htmlFor="videos" value="Video antenna (max. 2)" />
-              <div className="flex items-center gap-2">
-                <FileInput
-                  id="videos"
-                  multiple
-                  disabled={disabled}
-                  accept="video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv"
-                  onChange={handleVideoChange}
-                  className="w-full"
-                  ref={videoInputRef}
-                />
-                <Button
-                  color="dark"
-                  onClick={resetVideos}
-                  disabled={
-                    disabled ||
-                    isUploadingFiles ||
-                    isSubmitting ||
-                    !videos?.length
-                  }
-                >
-                  <FaUndo />
-                </Button>
+            <div className="mt-8">
+              <Typography variant="h2" className="text-center mb-2">
+                Anteprima
+              </Typography>
+              <div className="flex justify-center">
+                {pictures.length &&
+                Object.values(formValues).every(v =>
+                  Number.isInteger(v) ? v >= 0 : v === false || v?.length
+                ) ? (
+                  <ViewPostContent
+                    post={{
+                      ...formValues,
+                      createdAt: new Date(),
+                      pictures: [...Array(pictures.length).keys()].map(e =>
+                        window.URL.createObjectURL(pictures[e])
+                      ),
+                      videos: [...Array(videos.length).keys()].map(e =>
+                        window.URL.createObjectURL(videos[e])
+                      ),
+                      fromUser: user
+                    }}
+                  />
+                ) : (
+                  <Alert color="info">
+                    <Typography
+                      variant="h5"
+                      className="text-center text-red flex gap-2 items-center"
+                    >
+                      <FaInfoCircle />
+                      Compila tutti i campi per vedere l'anteprima
+                    </Typography>
+                  </Alert>
+                )}
               </div>
             </div>
-
-            <div className="flex justify-center">
-              <Button disabled={disabled} type="submit">
-                {isSubmitting ? <Spinner /> : <FaPlus />}
-                <span className="ml-1 font-semibold">
-                  {!isSubmitting
-                    ? "Crea post"
-                    : isUploadingFiles
-                    ? "Caricamento dei file"
-                    : "Creazione post"}
-                </span>
-              </Button>
-            </div>
-          </form>
+          </>
         ) : (
           <Spinner />
         )}

@@ -7,6 +7,7 @@ import {
   Button,
   Card,
   Label,
+  ListGroup,
   Modal,
   Spinner,
   TextInput
@@ -16,8 +17,14 @@ import { useEffect } from "react";
 import axios from "axios";
 import { createSearchParams, Link, useNavigate } from "react-router-dom";
 import { isAfter } from "date-fns/esm";
-import { it } from "date-fns/locale";
-import { FaCheck, FaExclamation, FaLink } from "react-icons/fa";
+import { it, itCH } from "date-fns/locale";
+import {
+  FaCheck,
+  FaExclamation,
+  FaInfoCircle,
+  FaLink,
+  FaTrash
+} from "react-icons/fa";
 import { formatInTimeZone } from "date-fns-tz";
 
 const Profile = () => {
@@ -124,6 +131,33 @@ const Profile = () => {
     } catch (err) {
       console.log(err);
       setJoinRequestDeleteError(getErrorStr(err?.response?.data?.err));
+    }
+  }
+
+  const [deleteDisabled, setDeleteDisabled] = useState(false);
+  async function deletePost(p) {
+    if (!window.confirm(`Vuoi davvero eliminare il post "${p.description}"?`)) {
+      return;
+    }
+
+    setDeleteDisabled(true);
+
+    try {
+      await axios.delete("/api/post/" + p._id);
+      setAlert({
+        color: "success",
+        msg: "Post eliminato con successo"
+      });
+      setUser({ ...user, posts: user.posts.filter(_p => _p._id !== p._id) });
+      setDeleteJoinRequest(null);
+    } catch (err) {
+      console.log("error in post delete", err);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+    } finally {
+      setDeleteDisabled(false);
     }
   }
 
@@ -485,65 +519,130 @@ const Profile = () => {
           </div>
 
           <div>
-            <Typography variant="h3" className="my-4">
-              Partecipazioni
-            </Typography>
+            <div>
+              <Typography variant="h3" className="my-4">
+                Partecipazioni
+              </Typography>
 
-            {joinRequests && events ? (
-              joinRequests.length > 0 ? (
-                joinRequests.map(j => (
-                  <Card key={j._id} className="mb-2">
-                    <h6 className="text-xl font-bold tracking-tight text-gray-900 hover:underline">
-                      <Link to={"/event/" + j.event._id}>{j.event.name}</Link>
-                    </h6>
-                    <p className="font-normal text-gray-700 dark:text-gray-100 -mt-2">
-                      {formatInTimeZone(
-                        new Date(j.event.date),
-                        "Europe/Rome",
-                        "📅 dd/MM/yyyy",
-                        {
-                          locale: it
-                        }
-                      )}
-                    </p>
-                    <p className="font-medium">
-                      {j.isApproved ? (
-                        <span>✅ Approvata</span>
-                      ) : isAfter(new Date(j.event.date), new Date()) ? (
-                        <span>⌛ In attesa di approvazione</span>
-                      ) : (
-                        <span>❌ Non approvata</span>
-                      )}
-                    </p>
+              {joinRequests && events ? (
+                joinRequests.length > 0 ? (
+                  joinRequests.map(j => (
+                    <Card key={j._id} className="mb-2">
+                      <h6 className="text-xl font-bold tracking-tight text-gray-900 hover:underline">
+                        <Link to={"/event/" + j.event._id}>{j.event.name}</Link>
+                      </h6>
+                      <p className="font-normal text-gray-700 dark:text-gray-100 -mt-2">
+                        {formatInTimeZone(
+                          new Date(j.event.date),
+                          "Europe/Rome",
+                          "📅 dd/MM/yyyy",
+                          {
+                            locale: it
+                          }
+                        )}
+                      </p>
+                      <p className="font-medium">
+                        {j.isApproved ? (
+                          <span>✅ Approvata</span>
+                        ) : isAfter(new Date(j.event.date), new Date()) ? (
+                          <span>⌛ In attesa di approvazione</span>
+                        ) : (
+                          <span>❌ Non approvata</span>
+                        )}
+                      </p>
 
-                    {isAfter(new Date(j.event.joinDeadline), new Date()) && (
-                      <div>
-                        <Button
-                          color="warning"
-                          onClick={() => setDeleteJoinRequest(j)}
-                          disabled={deleteJoinRequestDisabled}
-                        >
-                          Annulla richiesta
-                        </Button>
-                      </div>
-                    )}
-                  </Card>
-                ))
+                      {isAfter(new Date(j.event.joinDeadline), new Date()) && (
+                        <div>
+                          <Button
+                            color="warning"
+                            onClick={() => setDeleteJoinRequest(j)}
+                            disabled={deleteJoinRequestDisabled}
+                          >
+                            Annulla richiesta
+                          </Button>
+                        </div>
+                      )}
+                    </Card>
+                  ))
+                ) : (
+                  <Alert color="info">
+                    <p className="font-medium">Ancora nessuna richiesta!</p>
+                    <p>
+                      Ma puoi richiedere di partecipare a uno dei nostri flash
+                      mob sfogliando gli eventi visibili in{" "}
+                      <Link to="/" className="underline">
+                        homepage
+                      </Link>
+                    </p>
+                  </Alert>
+                )
               ) : (
-                <Alert color="info">
-                  <p className="font-medium">Ancora nessuna richiesta!</p>
-                  <p>
-                    Ma puoi richiedere di partecipare a uno dei nostri flash mob
-                    sfogliando gli eventi visibili in{" "}
-                    <Link to="/" className="underline">
-                      homepage
-                    </Link>
-                  </p>
-                </Alert>
-              )
-            ) : (
-              <Spinner />
-            )}
+                <Spinner />
+              )}
+            </div>
+
+            <div>
+              <Typography variant="h3" className="my-4">
+                Post
+              </Typography>
+              {user?.posts ? (
+                user.posts.length > 0 ? (
+                  <ListGroup className="p-0">
+                    {user.posts.map(p => (
+                      <ListGroup.Item key={p._id}>
+                        <div className="flex items-center gap-1 w-full">
+                          <Link
+                            to={p.isApproved ? "/social/" + p._id : "#"}
+                            className={`w-fit hover:scale-105 transition-transform flex items-center gap-1 p-1 ${
+                              p.isApproved ? "" : "ml-5"
+                            }`}
+                          >
+                            {p.isApproved && (
+                              <FaLink className="text-gray-500" />
+                            )}
+                            <span>{p.description}</span>
+                          </Link>
+                          <span className="ml-auto flex items-center gap-1">
+                            {p.isApproved ? (
+                              <>
+                                <FaCheck className="text-green-500" />
+                                <span>Approvato</span>
+                              </>
+                            ) : (
+                              <>
+                                <FaInfoCircle className="text-red-600" />
+                                <span>In attesa</span>
+                              </>
+                            )}
+                          </span>
+                          <p className="ml-3 text-gray-500">
+                            {p.createdAt &&
+                              formatInTimeZone(
+                                p.createdAt,
+                                "Europe/Rome",
+                                "dd MMM yyyy",
+                                { locale: itCH }
+                              )}
+                          </p>
+                          <Button
+                            color="failure"
+                            onClick={() => deletePost(p)}
+                            disabled={deleteDisabled}
+                            className="p-0 ml-3"
+                          >
+                            <FaTrash className="p-0" />
+                          </Button>
+                        </div>
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                ) : (
+                  <p>Ancora nessun post</p>
+                )
+              ) : (
+                <Spinner />
+              )}
+            </div>
           </div>
         </div>
       </div>

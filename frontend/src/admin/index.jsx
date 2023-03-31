@@ -619,7 +619,7 @@ const Event = () => {
       </Modal>
 
       <div className="w-full h-full pb-24 dark:text-white dark:bg-gray-900">
-        <div className="mx-auto px-2 w-full md:w-5/6 my-12">
+        <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           {alert && (
             <Alert
               className="mb-6"

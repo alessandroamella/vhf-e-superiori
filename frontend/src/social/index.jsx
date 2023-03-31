@@ -138,7 +138,10 @@ const Social = () => {
                   </div>
                 </InfiniteScroll>
               ) : (
-                <p>Ancora nessun post</p>
+                <div className="p-5">
+                  <p>Ancora nessun post</p>
+                  <p className="text-gray-500 italic">Tutto tace...</p>
+                </div>
               )
             ) : (
               <div className="p-5">

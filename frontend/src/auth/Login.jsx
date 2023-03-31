@@ -97,7 +97,7 @@ const Login = () => {
 
   return (
     <Layout>
-      {user && navigate("/profile")}
+      {user && navigate(searchParams.get("to") || "/profile")}
       <div className="w-full h-full min-h-[70vh] dark:bg-gray-900 dark:text-white">
         <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">
           <Typography variant="h1" className="mb-2">
