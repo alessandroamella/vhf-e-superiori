@@ -1,6 +1,7 @@
 import "../shared";
 import "./db";
 import "./auth";
+import "./config";
 import { logger } from "../shared/logger";
 import { createServer } from "./utils";
 

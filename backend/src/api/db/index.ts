@@ -5,7 +5,6 @@ import { logger } from "../../shared/logger";
 mongoose.set("strictQuery", false);
 
 mongoose.connection.on("error", err => {
-    console.log(err);
     logger.error("Error while connecting to MongoDB");
     logger.error(err);
 });

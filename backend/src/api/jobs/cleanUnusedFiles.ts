@@ -30,9 +30,9 @@ export const cleanUnusedFilesJob = new CronJob(
                 return;
             }
 
-            // Find all posts created more than 1 hour ago
+            // Find all posts created more than 1 week ago
             const posts = await Post.find({
-                createdAt: { $lt: moment().subtract(1, "hours").toDate() }
+                createdAt: { $lt: moment().subtract(1, "week").toDate() }
             }).select("pictures videos");
 
             const pics = [...new Set(posts.map(p => p.pictures).flat())];

@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import { checkSchema } from "express-validator";
 import randomstring from "randomstring";
 import bcrypt from "bcrypt";
@@ -9,6 +9,7 @@ import updateSchema from "../schemas/updateSchema";
 import User, { UserDoc } from "../models";
 import { Errors } from "../../errors";
 import EmailService from "../../../email";
+import returnUserWithPosts from "../../middlewares/returnUserWithPosts";
 
 const router = Router();
 
@@ -63,7 +64,7 @@ router.put(
     "/",
     checkSchema(updateSchema),
     validate,
-    async (req: Request, res: Response) => {
+    async (req: Request, res: Response, next: NextFunction) => {
         if (!req.user) {
             throw new Error("No req.user in user update");
         }
@@ -95,19 +96,8 @@ router.put(
 
             const oldEmail = (req.user as unknown as UserDoc).email;
             const user = await User.findOneAndUpdate(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                { _id: (req.user as any)._id },
-                { name, email },
-                {
-                    new: true,
-                    projection: {
-                        password: 0,
-                        joinRequests: 0,
-                        verificationCode: 0,
-                        passwordResetCode: 0,
-                        __v: 0
-                    }
-                }
+                { _id: (req.user as unknown as UserDoc)._id },
+                { name, email }
             );
 
             if (!user) {
@@ -135,13 +125,15 @@ router.put(
                 await EmailService.sendVerifyMail(user, newVerifCode, false);
             }
 
-            res.json(user.toObject());
+            // res.json(user.toObject());
+            return next();
         } catch (err) {
             logger.error("Error while updating user");
             logger.error(err);
-            res.status(INTERNAL_SERVER_ERROR).json(createError());
+            return res.status(INTERNAL_SERVER_ERROR).json(createError());
         }
-    }
+    },
+    returnUserWithPosts
 );
 
 export default router;

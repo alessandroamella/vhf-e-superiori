@@ -26,12 +26,14 @@ const Header = () => {
         <Bandiere />
       </div>
       {user?.isAdmin && (
-        <Link
-          to="/eventmanager"
-          className="bg-red-600 text-white p-2 ml-6 rounded font-medium"
-        >
-          Gestione eventi (admin)
-        </Link>
+        <div className="flex justify-center">
+          <Link
+            to="/eventmanager"
+            className="bg-red-600 text-white p-2 ml-6 rounded font-medium"
+          >
+            Gestione eventi (admin)
+          </Link>
+        </div>
       )}
     </header>
   );

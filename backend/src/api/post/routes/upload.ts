@@ -6,6 +6,8 @@ import { Errors } from "../../errors";
 import { createError } from "../../helpers";
 import { UserDoc } from "../../auth/models";
 import { s3Client } from "../../aws";
+import { compressVideos } from "../../videoCompressor/compressorInterface";
+import { basename } from "path";
 
 const router = Router();
 
@@ -93,7 +95,7 @@ router.post(
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.INVALID_FILE_MIME_TYPE));
-            } else if (f.size > 50 * 1024 * 1024) {
+            } else if (f.size > 300 * 1024 * 1024) {
                 logger.debug("File size too big for file " + f.name);
                 return res
                     .status(BAD_REQUEST)
@@ -102,10 +104,50 @@ router.post(
         }
 
         // DEBUG COMPRESS FILES!!
-        logger.warn("Compress files not implemented");
+        // logger.warn("Compress files not implemented");
+
+        // Compress videos
+        const vidsToCompress = fileArr.filter(f =>
+            f.mimetype.includes("video")
+        );
+        const rest = fileArr.filter(f => !f.mimetype.includes("video"));
+
+        if (rest.length > 5) {
+            return res
+                .status(BAD_REQUEST)
+                .json(createError(Errors.TOO_MANY_PICTURES));
+        } else if (vidsToCompress.length > 2) {
+            return res
+                .status(BAD_REQUEST)
+                .json(createError(Errors.TOO_MANY_VIDEOS));
+        }
+
+        let compressedVidsPaths: string[];
+        try {
+            compressedVidsPaths = await compressVideos(
+                vidsToCompress.map(f => f.tempFilePath)
+            );
+        } catch (err) {
+            logger.error("Error compressing videos");
+            logger.error(err);
+            return res.status(INTERNAL_SERVER_ERROR).json(createError());
+        }
+
+        const filesToUpload: {
+            name: string;
+            tempFilePath: string;
+            mimetype: string;
+        }[] = [
+            ...rest,
+            ...compressedVidsPaths.map(p => ({
+                name: basename(p),
+                tempFilePath: p,
+                mimetype: "video/mp4"
+            }))
+        ];
 
         logger.debug("Uploading files to S3");
-        for (const f of fileArr) {
+        for (const f of filesToUpload) {
             logger.debug("Uploading file: " + f.name);
             try {
                 const path = await s3Client.uploadFile({
@@ -113,7 +155,7 @@ router.post(
                         userId: (req.user as unknown as UserDoc)._id,
                         mimeType: f.mimetype
                     }),
-                    fileContent: f.data,
+                    filePath: f.tempFilePath,
                     mimeType: f.mimetype,
                     folder: f.mimetype.includes("image") ? "pics" : "vids"
                 });
@@ -131,6 +173,7 @@ router.post(
             }
         }
 
+        logger.debug("Uploaded files: " + pathsArr.join(", "));
         return res.json(pathsArr);
     }
 );

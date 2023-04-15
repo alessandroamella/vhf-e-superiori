@@ -2,11 +2,11 @@ import { NextFunction, Request, Response, Router } from "express";
 import passport from "passport";
 import { body, checkSchema } from "express-validator";
 import createSchema from "../schemas/createSchema";
-import { validate } from "../../helpers";
-import User from "../models";
+import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
-import { Errors } from "../../errors";
 import checkCaptcha from "../../middlewares/checkCaptcha";
+import { INTERNAL_SERVER_ERROR } from "http-status";
+import returnUserWithPosts from "../../middlewares/returnUserWithPosts";
 
 const router = Router();
 
@@ -81,32 +81,38 @@ router.post(
             { session: false },
             async (_err, user) => {
                 if (_err || !user) {
-                    logger.debug("_err");
-                    logger.debug(_err);
-                    logger.debug("user");
-                    logger.debug(user);
-                    return next(_err || new Error(Errors.UNKNOWN_ERROR));
+                    logger.error("Error in user signup");
+                    logger.error("_err");
+                    logger.error(_err);
+                    logger.error("user");
+                    logger.error(user);
+                    return res
+                        .status(INTERNAL_SERVER_ERROR)
+                        .json(createError());
                 }
                 logger.debug("user");
                 logger.debug(user);
 
-                return res.json(
-                    (
-                        await User.findOne(
-                            { _id: user._id },
-                            {
-                                password: 0,
-                                joinRequests: 0,
-                                verificationCode: 0,
-                                passwordResetCode: 0,
-                                __v: 0
-                            }
-                        )
-                    )?.toObject()
-                );
+                return next();
+
+                // return res.json(
+                //     (
+                //         await User.findOne(
+                //             { _id: user._id },
+                //             {
+                //                 password: 0,
+                //                 joinRequests: 0,
+                //                 verificationCode: 0,
+                //                 passwordResetCode: 0,
+                //                 __v: 0
+                //             }
+                //         )
+                //     )?.toObject()
+                // );
             }
         )(req, res, next);
-    }
+    },
+    returnUserWithPosts
 );
 
 export default router;

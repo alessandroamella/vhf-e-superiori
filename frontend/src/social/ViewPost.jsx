@@ -1,6 +1,6 @@
 import Layout from "../Layout";
-import { useEffect, useState } from "react";
-import { getErrorStr } from "..";
+import { useContext, useEffect, useState } from "react";
+import { getErrorStr, UserContext } from "..";
 
 import "react-medium-image-zoom/dist/styles.css";
 import "react-placeholder/lib/reactPlaceholder.css";
@@ -10,13 +10,17 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 
 import axios from "axios";
-import { Alert, Button } from "flowbite-react";
-import { Link, useParams } from "react-router-dom";
+import { Alert, Button, Spinner } from "flowbite-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import ViewPostContent from "./ViewPostContent";
-import { FaBackward } from "react-icons/fa";
+import { FaBackward, FaTrash } from "react-icons/fa";
 
 const ViewPost = () => {
   const { id } = useParams();
+
+  const { user, setUser } = useContext(UserContext);
+
+  const [deleteDisabled, setDeleteDisabled] = useState(false);
 
   const [alert, setAlert] = useState(null);
 
@@ -46,14 +50,53 @@ const ViewPost = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const navigate = useNavigate();
+
+  async function deletePost(p) {
+    if (!window.confirm(`Vuoi davvero eliminare il post "${p.description}"?`)) {
+      return;
+    }
+
+    setDeleteDisabled(true);
+
+    try {
+      await axios.delete("/api/post/" + p._id);
+      setAlert({
+        color: "success",
+        msg: "Post eliminato con successo"
+      });
+      setUser({ ...user, posts: user.posts.filter(_p => _p._id !== p._id) });
+      navigate("/social");
+    } catch (err) {
+      console.log("error in post delete", err);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+    } finally {
+      setDeleteDisabled(false);
+    }
+  }
+
   return (
     <Layout>
       <div className="px-4 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
-        <Link to={-1}>
-          <Button color="light">
-            <FaBackward />
-          </Button>
-        </Link>
+        <div className="flex justify-between items-center">
+          <Link to="/social">
+            <Button color="light">
+              <FaBackward />
+            </Button>
+          </Link>
+          {post && user && post.fromUser === user._id && (
+            <Button
+              disabled={deleteDisabled}
+              color="failure"
+              onClick={() => deletePost(post)}
+            >
+              {deleteDisabled ? <Spinner /> : <FaTrash />}
+            </Button>
+          )}
+        </div>
         {alert && (
           <Alert
             className="mb-6"

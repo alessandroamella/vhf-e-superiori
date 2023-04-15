@@ -13,6 +13,7 @@ import Post from "../models";
 import { isDocument } from "@typegoose/typegoose";
 import { Errors } from "../../errors";
 import mongoose from "mongoose";
+import { s3Client } from "../../aws";
 
 const router = Router();
 
@@ -84,6 +85,12 @@ router.delete(
                 ).pull(post._id);
                 await user.save();
             }
+
+            const filePaths = [...post.pictures, ...post.videos].map(url => {
+                const parts = url.split("/");
+                return parts.slice(-2).join("/");
+            });
+            s3Client.deleteMultiple({ filePaths });
 
             await post.deleteOne();
             res.sendStatus(OK);

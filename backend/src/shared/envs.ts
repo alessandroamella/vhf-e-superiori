@@ -17,8 +17,10 @@ const requiredEnvs = [
     "TOT_ADMIN_EMAILS",
     "AWS_BUCKET_NAME",
     "AWS_ACCESS_KEY_ID",
-    "AWS_SECRET_ACCESS_KEY"
-    // "TEMP_DIR_RELATIVE"
+    "AWS_SECRET_ACCESS_KEY",
+    "BASE_TEMP_DIR",
+    "VID_COMPRESS_TMP_FOLDER",
+    "FILE_UPLOAD_TMP_FOLDER"
 ] as const;
 export type Env = typeof requiredEnvs[number];
 

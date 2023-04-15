@@ -3,6 +3,7 @@ import moment from "moment";
 import mime from "mime-types";
 import randomstring from "randomstring";
 import { envs, logger } from "../../shared";
+import { readFile, unlink } from "fs/promises";
 
 const s3 = new AWS.S3({
     accessKeyId: envs.AWS_ACCESS_KEY_ID,
@@ -40,16 +41,19 @@ export class S3Client {
     }
 
     /**
-     * @param {S3FileUpload}
+     * @param {Omit<S3FileUpload, "fileContent"> & {filePath: string}} param0
      * @returns {string} The location of the uploaded file
      */
-    uploadFile({
+    async uploadFile({
         fileName,
-        fileContent,
+        filePath,
         folder,
         mimeType,
         bucket
-    }: S3FileUpload): Promise<string> {
+    }: Omit<S3FileUpload, "fileContent"> & {
+        filePath: string;
+    }): Promise<string> {
+        const fileContent = await readFile(filePath);
         return new Promise((resolve, reject) => {
             s3.upload(
                 {
@@ -58,13 +62,31 @@ export class S3Client {
                     Body: fileContent,
                     ContentType: mimeType
                 },
-                (err: Error, data: AWS.S3.ManagedUpload.SendData) => {
+                async (err: Error, data: AWS.S3.ManagedUpload.SendData) => {
                     if (err) return reject(err);
                     logger.debug(`Uploaded file to location ${data.Location}`);
+                    // Delete temp file
+                    await this._deleteTempFile({ filePath });
                     return resolve(data.Location);
                 }
             );
         });
+    }
+
+    private async _deleteTempFile({
+        filePath
+    }: {
+        filePath: string;
+    }): Promise<boolean> {
+        logger.debug("Deleting temp file at " + filePath);
+        try {
+            await unlink(filePath);
+            return true;
+        } catch (err) {
+            logger.error("Error deleting temp file");
+            logger.error(err);
+            return false;
+        }
     }
 
     deleteFile({ filePath, bucket }: S3FileDelete): Promise<void> {

@@ -6,8 +6,9 @@ import { envs } from "../../../shared/envs";
 import { AuthOptions } from "../shared";
 import { logger } from "../../../shared/logger";
 import { body } from "express-validator";
-import { validate } from "../../helpers";
-import User from "../models";
+import { createError, validate } from "../../helpers";
+import returnUserWithPosts from "../../middlewares/returnUserWithPosts";
+import { INTERNAL_SERVER_ERROR } from "http-status";
 
 const router = Router();
 
@@ -63,7 +64,6 @@ router.post(
         .trim()
         .isLength({ min: 8, max: 64 })
         .isStrongPassword({ minLength: 8 }),
-
     validate,
     async (req, res, next) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -102,28 +102,31 @@ router.post(
                         maxAge: 1000 * 60 * 60 * 24 * 3
                     });
 
-                    return res.json(
-                        (
-                            await User.findOne(
-                                { _id: user._id },
-                                {
-                                    password: 0,
-                                    joinRequests: 0,
-                                    verificationCode: 0,
-                                    passwordResetCode: 0,
-                                    __v: 0
-                                }
-                            )
-                        )?.toObject()
-                    );
+                    return next();
+
+                    // return res.json(
+                    //     (
+                    //         await User.findOne(
+                    //             { _id: user._id },
+                    //             {
+                    //                 password: 0,
+                    //                 joinRequests: 0,
+                    //                 verificationCode: 0,
+                    //                 passwordResetCode: 0,
+                    //                 __v: 0
+                    //             }
+                    //         )
+                    //     )?.toObject()
+                    // );
                 });
             } catch (err) {
                 logger.error("Error catch in login");
                 logger.error(err);
-                return next(new Error(Errors.UNKNOWN_ERROR));
+                return res.status(INTERNAL_SERVER_ERROR).json(createError());
             }
         })(req, res, next);
-    }
+    },
+    returnUserWithPosts
 );
 
 export default router;

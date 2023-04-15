@@ -3,7 +3,7 @@ import { createRef, useEffect, useState } from "react";
 import { getErrorStr, UserContext } from "..";
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
-
+import Compressor from "compressorjs";
 import "react-medium-image-zoom/dist/styles.css";
 
 import axios from "axios";
@@ -27,6 +27,7 @@ const NewPost = () => {
 
   const [alert, setAlert] = useState(null);
   const [disabled, setDisabled] = useState(false);
+  const [isCompressingPic, setIsCompressingPic] = useState(false);
 
   const pictureInputRef = createRef(null);
   const videoInputRef = createRef(null);
@@ -55,11 +56,64 @@ const NewPost = () => {
   });
   const navigate = useNavigate();
 
-  const handlePictureChange = event => {
+  const compressPic = f => {
+    return new Promise((resolve, reject) => {
+      new Compressor(f, {
+        quality: 0.6,
+        success(result) {
+          console.log("compressed img", result);
+          return resolve(result);
+        },
+        error(err) {
+          console.log("compress img error");
+          console.log(err.message);
+          return reject(err);
+        }
+      });
+    });
+  };
+
+  const handlePictureChange = async event => {
     const { files } = event.target;
     if (!files || files.length < 0) return;
-    setPictures(files);
+    else if (files.length > 5) {
+      setAlert({
+        color: "failure",
+        msg: "Puoi aggiungere al massimo 5 foto"
+      });
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+      resetPictures();
+      return;
+    }
+    setDisabled(true);
+    setIsCompressingPic(true);
+    const promises = [];
+    try {
+      for (const f of files) {
+        promises.push(compressPic(f));
+      }
+      const pics = await Promise.all(promises);
+      console.log("pics", pics);
+      setPictures(pics);
+    } catch (err) {
+      console.log("compress pic err", err);
+      setAlert({
+        color: "failure",
+        msg: "Errore durante la compressione delle foto"
+      });
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    } finally {
+      setDisabled(false);
+      setIsCompressingPic(false);
+    }
   };
+
   const handleVideoChange = event => {
     const { files } = event.target;
     if (!files || files.length < 0) return;
@@ -186,17 +240,16 @@ const NewPost = () => {
 
   return (
     <Layout>
-      {/* {!user &&
+      {!user &&
         navigate({
           pathname: "/login",
           search: createSearchParams({
             to: "/social/new"
           }).toString()
         })}
-      ) */}
       <div className="px-4 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
-        <Link to={-1}>
-          <Button color="light">
+        <Link to="/social">
+          <Button disabled={isSubmitting || isUploadingFiles} color="light">
             <FaBackward />
           </Button>
         </Link>
@@ -410,10 +463,14 @@ const NewPost = () => {
               </div>
 
               <div className="my-4">
-                <Label htmlFor="pictures" value="Foto antenna (min. 1)" />
+                <Label
+                  htmlFor="pictures"
+                  value="Foto antenna (min. 1, max. 5)"
+                />
                 <div className="flex items-center gap-2">
                   <FileInput
                     disabled={disabled}
+                    helperText={isCompressingPic && <Spinner />}
                     color={!pictures.length ? "failure" : undefined}
                     id="pictures"
                     multiple
@@ -467,7 +524,11 @@ const NewPost = () => {
 
               <div className="flex justify-center">
                 <Button disabled={disabled} type="submit">
-                  {isSubmitting ? <Spinner /> : <FaPlus />}
+                  {isSubmitting ? (
+                    <Spinner className="dark:text-white" />
+                  ) : (
+                    <FaPlus className="dark:text-white" />
+                  )}
                   <span className="ml-1 font-semibold">
                     {!isSubmitting
                       ? "Crea post"

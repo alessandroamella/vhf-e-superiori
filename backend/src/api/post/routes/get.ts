@@ -32,9 +32,9 @@ const router = Router();
  *          application/json:
  *            schema:
  *              type: object
- *              properties:
  *              required:
  *                - post
+ *              properties:
  *                post:
  *                  $ref: '#/components/schemas/Post'
  *                pp:

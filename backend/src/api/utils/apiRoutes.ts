@@ -22,6 +22,8 @@ import { envs } from "../../shared/envs";
 import { createError } from "../helpers";
 import { Errors } from "../errors";
 import { BAD_REQUEST, REQUEST_ENTITY_TOO_LARGE } from "http-status";
+import { join } from "path";
+import { cwd } from "process";
 
 const router = Router();
 
@@ -36,9 +38,11 @@ router.use(populateUser);
 
 router.use(
     fileUpload({
-        limits: { fileSize: 100 * 1024 * 1024 },
+        limits: { fileSize: 300 * 1024 * 1024 },
         abortOnLimit: true,
-        useTempFiles: false,
+        // useTempFiles: false,
+        tempFileDir: join(cwd(), "temp", "uploads"),
+        useTempFiles: true,
         safeFileNames: true,
         preserveExtension: false,
         responseOnLimit: JSON.stringify(createError(Errors.FILE_SIZE_TOO_LARGE))
@@ -51,13 +55,13 @@ router.use((req, res, next) => {
         const fileArr = Array.isArray(req.files[key])
             ? (req.files[key] as fileUpload.UploadedFile[])
             : ([req.files[key]] as fileUpload.UploadedFile[]);
-        if (fileArr.length > 12) {
+        if (fileArr.length > 7) {
             return res
                 .status(BAD_REQUEST)
                 .json(createError(Errors.TOO_MANY_FILES));
         }
         for (const f of fileArr) {
-            if (f.size > 50 * 1024 * 1024) {
+            if (f.size > 300 * 1024 * 1024) {
                 return res
                     .status(REQUEST_ENTITY_TOO_LARGE)
                     .json(createError(Errors.FILE_SIZE_TOO_LARGE));
