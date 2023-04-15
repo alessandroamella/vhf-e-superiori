@@ -125,7 +125,8 @@ router.put(
                 await EmailService.sendVerifyMail(user, newVerifCode, false);
             }
 
-            req.user = user;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            req.user = user.toObject() as any;
 
             // res.json(user.toObject());
             return next();
