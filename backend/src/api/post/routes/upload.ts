@@ -63,16 +63,17 @@ router.post(
         if (!req.user) {
             throw new Error("No req.user in post file upload");
         } else if (!req.files) {
-            logger.debug("No files to upload");
+            logger.info("No files to upload");
             return res.sendStatus(NO_CONTENT);
         }
-
-        logger.debug("Uploading files");
 
         const _file = req.files.content;
         const fileArr: fileUpload.UploadedFile[] = Array.isArray(_file)
             ? _file
             : [_file];
+
+        logger.info("Uploading files");
+        logger.info(fileArr);
 
         const pathsArr: string[] = [];
 
@@ -146,9 +147,9 @@ router.post(
             }))
         ];
 
-        logger.debug("Uploading files to S3");
+        logger.info("Uploading files to S3");
         for (const f of filesToUpload) {
-            logger.debug("Uploading file: " + f.name);
+            logger.info("Uploading file: " + f.name);
             try {
                 const path = await s3Client.uploadFile({
                     fileName: s3Client.generateFileName({
@@ -160,20 +161,20 @@ router.post(
                     folder: f.mimetype.includes("image") ? "pics" : "vids"
                 });
                 pathsArr.push(path);
-                logger.debug("File uploaded: " + f.name);
+                logger.info("File uploaded: " + f.name);
             } catch (err) {
                 logger.error("Error uploading file: " + f.name);
                 logger.error(err);
                 for (const uploadFile of pathsArr) {
-                    logger.debug("Deleting file: " + uploadFile);
+                    logger.info("Deleting file: " + uploadFile);
                     await s3Client.deleteFile({ filePath: uploadFile });
-                    logger.debug("Deleted file: " + uploadFile);
+                    logger.info("Deleted file: " + uploadFile);
                 }
                 return res.status(INTERNAL_SERVER_ERROR).json(createError());
             }
         }
 
-        logger.debug("Uploaded files: " + pathsArr.join(", "));
+        logger.info("Uploaded files: " + pathsArr.join(", "));
         return res.json(pathsArr);
     }
 );

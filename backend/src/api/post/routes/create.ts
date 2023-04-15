@@ -138,7 +138,7 @@ router.post(
                 filesPath
             } = req.body;
 
-            logger.debug("Checking files");
+            logger.info("Checking files");
 
             const metas: [path: string, meta: AWS.S3.HeadObjectOutput][] = [];
             for (const _p of filesPath) {
@@ -191,8 +191,8 @@ router.post(
                     .json(createError(Errors.INVALID_VIDS_NUM));
             }
 
-            logger.debug("Creating post with following params");
-            logger.debug({
+            logger.info("Creating post with following params");
+            logger.info({
                 description,
                 band,
                 brand,
