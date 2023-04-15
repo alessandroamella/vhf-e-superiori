@@ -125,6 +125,8 @@ router.put(
                 await EmailService.sendVerifyMail(user, newVerifCode, false);
             }
 
+            req.user = user;
+
             // res.json(user.toObject());
             return next();
         } catch (err) {

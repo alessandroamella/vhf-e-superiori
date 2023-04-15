@@ -5,7 +5,7 @@ import createSchema from "../schemas/createSchema";
 import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
 import checkCaptcha from "../../middlewares/checkCaptcha";
-import { INTERNAL_SERVER_ERROR } from "http-status";
+import { BAD_REQUEST } from "http-status";
 import returnUserWithPosts from "../../middlewares/returnUserWithPosts";
 
 const router = Router();
@@ -81,17 +81,17 @@ router.post(
             { session: false },
             async (_err, user) => {
                 if (_err || !user) {
-                    logger.error("Error in user signup");
-                    logger.error("_err");
-                    logger.error(_err);
-                    logger.error("user");
-                    logger.error(user);
-                    return res
-                        .status(INTERNAL_SERVER_ERROR)
-                        .json(createError());
+                    logger.debug("Error in user signup");
+                    logger.debug("_err");
+                    logger.debug(_err);
+                    logger.debug("user");
+                    logger.debug(user);
+                    return res.status(BAD_REQUEST).json(createError(_err));
                 }
                 logger.debug("user");
                 logger.debug(user);
+
+                req.user = user;
 
                 return next();
 

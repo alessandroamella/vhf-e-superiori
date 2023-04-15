@@ -102,6 +102,8 @@ router.post(
                         maxAge: 1000 * 60 * 60 * 24 * 3
                     });
 
+                    req.user = user;
+
                     return next();
 
                     // return res.json(
