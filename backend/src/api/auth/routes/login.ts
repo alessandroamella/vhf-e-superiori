@@ -56,8 +56,8 @@ router.post(
     body("callsign")
         .isString()
         .isLength({ min: 1, max: 10 })
-        .isAlphanumeric()
         .trim()
+        .isAlphanumeric()
         .toUpperCase(),
     body("password")
         .isString()

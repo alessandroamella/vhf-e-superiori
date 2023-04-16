@@ -193,6 +193,7 @@ router.post(
 
             logger.info("Creating post with following params");
             logger.info({
+                fromUser: user._id,
                 description,
                 band,
                 brand,

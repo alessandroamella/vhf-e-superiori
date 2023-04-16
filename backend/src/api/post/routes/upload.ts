@@ -8,8 +8,24 @@ import { UserDoc } from "../../auth/models";
 import { s3Client } from "../../aws";
 import { compressVideos } from "../../videoCompressor/compressorInterface";
 import { basename } from "path";
+import { unlink } from "fs/promises";
 
 const router = Router();
+
+interface UploadStatus {
+    // md5: string;
+    percent: number;
+}
+const currentUploads = new Map<string, UploadStatus>();
+const removeFromUploads = (files: fileUpload.UploadedFile[]) => {
+    files.forEach(f => currentUploads.delete(f.md5));
+};
+export const setCompressPercentage = (md5: string, percent: number) => {
+    currentUploads.set(md5, { percent });
+};
+export const getUploadStatus = (md5: string): UploadStatus | undefined => {
+    return currentUploads.get(md5);
+};
 
 /**
  * @openapi
@@ -64,13 +80,19 @@ router.post(
             throw new Error("No req.user in post file upload");
         } else if (!req.files) {
             logger.info("No files to upload");
-            return res.sendStatus(NO_CONTENT);
+            return res.status(NO_CONTENT).json(createError(Errors.NO_CONTENT));
         }
 
         const _file = req.files.content;
         const fileArr: fileUpload.UploadedFile[] = Array.isArray(_file)
             ? _file
             : [_file];
+
+        fileArr.forEach(f => {
+            currentUploads.set(f.md5, {
+                percent: 0
+            });
+        });
 
         logger.info("Uploading files");
         logger.info(JSON.stringify(fileArr, null, 2));
@@ -93,11 +115,19 @@ router.post(
             logger.debug(`Checking file ${f.name} MIME type`);
             if (!allowedMimeTypes.includes(f.mimetype)) {
                 logger.debug("File MIME type not allowed for file " + f.name);
+                removeFromUploads(fileArr);
+                for (const _f of fileArr) {
+                    await unlink(_f.tempFilePath);
+                }
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.INVALID_FILE_MIME_TYPE));
             } else if (f.size > 300 * 1024 * 1024) {
                 logger.debug("File size too big for file " + f.name);
+                removeFromUploads(fileArr);
+                for (const _f of fileArr) {
+                    await unlink(_f.tempFilePath);
+                }
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.FILE_SIZE_TOO_LARGE));
@@ -111,17 +141,31 @@ router.post(
         const vidsToCompress = fileArr.filter(f =>
             f.mimetype.includes("video")
         );
-        const rest = fileArr.filter(f => !f.mimetype.includes("video"));
+        const pics = fileArr.filter(f => !f.mimetype.includes("video"));
 
-        if (rest.length > 5) {
+        if (pics.length > 5) {
+            removeFromUploads(fileArr);
+            for (const _f of fileArr) {
+                await unlink(_f.tempFilePath);
+            }
             return res
                 .status(BAD_REQUEST)
                 .json(createError(Errors.TOO_MANY_PICTURES));
         } else if (vidsToCompress.length > 2) {
+            removeFromUploads(fileArr);
+            for (const _f of fileArr) {
+                await unlink(_f.tempFilePath);
+            }
             return res
                 .status(BAD_REQUEST)
                 .json(createError(Errors.TOO_MANY_VIDEOS));
         }
+
+        pics.forEach(f => {
+            currentUploads.set(f.md5, {
+                percent: 100
+            });
+        });
 
         logger.info("Compressing videos:");
         logger.info(vidsToCompress.map(f => f.name).join(", "));
@@ -129,11 +173,18 @@ router.post(
         let compressedVidsPaths: string[];
         try {
             compressedVidsPaths = await compressVideos(
-                vidsToCompress.map(f => f.tempFilePath)
+                vidsToCompress.map(f => ({
+                    tempFilePath: f.tempFilePath,
+                    md5: f.md5
+                }))
             );
         } catch (err) {
             logger.error("Error compressing videos");
             logger.error(err);
+            removeFromUploads(fileArr);
+            for (const _f of fileArr) {
+                await unlink(_f.tempFilePath);
+            }
             return res.status(INTERNAL_SERVER_ERROR).json(createError());
         }
 
@@ -142,7 +193,7 @@ router.post(
             tempFilePath: string;
             mimetype: string;
         }[] = [
-            ...rest,
+            ...pics,
             ...compressedVidsPaths.map(p => ({
                 name: basename(p),
                 tempFilePath: p,
@@ -173,11 +224,19 @@ router.post(
                     await s3Client.deleteFile({ filePath: uploadFile });
                     logger.info("Deleted file: " + uploadFile);
                 }
+                removeFromUploads(fileArr);
+                for (const _f of fileArr) {
+                    await unlink(_f.tempFilePath);
+                }
                 return res.status(INTERNAL_SERVER_ERROR).json(createError());
             }
         }
 
         logger.info("Uploaded files: " + pathsArr.join(", "));
+        removeFromUploads(fileArr);
+        // for (const _f of fileArr) {
+        //     await unlink(_f.tempFilePath);
+        // }
         return res.json(pathsArr);
     }
 );

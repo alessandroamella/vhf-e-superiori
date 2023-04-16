@@ -9,9 +9,10 @@ import { cwd } from "process";
 //     | ((msg: VideoCompressorResponse) => unknown);
 
 process.on("message", (payload: VideoCompressorPayload) => {
-    const { tempFilePath, name } = payload;
-    const endProcess = (endPayload: VideoCompressorResponse) => {
-        const { errorStr, outputPath } = endPayload;
+    const { tempFilePath, name, md5 } = payload;
+
+    const handleMsg = (endPayload: Omit<VideoCompressorResponse, "md5">) => {
+        const { errorStr, outputPath, percent } = endPayload;
 
         if (typeof process.send === "undefined") {
             throw new Error(
@@ -19,17 +20,30 @@ process.on("message", (payload: VideoCompressorPayload) => {
             );
         }
 
+        // check if undefined since it could be 0 and
+        // it would return false
+        if (typeof percent !== "undefined") {
+            // not finished nor error, just percent
+            process.send({ percent, md5 } as VideoCompressorResponse);
+            return;
+        }
+
         try {
             // Remove temp file
             fs.unlinkSync(tempFilePath);
             // Format response so it fits the API response
-            process.send({ errorStr, outputPath });
+            process.send({
+                errorStr,
+                outputPath,
+                md5
+            } as VideoCompressorResponse);
             process.exit(0);
         } catch (err) {
             // End process
             process.send({
+                md5,
                 errorStr: (err as Error)?.message || (err?.toString() as string)
-            });
+            } as VideoCompressorResponse);
             process.exit(1);
         }
     };
@@ -42,11 +56,14 @@ process.on("message", (payload: VideoCompressorPayload) => {
             // , "--preset veryfast"
         ])
         .videoCodec("libx264")
+        .on("progress", progress => {
+            handleMsg({ percent: progress.percent });
+        })
         .on("end", () => {
-            endProcess({ outputPath });
+            handleMsg({ outputPath });
         })
         .on("error", err => {
-            endProcess({ errorStr: err.message });
+            handleMsg({ errorStr: err.message });
         })
         .save(outputPath);
 });

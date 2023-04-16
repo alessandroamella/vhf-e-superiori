@@ -13,6 +13,7 @@ import {
   Checkbox,
   FileInput,
   Label,
+  Progress,
   Radio,
   Spinner,
   TextInput
@@ -21,9 +22,14 @@ import { FaBackward, FaInfoCircle, FaPlus, FaUndo } from "react-icons/fa";
 import { createSearchParams, Link, useNavigate } from "react-router-dom";
 import { Typography } from "@material-tailwind/react";
 import ViewPostContent from "./ViewPostContent";
+import BMF from "browser-md5-file";
+
+let statusInterval = null;
 
 const NewPost = () => {
   const { user } = useContext(UserContext);
+
+  const [uploadMap, setUploadMap] = useState(new Map());
 
   const [alert, setAlert] = useState(null);
   const [disabled, setDisabled] = useState(false);
@@ -31,6 +37,26 @@ const NewPost = () => {
 
   const pictureInputRef = createRef(null);
   const videoInputRef = createRef(null);
+
+  async function calculateMd5(f) {
+    return new Promise((resolve, reject) => {
+      const bmf = new BMF();
+      bmf.md5(
+        f,
+        (err, md5) => {
+          if (err) {
+            console.log("err in md5 calculation:", err);
+            return reject(err);
+          } else {
+            return resolve(md5);
+          }
+        },
+        progress => {
+          // console.log("progress number:", progress);
+        }
+      );
+    });
+  }
 
   useEffect(() => {
     if (user === null)
@@ -117,6 +143,18 @@ const NewPost = () => {
   const handleVideoChange = event => {
     const { files } = event.target;
     if (!files || files.length < 0) return;
+    else if (files.length > 2) {
+      setAlert({
+        color: "failure",
+        msg: "Puoi aggiungere al massimo 2 video"
+      });
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+      resetVideos();
+      return;
+    }
     setVideos(files);
   };
 
@@ -142,10 +180,32 @@ const NewPost = () => {
 
     setDisabled(true);
     setIsSubmitting(true);
+
+    uploadMap.clear();
+    setUploadMap(new Map());
+
+    for (const f of [...pictures, ...videos]) {
+      try {
+        const md5 = await calculateMd5(f);
+        console.log("DIO CANE SETTO", md5, "A", { name: f.name, percent: 0 });
+
+        setUploadMap(new Map(uploadMap.set(md5, { name: f.name, percent: 0 })));
+
+        console.log("md5 string of " + f.name + ":", md5);
+      } catch (err) {
+        console.log("err in md5 calculation:", err);
+      }
+    }
+
     setIsUploadingFiles(true);
 
+    // This will take a very long time to complete
     const filesPath = await sendPicturesAndVideos();
+
     setIsUploadingFiles(false);
+    uploadMap.clear();
+    setUploadMap(new Map());
+
     if (!filesPath) {
       setDisabled(false);
       setIsSubmitting(false);
@@ -158,6 +218,7 @@ const NewPost = () => {
       setIsSubmitting(false);
       return;
     }
+
     navigate({
       pathname: "/social",
       search: createSearchParams({
@@ -176,7 +237,8 @@ const NewPost = () => {
       const { data } = await axios.post("/api/post/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data"
-        }
+        },
+        timeout: 5 * 60 * 1000 // 5 minutes timeout
       });
       console.log("filesPath", data);
       return data;
@@ -233,6 +295,42 @@ const NewPost = () => {
     videoInputRef.current.value = null;
     setVideos([]);
   }
+
+  useEffect(() => {
+    if (!isUploadingFiles) {
+      clearInterval(statusInterval);
+      statusInterval = null;
+      return;
+    }
+
+    // emit a upload status socket event every 5 seconds
+    if (!statusInterval) {
+      statusInterval = setInterval(async () => {
+        console.log(
+          "emit upload status",
+          [...uploadMap.keys()],
+          [...uploadMap.values()]
+        );
+        try {
+          const { data } = await axios.post("/api/post/uploadstatus", {
+            md5s: [...uploadMap.keys()]
+          });
+          for (const e of data) {
+            setUploadMap(
+              new Map(
+                uploadMap.set(e.md5, {
+                  ...uploadMap.get(e.md5),
+                  percent: e.percent
+                })
+              )
+            );
+          }
+          console.log("AAAAAAAAAAAAA", data, uploadMap);
+        } catch (err) {}
+      }, 1000);
+      console.log("Starting emit status interval");
+    }
+  }, [isUploadingFiles]);
 
   const { register, handleSubmit, formState } = useForm();
 
@@ -522,7 +620,7 @@ const NewPost = () => {
                 </div>
               </div>
 
-              <div className="flex justify-center">
+              <div className="flex justify-center items-center flex-col">
                 <Button disabled={disabled} type="submit">
                   {isSubmitting ? (
                     <Spinner className="dark:text-white" />
@@ -537,6 +635,20 @@ const NewPost = () => {
                       : "Creazione post"}
                   </span>
                 </Button>
+                {[...uploadMap.keys()].length > 0 &&
+                  [...uploadMap.entries()].map(([md5, { name, percent }]) => (
+                    <div key={md5} className="mb-2 w-56">
+                      <Typography variant="h5" className="text-center">
+                        {name}: {Math.round(percent)}%
+                      </Typography>
+                      <Progress
+                        progress={percent || 0}
+                        size="sm"
+                        className="w-full"
+                        color="dark"
+                      />
+                    </div>
+                  ))}
               </div>
             </form>
 

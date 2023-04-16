@@ -47,8 +47,8 @@ router.get(
     param("callsign")
         .isString()
         .isLength({ min: 1, max: 10 })
-        .isAlphanumeric()
         .trim()
+        .isAlphanumeric()
         .toUpperCase(),
     async (req, res) => {
         try {

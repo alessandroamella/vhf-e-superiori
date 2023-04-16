@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 
 const FeedCard = ({ post, pp }) => {
   const pic = pp && pp.find(p => p.callsign === post?.fromUser?.callsign)?.url;
-  console.log({ pic });
 
   const navigate = useNavigate();
 
