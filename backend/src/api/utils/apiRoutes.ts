@@ -17,7 +17,7 @@ import morgan from "morgan";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
-import { LoggerStream } from "../../shared/logger";
+import { logger, LoggerStream } from "../../shared/logger";
 import { envs } from "../../shared/envs";
 import { createError } from "../helpers";
 import { Errors } from "../errors";
@@ -62,6 +62,13 @@ router.use((req, res, next) => {
         }
         for (const f of fileArr) {
             if (f.size > 300 * 1024 * 1024) {
+                logger.info(
+                    "Tried to upload file too large: " +
+                        f.name +
+                        ", size: " +
+                        f.size +
+                        " bytes"
+                );
                 return res
                     .status(REQUEST_ENTITY_TOO_LARGE)
                     .json(createError(Errors.FILE_SIZE_TOO_LARGE));
