@@ -62,7 +62,7 @@ router.use((req, res, next) => {
         }
         for (const f of fileArr) {
             if (f.size > 300 * 1024 * 1024) {
-                logger.info(
+                logger.debug(
                     "Tried to upload file too large: " +
                         f.name +
                         ", size: " +

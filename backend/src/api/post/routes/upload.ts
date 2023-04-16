@@ -73,7 +73,7 @@ router.post(
             : [_file];
 
         logger.info("Uploading files");
-        logger.info(fileArr);
+        logger.info(JSON.stringify(fileArr, null, 2));
 
         const pathsArr: string[] = [];
 
@@ -122,6 +122,9 @@ router.post(
                 .status(BAD_REQUEST)
                 .json(createError(Errors.TOO_MANY_VIDEOS));
         }
+
+        logger.info("Compressing videos:");
+        logger.info(vidsToCompress.map(f => f.name).join(", "));
 
         let compressedVidsPaths: string[];
         try {
