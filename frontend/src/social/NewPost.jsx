@@ -187,7 +187,6 @@ const NewPost = () => {
     for (const f of [...pictures, ...videos]) {
       try {
         const md5 = await calculateMd5(f);
-        console.log("DIO CANE SETTO", md5, "A", { name: f.name, percent: 0 });
 
         setUploadMap(new Map(uploadMap.set(md5, { name: f.name, percent: 0 })));
 
@@ -621,7 +620,7 @@ const NewPost = () => {
               </div>
 
               <div className="flex justify-center items-center flex-col">
-                <Button disabled={disabled} type="submit">
+                <Button disabled={disabled} type="submit" className="mb-2">
                   {isSubmitting ? (
                     <Spinner className="dark:text-white" />
                   ) : (
