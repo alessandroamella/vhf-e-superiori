@@ -47,6 +47,16 @@ export const cleanUnusedFilesJob = new CronJob(
             const pics = [...new Set(posts.map(p => p.pictures).flat())];
             const vids = [...new Set(posts.map(p => p.videos).flat())];
 
+            logger.info("cleanUnusedFilesJob");
+            logger.info("S3 vics:");
+            logger.info(s3Pics);
+            logger.info("S3 vids");
+            logger.info(s3Pics);
+            logger.info("Posts pics:");
+            logger.info(pics);
+            logger.info("Posts vids");
+            logger.info(vids);
+
             for (const p of [...pics, ...vids]) {
                 if (
                     !s3Pics.find(f => p.includes(f)) &&
