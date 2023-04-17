@@ -16,12 +16,18 @@ export const cleanUnusedFilesJob = new CronJob(
             const _s3Pics = await s3Client.listFiles({ folder: "pics" });
             const _s3Vids = await s3Client.listFiles({ folder: "vids" });
 
-            const s3Pics = _s3Pics.Contents?.map(c => c.Key).filter(
-                (f): f is string => typeof f === "string"
-            );
-            const s3Vids = _s3Vids.Contents?.map(c => c.Key).filter(
-                (f): f is string => typeof f === "string"
-            );
+            // Get files created more than 1 day ago
+            const s3Pics = _s3Pics.Contents?.filter(
+                c => moment().diff(moment(c.LastModified), "days") > 1
+            )
+                .map(c => c.Key)
+                .filter((f): f is string => typeof f === "string");
+
+            const s3Vids = _s3Vids.Contents?.filter(
+                c => moment().diff(moment(c.LastModified), "days") > 1
+            )
+                .map(c => c.Key)
+                .filter((f): f is string => typeof f === "string");
 
             if (!s3Pics || !s3Vids) {
                 logger.error(
@@ -31,9 +37,12 @@ export const cleanUnusedFilesJob = new CronJob(
             }
 
             // Find all posts created more than 1 week ago
-            const posts = await Post.find({
-                createdAt: { $lt: moment().subtract(1, "week").toDate() }
-            }).select("pictures videos");
+            // const posts = await Post.find({
+            //     createdAt: { $lt: moment().subtract(1, "week").toDate() }
+            // }).select("pictures videos");
+
+            // above is wrong, it's the opposite of what we want
+            const posts = await Post.find({}).select("pictures videos");
 
             const pics = [...new Set(posts.map(p => p.pictures).flat())];
             const vids = [...new Set(posts.map(p => p.videos).flat())];
