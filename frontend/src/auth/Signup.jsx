@@ -3,7 +3,12 @@ import axios from "axios";
 import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
 import React, { createRef, useEffect, useRef, useState } from "react";
 import { useContext } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  createSearchParams,
+  useNavigate,
+  useSearchParams
+} from "react-router-dom";
 import { getErrorStr, UserContext } from "..";
 import { useCookies } from "react-cookie";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -24,14 +29,25 @@ const Signup = () => {
   const [callsign, setCallsign] = useState(cookies.callsign || "");
   const [name, setName] = useState(cookies.name || "");
   const [password, setPassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState(cookies.phoneNumber || "+39");
   const [email, setEmail] = useState(cookies.email || "");
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", event => {
+      const e = event || window.event;
+      e.preventDefault();
+      if (e) {
+        e.returnValue = ""; // Legacy method for cross browser support
+      }
+      return ""; // Legacy method for cross browser support
+    });
+  }, []);
 
   useEffect(() => {
     console.log("set cookie", {
       callsign,
       name,
-      password,
       phoneNumber,
       email
     });
@@ -109,6 +125,14 @@ const Signup = () => {
       );
     }
 
+    if (password !== repeatPassword) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+      return setAlert("Le password non corrispondono");
+    }
+
     setDisabled(true);
     try {
       await axios.post("/api/auth/signup", {
@@ -130,9 +154,9 @@ const Signup = () => {
       setUser(data);
       navigate({
         pathname: searchParams.get("to") || "/",
-        search: {
+        search: createSearchParams({
           toconfirm: true
-        }
+        }).toString()
       });
     } catch (err) {
       console.log("signup error", err);
@@ -262,7 +286,22 @@ const Signup = () => {
               label="Password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              helperText="Minimo 8 caratteri, almeno un numero e un carattere speciale"
+              helperText="Minimo 8 caratteri, almeno un numero, una maiuscola e un carattere speciale"
+              disabled={disabled}
+              maxlength={100}
+            />
+            <div className="my-4" />
+            <div className="mb-2 block">
+              <Label htmlFor="password" value="Ripeti password" />
+            </div>
+            <TextInput
+              type="password"
+              name="password"
+              id="password"
+              autoComplete="new-password"
+              label="Password"
+              value={repeatPassword}
+              onChange={e => setRepeatPassword(e.target.value)}
               disabled={disabled}
               maxlength={100}
             />

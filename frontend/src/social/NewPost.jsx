@@ -38,6 +38,21 @@ const NewPost = () => {
   const pictureInputRef = createRef(null);
   const videoInputRef = createRef(null);
 
+  useEffect(() => {
+    window.addEventListener("beforeunload", event => {
+      const e = event || window.event;
+      e.preventDefault();
+      if (e) {
+        e.returnValue = ""; // Legacy method for cross browser support
+      }
+      return ""; // Legacy method for cross browser support
+    });
+  }, []);
+
+  const { register, handleSubmit, formState, watch } = useForm();
+
+  const watchSelfBuilt = watch("isSelfBuilt", false);
+
   async function calculateMd5(f) {
     return new Promise((resolve, reject) => {
       const bmf = new BMF();
@@ -164,12 +179,21 @@ const NewPost = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingFiles, setIsUploadingFiles] = useState(false);
 
+  const [createdAt, setCreatedAt] = useState(null);
+
   const onSubmit = async data => {
     console.log(formValues);
     if (!pictures || pictures.length === 0) {
       setAlert({
         color: "failure",
         msg: "Devi aggiungere almeno una foto"
+      });
+
+      return;
+    } else if (!watchSelfBuilt && formValues.brand.trim().length < 1) {
+      setAlert({
+        color: "failure",
+        msg: "Inserisci la marca dell'antenna (o impostala come autocostruita)"
       });
       window.scrollTo({
         top: 0,
@@ -197,6 +221,7 @@ const NewPost = () => {
     }
 
     setIsUploadingFiles(true);
+    setCreatedAt(new Date());
 
     // This will take a very long time to complete
     const filesPath = await sendPicturesAndVideos();
@@ -208,6 +233,7 @@ const NewPost = () => {
     if (!filesPath) {
       setDisabled(false);
       setIsSubmitting(false);
+      setCreatedAt(null);
       return;
     }
 
@@ -215,6 +241,7 @@ const NewPost = () => {
     if (!postCreated) {
       setDisabled(false);
       setIsSubmitting(false);
+      setCreatedAt(null);
       return;
     }
 
@@ -259,6 +286,7 @@ const NewPost = () => {
     try {
       const { data } = await axios.post("/api/post", {
         ...formValues,
+        isSelfBuilt: watchSelfBuilt,
         filesPath
       });
       console.log(data);
@@ -324,14 +352,13 @@ const NewPost = () => {
               )
             );
           }
-          console.log("AAAAAAAAAAAAA", data, uploadMap);
+          // console.log("AAAAAAAAAAAAA", data, uploadMap);
         } catch (err) {}
       }, 1000);
       console.log("Starting emit status interval");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUploadingFiles]);
-
-  const { register, handleSubmit, formState } = useForm();
 
   const { errors, isValid } = formState;
 
@@ -422,7 +449,7 @@ const NewPost = () => {
                 </div>
 
                 <div className="my-4 flex items-center gap-4">
-                  <div>
+                  <div className={`${watchSelfBuilt ? "hidden" : "block"}`}>
                     <Label htmlFor="brand" value="Marca" />
                     <TextInput
                       type="text"
@@ -522,7 +549,7 @@ const NewPost = () => {
                 <div>
                   <Label
                     htmlFor="numberOfAntennas"
-                    value="Numero di antenne coppiate (0 se nessuna)"
+                    value="Numero di antenne coppiate (1 se unica antenna)"
                   />
                   <TextInput
                     type="number"
@@ -530,11 +557,11 @@ const NewPost = () => {
                     color={errors.numberOfAntennas ? "failure" : undefined}
                     {...register("numberOfAntennas", {
                       required: true,
-                      min: 0,
+                      min: 1,
                       max: 100
                     })}
                     disabled={disabled}
-                    min={0}
+                    min={1}
                     max={100}
                     id="numberOfAntennas"
                     value={formValues.numberOfAntennas}
@@ -634,20 +661,26 @@ const NewPost = () => {
                       : "Creazione post"}
                   </span>
                 </Button>
-                {[...uploadMap.keys()].length > 0 &&
-                  [...uploadMap.entries()].map(([md5, { name, percent }]) => (
-                    <div key={md5} className="mb-2 w-56">
-                      <Typography variant="h5" className="text-center">
-                        {name}: {Math.round(percent)}%
-                      </Typography>
-                      <Progress
-                        progress={percent || 0}
-                        size="sm"
-                        className="w-full"
-                        color="dark"
-                      />
-                    </div>
-                  ))}
+                {[...uploadMap.keys()].length > 0 && (
+                  <>
+                    <p className="text-center">È normale che ci metta un po'</p>
+                    {[...uploadMap.entries()].map(
+                      ([md5, { name, percent }]) => (
+                        <div key={md5} className="mb-2 w-56">
+                          <Typography variant="h5" className="text-center">
+                            {name}: {Math.round(percent)}%
+                          </Typography>
+                          <Progress
+                            progress={percent || 0}
+                            size="sm"
+                            className="w-full"
+                            color="dark"
+                          />
+                        </div>
+                      )
+                    )}
+                  </>
+                )}
               </div>
             </form>
 
@@ -660,14 +693,15 @@ const NewPost = () => {
                   <ViewPostContent
                     post={{
                       ...formValues,
-                      createdAt: new Date(),
+                      createdAt: createdAt || new Date(),
                       pictures: [...Array(pictures.length).keys()].map(e =>
                         window.URL.createObjectURL(pictures[e])
                       ),
                       videos: [...Array(videos.length).keys()].map(e =>
                         window.URL.createObjectURL(videos[e])
                       ),
-                      fromUser: user
+                      fromUser: user,
+                      isSelfBuilt: watchSelfBuilt
                     }}
                   />
                 ) : (

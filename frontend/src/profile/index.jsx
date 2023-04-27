@@ -259,7 +259,7 @@ const Profile = () => {
                   disabled={!user || changePwBtnDisabled}
                   value={newPw}
                   onChange={e => setNewPw(e.target.value)}
-                  helperText="Minimo 8 caratteri, almeno un numero e un carattere speciale"
+                  helperText="Minimo 8 caratteri, almeno un numero, una maiuscola e un carattere speciale"
                 />
               </div>
             </div>

@@ -46,7 +46,9 @@ const FeedCard = ({ post, pp }) => {
             >
               <div className="flex items-center gap-2">
                 <span>{post?.band} MHz</span>
-                <span>{post?.brand}</span>
+                {post && !post?.isSelfbuilt && (
+                  <span>{post?.brand || "-- nessuna marca --"}</span>
+                )}
                 <span>{post?.numberOfElements} elementi</span>
               </div>
             </ReactPlaceholder>

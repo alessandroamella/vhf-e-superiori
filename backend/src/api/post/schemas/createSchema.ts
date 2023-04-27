@@ -19,7 +19,8 @@ const createSchema: Schema = {
     },
     brand: {
         isString: { options: [] },
-        isLength: { options: { min: 0, max: 30 } }
+        isLength: { options: { min: 0, max: 30 } },
+        optional: { options: {} }
     },
     isSelfBuilt: {
         isBoolean: { options: {} }
@@ -34,7 +35,7 @@ const createSchema: Schema = {
         isInt: { options: { min: 1, max: 300 } }
     },
     numberOfAntennas: {
-        isInt: { options: { min: 0, max: 100 } }
+        isInt: { options: { min: 1, max: 100 } }
     },
     cable: {
         isString: { options: [] },

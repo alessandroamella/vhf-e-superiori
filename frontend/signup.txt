@@ -15,6 +15,6 @@ Email
 
 Password
 
-Minimo 8 caratteri, almeno un numero e un carattere speciale
+Minimo 8 caratteri, almeno un numero, una maiuscola e un carattere speciale
 
 REGISTRATI

@@ -17,7 +17,6 @@ import { Errors } from "../../errors";
  *          - fromUser
  *          - description
  *          - band
- *          - brand
  *          - isSelfBuilt
  *          - metersFromSea
  *          - boomLengthCm
@@ -67,7 +66,7 @@ import { Errors } from "../../errors";
  *            description: Number of elements of this antenna
  *          numberOfAntennas:
  *            type: integer
- *            minimum: 0
+ *            minimum: 1
  *            maximum: 100
  *            description: Number of coupled antennas (0 if none)
  *          cable:
@@ -115,7 +114,7 @@ export class PostClass {
     @prop({ required: true, enum: ["144", "432", "1200"] })
     public band!: string;
 
-    @prop({ required: true, minlength: 0, maxlength: 30 })
+    @prop({ required: false, minlength: 0, maxlength: 30 })
     public brand!: string;
 
     @prop({ required: true })
@@ -130,7 +129,7 @@ export class PostClass {
     @prop({ required: true, min: 1, max: 300 })
     public numberOfElements!: number;
 
-    @prop({ required: true, min: 0, max: 100 })
+    @prop({ required: true, min: 1, max: 100 })
     public numberOfAntennas!: number;
 
     @prop({ required: true, minlength: 0, maxlength: 100 })

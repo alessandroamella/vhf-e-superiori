@@ -7,7 +7,7 @@ import "swiper/css/scrollbar";
 
 import { Table } from "flowbite-react";
 import ReactPlaceholder from "react-placeholder/lib";
-import { FaCheck, FaTimes } from "react-icons/fa";
+// import { FaCheck, FaTimes } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper";
 import Zoom from "react-medium-image-zoom";
@@ -19,19 +19,24 @@ const ViewPostContent = ({ post, pic }) => {
   const fields = post
     ? [
         ["Banda", post.band + "MHz"],
-        ["Marca", post.brand],
         [
-          "Autocostruita",
-          post.isSelfBuilt ? (
-            <FaCheck className="text-green-500" />
-          ) : (
-            <FaTimes className="text-red-500" />
-          )
+          "Marca",
+          post.isSelfBuilt
+            ? "Autocostruita"
+            : post.brand || "-- non specificata --"
         ],
+        // [
+        //   "Autocostruita",
+        //   post.isSelfBuilt ? (
+        //     <FaCheck className="text-green-500" />
+        //   ) : (
+        //     <FaTimes className="text-red-500" />
+        //   )
+        // ],
         ["Metri dal mare (S.L.M.)", post.metersFromSea + "m"],
         ["Lunghezza boom", post.boomLengthCm + "cm"],
         ["Numero di elementi", post.numberOfElements],
-        ["Antenne accoppiate", post.numberOfAntennas || "unica antenna"],
+        ["Antenne accoppiate", post.numberOfAntennas > 1 || "unica antenna"],
         ["Cavo", post.cable]
       ]
     : null;
@@ -41,7 +46,7 @@ const ViewPostContent = ({ post, pic }) => {
       <ReactPlaceholder
         showLoadingAnimation
         type="rect"
-        className="h-64 object-cover w-full"
+        className="h-96 object-cover w-full"
         ready={!!post}
       >
         {post && (

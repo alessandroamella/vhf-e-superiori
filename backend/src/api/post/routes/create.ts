@@ -27,7 +27,6 @@ const s3 = new S3Client();
  *           required:
  *             - description
  *             - band
- *             - brand
  *             - metersFromSea
  *             - boomLengthCm
  *             - numberOfElements
@@ -67,7 +66,7 @@ const s3 = new S3Client();
  *               description: Number of elements of this antenna
  *             numberOfAntennas:
  *               type: integer
- *               minimum: 0
+ *               minimum: 1
  *               maximum: 100
  *               description: Number of coupled antennas (0 if none)
  *             cable:
