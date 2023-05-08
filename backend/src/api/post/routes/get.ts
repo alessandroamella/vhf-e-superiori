@@ -7,7 +7,7 @@ import { UserDoc } from "../../auth/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import { qrz } from "../../qrz";
-import Post from "../models";
+import { BasePost } from "../models";
 
 const router = Router();
 
@@ -54,7 +54,7 @@ const router = Router();
  */
 router.get("/:_id", param("_id").isMongoId(), validate, async (req, res) => {
     try {
-        const post = await Post.findOne({ _id: req.params?._id }).populate(
+        const post = await BasePost.findOne({ _id: req.params?._id }).populate(
             "fromUser"
         );
 

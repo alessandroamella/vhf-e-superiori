@@ -4,7 +4,7 @@ import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { Errors } from "../../errors";
-import Post from "../models";
+import { BasePost } from "../models";
 
 const router = Router();
 
@@ -55,7 +55,7 @@ router.post(
     validate,
     async (req: Request, res: Response) => {
         try {
-            const post = await Post.findOne({
+            const post = await BasePost.findOne({
                 _id: req.params.id
             });
             if (!post) {

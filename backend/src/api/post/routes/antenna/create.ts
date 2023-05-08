@@ -1,13 +1,13 @@
 import { Request, Response, Router } from "express";
 import { checkSchema } from "express-validator";
-import createSchema from "../schemas/createSchema";
-import { createError, validate } from "../../helpers";
-import { logger } from "../../../shared";
+import createSchema from "./createSchema";
+import { createError, validate } from "../../../helpers";
+import { logger } from "../../../../shared";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
-import { S3Client } from "../../aws";
-import { Errors } from "../../errors";
-import Post from "../models";
-import User, { UserDoc } from "../../auth/models";
+import { S3Client } from "../../../aws";
+import { Errors } from "../../../errors";
+import User, { UserDoc } from "../../../auth/models";
+import { AntennaPost } from "../../models";
 
 const router = Router();
 
@@ -15,9 +15,9 @@ const s3 = new S3Client();
 
 /**
  * @openapi
- * /post:
+ * /post/antenna:
  *  post:
- *    summary: Creates a new post
+ *    summary: Creates a new Antenna post
  *    requestBody:
  *      required: true
  *      content:
@@ -112,7 +112,6 @@ router.post(
     checkSchema(createSchema),
     validate,
     async (req: Request, res: Response) => {
-        // DEBUG TO IMPLEMENT!!
         if (!req.user) {
             throw new Error("No req.user in post create");
         }
@@ -207,8 +206,9 @@ router.post(
             });
             logger.debug("fromUser");
             logger.debug(user);
-            const post = new Post({
+            const post = new AntennaPost({
                 fromUser: user._id,
+                postType: "antennaPost",
                 description,
                 isSelfBuilt,
                 band,

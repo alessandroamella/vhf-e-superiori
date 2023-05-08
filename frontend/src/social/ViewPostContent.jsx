@@ -5,7 +5,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 
-import { Table } from "flowbite-react";
+import { Badge, Table } from "flowbite-react";
 import ReactPlaceholder from "react-placeholder/lib";
 // import { FaCheck, FaTimes } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -15,7 +15,18 @@ import { formatInTimeZone } from "date-fns-tz";
 import { it } from "date-fns/locale";
 import ReactPlayer from "react-player/lazy";
 
-const ViewPostContent = ({ post, pic }) => {
+/**
+ * @typedef {import('./NewPost').PostType} PostType
+ * @typedef {import('./FeedCard').BasePost} BasePost
+ *
+ * @typedef {object} Props
+ * @property {PostType} type - The type of the post
+ * @property {BasePost} post - The post content
+ * @property {string} pic - The user profile picture
+ *
+ * @param {Props} props
+ */
+const ViewPostContent = ({ type, post, pic }) => {
   const fields = post
     ? [
         ["Banda", post.band + "MHz"],
@@ -150,7 +161,7 @@ const ViewPostContent = ({ post, pic }) => {
                 rows={2}
                 ready={!!post}
               >
-                {fields && (
+                {type === "antennaPost" && fields && (
                   <Table className="w-full mx-auto" hoverable>
                     <Table.Body className="divide-y w-full mx-auto">
                       <div className="block md:hidden">

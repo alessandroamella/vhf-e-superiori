@@ -9,11 +9,11 @@ import {
 } from "http-status";
 import { param } from "express-validator";
 import { UserDoc } from "../../auth/models";
-import Post from "../models";
 import { isDocument } from "@typegoose/typegoose";
 import { Errors } from "../../errors";
 import mongoose from "mongoose";
 import { s3Client } from "../../aws";
+import { BasePost } from "../models";
 
 const router = Router();
 
@@ -54,9 +54,9 @@ router.delete(
     validate,
     async (req: Request, res: Response) => {
         try {
-            const post = await Post.findOne({ _id: req.params._id }).populate(
-                "fromUser"
-            );
+            const post = await BasePost.findOne({
+                _id: req.params._id
+            }).populate("fromUser");
             if (!post) {
                 return res
                     .status(BAD_REQUEST)

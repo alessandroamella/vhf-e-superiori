@@ -5,6 +5,8 @@ import {
   Badge,
   Button,
   Card,
+  Checkbox,
+  FileInput,
   Label,
   ListGroup,
   Modal,
@@ -17,21 +19,29 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import React, { useContext, useEffect, useState } from "react";
+import React, { createRef, useContext, useEffect, useState } from "react";
 import { it } from "date-fns/locale";
 import { formatInTimeZone } from "date-fns-tz";
 import { EventsContext, getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
-import { DefaultEditor } from "react-simple-wysiwyg";
-import { FaCheck, FaDownload, FaPlusCircle, FaTimes } from "react-icons/fa";
+// import { DefaultEditor } from "react-simple-wysiwyg";
+import {
+  FaCheck,
+  FaDownload,
+  FaPlusCircle,
+  FaTimes,
+  FaUndo
+} from "react-icons/fa";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import ReactHTMLTableToExcel from "react-html-table-to-excel";
 import { Navigation, Pagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Zoom from "react-medium-image-zoom";
 import ReactPlayer from "react-player/lazy";
+import Compressor from "compressorjs";
+import { isFuture } from "date-fns";
 
-const Event = () => {
+const AdminManager = () => {
   const { user } = useContext(UserContext);
   const { events, setEvents } = useContext(EventsContext);
 
@@ -42,13 +52,15 @@ const Event = () => {
 
   const [name, setName] = useState("");
   const [band, setBand] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().slice(0, -8));
+  // const [description, setDescription] = useState("");
+  const [date, setDate] = useState(
+    new Date().toISOString().slice(0, -14) + "T10:00"
+  );
   const [joinStart, setJoinStart] = useState(
-    new Date().toISOString().slice(0, -8)
+    new Date("2023/01/01").toISOString().slice(0, -14) + "T00:00"
   );
   const [joinDeadline, setJoinDeadline] = useState(
-    new Date().toISOString().slice(0, -8)
+    new Date().toISOString().slice(0, -14) + "T10:00"
   );
   const [logoUrl, setLogoUrl] = useState("/logo-min.png");
 
@@ -56,6 +68,10 @@ const Event = () => {
 
   const [users, setUsers] = useState(false);
   const [posts, setPosts] = useState(false);
+
+  const [isCompressingPic, setIsCompressingPic] = useState(false);
+
+  const pictureInputRef = createRef(null);
 
   useEffect(() => {
     async function getUsers() {
@@ -100,8 +116,10 @@ const Event = () => {
     try {
       const obj = {
         name,
-        description,
+        // description,
+        band,
         date,
+        joinStart,
         joinDeadline,
         logoUrl
       };
@@ -141,6 +159,10 @@ const Event = () => {
       // navigate("/");
     } catch (err) {
       console.log(err.response?.data?.err || err);
+      window.alert(
+        "ERRORE crea evento: " + getErrorStr(err?.response?.data?.err || err)
+      );
+
       // setAlert({
       //     color: "failure",
       //     msg: getErrorStr(err?.response?.data?.err)
@@ -161,7 +183,7 @@ const Event = () => {
     setEventEditing(e._id);
     setName(e.name);
     setBand(e.band);
-    setDescription(e.description);
+    // setDescription(e.description);
     setDate(formatInTimeZone(e.date, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"));
     setJoinStart(
       formatInTimeZone(e.joinStart, "Europe/Rome", "yyyy-MM-dd'T'HH:mm")
@@ -279,6 +301,29 @@ const Event = () => {
     }
   }
 
+  const uploadEventPic = async uploadedPic => {
+    const formData = new FormData();
+    console.log({ uploadedPic });
+    formData.append("content", uploadedPic);
+
+    try {
+      const { data } = await axios.post("/api/event/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        },
+        timeout: 2 * 60 * 1000 // 2 minutes timeout
+      });
+      console.log("filesPath", data);
+      return data;
+    } catch (err) {
+      console.log(err);
+      window.alert(
+        "ERRORE upload immagine: " + getErrorStr(err?.response?.data?.err)
+      );
+      return null;
+    }
+  };
+
   const [isDeleting, setIsDeleting] = useState(false);
   async function deletePost(j) {
     if (!window.confirm("Vuoi ELIMINARE il post con ID " + j._id + "?")) {
@@ -306,6 +351,78 @@ const Event = () => {
   }
 
   const navigate = useNavigate();
+
+  const [uploadedPic, setUploadedPic] = useState(null);
+
+  function resetPicture() {
+    pictureInputRef.current.value = null;
+    setUploadedPic(null);
+  }
+
+  const compressPic = f => {
+    return new Promise((resolve, reject) => {
+      new Compressor(f, {
+        quality: 0.6,
+        success(result) {
+          console.log("compressed img", result);
+          return resolve(result);
+        },
+        error(err) {
+          console.log("compress img error");
+          console.log(err.message);
+          return reject(err);
+        }
+      });
+    });
+  };
+
+  const handlePictureChange = async event => {
+    const { files } = event.target;
+    if (!files || files.length <= 0) return;
+    else if (files.length > 1) {
+      window.alert("Solo una foto per evento");
+      resetPicture();
+      return;
+    }
+    setDisabled(true);
+    setIsCompressingPic(true);
+
+    let pic;
+    try {
+      pic = await compressPic(files[0]);
+      console.log("pic", pic);
+      setUploadedPic(pic);
+    } catch (err) {
+      console.log("compress pic err", err);
+      window.alert(
+        "Errore nella compressione (in caso mandamelo): " +
+          err +
+          "\nJSON: " +
+          JSON.stringify(err, null, 2)
+      );
+    } finally {
+      setDisabled(false);
+      setIsCompressingPic(false);
+    }
+
+    try {
+      setDisabled(true);
+      const filePath = await uploadEventPic(pic);
+      setDisabled(false);
+      setLogoUrl(filePath.path);
+      window.alert(
+        "Path immagine: " +
+          filePath.path +
+          '\nRICORDA DI PREMERE IL TASTO "Applica modifiche"'
+      );
+    } catch (err) {
+      window.alert("ERRORE upload immagine (outer): " + getErrorStr(err));
+    } finally {
+      setDisabled(false);
+    }
+  };
+
+  const [hidePastEvents, setHidePastEvents] = useState(false);
 
   return user === null || (user && !user.isAdmin) ? (
     navigate({
@@ -339,21 +456,50 @@ const Event = () => {
                   <div className="mb-2 block">
                     <Label htmlFor="event-logo-url" value="URL logo" />
                   </div>
-                  <TextInput
-                    id="event-logo-url"
-                    type="text"
-                    required={true}
-                    value={logoUrl}
-                    onChange={e => setLogoUrl(e.target.value)}
-                    disabled={disabled}
-                  />
-                  <Button
-                    className="mt-2"
-                    onClick={() => setLogoUrl("/logo-min.png")}
-                    disabled={disabled}
-                  >
-                    Resetta
-                  </Button>
+
+                  <div className="flex items-center gap-2">
+                    <TextInput
+                      id="event-logo-url"
+                      type="text"
+                      required={true}
+                      className="w-full"
+                      value={logoUrl}
+                      onChange={e => setLogoUrl(e.target.value)}
+                      disabled={disabled}
+                    />
+
+                    <Button
+                      onClick={() => setLogoUrl("/logo-min.png")}
+                      disabled={disabled}
+                    >
+                      Resetta
+                    </Button>
+                  </div>
+
+                  <div className="my-4">
+                    <Label
+                      htmlFor="uploadedPic"
+                      value="Locandina (MAX 10MB COMPRESSA)"
+                    />
+                    <div className="flex items-center gap-2">
+                      <FileInput
+                        disabled={disabled}
+                        helperText={isCompressingPic && <Spinner />}
+                        id="uploadedPic"
+                        accept="image/*"
+                        onChange={handlePictureChange}
+                        className="w-full"
+                        ref={pictureInputRef}
+                      />
+                      <Button
+                        color="dark"
+                        onClick={resetPicture}
+                        disabled={disabled || !uploadedPic}
+                      >
+                        <FaUndo />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div>
@@ -372,7 +518,7 @@ const Event = () => {
               </div>
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="event-band" value="Nome" />
+                  <Label htmlFor="event-band" value="Banda" />
                 </div>
                 <TextInput
                   id="event-band"
@@ -384,7 +530,7 @@ const Event = () => {
                   disabled={disabled}
                 />
               </div>
-              <div>
+              {/* <div>
                 <div className="mb-2 block">
                   <Label
                     htmlFor="event-description"
@@ -398,15 +544,7 @@ const Event = () => {
                   onChange={e => setDescription(e.target.value)}
                   disabled={disabled}
                 />
-
-                {/* <TextInput
-                                id="event-description"
-                                type="text"
-                                required={true}
-                                value={description}
-                                onChange={e => setDescription(e.target.value)}
-                            /> */}
-              </div>
+              </div> */}
               <div className="grid grid-cols-1 md:gap-4 md:grid-cols-3">
                 <div>
                   <div className="mb-2 block">
@@ -454,10 +592,6 @@ const Event = () => {
                   />
                 </div>
               </div>
-
-              <Button type="submit" disabled={disabled}>
-                {!eventEditing ? "Crea" : "Modifica"} evento
-              </Button>
 
               {eventEditing && (
                 <div className="min-h-[60vh] overflow-auto">
@@ -613,6 +747,9 @@ const Event = () => {
               >
                 Chiudi
               </Button>
+              <Button type="submit" disabled={disabled}>
+                {!eventEditing ? "Crea evento" : "Applica modifiche"}
+              </Button>
             </div>
           </Modal.Footer>
         </form>
@@ -635,6 +772,66 @@ const Event = () => {
               Admin
             </Badge>
           </Typography>
+
+          <Typography variant="h2" className="mb-4 flex items-center">
+            Gestione locandine
+          </Typography>
+          <div className="mb-6">
+            {users ? (
+              <Table>
+                <Table.Head>
+                  <Table.HeadCell>callsign</Table.HeadCell>
+                  <Table.HeadCell>name</Table.HeadCell>
+                  <Table.HeadCell>email</Table.HeadCell>
+                  <Table.HeadCell>phoneNumber</Table.HeadCell>
+                  <Table.HeadCell>createdAt</Table.HeadCell>
+                  <Table.HeadCell>isAdmin</Table.HeadCell>
+                  <Table.HeadCell>joinRequests</Table.HeadCell>
+                </Table.Head>
+                <Table.Body>
+                  {users?.map(u => (
+                    <Table.Row key={u._id}>
+                      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                        {u.callsign}
+                      </Table.Cell>
+                      <Table.Cell>{u.name}</Table.Cell>
+                      <Table.Cell>{u.email}</Table.Cell>
+                      <Table.Cell>{u.phoneNumber}</Table.Cell>
+                      <Table.Cell>
+                        {formatInTimeZone(
+                          u.createdAt,
+                          "Europe/Rome",
+                          "yyyy-MM-dd HH:mm:ss"
+                        )}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {u.isAdmin ? (
+                          <FaCheck className="text-green-500" />
+                        ) : (
+                          <FaTimes className="text-red-600" />
+                        )}
+                      </Table.Cell>
+                      <Table.Cell>
+                        <ListGroup>
+                          {u.joinRequests.length ? (
+                            u.joinRequests.map(j => (
+                              <ListGroup.Item>{j}</ListGroup.Item>
+                            ))
+                          ) : (
+                            <FaTimes />
+                          )}
+                        </ListGroup>
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table>
+            ) : users === false ? (
+              <Spinner />
+            ) : (
+              <p>Errore nel caricamento degli utenti</p>
+            )}
+          </div>
 
           <Typography variant="h2" className="mb-4 flex items-center">
             Utenti
@@ -860,21 +1057,35 @@ const Event = () => {
             Eventi
           </Typography>
 
+          <div className="flex items-center gap-2 mb-4">
+            <Checkbox
+              onChange={e => setHidePastEvents(e.target.checked)}
+              id="remove-passed-events"
+            />
+            <Label htmlFor="remove-passed-events" className="select-none">
+              Escludi eventi passati
+            </Label>
+          </div>
+
           {events === null ? (
             <p>Eventi non caricati</p>
           ) : events ? (
             <div className="grid grid-cols-1 md:grid-cols-3 md:gap-4">
-              {events.map(e => (
-                <Card
-                  className="cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-700 hover:scale-105 transition-all"
-                  key={e._id}
-                  imgSrc={e.logoUrl || "/logo-min.png"}
-                  onClick={() => editEventModal(e)}
-                >
-                  <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    {e.name}
-                  </h5>
-                  {e.description ? (
+              {events
+                .filter(e =>
+                  hidePastEvents ? isFuture(new Date(e.date)) : true
+                )
+                .map(e => (
+                  <Card
+                    className="cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-700 hover:scale-105 transition-all"
+                    key={e._id}
+                    imgSrc={e.logoUrl || "/logo-min.png"}
+                    onClick={() => editEventModal(e)}
+                  >
+                    <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                      {e.name}
+                    </h5>
+                    {/* {e.description ? (
                     <div
                       className="line-clamp-3"
                       dangerouslySetInnerHTML={{
@@ -885,10 +1096,10 @@ const Event = () => {
                     <p className="font-normal text-gray-700 dark:text-gray-400">
                       "-- nessuna descrizione --"
                     </p>
-                  )}
-                  <p className="font-normal text-gray-700 dark:text-gray-400">
-                    Data{" "}
-                    <strong>
+                  )} */}
+
+                    <p className="font-bold text-gray-700 dark:text-gray-400">
+                      📅{" "}
                       {formatInTimeZone(
                         new Date(e.date),
                         "Europe/Rome",
@@ -897,23 +1108,35 @@ const Event = () => {
                           locale: it
                         }
                       )}
-                    </strong>
-                  </p>
-                  <p className="font-normal text-gray-700 dark:text-gray-400">
-                    Scadenza per partecipare{" "}
-                    <strong>
+                      <br />
+                      🕒{" "}
                       {formatInTimeZone(
-                        new Date(e.joinDeadline),
+                        new Date(e.date),
                         "Europe/Rome",
-                        "eee d MMMM Y",
+                        "HH:mm",
                         {
                           locale: it
                         }
                       )}
-                    </strong>
-                  </p>
-                </Card>
-              ))}
+                    </p>
+                    <p className="font-normal text-gray-700 dark:text-gray-400">
+                      📡 <strong>{e.band}</strong>
+                    </p>
+                    <p className="font-normal text-gray-700 dark:text-gray-400">
+                      Scadenza per partecipare{" "}
+                      <strong>
+                        {formatInTimeZone(
+                          new Date(e.joinDeadline),
+                          "Europe/Rome",
+                          "eee d MMMM Y",
+                          {
+                            locale: it
+                          }
+                        )}
+                      </strong>
+                    </p>
+                  </Card>
+                ))}
               {events.length === 0 && <p>Nessun evento salvato</p>}
               <Button
                 className="flex h-full text-md flex-col justify-center items-center"
@@ -953,7 +1176,7 @@ const Event = () => {
                     />
                     <div className="my-4" />
                     <Button type="submit" disabled={disabled}>
-                        Event
+                        AdminManager
                     </Button>
                 </form> */}
         </div>
@@ -962,4 +1185,4 @@ const Event = () => {
   );
 };
 
-export default Event;
+export default AdminManager;

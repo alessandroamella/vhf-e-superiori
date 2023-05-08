@@ -2,7 +2,7 @@ import { CronJob } from "cron";
 import moment from "moment";
 import { logger } from "../../shared";
 import { s3Client } from "../aws";
-import Post from "../post/models";
+import { BasePost } from "../post/models";
 
 export const cleanUnusedFilesJob = new CronJob(
     "0 1 * * *",
@@ -42,7 +42,7 @@ export const cleanUnusedFilesJob = new CronJob(
             // }).select("pictures videos");
 
             // above is wrong, it's the opposite of what we want
-            const posts = await Post.find({}).select("pictures videos");
+            const posts = await BasePost.find({}).select("pictures videos");
 
             const pics = [...new Set(posts.map(p => p.pictures).flat())];
             const vids = [...new Set(posts.map(p => p.videos).flat())];

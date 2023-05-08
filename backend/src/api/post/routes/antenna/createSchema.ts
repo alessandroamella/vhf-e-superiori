@@ -1,5 +1,5 @@
 import { Schema } from "express-validator";
-import { Errors } from "../../errors";
+import { Errors } from "../../../errors";
 
 const createSchema: Schema = {
     // fromUser: {
@@ -10,7 +10,7 @@ const createSchema: Schema = {
     // },
     description: {
         isString: { options: [] },
-        isLength: { options: { min: 1 } }
+        isLength: { options: { min: 1, max: 30 } }
     },
     band: {
         isString: { options: [] },

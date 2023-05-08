@@ -34,7 +34,7 @@ const SectionHref = ({ href, wip, children }) => {
         wip ? "text-gray-500 cursor-not-allowed" : ""
       }`}
       onClick={() => {
-        if (wip) return alert("Lavori in corso!");
+        if (wip) return window.alert("Lavori in corso!");
         setSidebarOpen(false);
         // if (window.location.pathname !== "/") {
         //   navigate("/" + href);
@@ -108,7 +108,7 @@ const MenuContent = ({ isSideBar }) => {
       setUser(null);
     } catch (err) {
       console.log("logout error", getErrorStr(err?.response?.data?.err));
-      alert(getErrorStr(err?.response?.data?.err));
+      window.alert(getErrorStr(err?.response?.data?.err));
     }
   }
 
@@ -218,8 +218,10 @@ const MenuContent = ({ isSideBar }) => {
         La mia area
       </SectionTitle>
 
-      <SectionLink to="/social">Le mie antenne</SectionLink>
-      <SectionHref wip href="#">
+      <SectionLink to="/social" className="text-xl font-semibold">
+        Social
+      </SectionLink>
+      {/* <SectionHref wip href="#">
         I miei amplificatori lineari e preamplificatori
       </SectionHref>
       <SectionHref wip href="#">
@@ -227,7 +229,7 @@ const MenuContent = ({ isSideBar }) => {
       </SectionHref>
       <SectionHref wip href="#">
         Il mio radio flashmob
-      </SectionHref>
+      </SectionHref> */}
       <a
         href="/listabeacon20230220.pdf"
         target="_blank"

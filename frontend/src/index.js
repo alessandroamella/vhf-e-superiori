@@ -9,7 +9,7 @@ import Signup from "./auth/Signup";
 import reportWebVitals from "./reportWebVitals";
 import axios, { isAxiosError } from "axios";
 import Profile from "./profile";
-import Event from "./admin";
+import AdminManager from "./admin";
 import ViewEvent from "./event/ViewEvent";
 // import Regolamento from "./homepage/Regolamento";
 // import Info from "./homepage/Info";
@@ -35,7 +35,7 @@ const router = createBrowserRouter([
   { path: "/social", element: <Social /> },
   { path: "/social/new", element: <NewPost /> },
   { path: "/social/:id", element: <ViewPost /> },
-  { path: "/eventmanager", element: <Event /> },
+  { path: "/eventmanager", element: <AdminManager /> },
   // { path: "/regolamento", element: <Regolamento /> },
   // { path: "/info", element: <Info /> },
   { path: "/resetpw", element: <ResetPw /> },

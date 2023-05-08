@@ -1,5 +1,5 @@
 import Layout from "../Layout";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   JoinOpenContext,
   EventsContext,
@@ -30,8 +30,6 @@ import "react-round-carousel/src/index.css";
 import Bandiere from "../Bandiere";
 
 const Homepage = () => {
-  const numLocandine = 15;
-
   const { user } = useContext(UserContext);
   const { events } = useContext(EventsContext);
   const { splashPlayed, setSplashPlayed } = useContext(SplashContext);
@@ -126,21 +124,21 @@ const Homepage = () => {
     }
   }, [events]);
 
-  const items = Array.from(Array(numLocandine).keys()).map(e => ({
-    alt: "Locandina " + e,
-    image: `/locandine/${numLocandine - e}-min.jpg`,
-    content: (
-      <ControlledZoom
-        isZoomed={zoomedImg?.includes(`/locandine/${numLocandine - e}-min.jpg`)}
-        onZoomChange={handleZoomChange}
-      >
-        <img
-          src={`/locandine/${numLocandine - e}-min.jpg`}
-          alt={`Locandina ${numLocandine - e + 1}`}
-        />
-      </ControlledZoom>
-    )
-  }));
+  const posters = useMemo(() => {
+    if (!events) return null;
+    return events.map(e => ({
+      alt: "Locandina " + e.i,
+      image: e.logoUrl,
+      content: (
+        <ControlledZoom
+          isZoomed={zoomedImg?.includes(e.logoUrl)}
+          onZoomChange={handleZoomChange}
+        >
+          <img src={e.logoUrl} alt={`Locandina ${e.i}`} />
+        </ControlledZoom>
+      )
+    }));
+  }, [events, handleZoomChange, zoomedImg]);
 
   const [eventJoining, setEventJoining] = useState(null);
   const { joinOpen, setJoinOpen } = useContext(JoinOpenContext);
@@ -409,7 +407,13 @@ const Homepage = () => {
                     }}
                     className="min-h-[20rem] mt-12 md:mt-24 overflow-x-hidden overflow-y-clip -mx-4 md:mx-4 md:max-w-[80vw] select-none"
                   >
-                    <Carousel items={items} showControls={false} />
+                    {posters ? (
+                      <Carousel items={posters} showControls={false} />
+                    ) : (
+                      <div className="flex justify-center items-center h-full">
+                        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900 dark:border-white"></div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="my-12" />
@@ -708,167 +712,6 @@ const Homepage = () => {
           </div>
         </div>
       )}
-
-      {/* <div className="p-3 md:p-6"> */}
-      {/* {shownEvent && (
-          <div className="w-full flex flex-col md:flex-row justify-center py-4">
-            <img
-              className="max-h-[69vh] object-contain shadow hover:scale-105 transition-all"
-              src={shownEvent.logoUrl}
-              alt="Next event"
-            />
-            <div className="h-full mt-2 ml-0 md:ml-8">
-              <p className="text-2xl md:text-4xl w-fit bg-red-500 shadow p-4 font-bold tracking-tight text-white">
-                Prossimo evento
-              </p>
-
-              <p className="text-3xl mt-4 md:mt-8 md:text-5xl font-bold">
-                {shownEvent.name}
-              </p>
-              <p className="text-xl mt-2 mb-6 text-gray-600 dark:text-gray-100">
-                {formatInTimeZone(
-                  new Date(shownEvent.date),
-                  "Europe/Rome",
-                  "dd MMMM yyyy",
-                  { locale: it }
-                )}
-              </p>
-
-              <Button className="flex items-center text-md">
-                <FaCalendarAlt />
-                <span className="ml-1">Aggiungi al calendario</span>
-              </Button>
-            </div>
-          </div>
-        )} */}
-
-      {/* <Typography variant="h2" className="mb-8">
-          Prossimi eventi
-        </Typography> */}
-
-      {/* {events === null ? (
-          <p>Eventi non caricati</p>
-        ) : events ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 md:gap-4 md:mx-12 lg:mx-24 xl:mx-36">
-            {events
-              .filter(e => isAfter(new Date(e.date), new Date()))
-              .map(e => (
-                <Card
-                  className="cursor-pointer hover:bg-gray-100 hover:scale-105 transition-all"
-                  key={e._id}
-                  horizontal
-                  // imgSrc={e.logoUrl || "/logo-min.png"}
-                  // onClick={() => setViewEventModal(e)}
-                  onClick={() => navigate("/event/" + e._id)}
-                >
-                  <div className="flex items-center text-gray-500">
-                    <p className="font-bold text-5xl">
-                      {format(new Date(e.date), "d")}
-                    </p>
-                    <div className="ml-2">
-                      <p className="text-lg mb-0">
-                        {format(new Date(e.date), "MMMM", {
-                          locale: it
-                        })}
-                      </p>
-                      <p className="-mt-1">
-                        {format(new Date(e.date), "HH:mm")}
-                      </p>
-                    </div>
-                  </div>
-
-                  <Typography
-                    variant="h5"
-                    className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
-                  >
-                    {e.name}
-                  </Typography>
-
-                  <div className="border-t w-full" />
-
-                  <p className="text-gray-400 uppercase font-bold tracking-tight -mb-4">
-                    Prenotazioni
-                  </p>
-
-                  {isAfter(new Date(e.date), new Date()) ? (
-                    <Button>Prenota</Button>
-                  ) : (
-                    <p className="text-gray-600 dark:text-gray-100">
-                      Il tempo per prenotarsi è scaduto il{" "}
-                      {format(new Date(e.date), "dd/MM/yyyy 'alle' HH:mm", {
-                        locale: it
-                      })}
-                    </p>
-                  )}
-
-                  {e.description ? (
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: e.description
-                      }}
-                    />
-                  ) : (
-                    <p className="font-normal text-gray-700 dark:text-gray-400">
-                      "-- nessuna descrizione --"
-                    </p>
-                  )}
-                  <p className="font-normal text-gray-700 dark:text-gray-400">
-                    Data{" "}
-                    <strong>
-                      {format(new Date(e.date), "eee d MMMM Y", {
-                        locale: it
-                      })}
-                    </strong>
-                  </p>
-                  <p className="font-normal text-gray-700 dark:text-gray-400">
-                    Scadenza per partecipare{" "}
-                    <strong>
-                      {format(new Date(e.joinDeadline), "eee d MMMM Y", {
-                        locale: it
-                      })}
-                    </strong>
-                  </p>
-                </Card>
-              ))}
-            {events.length === 0 && <p>Nessun evento salvato</p>}
-          </div>
-        ) : (
-          <Spinner />
-        )} */}
-
-      {/* {events === null ? (
-          <Alert
-            className="mb-6"
-            color="failure"
-            onDismiss={() => setAlert(null)}
-          >
-            <span>
-              <span className="font-medium">
-                Errore nel caricamento degli eventi
-              </span>{" "}
-              {alert?.msg}
-            </span>
-          </Alert>
-        ) : !events ? (
-          <Spinner />
-        ) : (
-          <Carousel
-            showThumbs={false}
-            // autoPlay
-            centerMode
-            emulateTouch
-            infiniteLoop
-          >
-            {events.map((e, i) => (
-              <EventPreview
-                onClick={() => navigate("/event/" + e._id)}
-                event={e}
-                key={i}
-              />
-            ))}
-          </Carousel>
-        )} */}
-      {/* </div> */}
     </Layout>
   );
 };

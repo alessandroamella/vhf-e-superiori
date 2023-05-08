@@ -1,20 +1,15 @@
-import {
-    modelOptions,
-    mongoose,
-    prop,
-    Ref,
-    Severity
-} from "@typegoose/typegoose";
-import { Errors } from "../../errors";
+import { modelOptions, prop, Severity } from "@typegoose/typegoose";
+import { BasePostClass } from "./BasePost";
 
 /**
  * @swagger
  *  components:
  *    schemas:
- *      Post:
+ *      AntennaPost:
  *        type: object
  *        required:
  *          - fromUser
+ *          - postType
  *          - description
  *          - band
  *          - isSelfBuilt
@@ -74,6 +69,10 @@ import { Errors } from "../../errors";
  *            minLength: 0
  *            maxLength: 100
  *            description: Brand, type, length... of the cable used for this antenna
+ *          postType:
+ *            type: string
+ *            enum: ["antennaPost", "myFlashMobPost", "radioStationPost"]
+ *            description: The type of post
  *          pictures:
  *            type: array
  *            items:
@@ -102,12 +101,9 @@ import { Errors } from "../../errors";
  */
 @modelOptions({
     schemaOptions: { timestamps: true },
-    options: { allowMixed: Severity.ERROR, customName: "Post" }
+    options: { allowMixed: Severity.ERROR, customName: "AntennaPost" }
 })
-export class PostClass {
-    @prop({ required: true, ref: "User" })
-    public fromUser!: Ref<"User">;
-
+export class AntennaPostClass extends BasePostClass {
     @prop({ required: true, minlength: 1, maxlength: 30 })
     public description!: string;
 
@@ -134,28 +130,4 @@ export class PostClass {
 
     @prop({ required: true, minlength: 0, maxlength: 100 })
     public cable!: string;
-
-    @prop({
-        type: () => [String],
-        required: true,
-        validate: [
-            (v: unknown[]) => v.length > 0 && v.length <= 5,
-            Errors.INVALID_PICS_NUM
-        ]
-    })
-    public pictures!: mongoose.Types.Array<string>;
-
-    @prop({
-        type: () => [String],
-        required: true,
-        validate: [
-            (v: unknown[]) => v.length >= 0 && v.length <= 2,
-            Errors.INVALID_VIDS_NUM
-        ]
-    })
-    public videos!: mongoose.Types.Array<string>;
-
-    // DEBUG send email
-    @prop({ required: true, default: false })
-    public isApproved!: boolean;
 }

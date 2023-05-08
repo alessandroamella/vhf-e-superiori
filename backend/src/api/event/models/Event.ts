@@ -53,7 +53,7 @@ export class EventClass {
     @prop({ required: true, minlength: 1 })
     public name!: string;
 
-    @prop({ required: false, minlength: 1 })
+    @prop({ required: false })
     public description?: string;
 
     @prop({ required: true, minlength: 1 })

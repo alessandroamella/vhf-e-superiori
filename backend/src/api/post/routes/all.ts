@@ -5,7 +5,7 @@ import { logger } from "../../../shared/logger";
 import { UserDoc } from "../../auth/models";
 import { createError } from "../../helpers";
 import { qrz } from "../../qrz";
-import Post from "../models";
+import { BasePost } from "../models";
 
 const router = Router();
 
@@ -72,7 +72,7 @@ router.get(
         try {
             const user = req.user as unknown as UserDoc | undefined;
             const query = user?.isAdmin ? {} : { isApproved: true };
-            const posts = await Post.find(query)
+            const posts = await BasePost.find(query)
                 .sort({ createdAt: -1 })
                 .populate("fromUser")
                 .limit(req.query?.limit)

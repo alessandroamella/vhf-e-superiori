@@ -149,3 +149,14 @@ a:hover {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* set currentColor background to checkboxes */
+input[type='checkbox']:checked, input[type='radio']:checked, .dark input[type='checkbox']:checked, .dark input[type='radio']:checked {
+    background-color: currentColor!important;
+}
+
+div[data-testid='flowbite-tooltip'] ul {
+    padding-left: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
