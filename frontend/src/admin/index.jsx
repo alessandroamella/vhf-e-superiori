@@ -774,66 +774,6 @@ const AdminManager = () => {
           </Typography>
 
           <Typography variant="h2" className="mb-4 flex items-center">
-            Gestione locandine
-          </Typography>
-          <div className="mb-6">
-            {users ? (
-              <Table>
-                <Table.Head>
-                  <Table.HeadCell>callsign</Table.HeadCell>
-                  <Table.HeadCell>name</Table.HeadCell>
-                  <Table.HeadCell>email</Table.HeadCell>
-                  <Table.HeadCell>phoneNumber</Table.HeadCell>
-                  <Table.HeadCell>createdAt</Table.HeadCell>
-                  <Table.HeadCell>isAdmin</Table.HeadCell>
-                  <Table.HeadCell>joinRequests</Table.HeadCell>
-                </Table.Head>
-                <Table.Body>
-                  {users?.map(u => (
-                    <Table.Row key={u._id}>
-                      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                        {u.callsign}
-                      </Table.Cell>
-                      <Table.Cell>{u.name}</Table.Cell>
-                      <Table.Cell>{u.email}</Table.Cell>
-                      <Table.Cell>{u.phoneNumber}</Table.Cell>
-                      <Table.Cell>
-                        {formatInTimeZone(
-                          u.createdAt,
-                          "Europe/Rome",
-                          "yyyy-MM-dd HH:mm:ss"
-                        )}
-                      </Table.Cell>
-                      <Table.Cell>
-                        {u.isAdmin ? (
-                          <FaCheck className="text-green-500" />
-                        ) : (
-                          <FaTimes className="text-red-600" />
-                        )}
-                      </Table.Cell>
-                      <Table.Cell>
-                        <ListGroup>
-                          {u.joinRequests.length ? (
-                            u.joinRequests.map(j => (
-                              <ListGroup.Item>{j}</ListGroup.Item>
-                            ))
-                          ) : (
-                            <FaTimes />
-                          )}
-                        </ListGroup>
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table>
-            ) : users === false ? (
-              <Spinner />
-            ) : (
-              <p>Errore nel caricamento degli utenti</p>
-            )}
-          </div>
-
-          <Typography variant="h2" className="mb-4 flex items-center">
             Utenti
           </Typography>
           <div className="mb-6">
