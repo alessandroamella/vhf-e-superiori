@@ -557,6 +557,32 @@ const Homepage = () => {
                 </div>
                 <div>
                   <div className="mt-4 mb-2">
+                    <div className="mb-6 w-fit mx-auto dark:bg-gray-800 dark:rounded-lg dark:items-center dark:flex dark:flex-col dark:overflow-hidden">
+                      <h2
+                        id="amministratori"
+                        className="font-bold text-center text-3xl tracking-tight dark:w-full dark:bg-gray-700 dark:px-8 dark:pt-4 pb-2 mb-2"
+                      >
+                        Amministratori
+                      </h2>
+
+                      <div className="mx-auto dark:pb-2 dark:px-4">
+                        {adminsList.map(e => (
+                          <a
+                            href={"https://www.qrz.com/db/" + e.split(" ")[0]}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            key={e}
+                            className="flex font-bold text-lg items-center underline decoration-dotted text-gray-900 dark:text-gray-200"
+                          >
+                            {/* <span className="text-gray-500 font-bold text-3xl">
+                              <FaAngleDoubleRight />
+                            </span> */}
+                            <span /* className="ml-1" */>{e}</span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+
                     {/* storia flash mob */}
                     <div className="text-justify text-gray-600 dark:text-gray-200">
                       <h3 className="text-left text-3xl mb-2 font-bold text-red-600 tracking-tight uppercase">
@@ -679,32 +705,6 @@ const Homepage = () => {
                       <p className="font-semibold text-xl text-black dark:text-white">
                         IZ5RNF ALESSANDRO
                       </p>
-                    </div>
-
-                    <div className="mt-8 w-fit mx-auto dark:bg-gray-800 dark:rounded-lg dark:items-center dark:flex dark:flex-col dark:overflow-hidden">
-                      <h2
-                        id="amministratori"
-                        className="font-bold text-center text-3xl tracking-tight dark:w-full dark:bg-gray-700 dark:px-8 dark:pt-4 pb-2 mb-2"
-                      >
-                        Amministratori
-                      </h2>
-
-                      <div className="mx-auto dark:pb-2">
-                        {adminsList.map(e => (
-                          <a
-                            href={"https://www.qrz.com/db/" + e.split(" ")[0]}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            key={e}
-                            className="flex font-bold text-lg items-center underline decoration-dotted text-gray-900 dark:text-gray-200"
-                          >
-                            {/* <span className="text-gray-500 font-bold text-3xl">
-                              <FaAngleDoubleRight />
-                            </span> */}
-                            <span /* className="ml-1" */>{e}</span>
-                          </a>
-                        ))}
-                      </div>
                     </div>
                   </div>
                 </div>
