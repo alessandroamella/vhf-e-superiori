@@ -42,13 +42,12 @@ const Homepage = () => {
   // const [isZoomed, setIsZoomed] = useState(false);
   const [zoomedImg, setZoomedImg] = useState(null);
 
-  const handleZoomChange = useCallback(shouldZoom => {
+  const handleZoomChange = useCallback((shouldZoom, zoomImg) => {
     console.log({ shouldZoom, zoomedImg });
-    // setIsZoomed(shouldZoom);
-
     if (!shouldZoom) {
       setZoomedImg(null);
-      // setTimeout(() => setIsZoomed(false), 500);
+    } else {
+      setZoomedImg(zoomImg);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -126,19 +125,28 @@ const Homepage = () => {
 
   const posters = useMemo(() => {
     if (!events) return null;
-    return events.map(e => ({
-      alt: "Locandina " + e.i,
-      image: e.logoUrl,
-      content: (
-        <ControlledZoom
-          isZoomed={zoomedImg?.includes(e.logoUrl)}
-          onZoomChange={handleZoomChange}
-        >
-          <img src={e.logoUrl} alt={`Locandina ${e.i}`} />
-        </ControlledZoom>
-      )
-    }));
-  }, [events, handleZoomChange, zoomedImg]);
+    const _inverted = [...events];
+    _inverted.sort((a, b) => new Date(b.date) - new Date(a.date));
+    return _inverted
+      .filter(e => e.logoUrl && !e.logoUrl.endsWith("logo-min.png"))
+      .map(e => ({
+        alt: "Locandina " + e.i,
+        image: e.logoUrl,
+        content: (
+          <ControlledZoom
+            isZoomed={zoomedImg?.includes(e.logoUrl)}
+            onZoomChange={s => handleZoomChange(s, e.logoUrl)}
+          >
+            <img
+              src={e.logoUrl}
+              alt={`Locandina di ${e.name}`}
+              className="object-contain w-full h-full"
+            />
+          </ControlledZoom>
+        )
+      }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [events, zoomedImg]);
 
   const [eventJoining, setEventJoining] = useState(null);
   const { joinOpen, setJoinOpen } = useContext(JoinOpenContext);

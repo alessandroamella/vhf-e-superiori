@@ -460,6 +460,15 @@ const NewPost = () => {
             ) : (
               <>
                 <form onSubmit={handleSubmit(onSubmit)}>
+                  <Typography variant="h2" className="mt-3">
+                    {postType === "antennaPost"
+                      ? "Le mie antenne"
+                      : postType === "myFlashMobPost"
+                      ? "Il mio flash mob"
+                      : postType === "radioStationPost"
+                      ? "La mia stazione"
+                      : "Errore"}
+                  </Typography>
                   <div className="my-4">
                     <Label
                       htmlFor="description"
