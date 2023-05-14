@@ -3,6 +3,17 @@ import React from "react";
 import { FaAngleDoubleRight } from "react-icons/fa";
 import Layout from "../Layout";
 
+export const adminsList = [
+  "IZ5RNF Ronca Alessandro",
+  "IZ5IOQ Metteucci Giacomo",
+  "IK7UXU Ingrosso Flavio",
+  "IZ2MHO Pinzelli Bruno",
+  "IT9DJF Casini Andrea",
+  "IU0NWJ Peruzzi Cristiano",
+  "IU4JJJ Cerrone Pietro",
+  "EA5ZJ Jorge Alfonso Martinez"
+];
+
 const Info = ({ event, ...props }) => {
   return (
     <Layout>
@@ -68,15 +79,7 @@ const Info = ({ event, ...props }) => {
         </p>
 
         <div className="mt-4">
-          {[
-            "IZ5RNF Ronca Alessandro",
-            "IZ5IOQ Metteucci Giacomo",
-            "IK7UXU Ingrosso Flavio",
-            "IZ2MHO Pinzelli Bruno",
-            "IT9DJF Casini Andrea",
-            "IU0NWJ Peruzzi Cristiano",
-            "IU4JJJ Cerrone Pietro"
-          ].map(e => (
+          {adminsList.map(e => (
             <a
               href={"https://www.qrz.com/db/" + e.split(" ")[0]}
               target="_blank"

@@ -28,6 +28,7 @@ import { Button } from "@material-tailwind/react";
 import "react-medium-image-zoom/dist/styles.css";
 import "react-round-carousel/src/index.css";
 import Bandiere from "../Bandiere";
+import { adminsList } from "./Info";
 
 const Homepage = () => {
   const { user } = useContext(UserContext);
@@ -689,15 +690,7 @@ const Homepage = () => {
                       </h2>
 
                       <div className="mx-auto dark:pb-2">
-                        {[
-                          "IZ5RNF Ronca Alessandro",
-                          "IZ5IOQ Metteucci Giacomo",
-                          "IK7UXU Ingrosso Flavio",
-                          "IZ2MHO Pinzelli Bruno",
-                          "IT9DJF Casini Andrea",
-                          "IU0NWJ Peruzzi Cristiano",
-                          "IU4JJJ Cerrone Pietro"
-                        ].map(e => (
+                        {adminsList.map(e => (
                           <a
                             href={"https://www.qrz.com/db/" + e.split(" ")[0]}
                             target="_blank"
