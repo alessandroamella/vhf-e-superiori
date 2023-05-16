@@ -1,12 +1,14 @@
 import { Request, Response, Router } from "express";
-import { logger } from "../../../shared";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from "http-status";
+import sharp from "sharp";
+import { logger } from "../../../shared";
 import fileUpload from "express-fileupload";
 import { Errors } from "../../errors";
 import { createError } from "../../helpers";
 import { UserDoc } from "../../auth/models";
 import { s3Client } from "../../aws";
 import { unlink } from "fs/promises";
+import path from "path";
 
 const router = Router();
 
@@ -111,6 +113,34 @@ router.post(
             return res
                 .status(BAD_REQUEST)
                 .json(createError(Errors.FILE_SIZE_TOO_LARGE));
+        }
+
+        // Minify images here
+        try {
+            const minifiedImg = await sharp(f.tempFilePath)
+                .toFormat("jpeg")
+                .toBuffer();
+
+            // Delete old file, replace new path as jpeg
+            await unlink(f.tempFilePath);
+            f.tempFilePath = path.format({
+                dir: path.dirname(f.tempFilePath),
+                name: path.basename(
+                    f.tempFilePath,
+                    path.extname(f.tempFilePath)
+                ),
+                ext: ".jpeg"
+            });
+            f.mimetype = "image/jpeg";
+
+            await sharp(minifiedImg)
+                .jpeg({ quality: 69 })
+                .toFile(f.tempFilePath);
+        } catch (err) {
+            logger.error("Error minifying image");
+            logger.error(err);
+            await unlink(f.tempFilePath);
+            return res.status(INTERNAL_SERVER_ERROR).json(createError());
         }
 
         let awsPath: string;

@@ -7,8 +7,9 @@ import { createError } from "../../helpers";
 import { UserDoc } from "../../auth/models";
 import { s3Client } from "../../aws";
 import { compressVideos } from "../../videoCompressor/compressorInterface";
-import { basename } from "path";
+import path, { basename } from "path";
 import { unlink } from "fs/promises";
+import sharp from "sharp";
 
 const router = Router();
 
@@ -159,6 +160,36 @@ router.post(
             return res
                 .status(BAD_REQUEST)
                 .json(createError(Errors.TOO_MANY_VIDEOS));
+        }
+
+        for (const f of pics) {
+            // Minify images here
+            try {
+                const minifiedImg = await sharp(f.tempFilePath)
+                    .toFormat("jpeg")
+                    .toBuffer();
+
+                // Delete old file, replace new path as jpeg
+                await unlink(f.tempFilePath);
+                f.tempFilePath = path.format({
+                    dir: path.dirname(f.tempFilePath),
+                    name: path.basename(
+                        f.tempFilePath,
+                        path.extname(f.tempFilePath)
+                    ),
+                    ext: ".jpeg"
+                });
+                f.mimetype = "image/jpeg";
+
+                await sharp(minifiedImg)
+                    .jpeg({ quality: 69 })
+                    .toFile(f.tempFilePath);
+            } catch (err) {
+                logger.error("Error minifying image");
+                logger.error(err);
+                await unlink(f.tempFilePath);
+                return res.status(INTERNAL_SERVER_ERROR).json(createError());
+            }
         }
 
         pics.forEach(f => {

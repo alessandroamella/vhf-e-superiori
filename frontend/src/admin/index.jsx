@@ -400,6 +400,7 @@ const AdminManager = () => {
           "\nJSON: " +
           JSON.stringify(err, null, 2)
       );
+      return;
     } finally {
       setDisabled(false);
       setIsCompressingPic(false);
