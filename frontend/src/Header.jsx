@@ -1,10 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from ".";
 import Bandiere from "./Bandiere";
+import { Button } from "flowbite-react";
 
 const Header = () => {
   const { user } = useContext(UserContext);
+
+  const navigate = useNavigate();
 
   return (
     <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-2 md:px-8 flex flex-col lg:flex-row md:items-center">
@@ -24,6 +27,9 @@ const Header = () => {
       </Link>
       <div className="hidden md:block">
         <Bandiere />
+      </div>
+      <div className="flex justify-center md:ml-6 lg:ml-12">
+        <Button onClick={() => navigate("/social")}>VIDEO</Button>
       </div>
       {user?.isAdmin && (
         <div className="flex justify-center">

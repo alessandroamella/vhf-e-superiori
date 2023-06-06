@@ -219,7 +219,7 @@ const MenuContent = ({ isSideBar }) => {
       </SectionTitle>
 
       <SectionLink to="/social" className="text-xl font-semibold">
-        Social
+        Foto / video
       </SectionLink>
       {/* <SectionHref wip href="#">
         I miei amplificatori lineari e preamplificatori
