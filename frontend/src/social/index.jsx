@@ -126,7 +126,7 @@ const Social = () => {
                     </h4>
                   }
                   endMessage={
-                    <p style={{ textAlign: "center" }}>
+                    <p style={{ textAlign: "center", display: "none" }}>
                       <b>Per ora è tutto!</b>
                     </p>
                   }
