@@ -218,7 +218,7 @@ router.post(
                 numberOfElements,
                 numberOfAntennas,
                 cable,
-                isApproved: user.isAdmin,
+                isApproved: true,
                 pictures,
                 videos
             });

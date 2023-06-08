@@ -274,7 +274,8 @@ class Qrz {
         }
         try {
             const { data } = await axios.get(
-                "https://www.qrz.com/db/" + callsign
+                "https://www.qrz.com/db/" + callsign,
+                { timeout: 5000 }
             );
             const dom = new JSDOM(data);
 

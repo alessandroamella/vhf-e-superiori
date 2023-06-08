@@ -60,14 +60,16 @@ export const errors = {
   QTH_NOT_FOUND: "QTH non trovato",
   INVALID_OBJECT_ID: "ObjectId non valido",
   INVALID_LOGIN: "Login non valido",
-  MALFORMED_REQUEST_BODY: "Corpo della richiesta malformato",
   NOT_LOGGED_IN: "Devi fare il login per procedere",
+  MALFORMED_REQUEST_BODY: "Corpo della richiesta malformato",
   NOT_AN_ADMIN: "Devi essere un amministratore per procedere",
   EVENT_NOT_FOUND: "Evento non trovato",
   EVENT_JOIN_ALREADY_REQUESTED:
     "Richiesta di partecipazione all'evento già effettuata",
   EVENT_JOIN_TIME_EXPIRED:
     "La data per richiedere di partecipare all'evento è già trascorsa",
+  EVENT_JOIN_TIME_TOO_EARLY:
+    "La data per richiedere di partecipare all'evento non è ancora arrivata",
   JOIN_REQUEST_NOT_FOUND: "Richiesta di partecipazione non trovata",
   URL_NOT_FOUND: "URL non trovato",
   INVALID_EMAIL: "Email non valida",
@@ -83,8 +85,26 @@ export const errors = {
   USER_NOT_VERIFIED:
     "Utente non verificato, per favore verifica il tuo account cliccando il link che hai ricevuto per email",
   USER_ALREADY_VERIFIED: "Utente già verificato",
-  INVALID_VERIFICATION_CODE: "Codice di verifica non valido"
+  VERIFICATION_CODE_NOT_FOUND: "Codice di verifica non trovato",
+  INVALID_VERIFICATION_CODE: "Codice di verifica non valido",
+  INVALID_PW_RESET_CODE: "Codice per reimpostare la password non valido",
+  INVALID_PICS_NUM: "Numero di immagini non valido",
+  INVALID_VIDS_NUM: "Numero di video non valido",
+  INVALID_FREQUENCY_BAND: "Banda di frequenza non valida",
+  INVALID_FILE_MIME_TYPE: "Tipo di file non valido",
+  FILE_SIZE_TOO_LARGE: "Dimensione del file troppo grande",
+  FILE_NOT_FOUND: "File non trovato",
+  INVALID_POST: "Post non valido",
+  TOO_MANY_FILES: "Troppi file",
+  TOO_MANY_PICTURES: "Troppe immagini",
+  TOO_MANY_VIDEOS: "Troppi video",
+  POST_NOT_FOUND: "Post non trovato",
+  MUST_BE_POST_OWNER: "Devi essere il proprietario del post per procedere",
+  VIDEO_COMPRESS_NO_OUTPUT_PATH:
+    "Percorso di output per compressione video non presente",
+  NO_CONTENT: "Nessun contenuto"
 };
+
 export function getErrorStr(str) {
   console.log("Stringa errore:", str);
   return str && str in errors

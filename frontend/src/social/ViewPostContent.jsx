@@ -5,7 +5,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 
-import { Badge, Table } from "flowbite-react";
+import { Table } from "flowbite-react";
 import ReactPlaceholder from "react-placeholder/lib";
 // import { FaCheck, FaTimes } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";

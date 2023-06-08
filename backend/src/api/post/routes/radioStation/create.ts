@@ -149,7 +149,7 @@ router.post(
                 fromUser: user._id,
                 postType: "radioStationPost",
                 description,
-                isApproved: user.isAdmin,
+                isApproved: true,
                 pictures,
                 videos
             });

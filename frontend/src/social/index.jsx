@@ -92,7 +92,7 @@ const Social = () => {
               </span>{" "}
               creato con successo!
             </p>
-            <p>Dovrà essere approvato prima di essere visibile pubblicamente</p>
+            {/* <p>Dovrà essere approvato prima di essere visibile pubblicamente</p> */}
           </Alert>
         )}
 

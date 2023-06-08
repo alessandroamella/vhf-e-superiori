@@ -149,7 +149,7 @@ router.post(
                 fromUser: user._id,
                 postType: "myFlashMobPost",
                 description,
-                isApproved: user.isAdmin,
+                isApproved: true,
                 pictures,
                 videos
             });

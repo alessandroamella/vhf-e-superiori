@@ -429,6 +429,14 @@ const NewPost = () => {
           </Alert>
         )}
 
+        {user && !user.isVerified && (
+          <Alert className="mt-2 mb-6" color="warning">
+            <span className="font-bold">Attenzione!</span> La tua email non è
+            verificata. Per favore clicca il link di verifica che ti abbiamo
+            inviato per email per creare un post.
+          </Alert>
+        )}
+
         {user ? (
           <>
             {postType === null ? (

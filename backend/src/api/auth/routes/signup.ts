@@ -86,7 +86,9 @@ router.post(
                     logger.debug(_err);
                     logger.debug("user");
                     logger.debug(user);
-                    return res.status(BAD_REQUEST).json(createError(_err));
+                    return res
+                        .status(BAD_REQUEST)
+                        .json(createError(_err?.message || _err));
                 }
                 logger.debug("user");
                 logger.debug(user);

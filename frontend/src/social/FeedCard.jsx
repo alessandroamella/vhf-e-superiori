@@ -43,7 +43,7 @@ const FeedCard = ({ post, pp }) => {
           alt="Feed card"
         />
       </ReactPlaceholder>
-      <div className="p-4 absolute flex bottom-0 h-28 bg-[rgba(0,0,0,0.33)] w-full">
+      <div className="p-4 absolute flex bottom-0 bg-[rgba(0,0,0,0.33)] w-full">
         <div className="w-full">
           <h5 className="line-clamp-1 text-2xl font-bold tracking-tight text-white">
             <ReactPlaceholder
@@ -86,10 +86,16 @@ const FeedCard = ({ post, pp }) => {
                 {post?.postType === "antennaPost" && (
                   <div className="flex items-center gap-2">
                     <span>{post?.band} MHz</span>
-                    {post && !post?.isSelfbuilt && (
-                      <span>{post?.brand || "-- nessuna marca --"}</span>
+                    {post && post?.brand && !post?.isSelfbuilt && (
+                      <span className="hidden md:block">
+                        {post?.brand || "-- nessuna marca --"}
+                      </span>
                     )}
-                    <span>{post?.numberOfElements} elementi</span>
+                    {post && post?.numberOfElements && (
+                      <span className="hidden md:block">
+                        {post?.numberOfElements} elementi
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
