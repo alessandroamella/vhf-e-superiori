@@ -19,6 +19,7 @@ import { Errors } from "../../errors";
  *          - pictures
  *          - videos
  *          - isApproved
+ *          - isProcessing
  *          - createdAt
  *          - updatedAt
  *        properties:
@@ -47,6 +48,9 @@ import { Errors } from "../../errors";
  *          isApproved:
  *            type: boolean
  *            description: Whether this post was approved (send email)
+ *          isProcessing:
+ *            type: boolean
+ *            description: Whether this post is currently being processed (video compression)
  *          createdAt:
  *            type: string
  *            format: date-time
@@ -91,7 +95,9 @@ export class BasePostClass {
     })
     public videos!: mongoose.Types.Array<string>;
 
-    // DEBUG send email
     @prop({ required: true, default: false })
     public isApproved!: boolean;
+
+    @prop({ required: true, default: true })
+    public isProcessing!: boolean;
 }

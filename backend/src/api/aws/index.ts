@@ -14,7 +14,7 @@ const s3 = new AWS.S3({
  * Represents a file to be uploaded to an S3 bucket.
  * @interface S3FileUpload
  */
-interface S3FileUpload {
+export interface S3FileUpload {
     fileName: string;
     fileContent: Buffer;
     folder: string;

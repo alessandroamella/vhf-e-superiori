@@ -13,7 +13,6 @@ import axios from "axios";
 import { Alert, Button, Spinner } from "flowbite-react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MenuContent from "../sideMenu/MenuContent";
-import { FaPlus } from "react-icons/fa";
 
 const Social = () => {
   const { splashPlayed } = useContext(SplashContext);
@@ -98,10 +97,12 @@ const Social = () => {
 
         <Button
           onClick={() => navigate("new")}
-          className="flex rounded-full w-16 h-16 aspect-square items-center fixed bottom-8 right-8 z-40"
+          // className="flex rounded-full w-16 h-16 aspect-square items-center fixed bottom-8 right-8 z-40"
+          className="flex rounded-full uppercase items-center fixed bottom-8 right-8 z-40"
         >
-          <Link to="new" className="text-xl text-white">
-            <FaPlus />
+          <Link to="new" className="text-xl text-white font-bold">
+            {/* <FaPlus /> */}
+            Inserisci foto / video
           </Link>
           {/* <span className="ml-1">Nuovo post</span> */}
         </Button>

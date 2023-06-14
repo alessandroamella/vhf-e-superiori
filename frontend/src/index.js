@@ -17,6 +17,7 @@ import ResetPw from "./profile/ResetPw";
 import Social from "./social";
 import NewPost from "./social/NewPost";
 import ViewPost from "./social/ViewPost";
+import ProgettiGianni from "./homepage/ProgettiGianni";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
@@ -29,6 +30,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const router = createBrowserRouter([
   { path: "/", element: <Homepage /> },
+  { path: "/progetti-gianni", element: <ProgettiGianni /> },
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
   { path: "/profile", element: <Profile /> },

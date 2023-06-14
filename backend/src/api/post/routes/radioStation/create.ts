@@ -150,6 +150,7 @@ router.post(
                 postType: "radioStationPost",
                 description,
                 isApproved: true,
+                isProcessing: true,
                 pictures,
                 videos
             });

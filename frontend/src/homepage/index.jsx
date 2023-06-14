@@ -8,10 +8,11 @@ import {
   UserContext
 } from "..";
 import { useContext } from "react";
-import { Accordion, Alert, Table } from "flowbite-react";
+import { Accordion, Alert, Spinner, Table } from "flowbite-react";
 import { differenceInDays, isAfter } from "date-fns";
 import { it } from "date-fns/locale";
 import {
+  Link,
   createSearchParams,
   useNavigate,
   useSearchParams
@@ -53,6 +54,11 @@ const Homepage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const getNumbersFromString = useCallback(
+    str => str.match(/\d+/g)?.map(Number) || [],
+    []
+  );
+
   useEffect(() => {
     if (searchParams.get("toconfirm")) {
       setAlert({
@@ -79,26 +85,6 @@ const Homepage = () => {
   }, []);
 
   const navigate = useNavigate();
-
-  // const [shownEvent, setShownEvent] = useState(null);
-
-  const prossimiEventi = [
-    { i: 13, d: new Date(2023, 1 - 1, 29) },
-    { i: 14, d: new Date(2023, 2 - 1, 26) },
-    { i: 15, d: new Date(2023, 3 - 1, 26) },
-    { i: 16, d: new Date(2023, 4 - 1, 30) },
-    { i: 17, d: new Date(2023, 5 - 1, 28) },
-    { i: 18, d: new Date(2023, 6 - 1, 25) },
-    { i: 19, d: new Date(2023, 7 - 1, 30) },
-    { i: 20, d: new Date(2023, 8 - 1, 27) },
-    { i: 21, d: new Date(2023, 9 - 1, 24) },
-    { i: 22, d: new Date(2023, 10 - 1, 29) },
-    { i: 23, d: new Date(2023, 11 - 1, 26) },
-    { i: 24, d: new Date(2023, 12 - 1, 31) }
-  ].filter(e => isAfter(e.d, new Date()));
-  // prossimiEventi.sort((a, b) => a - b);
-
-  // console.log({ prossimiEventi });
 
   useEffect(() => {
     if (!events) return;
@@ -194,6 +180,32 @@ const Homepage = () => {
                 </div>
                 <hr />
               </div>
+
+              <div className="p-4 my-4 text-center bg-white dark:bg-gray-800 shadow-lg rounded-lg">
+                {/* <img
+                  src="link-alla-foto-di-gianni"
+                  alt="Gianni - I4GBZ"
+                  className="mb-4 rounded-full max-w-md mx-auto border-4 dark:border-gray-600 border-gray-300"
+                /> */}
+                <p className="font-semibold text-lg dark:text-gray-200">
+                  Un omaggio ad un uomo
+                </p>
+                <p className="dark:text-gray-300">Un radioamatore</p>
+                <p className="dark:text-gray-300">Un amico</p>
+                <p className="dark:text-gray-300">
+                  Che ha dedicato la vita a quello che gli piaceva di più.
+                </p>
+                <p className="font-semibold dark:text-gray-200">
+                  ESSERE RADIOAMATORE.
+                </p>
+                <p className="font-bold dark:text-green-400 text-green-600">
+                  Grazie Gianni.
+                </p>
+                <Link to="/progetti-gianni">
+                  <Button className="mt-2">Vedi Progetti</Button>
+                </Link>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-3">
                 <div>
                   <img
@@ -337,7 +349,50 @@ const Homepage = () => {
                             <Table.HeadCell>Data</Table.HeadCell>
                           </Table.Head>
                           <Table.Body className="text-xl">
-                            {prossimiEventi.map((e, i) => (
+                            {!events ? (
+                              <Spinner />
+                            ) : (
+                              events
+                                .filter(e =>
+                                  isAfter(new Date(e.date), new Date())
+                                )
+                                .map(e => (
+                                  <Table.Row
+                                    key={e._id}
+                                    className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                                  >
+                                    <Table.Cell className="py-2 pr-2 whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                      {getNumbersFromString(e.name).join("")}°
+                                    </Table.Cell>
+                                    <Table.Cell className="py-2">
+                                      {e.band}
+                                    </Table.Cell>
+                                    <Table.Cell className="py-2 font-semibold">
+                                      <span className="block xl:hidden">
+                                        {formatInTimeZone(
+                                          e.date,
+                                          "Europe/Rome",
+                                          "dd/MM",
+                                          {
+                                            locale: it
+                                          }
+                                        )}
+                                      </span>
+                                      <span className="hidden xl:block">
+                                        {formatInTimeZone(
+                                          e.date,
+                                          "Europe/Rome",
+                                          "dd MMMM yyyy",
+                                          {
+                                            locale: it
+                                          }
+                                        )}
+                                      </span>
+                                    </Table.Cell>
+                                  </Table.Row>
+                                ))
+                            )}
+                            {/* {prossimiEventi.map((e, i) => (
                               <Table.Row
                                 key={e.i.toString()}
                                 className="bg-white dark:border-gray-700 dark:bg-gray-800"
@@ -375,7 +430,7 @@ const Homepage = () => {
                                   </span>
                                 </Table.Cell>
                               </Table.Row>
-                            ))}
+                            ))} */}
                           </Table.Body>
                         </Table>
                       </Accordion.Content>

@@ -71,7 +71,9 @@ router.get(
     async (req, res) => {
         try {
             const user = req.user as unknown as UserDoc | undefined;
-            const query = user?.isAdmin ? {} : { isApproved: true };
+            const query = user?.isAdmin
+                ? {}
+                : { isApproved: true, isProcessing: false };
             const posts = await BasePost.find(query)
                 .sort({ createdAt: -1 })
                 .populate("fromUser")
