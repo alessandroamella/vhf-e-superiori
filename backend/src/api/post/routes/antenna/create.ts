@@ -219,7 +219,7 @@ router.post(
                 numberOfAntennas,
                 cable,
                 isApproved: true,
-                isProcessing: true,
+                isProcessing: false,
                 pictures,
                 videos
             });

@@ -150,7 +150,7 @@ router.post(
                 postType: "myFlashMobPost",
                 description,
                 isApproved: true,
-                isProcessing: true,
+                isProcessing: false,
                 pictures,
                 videos
             });
