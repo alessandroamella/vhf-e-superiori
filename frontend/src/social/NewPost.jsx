@@ -1,9 +1,8 @@
 import Layout from "../Layout";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { getErrorStr, UserContext } from "..";
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
-import { throttle } from "lodash";
 import "react-medium-image-zoom/dist/styles.css";
 
 import axios from "axios";
@@ -23,6 +22,25 @@ import BMF from "browser-md5-file";
 import FileUploader from "./FileUploader";
 
 let statusInterval = null;
+
+const FileUploaderMemo = React.memo(
+  ({ files, setFiles, disabled, maxPhotos, maxVideos }) => {
+    const pictures = useMemo(() => {
+      return files.filter(file => file.type.includes("image"));
+    }, [files]);
+
+    return (
+      <FileUploader
+        disabled={disabled}
+        color={!pictures.length && "failure"}
+        setFiles={setFiles}
+        files={files}
+        maxPhotos={maxPhotos}
+        maxVideos={maxVideos}
+      />
+    );
+  }
+);
 
 const NewPost = () => {
   const maxPhotos = 5;
@@ -342,11 +360,10 @@ const NewPost = () => {
               <Typography variant="h2" className="mt-3">
                 Nuovo post
               </Typography>
-              <FileUploader
-                disabled={disabled}
-                color={!pictures.length && "failure"}
-                setFiles={setFiles}
+              <FileUploaderMemo
                 files={files}
+                setFiles={setFiles}
+                disabled={disabled}
                 maxPhotos={maxPhotos}
                 maxVideos={maxVideos}
               />
