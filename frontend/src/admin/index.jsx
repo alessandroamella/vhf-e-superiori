@@ -40,6 +40,7 @@ import Zoom from "react-medium-image-zoom";
 import ReactPlayer from "react-player/lazy";
 import Compressor from "compressorjs";
 import { isFuture } from "date-fns";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const AdminManager = () => {
   const { user } = useContext(UserContext);
@@ -268,38 +269,38 @@ const AdminManager = () => {
     }
   }
 
-  const [isApproving, setIsApproving] = useState(false);
+  // const [isApproving, setIsApproving] = useState(false);
 
-  async function setApprovePost(j) {
-    if (
-      !window.confirm(
-        `Vuoi ${j.isApproved ? "DISAPPROVARE" : "APPROVARE"} il post con ID ${
-          j._id
-        }?`
-      )
-    ) {
-      return;
-    }
+  // async function setApprovePost(j) {
+  //   if (
+  //     !window.confirm(
+  //       `Vuoi ${j.isApproved ? "DISAPPROVARE" : "APPROVARE"} il post con ID ${
+  //         j._id
+  //       }?`
+  //     )
+  //   ) {
+  //     return;
+  //   }
 
-    console.log("approve post", j);
-    setIsApproving(true);
-    try {
-      await axios.post("/api/post/approve/" + j._id);
-      console.log("set approved post", j._id);
-      const _posts = [...posts];
-      const i = _posts.findIndex(_j => _j._id === j._id);
-      _posts[i] = { ...j, isApproved: !j.isApproved };
-      setPosts(_posts);
-    } catch (err) {
-      console.log(err?.response?.data || err);
-      setAlert({
-        color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
-      });
-    } finally {
-      setIsApproving(false);
-    }
-  }
+  //   console.log("approve post", j);
+  //   setIsApproving(true);
+  //   try {
+  //     await axios.post("/api/post/approve/" + j._id);
+  //     console.log("set approved post", j._id);
+  //     const _posts = [...posts];
+  //     const i = _posts.findIndex(_j => _j._id === j._id);
+  //     _posts[i] = { ...j, isApproved: !j.isApproved };
+  //     setPosts(_posts);
+  //   } catch (err) {
+  //     console.log(err?.response?.data || err);
+  //     setAlert({
+  //       color: "failure",
+  //       msg: getErrorStr(err?.response?.data?.err)
+  //     });
+  //   } finally {
+  //     setIsApproving(false);
+  //   }
+  // }
 
   const uploadEventPic = async uploadedPic => {
     const formData = new FormData();
@@ -447,8 +448,7 @@ const AdminManager = () => {
           <Modal.Body>
             <div className="space-y-2 flex flex-col gap-4 overflow-y-auto max-h-[60vh] pr-4">
               <div className="grid grid-cols-1 md:grid-cols-2 md:gap-2">
-                <img
-                  loading="lazy"
+                <LazyLoadImage
                   src={logoUrl}
                   alt="Logo URL"
                   className="w-96 max-w-full max-h-96 object-contain mx-auto"
@@ -844,17 +844,8 @@ const AdminManager = () => {
                   <Table.HeadCell>Azioni</Table.HeadCell>
                   <Table.HeadCell>fromUser</Table.HeadCell>
                   <Table.HeadCell>description</Table.HeadCell>
-                  <Table.HeadCell>band</Table.HeadCell>
-                  <Table.HeadCell>brand</Table.HeadCell>
-                  <Table.HeadCell>isSelfBuilt</Table.HeadCell>
-                  <Table.HeadCell>metersFromSea</Table.HeadCell>
-                  <Table.HeadCell>boomLengthCm</Table.HeadCell>
-                  <Table.HeadCell>numberOfElements</Table.HeadCell>
-                  <Table.HeadCell>numberOfAntennas</Table.HeadCell>
-                  <Table.HeadCell>cable</Table.HeadCell>
                   <Table.HeadCell>pictures</Table.HeadCell>
                   <Table.HeadCell>videos</Table.HeadCell>
-                  <Table.HeadCell>isApproved</Table.HeadCell>
                   <Table.HeadCell>createdAt</Table.HeadCell>
                 </Table.Head>
                 <Table.Body>
@@ -862,35 +853,6 @@ const AdminManager = () => {
                     <Table.Row key={u._id}>
                       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                         <div className="flex items-center gap-2">
-                          {u.isApproved ? (
-                            <>
-                              <Button
-                                color="warning"
-                                disabled={isApproving}
-                                onClick={() => setApprovePost(u)}
-                              >
-                                {isApproving ? (
-                                  <Spinner />
-                                ) : (
-                                  <span>Disapprova</span>
-                                )}
-                              </Button>
-                            </>
-                          ) : (
-                            <>
-                              <Button
-                                color="success"
-                                disabled={isApproving}
-                                onClick={() => setApprovePost(u)}
-                              >
-                                {isApproving ? (
-                                  <Spinner />
-                                ) : (
-                                  <span>Approva</span>
-                                )}
-                              </Button>
-                            </>
-                          )}
                           <Button
                             color="failure"
                             disabled={isDeleting}
@@ -908,20 +870,6 @@ const AdminManager = () => {
                           <span className="line-clamp-3">{u.description}</span>
                         </Tooltip>
                       </Table.Cell>
-                      <Table.Cell>{u.band}</Table.Cell>
-                      <Table.Cell>{u.brand}</Table.Cell>
-                      <Table.Cell>
-                        {u.isSelfBuilt ? (
-                          <FaCheck className="text-green-500" />
-                        ) : (
-                          <FaTimes className="text-red-600" />
-                        )}
-                      </Table.Cell>
-                      <Table.Cell>{u.metersFromSea}</Table.Cell>
-                      <Table.Cell>{u.boomLengthCm}</Table.Cell>
-                      <Table.Cell>{u.numberOfElements}</Table.Cell>
-                      <Table.Cell>{u.numberOfAntennas}</Table.Cell>
-                      <Table.Cell>{u.cable}</Table.Cell>
                       <Table.Cell>
                         <Swiper
                           spaceBetween={30}
@@ -935,7 +883,7 @@ const AdminManager = () => {
                           {u.pictures.map(p => (
                             <SwiperSlide key={p}>
                               <Zoom>
-                                <img
+                                <LazyLoadImage
                                   className="select-none w-full max-h-32 object-center object-contain"
                                   src={p}
                                   alt="Post pic"
@@ -946,7 +894,7 @@ const AdminManager = () => {
                         </Swiper>
                       </Table.Cell>
                       <Table.Cell>
-                        <div className="w-[384px]">
+                        <div className="w-[228px]">
                           <Swiper
                             spaceBetween={30}
                             slidesPerView="auto"
@@ -961,20 +909,13 @@ const AdminManager = () => {
                                 <ReactPlayer
                                   controls
                                   height={128}
-                                  width={384}
+                                  width={228}
                                   url={v}
                                 />
                               </SwiperSlide>
                             ))}
                           </Swiper>
                         </div>
-                      </Table.Cell>
-                      <Table.Cell>
-                        {u.isApproved ? (
-                          <FaCheck className="text-green-500" />
-                        ) : (
-                          <FaTimes className="text-red-600" />
-                        )}
                       </Table.Cell>
                       <Table.Cell>
                         {formatInTimeZone(

@@ -5,19 +5,30 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Layout from "../Layout";
-import Zoom from "react-medium-image-zoom";
 import { Link } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
 import { Button } from "@material-tailwind/react";
+import { trackWindowScroll } from "react-lazy-load-image-component";
+import LazyPDFViewer from "../PdfViewer";
 
 SwiperCore.use([Navigation, Pagination]);
 
-const ProgettiGianni = () => {
-  const images = [
-    { src: "/gianni/1.jpeg", subtitle: "16 ELEMENTI UHF" },
-    { src: "/gianni/2.jpeg", subtitle: "7 ELEMENTI VHF" },
-    { src: "/gianni/3.jpeg", subtitle: "7 ELEMENTI VHF" }
-  ];
+const ProgettiGianni = ({ scrollPosition }) => {
+  const documents = [
+    "10wi4gbz",
+    "11KK4GBZ",
+    "11wx4gbz",
+    "7NFBI4GBZ",
+    "11DX4GBZ",
+    "11ww4gbz",
+    "11XX4GBZ"
+  ].map(e => `/gianni/${e}.pdf`);
+
+  const [currentSlide, setCurrentSlide] = React.useState(0);
+
+  const handleSlideChange = swiper => {
+    setCurrentSlide(swiper.realIndex);
+  };
 
   return (
     <Layout>
@@ -37,22 +48,16 @@ const ProgettiGianni = () => {
           spaceBetween={10}
           slidesPerView={1}
           loop={true}
-          className="max-w-xl mx-auto"
+          className="mx-auto"
+          onSlideChange={handleSlideChange}
+          currentSlide={currentSlide}
         >
-          {images.map((image, index) => (
-            <SwiperSlide key={index}>
-              <div className="relative">
-                <Zoom>
-                  <img
-                    src={image.src}
-                    alt={`Progetto ${index + 1}`}
-                    className="max-h-screen object-contain w-full"
-                  />
-                  <div className="absolute bottom-0 left-0 w-full bg-gray-800 bg-opacity-60 text-white p-2 text-center">
-                    {image.subtitle}
-                  </div>
-                </Zoom>
-              </div>
+          {documents.map((pdf, i) => (
+            <SwiperSlide key={i}>
+              <LazyPDFViewer
+                pdfName={pdf}
+                shouldRender={Math.abs(currentSlide - i) < 2}
+              />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -61,4 +66,4 @@ const ProgettiGianni = () => {
   );
 };
 
-export default ProgettiGianni;
+export default trackWindowScroll(ProgettiGianni);

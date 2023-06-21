@@ -20,11 +20,12 @@ import {
 } from "react-router-dom";
 import { EventsContext, getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const EventContainer = ({ event, children }) =>
   event?.logoUrl ? (
     <div className="grid min-h-[90vh] grid-cols-1 md:grid-cols-2 dark:text-white dark:bg-gray-900">
-      <img loading="lazy" className={event.logoUrl} alt="Logo dell'evento" />
+      <LazyLoadImage className={event.logoUrl} alt="Logo dell'evento" />
       <div>{children}</div>
     </div>
   ) : (

@@ -21,6 +21,7 @@ import {
   SidebarOpenContext,
   UserContext
 } from "..";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const SectionHref = ({ href, wip, children }) => {
   const { setSidebarOpen } = useContext(SidebarOpenContext);
@@ -115,7 +116,7 @@ const MenuContent = ({ isSideBar }) => {
   return (
     <>
       <Link to="/" className="flex items-center gap-2 mb-2">
-        <img className="w-14" src="/logo-min.png" alt="Logo" loading="lazy" />
+        <LazyLoadImage className="w-14" src="/logo-min.png" alt="Logo" />
         <h3
           className={`font-bold text-xl ${
             isSideBar ? "text-gray-800 dark:text-white" : "text-white"

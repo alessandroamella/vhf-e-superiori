@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { UserContext } from ".";
 import Bandiere from "./Bandiere";
 import { Button } from "flowbite-react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const Header = () => {
   const { user } = useContext(UserContext);
@@ -15,11 +16,10 @@ const Header = () => {
         to="/"
         className="flex items-center hover:scale-105 transition-transform w-fit"
       >
-        <img
+        <LazyLoadImage
           className="w-20 md:w-36"
           src="/logo-min.png"
           alt="Logo"
-          loading="lazy"
         />
         <h1 className="font-bold text-xl md:text-3xl ml-2 md:ml-3 block text-red-500 dark:text-white">
           www.vhfesuperiori.eu
@@ -29,7 +29,9 @@ const Header = () => {
         <Bandiere />
       </div>
       <div className="flex justify-center md:ml-6 lg:ml-12">
-        <Button onClick={() => navigate("/social")}>VIDEO</Button>
+        <Button className="uppercase" onClick={() => navigate("/social")}>
+          Foto / video
+        </Button>
       </div>
       {user?.isAdmin && (
         <div className="flex justify-center">

@@ -11,7 +11,7 @@ import bcrypt from "bcrypt";
 import { JoinRequestClass } from "../../joinRequest/models";
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { logger } from "../../../shared";
-import { AntennaPostClass } from "../../post/models";
+import { BasePostClass } from "../../post/models/BasePost";
 
 /**
  * @swagger
@@ -120,8 +120,8 @@ export class UserClass {
     @prop({ required: true, default: [], ref: () => JoinRequestClass })
     public joinRequests!: Ref<JoinRequestClass>[];
 
-    @prop({ required: true, default: [], ref: () => AntennaPostClass })
-    public posts!: Ref<AntennaPostClass>[];
+    @prop({ required: true, default: [], ref: () => BasePostClass })
+    public posts!: Ref<BasePostClass>[];
 
     public async isValidPw(this: DocumentType<UserClass>, plainPw: string) {
         return await bcrypt.compare(plainPw, this.password);

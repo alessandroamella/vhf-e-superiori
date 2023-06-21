@@ -288,7 +288,7 @@ const Signup = () => {
               onChange={e => setPassword(e.target.value)}
               helperText="Minimo 8 caratteri, almeno un numero, una maiuscola e un carattere speciale"
               disabled={disabled}
-              maxlength={100}
+              maxLength={100}
             />
             <div className="my-4" />
             <div className="mb-2 block">
@@ -303,7 +303,7 @@ const Signup = () => {
               value={repeatPassword}
               onChange={e => setRepeatPassword(e.target.value)}
               disabled={disabled}
-              maxlength={100}
+              maxLength={100}
             />
             <div className="my-4" />
             <ReCAPTCHA

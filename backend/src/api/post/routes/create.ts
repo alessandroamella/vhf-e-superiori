@@ -1,13 +1,13 @@
 import { Request, Response, Router } from "express";
 import { checkSchema } from "express-validator";
-import createSchema from "./createSchema";
-import { createError, validate } from "../../../helpers";
-import { logger } from "../../../../shared";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
-import { S3Client } from "../../../aws";
-import { Errors } from "../../../errors";
-import User, { UserDoc } from "../../../auth/models";
-import { RadioStationPost } from "../../models";
+import { S3Client } from "../../aws";
+import { BasePost } from "../models";
+import { logger } from "../../../shared";
+import { createError, validate } from "../../helpers";
+import { Errors } from "../../errors";
+import createSchema from "./schemas/createSchema";
+import User, { UserDoc } from "../../auth/models";
 
 const router = Router();
 
@@ -15,9 +15,9 @@ const s3 = new S3Client();
 
 /**
  * @openapi
- * /post/radiostation:
+ * /post:
  *  post:
- *    summary: Creates a new Radio Station post
+ *    summary: Creates a new post
  *    requestBody:
  *      required: true
  *      content:
@@ -145,9 +145,8 @@ router.post(
             });
             logger.debug("fromUser");
             logger.debug(user);
-            const post = new RadioStationPost({
+            const post = new BasePost({
                 fromUser: user._id,
-                postType: "radioStationPost",
                 description,
                 isApproved: true,
                 isProcessing: false,

@@ -30,6 +30,7 @@ import "react-medium-image-zoom/dist/styles.css";
 import "react-round-carousel/src/index.css";
 import Bandiere from "../Bandiere";
 import { adminsList } from "./Info";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const Homepage = () => {
   const { user } = useContext(UserContext);
@@ -124,7 +125,7 @@ const Homepage = () => {
             isZoomed={zoomedImg?.includes(e.logoUrl)}
             onZoomChange={s => handleZoomChange(s, e.logoUrl)}
           >
-            <img
+            <LazyLoadImage
               src={e.logoUrl}
               alt={`Locandina di ${e.name}`}
               className="object-contain w-full h-full"
@@ -182,11 +183,6 @@ const Homepage = () => {
               </div>
 
               <div className="p-4 my-4 text-center bg-white dark:bg-gray-800 shadow-lg rounded-lg">
-                {/* <img
-                  src="link-alla-foto-di-gianni"
-                  alt="Gianni - I4GBZ"
-                  className="mb-4 rounded-full max-w-md mx-auto border-4 dark:border-gray-600 border-gray-300"
-                /> */}
                 <p className="font-semibold text-lg dark:text-gray-200">
                   Un omaggio ad un uomo
                 </p>
@@ -208,7 +204,7 @@ const Homepage = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-3">
                 <div>
-                  <img
+                  <LazyLoadImage
                     src="/flashmob.png"
                     alt="Flash mob"
                     className="dark:p-3 dark:bg-gray-100 w-full fit max-w-md md:max-w-xl lg:max-w-2xl py-4 mx-auto"
@@ -286,7 +282,7 @@ const Homepage = () => {
                     <div className="py-6 flex w-full mt-4 md:mt-0 justify-center items-center">
                       <figure>
                         <Zoom>
-                          <img
+                          <LazyLoadImage
                             className="max-w-[10rem] mx-auto object-contain w-full"
                             src="/locandine/1-min.png"
                             alt="Esempio"

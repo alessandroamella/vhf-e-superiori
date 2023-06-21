@@ -1,12 +1,12 @@
-import { Avatar, Badge } from "flowbite-react";
+import { Avatar } from "flowbite-react";
 import React from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlaceholder from "react-placeholder";
 import { useNavigate } from "react-router-dom";
 
 /**
  * @typedef {object} BasePost
  * @property {string} fromUser - The ObjectId of the user who made the post.
- * @property {'antennaPost'|'myFlashMobPost'|'radioStationPost'} postType - The type of post.
  * @property {string[]} pictures - An array of file paths for the pictures uploaded by the user.
  * @property {string[]} videos - An array of file paths for the videos uploaded by the user.
  * @property {boolean} isApproved - Whether the post has been approved.
@@ -37,7 +37,7 @@ const FeedCard = ({ post, pp }) => {
         className="h-64 object-cover w-full"
         ready={!!post}
       >
-        <img
+        <LazyLoadImage
           src={post?.pictures[0] || "/no-image.png"}
           className="h-64 object-cover w-full"
           alt="Feed card"
@@ -55,52 +55,6 @@ const FeedCard = ({ post, pp }) => {
               {post?.description}
             </ReactPlaceholder>
           </h5>
-          <p className="font-normal text-gray-200 line-clamp-2">
-            <ReactPlaceholder
-              showLoadingAnimation
-              type="text"
-              rows={2}
-              ready={!!post?.description}
-            >
-              <div className="flex items-center gap-2 mt-1">
-                <Badge
-                  className="w-fit"
-                  color={
-                    post?.postType === "antennaPost"
-                      ? "purple"
-                      : post?.postType === "myFlashMobPost"
-                      ? "pink"
-                      : post?.postType === "radioStationPost"
-                      ? "indigo"
-                      : null
-                  }
-                >
-                  {post?.postType === "antennaPost"
-                    ? "Antenna"
-                    : post?.postType === "myFlashMobPost"
-                    ? "Il mio Flash Mob"
-                    : post?.postType === "radioStationPost"
-                    ? "Stazione radio"
-                    : null}
-                </Badge>
-                {post?.postType === "antennaPost" && (
-                  <div className="flex items-center gap-2">
-                    <span>{post?.band} MHz</span>
-                    {post && post?.brand && !post?.isSelfbuilt && (
-                      <span className="hidden md:block">
-                        {post?.brand || "-- nessuna marca --"}
-                      </span>
-                    )}
-                    {post && post?.numberOfElements && (
-                      <span className="hidden md:block">
-                        {post?.numberOfElements} elementi
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            </ReactPlaceholder>
-          </p>
         </div>
         <div className="flex items-center gap-2">
           {pic && <Avatar img={pic} rounded />}

@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { it } from "date-fns/locale";
 import React from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const EventPreview = ({ event, ...props }) => {
   return (
@@ -18,11 +19,10 @@ const EventPreview = ({ event, ...props }) => {
        *          - joinRequests */}
 
       <div className="w-full clamp flex flex-col justify-center mr-0 mb-4 md:mr-8 mb:mb-0">
-        <img
+        <LazyLoadImage
           className="max-h-[69vh] object-contain overflow-hidden"
           src={event.logoUrl}
           alt="Event logo"
-          loading="lazy"
         />
       </div>
       <div className="w-full flex flex-col items-start">

@@ -2,6 +2,7 @@ import { Timeline } from "flowbite-react";
 import React from "react";
 import { FaAngleDoubleRight } from "react-icons/fa";
 import Layout from "../Layout";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export const adminsList = [
   "IZ5RNF Ronca Alessandro",
@@ -26,7 +27,7 @@ const Info = ({ event, ...props }) => {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12">
-          <img
+          <LazyLoadImage
             src="/logo-min.png"
             alt="Logo"
             className="w-full max-w-sm mx-auto"

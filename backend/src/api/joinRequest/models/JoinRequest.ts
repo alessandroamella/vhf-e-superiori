@@ -9,7 +9,6 @@ import { EventClass } from "../../event/models";
  *        type: object
  *        required:
  *          - fromUser
- *          - postType
  *          - antenna
  *          - forEvent
  *          - isApproved

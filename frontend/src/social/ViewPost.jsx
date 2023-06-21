@@ -4,10 +4,6 @@ import { getErrorStr, UserContext } from "..";
 
 import "react-medium-image-zoom/dist/styles.css";
 import "react-placeholder/lib/reactPlaceholder.css";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
 
 import axios from "axios";
 import { Alert, Button, Spinner } from "flowbite-react";

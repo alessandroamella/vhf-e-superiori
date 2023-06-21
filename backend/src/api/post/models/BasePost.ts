@@ -15,7 +15,7 @@ import { Errors } from "../../errors";
  *        type: object
  *        required:
  *          - fromUser
- *          - postType
+ *          - description
  *          - pictures
  *          - videos
  *          - isApproved
@@ -27,10 +27,11 @@ import { Errors } from "../../errors";
  *            type: string
  *            format: objectid
  *            description: ObjectId of the user who made this post
- *          postType:
+ *          description:
  *            type: string
- *            enum: ["antennaPost", "myFlashMobPost", "radioStationPost"]
- *            description: The type of post
+ *            minLength: 1
+ *            maxLength: 300
+ *            description: Description of the post
  *          pictures:
  *            type: array
  *            items:
@@ -68,12 +69,8 @@ export class BasePostClass {
     @prop({ required: true, ref: "User" })
     public fromUser!: Ref<"User">;
 
-    @prop({
-        type: () => String,
-        required: true,
-        enum: ["antennaPost", "myFlashMobPost", "radioStationPost"]
-    })
-    public postType!: string;
+    @prop({ required: true, minlength: 1, maxlength: 300 })
+    public description!: string;
 
     @prop({
         type: () => [String],

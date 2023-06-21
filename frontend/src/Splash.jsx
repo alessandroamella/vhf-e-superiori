@@ -1,5 +1,6 @@
 import React from "react";
 import AnimatedText from "react-animated-text-content";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const Splash = ({ ready }) => {
   // const { events } = useContext(EventsContext);
@@ -32,8 +33,7 @@ const Splash = ({ ready }) => {
       }`}
     >
       <div className="w-screen h-screen flex flex-col row justify-center items-center">
-        <img
-          loading="eager"
+        <LazyLoadImage
           src="/logo-min.png"
           alt="Logo"
           className="w-96 max-w-[50vw]"
