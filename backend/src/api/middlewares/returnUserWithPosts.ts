@@ -34,7 +34,7 @@ async function returnUserWithPosts(
         }
         user.posts?.reverse();
         logger.debug("User view");
-        logger.debug(user);
+        logger.debug(JSON.stringify(user));
         res.json(user);
     } catch (err) {
         logger.error("Error in user view");

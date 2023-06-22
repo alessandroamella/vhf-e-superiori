@@ -69,9 +69,9 @@ export class EmailService {
                 ' <span style="font-weight: 600">' +
                 user.callsign +
                 "</span>, abbiamo ricevuto la tua richiesta di reset della password.<br />" +
-                'Se non sei stato tu, faccelo sapere ad <a href="mailto:alexlife@tiscali.it">alexlife@tiscali.it</a>, altrimenti<br />' +
-                `<span style="margin-top: 1rem; margin-bottom: 1rem; font-size: 1.2rem">Altrimenti, procedi alla verifica del tuo account <a href="https://www.vhfesuperiori.eu/resetpw?user=${user._id}&code=${code}&callsign=${user.callsign}" style="font-weight: 800">cliccando qui</a>.</span><br />` +
-                'Buona giornata da <a href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>'
+                'Se non sei stato tu, faccelo sapere ad <a style="text-decoration: none;" href="mailto:alexlife@tiscali.it">alexlife@tiscali.it</a>, altrimenti<br />' +
+                `<br /><span style="margin-top: 1rem; margin-bottom: 1rem; font-size: 1.2rem">Altrimenti, procedi alla verifica del tuo account <a href="https://www.vhfesuperiori.eu/resetpw?user=${user._id}&code=${code}&callsign=${user.callsign}" style="font-weight: 800">cliccando qui</a>.</span><br /><br />` +
+                'Buona giornata da <a style="text-decoration: none;" href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>'
         };
 
         await EmailService.sendMail(message);
@@ -83,6 +83,9 @@ export class EmailService {
         code: string,
         isNewUser: boolean
     ) {
+        logger.debug(
+            "Sending verify mail to " + user.email + " with code: " + code
+        );
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
             to: user.email,
@@ -94,9 +97,9 @@ export class EmailService {
                 user.callsign +
                 "</span>, abbiamo ricevuto la tua richiesta di " +
                 (isNewUser ? "registrazione" : "cambio email") +
-                '.<br />Se non sei stato tu, faccelo sapere ad <a style="color: inherit" href="mailto:alexlife@tiscali.it">alexlife@tiscali.it</a>, altrimenti<br />' +
-                `<span style="margin-top: 1rem; margin-bottom: 1rem; font-size: 1.2rem">procedi alla verifica del tuo account <a href="https://www.vhfesuperiori.eu/api/auth/verify/${user._id}/${code}" style="font-weight: 800">cliccando qui</a>.</span><br />` +
-                'Buona giornata da <a href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>'
+                '.<br />Se non sei stato tu, faccelo sapere ad <a style="text-decoration: none;" href="mailto:alexlife@tiscali.it">alexlife@tiscali.it</a>, altrimenti<br />' +
+                `<br /><span style="margin-top: 1rem; margin-bottom: 1rem; font-size: 1.2rem">procedi alla verifica del tuo account <a href="https://www.vhfesuperiori.eu/api/auth/verify/${user._id}/${code}" style="font-weight: 800">cliccando qui</a>.</span><br /><br />` +
+                'Buona giornata da <a style="text-decoration: none;" href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>'
         };
 
         await EmailService.sendMail(message);

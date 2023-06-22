@@ -77,6 +77,10 @@ router.get(
                 user.verificationCode
             );
 
+            logger.debug(
+                `Compare ${req.params.code} and ${user.verificationCode}: ${same}`
+            );
+
             if (same) {
                 user.isVerified = true;
                 user.verificationCode = undefined;

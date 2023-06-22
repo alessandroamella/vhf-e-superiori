@@ -97,7 +97,8 @@ router.put(
             const oldEmail = (req.user as unknown as UserDoc).email;
             const user = await User.findOneAndUpdate(
                 { _id: (req.user as unknown as UserDoc)._id },
-                { name, email }
+                { name, email },
+                { new: true }
             );
 
             if (!user) {
@@ -121,6 +122,10 @@ router.put(
                 user.verificationCode = bcrypt.hashSync(newVerifCode, 10);
                 user.isVerified = false;
                 await user.save();
+
+                logger.debug(
+                    `New verification code for ${user.callsign}: ${newVerifCode} (hash: ${user.verificationCode})`
+                );
 
                 await EmailService.sendVerifyMail(user, newVerifCode, false);
             }

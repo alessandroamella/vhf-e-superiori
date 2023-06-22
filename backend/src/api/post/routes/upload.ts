@@ -96,7 +96,7 @@ router.post(
         });
 
         logger.info("Uploading files");
-        logger.info(JSON.stringify(fileArr, null, 2));
+        logger.info(JSON.stringify(fileArr));
 
         const pathsArr: string[] = [];
 

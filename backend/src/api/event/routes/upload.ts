@@ -94,7 +94,7 @@ router.post(
         }
 
         logger.info("Uploading event picture");
-        logger.info(JSON.stringify(fileArr, null, 2));
+        logger.info(JSON.stringify(fileArr));
 
         const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
 
