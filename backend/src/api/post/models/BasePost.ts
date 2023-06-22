@@ -95,6 +95,6 @@ export class BasePostClass {
     @prop({ required: true, default: false })
     public isApproved!: boolean;
 
-    @prop({ required: true, default: true })
+    @prop({ required: true, default: false })
     public isProcessing!: boolean;
 }

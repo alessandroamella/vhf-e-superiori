@@ -71,10 +71,18 @@ router.delete(
 
                 logger.debug("Delete post isAdmin: " + reqUser?.isAdmin);
                 logger.debug(
-                    "Delete post _id match: " +
-                        (user._id.toString() === reqUser?._id)
+                    `Delete post _id match: ${user._id.toString()} === ${typeof reqUser?._id?.toString()} (${
+                        user._id.toString() === reqUser?._id?.toString()
+                    }`
                 );
-                if (!reqUser?.isAdmin && user._id.toString() !== reqUser?._id) {
+                if (!reqUser) {
+                    return res
+                        .status(UNAUTHORIZED)
+                        .json(createError(Errors.NOT_LOGGED_IN));
+                } else if (
+                    !reqUser?.isAdmin &&
+                    user._id.toString() !== reqUser?._id?.toString()
+                ) {
                     return res
                         .status(UNAUTHORIZED)
                         .json(createError(Errors.MUST_BE_POST_OWNER));

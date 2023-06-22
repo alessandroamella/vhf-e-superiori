@@ -26,7 +26,22 @@ const Login = () => {
   async function sendResetPw(e) {
     e.preventDefault();
 
-    const token = captchaRef.current.getValue();
+    let token;
+
+    try {
+      token = captchaRef.current.getValue();
+    } catch (err) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+      return setAlert({
+        color: "failure",
+        msg: "Errore nel caricamento del ReCAPTCHA, per favore ricarica la pagina"
+      });
+    }
+
     if (!token) {
       window.scrollTo({
         top: 0,
@@ -47,7 +62,7 @@ const Login = () => {
       });
       setAlert({
         color: "success",
-        msg: "Richiesta di reset della password effettuata con successo! Controlla la mail ricevuta"
+        msg: "Se l'indirizzo email fornito è associato a un account registrato, riceverai a breve un'email per reimpostare la password. Controlla la tua casella di posta!"
       });
     } catch (err) {
       console.log("pw send reset error", err);
