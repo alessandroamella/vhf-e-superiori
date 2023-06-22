@@ -67,7 +67,7 @@ const Social = () => {
     <Layout>
       {!splashPlayed && <Splash ready={ready} />}
 
-      <div className="px-4 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
+      <div className="px-0 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
         {alert && (
           <Alert
             className="mb-6"
@@ -132,7 +132,7 @@ const Social = () => {
                     </p>
                   }
                 >
-                  <div className="p-5">
+                  <div className="p-0 md:p-5">
                     {posts.map(p => (
                       <FeedCard key={p._id} post={p} pp={profilePictures} />
                     ))}

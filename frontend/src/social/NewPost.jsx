@@ -392,9 +392,9 @@ const NewPost = () => {
               <div className="flex justify-center items-center flex-col">
                 <Button disabled={disabled} type="submit" className="mb-2">
                   {isSubmitting ? (
-                    <Spinner className="dark:text-white" />
+                    <Spinner className="dark:text-white dark:fill-white" />
                   ) : (
-                    <FaPlus className="dark:text-white" />
+                    <FaPlus className="dark:text-white dark:fill-white" />
                   )}
                   <span className="ml-1 font-semibold">
                     {!isSubmitting
@@ -410,7 +410,12 @@ const NewPost = () => {
                     {[...uploadMap.entries()].map(
                       ([md5, { name, percent }]) => (
                         <div key={md5} className="mb-2 w-56">
-                          <Typography variant="h5" className="text-center">
+                          <Typography
+                            variant="h5"
+                            className="text-center truncate max-w-full dark:text-gray-200"
+                            style={{ maxWidth: "calc(100% - 3rem)" }}
+                            title={name}
+                          >
                             {name}: {Math.round(percent)}%
                           </Typography>
                           <Progress
