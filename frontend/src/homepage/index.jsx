@@ -358,7 +358,10 @@ const Homepage = () => {
                                     className="bg-white dark:border-gray-700 dark:bg-gray-800"
                                   >
                                     <Table.Cell className="py-2 pr-2 whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                      {getNumbersFromString(e.name).join("")}°
+                                      {getNumbersFromString(e.name)
+                                        .join("")
+                                        .substring(0, 2)}
+                                      °
                                     </Table.Cell>
                                     <Table.Cell className="py-2">
                                       {e.band}
