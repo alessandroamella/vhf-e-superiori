@@ -79,7 +79,7 @@ router.post(
         passport.authenticate(
             "signup",
             { session: false },
-            async (_err, user) => {
+            async (_err: any, user: any) => {
                 if (_err || !user) {
                     logger.debug("Error in user signup");
                     logger.debug("_err");

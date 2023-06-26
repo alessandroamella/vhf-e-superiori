@@ -68,7 +68,7 @@ router.delete(
                 _id: req.params._id
             };
             if (!user.isAdmin) {
-                obj.fromUser = user._id;
+                obj.fromUser = user._id.toString();
             }
 
             const joinRequest = await JoinRequest.findOne(obj);

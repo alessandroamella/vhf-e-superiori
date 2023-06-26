@@ -25,14 +25,14 @@ let statusInterval = null;
 
 const FileUploaderMemo = React.memo(
   ({ files, setFiles, disabled, maxPhotos, maxVideos }) => {
-    const pictures = useMemo(() => {
-      return files.filter(file => file.type.includes("image"));
-    }, [files]);
+    // const pictures = useMemo(() => {
+    //   return files.filter(file => file.type.includes("image"));
+    // }, [files]);
 
     return (
       <FileUploader
         disabled={disabled}
-        color={!pictures.length && "failure"}
+        // color={!pictures.length && "failure"}
         setFiles={setFiles}
         files={files}
         maxPhotos={maxPhotos}
@@ -125,7 +125,10 @@ const NewPost = () => {
   const onSubmit = async data => {
     console.log(data);
 
-    if (!pictures || pictures.length === 0) {
+    if (
+      (!pictures || pictures.length === 0) &&
+      (!videos || videos.length === 0)
+    ) {
       setAlert({
         color: "failure",
         msg: "Devi aggiungere almeno una foto"
@@ -390,7 +393,11 @@ const NewPost = () => {
               </div>
 
               <div className="flex justify-center items-center flex-col">
-                <Button disabled={disabled} type="submit" className="mb-2">
+                <Button
+                  disabled={disabled || (!pictures.length && !videos.length)}
+                  type="submit"
+                  className="mb-2"
+                >
                   {isSubmitting ? (
                     <Spinner className="dark:text-white dark:fill-white" />
                   ) : (
@@ -437,7 +444,7 @@ const NewPost = () => {
                 Anteprima
               </Typography>
               <div className="flex justify-center">
-                {pictures.length && isValid ? (
+                {(pictures.length || videos.length) && isValid ? (
                   <ViewPostContent post={post} />
                 ) : (
                   <Alert color="info">

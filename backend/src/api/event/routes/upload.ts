@@ -148,7 +148,7 @@ router.post(
         try {
             awsPath = await s3Client.uploadFile({
                 fileName: s3Client.generateFileName({
-                    userId: (req.user as unknown as UserDoc)._id,
+                    userId: (req.user as unknown as UserDoc)._id.toString(),
                     mimeType: f.mimetype
                 }),
                 filePath: f.tempFilePath,

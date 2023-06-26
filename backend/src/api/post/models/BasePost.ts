@@ -1,6 +1,7 @@
 import {
     modelOptions,
     mongoose,
+    pre,
     prop,
     Ref,
     Severity
@@ -37,7 +38,7 @@ import { Errors } from "../../errors";
  *            items:
  *              type: string
  *            description: Path of the pictures uploaded by the user (will be compressed)
- *            minItems: 1
+ *            minItems: 0
  *            maxItems: 5
  *          videos:
  *            type: array
@@ -61,6 +62,14 @@ import { Errors } from "../../errors";
  *            format: date-time
  *            description: Document update date (handled by MongoDB)
  */
+@pre<BasePostClass>("save", function (next) {
+    // Controlla che ci sia almeno una foto o un video
+    if (this.pictures.length === 0 && this.videos.length === 0) {
+        next(new Error(Errors.NO_CONTENT));
+    } else {
+        next();
+    }
+})
 @modelOptions({
     schemaOptions: { timestamps: true },
     options: { allowMixed: Severity.ERROR, customName: "BasePost" }
@@ -76,7 +85,7 @@ export class BasePostClass {
         type: () => [String],
         required: true,
         validate: [
-            (v: unknown[]) => v.length > 0 && v.length <= 5,
+            (v: unknown[]) => v.length >= 0 && v.length <= 5,
             Errors.INVALID_PICS_NUM
         ]
     })

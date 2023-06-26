@@ -11,7 +11,5 @@ export const validate = (req: Request, res: Response, next: NextFunction) => {
 
     return res
         .status(BAD_REQUEST)
-        .json(
-            createError([...new Set(errors.array().map(e => e.param))].join())
-        );
+        .json(createError([...new Set(errors.array().map(e => e.msg))].join()));
 };

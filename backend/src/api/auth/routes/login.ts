@@ -67,66 +67,71 @@ router.post(
     validate,
     async (req, res, next) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        passport.authenticate("login", async (_err, user, info) => {
-            logger.debug("Logging in callsign " + user?.callsign);
-            try {
-                if (_err || !user) {
-                    if (_err) {
-                        logger.error("Error while logging in");
-                        logger.error(_err);
-                    }
-                    return next(_err || new Error(Errors.USER_NOT_FOUND));
-                }
-
-                req.login(user, { session: false }, async err => {
-                    if (err) {
-                        logger.error("Error in req.login");
-                        logger.error(err);
-                        return next(err);
+        passport.authenticate(
+            "login",
+            async (_err: any, user: any, info: any) => {
+                logger.debug("Logging in callsign " + user?.callsign);
+                try {
+                    if (_err || !user) {
+                        if (_err) {
+                            logger.error("Error while logging in");
+                            logger.error(_err);
+                        }
+                        return next(_err || new Error(Errors.USER_NOT_FOUND));
                     }
 
-                    const body = {
-                        _id: user._id,
-                        callsign: user.callsign,
-                        expiration:
-                            Date.now() + AuthOptions.AUTH_COOKIE_DURATION_MS
-                    };
-                    const token = jwt.sign(body, envs.JWT_SECRET);
+                    req.login(user, { session: false }, async err => {
+                        if (err) {
+                            logger.error("Error in req.login");
+                            logger.error(err);
+                            return next(err);
+                        }
 
-                    logger.debug("Created new JWT token");
-                    logger.debug(body);
+                        const body = {
+                            _id: user._id,
+                            callsign: user.callsign,
+                            expiration:
+                                Date.now() + AuthOptions.AUTH_COOKIE_DURATION_MS
+                        };
+                        const token = jwt.sign(body, envs.JWT_SECRET);
 
-                    res.cookie(AuthOptions.AUTH_COOKIE_NAME, token, {
-                        httpOnly: true,
-                        signed: true,
-                        maxAge: 1000 * 60 * 60 * 24 * 3
+                        logger.debug("Created new JWT token");
+                        logger.debug(body);
+
+                        res.cookie(AuthOptions.AUTH_COOKIE_NAME, token, {
+                            httpOnly: true,
+                            signed: true,
+                            maxAge: 1000 * 60 * 60 * 24 * 3
+                        });
+
+                        req.user = user;
+
+                        return next();
+
+                        // return res.json(
+                        //     (
+                        //         await User.findOne(
+                        //             { _id: user._id },
+                        //             {
+                        //                 password: 0,
+                        //                 joinRequests: 0,
+                        //                 verificationCode: 0,
+                        //                 passwordResetCode: 0,
+                        //                 __v: 0
+                        //             }
+                        //         )
+                        //     )?.toObject()
+                        // );
                     });
-
-                    req.user = user;
-
-                    return next();
-
-                    // return res.json(
-                    //     (
-                    //         await User.findOne(
-                    //             { _id: user._id },
-                    //             {
-                    //                 password: 0,
-                    //                 joinRequests: 0,
-                    //                 verificationCode: 0,
-                    //                 passwordResetCode: 0,
-                    //                 __v: 0
-                    //             }
-                    //         )
-                    //     )?.toObject()
-                    // );
-                });
-            } catch (err) {
-                logger.error("Error catch in login");
-                logger.error(err);
-                return res.status(INTERNAL_SERVER_ERROR).json(createError());
+                } catch (err) {
+                    logger.error("Error catch in login");
+                    logger.error(err);
+                    return res
+                        .status(INTERNAL_SERVER_ERROR)
+                        .json(createError());
+                }
             }
-        })(req, res, next);
+        )(req, res, next);
     },
     returnUserWithPosts
 );

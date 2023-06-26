@@ -9,12 +9,13 @@ import getRoute from "./get";
 import deleteRoute from "./delete";
 import uploadFilesRoute from "./upload";
 import uploadStatusRoute from "./uploadStatus";
+import isAdmin from "../../middlewares/isAdmin";
 
 const router = Router();
 
 router.use("/", allRoute);
-router.use("/approve", approveRoute);
-router.use("/", createRoute);
+router.use("/approve", isLoggedIn, isVerified, isAdmin, approveRoute);
+router.use("/", isLoggedIn, isVerified, createRoute);
 router.use("/", getRoute);
 router.use("/", isLoggedIn, isVerified, deleteRoute);
 router.use("/upload", isLoggedIn, isVerified, uploadFilesRoute);

@@ -126,7 +126,7 @@ router.post(
                 }
             }
 
-            if (pictures.length > 10) {
+            if (pictures.length > 5) {
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.INVALID_PICS_NUM));
@@ -134,6 +134,10 @@ router.post(
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.INVALID_VIDS_NUM));
+            } else if (pictures.length + videos.length === 0) {
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.NO_CONTENT));
             }
 
             logger.info("Creating post with following params");
