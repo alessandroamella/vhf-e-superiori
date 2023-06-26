@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlaceholder from "react-placeholder";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,11 @@ import "swiper/css/pagination";
 // import "swiper/css/navigation";
 // import "swiper/css/scrollbar";
 import TimeAgo from "./TimeAgo";
-import { Spinner } from "flowbite-react";
+import { Badge, Button, Spinner } from "flowbite-react";
+import { UserContext, getErrorStr } from "..";
+import axios from "axios";
+import { FaTrash } from "react-icons/fa";
+import { adminNames, ownerNames } from "../homepage/Info";
 
 /**
  * @typedef {object} BasePost
@@ -27,9 +31,41 @@ import { Spinner } from "flowbite-react";
  *
  * @param {Props} props
  */
-const FeedCard = ({ post, pp }) => {
+const FeedCard = ({ posts, setPosts, post, pp, setAlert }) => {
+  const { user, setUser } = useContext(UserContext);
+
   const navigate = useNavigate();
   const pic = pp && pp.find(p => p.callsign === post?.fromUser?.callsign)?.url;
+
+  const [deleteDisabled, setDeleteDisabled] = useState(false);
+
+  async function deletePost(e, p) {
+    e.stopPropagation(); // Fermare la propagazione del click
+
+    if (!window.confirm(`Vuoi davvero eliminare il post "${p.description}"?`)) {
+      return;
+    }
+
+    setDeleteDisabled(true);
+
+    try {
+      await axios.delete("/api/post/" + p._id);
+      setAlert({
+        color: "success",
+        msg: "Post eliminato con successo"
+      });
+      setUser({ ...user, posts: user.posts.filter(_p => _p._id !== p._id) });
+      setPosts(posts.filter(_p => _p._id !== p._id));
+    } catch (err) {
+      console.log("error in post delete", err);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+    } finally {
+      setDeleteDisabled(false);
+    }
+  }
 
   return (
     <div
@@ -46,7 +82,7 @@ const FeedCard = ({ post, pp }) => {
         )}
 
         {/* Username */}
-        <div className="ml-4">
+        <div className="ml-4 flex items-center gap-2">
           <ReactPlaceholder
             showLoadingAnimation
             type="text"
@@ -57,14 +93,32 @@ const FeedCard = ({ post, pp }) => {
               {post?.fromUser?.callsign}
             </p>
           </ReactPlaceholder>
+          {post?.fromUser?.callsign &&
+            Object.keys(ownerNames).includes(post.fromUser.callsign) && (
+              <Badge color="purple">Dev 👨‍💻</Badge>
+            )}
+          {post?.fromUser?.callsign &&
+            Object.keys(adminNames).includes(post.fromUser.callsign) && (
+              <Badge color="pink">Admin 🛡️</Badge>
+            )}
         </div>
 
         {/* Time Ago */}
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
           {post?.createdAt ? (
             <TimeAgo createdAt={post?.createdAt} />
           ) : (
             <Spinner />
+          )}
+
+          {user && post && user.callsign === post.fromUser?.callsign && (
+            <Button
+              color="failure"
+              onClick={e => deletePost(e, post)}
+              disabled={deleteDisabled}
+            >
+              <FaTrash className="p-0" />
+            </Button>
           )}
         </div>
       </div>

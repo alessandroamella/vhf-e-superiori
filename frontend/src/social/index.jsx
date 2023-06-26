@@ -134,7 +134,14 @@ const Social = () => {
                 >
                   <div className="p-0 md:p-5">
                     {posts.map(p => (
-                      <FeedCard key={p._id} post={p} pp={profilePictures} />
+                      <FeedCard
+                        setAlert={setAlert}
+                        key={p._id}
+                        post={p}
+                        pp={profilePictures}
+                        posts={posts}
+                        setPosts={setPosts}
+                      />
                     ))}
                   </div>
                 </InfiniteScroll>

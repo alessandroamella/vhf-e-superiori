@@ -15,8 +15,8 @@ const router = Router();
 
 router.use("/", allRoute);
 router.use("/approve", isLoggedIn, isVerified, isAdmin, approveRoute);
-router.use("/", isLoggedIn, isVerified, createRoute);
 router.use("/", getRoute);
+router.use("/", isLoggedIn, isVerified, createRoute);
 router.use("/", isLoggedIn, isVerified, deleteRoute);
 router.use("/upload", isLoggedIn, isVerified, uploadFilesRoute);
 router.use("/uploadstatus", isLoggedIn, isVerified, uploadStatusRoute);

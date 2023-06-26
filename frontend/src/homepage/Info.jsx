@@ -4,16 +4,22 @@ import { FaAngleDoubleRight } from "react-icons/fa";
 import Layout from "../Layout";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
-export const adminsList = [
-  "IZ5RNF Ronca Alessandro",
-  "IZ5IOQ Metteucci Giacomo",
-  "IK7UXU Ingrosso Flavio",
-  "IZ2MHO Pinzelli Bruno",
-  "IT9DJF Casini Andrea",
-  "IU0NWJ Peruzzi Cristiano",
-  "IU4JJJ Cerrone Pietro",
-  "EA5ZJ Jorge Alfonso Martinez"
-];
+export const ownerNames = {
+  IU4QSG: "Alessandro Amella"
+};
+
+export const adminNames = {
+  IZ5RNF: "Ronca Alessandro",
+  IZ5IOQ: "Metteucci Giacomo",
+  IK7UXU: "Ingrosso Flavio",
+  IZ2MHO: "Pinzelli Bruno",
+  IT9DJF: "Casini Andrea",
+  IU0NWJ: "Peruzzi Cristiano",
+  IU4JJJ: "Cerrone Pietro",
+  EA5ZJ: "Jorge Alfonso Martinez"
+};
+
+export const adminsList = Object.entries(adminNames).map(e => e.join(" "));
 
 const Info = ({ event, ...props }) => {
   return (
