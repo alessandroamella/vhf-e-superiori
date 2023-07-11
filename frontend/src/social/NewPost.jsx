@@ -405,10 +405,10 @@ const NewPost = () => {
                   )}
                   <span className="ml-1 font-semibold">
                     {!isSubmitting
-                      ? "Crea post"
+                      ? "Inserisci"
                       : isUploadingFiles
-                      ? "Caricamento dei file"
-                      : "Creazione post"}
+                      ? "Caricamento foto e video..."
+                      : "Inserimento in corso..."}
                   </span>
                 </Button>
                 {[...uploadMap.keys()].length > 0 && (
