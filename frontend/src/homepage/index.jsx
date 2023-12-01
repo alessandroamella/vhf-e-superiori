@@ -182,26 +182,6 @@ const Homepage = () => {
                 <hr />
               </div>
 
-              <div className="p-4 my-4 text-center bg-white dark:bg-gray-800 shadow-lg rounded-lg">
-                <p className="font-semibold text-lg dark:text-gray-200">
-                  Un omaggio ad un uomo
-                </p>
-                <p className="dark:text-gray-300">Un radioamatore</p>
-                <p className="dark:text-gray-300">Un amico</p>
-                <p className="dark:text-gray-300">
-                  Che ha dedicato la vita a quello che gli piaceva di più.
-                </p>
-                <p className="font-semibold dark:text-gray-200">
-                  ESSERE RADIOAMATORE.
-                </p>
-                <p className="font-bold dark:text-green-400 text-green-600">
-                  Grazie Gianni.
-                </p>
-                <Link to="/progetti-gianni">
-                  <Button className="mt-2">Vedi Progetti</Button>
-                </Link>
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-3">
                 <div>
                   <LazyLoadImage
