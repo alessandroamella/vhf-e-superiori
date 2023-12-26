@@ -160,3 +160,7 @@ div[data-testid='flowbite-tooltip'] ul {
     margin-top: 0;
     margin-bottom: 0;
 }
+
+video {
+    max-height: inherit;
+}
