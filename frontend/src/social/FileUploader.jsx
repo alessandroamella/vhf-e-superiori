@@ -41,7 +41,18 @@ const FileUploader = ({
     });
 
     // check if any heic file
-    const heicFiles = filteredFiles.filter(file => file.type === "image/heic");
+    const heicFiles = filteredFiles.filter(
+      file =>
+        file.type === "image/heic" ||
+        file.name.endsWith(".heic") ||
+        file.name.endsWith(".heif")
+    );
+    const notHeicFiles = filteredFiles.filter(
+      file =>
+        file.type !== "image/heic" &&
+        !file.name.endsWith(".heic") &&
+        !file.name.endsWith(".heif")
+    );
 
     // convert heic files to jpg
     const convertedFiles = [];
@@ -59,11 +70,7 @@ const FileUploader = ({
       convertedFiles.push(...heic);
     }
 
-    setFiles(prevFiles => [
-      ...prevFiles,
-      ...filteredFiles.filter(file => file.type !== "image/heic"),
-      ...convertedFiles
-    ]);
+    setFiles(prevFiles => [...prevFiles, ...notHeicFiles, ...convertedFiles]);
   };
 
   const handleDelete = (e, index) => {
@@ -78,6 +85,8 @@ const FileUploader = ({
       "image/webp",
       "image/gif",
       "image/heic",
+      ".heic",
+      ".heif",
       "video/mp4",
       "video/quicktime",
       "video/x-msvideo",
