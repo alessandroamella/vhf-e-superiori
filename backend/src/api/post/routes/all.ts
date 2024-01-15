@@ -6,6 +6,7 @@ import { UserDoc } from "../../auth/models";
 import { createError } from "../../helpers";
 import { qrz } from "../../qrz";
 import { BasePost } from "../models";
+import { Comment } from "../../comment/models";
 
 const router = Router();
 
@@ -75,10 +76,20 @@ router.get(
                 ? {}
                 : { isApproved: true, isProcessing: false };
             const posts = await BasePost.find(query)
-                .sort({ createdAt: -1 })
-                .populate("fromUser")
+                .populate({ path: "fromUser", select: "callsign" })
+                .populate({
+                    path: "comments",
+                    select: "fromUser content createdAt"
+                })
                 .limit(req.query?.limit)
-                .skip(req.query?.offset);
+                .skip(req.query?.offset)
+                .sort({ createdAt: -1 })
+                .sort({ "comments.createdAt": -1 });
+            await Comment.populate(posts, {
+                path: "comments.fromUser",
+                model: "User",
+                select: "callsign"
+            });
 
             logger.debug("Fetched " + posts.length + " posts");
 

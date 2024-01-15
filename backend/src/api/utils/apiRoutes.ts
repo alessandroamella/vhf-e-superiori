@@ -6,6 +6,7 @@ import joinRequestRoutes from "../joinRequest/routes";
 import qrzRoutes from "../qrz/routes";
 import counterRoutes from "../counter/routes";
 import postRoutes from "../post/routes";
+import commentRoutes from "../comment/routes";
 import notFound from "./notFound";
 
 import errorHandler from "../middlewares/errorHandler";
@@ -84,6 +85,7 @@ router.use("/joinrequest", joinRequestRoutes);
 router.use("/qrz", qrzRoutes);
 router.use("/counter", counterRoutes);
 router.use("/post", postRoutes);
+router.use("/comment", commentRoutes);
 
 router.use(errorHandler);
 router.use(notFound);

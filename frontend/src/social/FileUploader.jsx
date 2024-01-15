@@ -3,6 +3,8 @@ import { useDropzone } from "react-dropzone";
 import { FaTrash } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlayer from "react-player";
+import heic2any from "heic2any";
+import { v4 as uuidv4 } from "uuid";
 
 const FileUploader = ({
   files,
@@ -12,7 +14,11 @@ const FileUploader = ({
   maxPhotos = 5,
   maxVideos = 2
 }) => {
-  const handleDrop = acceptedFiles => {
+  /**
+   * @param {File[]} acceptedFiles
+   * @param {File[]} rejectedFiles
+   */
+  const handleDrop = async acceptedFiles => {
     const currentPhotos = files.filter(file =>
       file.type.startsWith("image")
     ).length;
@@ -34,7 +40,30 @@ const FileUploader = ({
       return false;
     });
 
-    setFiles(prevFiles => [...prevFiles, ...filteredFiles]);
+    // check if any heic file
+    const heicFiles = filteredFiles.filter(file => file.type === "image/heic");
+
+    // convert heic files to jpg
+    const convertedFiles = [];
+    for (const file of heicFiles) {
+      const convertedFile = await heic2any({
+        blob: file,
+        toType: "image/jpeg",
+        quality: 0.8
+      });
+      const heic = [];
+      Array.isArray(convertedFile)
+        ? heic.push(...convertedFile)
+        : heic.push(convertedFile);
+      heic.forEach(f => (f.name = uuidv4() + ".jpg"));
+      convertedFiles.push(...heic);
+    }
+
+    setFiles(prevFiles => [
+      ...prevFiles,
+      ...filteredFiles.filter(file => file.type !== "image/heic"),
+      ...convertedFiles
+    ]);
   };
 
   const handleDelete = (e, index) => {

@@ -12,6 +12,7 @@ import { JoinRequestClass } from "../../joinRequest/models";
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { logger } from "../../../shared";
 import { BasePostClass } from "../../post/models/BasePost";
+import { CommentClass } from "../../comment/models/Comment";
 
 /**
  * @swagger
@@ -28,6 +29,7 @@ import { BasePostClass } from "../../post/models/BasePost";
  *          - isAdmin
  *          - joinRequests
  *          - posts
+ *          - comments
  *        properties:
  *          callsign:
  *            type: string
@@ -76,6 +78,12 @@ import { BasePostClass } from "../../post/models/BasePost";
  *              type: string
  *              format: ObjectId
  *            description: ObjectIds of published posts
+ *          comments:
+ *            type: array
+ *            items:
+ *              type: string
+ *              format: ObjectId
+ *            description: ObjectIds of published comments
  */
 
 @modelOptions({
@@ -122,6 +130,12 @@ export class UserClass {
 
     @prop({ required: true, default: [], ref: () => BasePostClass })
     public posts!: Ref<BasePostClass>[];
+
+    @prop({ required: true, default: [], ref: () => CommentClass })
+    public comments!: Ref<CommentClass>[];
+
+    // @prop({ required: true, default: [], ref: "Comment" })
+    // public comments!: Ref<"Comment">[];
 
     public async isValidPw(this: DocumentType<UserClass>, plainPw: string) {
         return await bcrypt.compare(plainPw, this.password);

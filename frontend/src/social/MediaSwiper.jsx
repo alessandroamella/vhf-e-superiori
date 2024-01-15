@@ -25,7 +25,7 @@ const MediaSwiper = React.memo(({ postPictures, postVideos }) => (
         <Zoom>
           <img
             loading="lazy"
-            className="select-none w-full max-h-96 object-cover"
+            className="select-none w-full max-h-[30rem] object-contain"
             src={p}
             alt="Post pic"
           />

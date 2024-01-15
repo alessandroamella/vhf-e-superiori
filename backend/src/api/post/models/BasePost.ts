@@ -7,6 +7,7 @@ import {
     Severity
 } from "@typegoose/typegoose";
 import { Errors } from "../../errors";
+import { CommentClass } from "../../comment/models/Comment";
 
 /**
  * @swagger
@@ -21,6 +22,7 @@ import { Errors } from "../../errors";
  *          - videos
  *          - isApproved
  *          - isProcessing
+ *          - comments
  *          - createdAt
  *          - updatedAt
  *        properties:
@@ -106,4 +108,10 @@ export class BasePostClass {
 
     @prop({ required: true, default: false })
     public isProcessing!: boolean;
+
+    @prop({ ref: () => CommentClass, required: true, default: [] })
+    public comments?: Ref<CommentClass>[];
+
+    // @prop({ ref: "Comment", default: [] })
+    // public comments?: Ref<"Comment">[];
 }

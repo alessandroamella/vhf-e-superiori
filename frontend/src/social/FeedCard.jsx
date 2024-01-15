@@ -111,15 +111,17 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert }) => {
             <Spinner />
           )}
 
-          {user && post && user.callsign === post.fromUser?.callsign && (
-            <Button
-              color="failure"
-              onClick={e => deletePost(e, post)}
-              disabled={deleteDisabled}
-            >
-              <FaTrash className="p-0" />
-            </Button>
-          )}
+          {user &&
+            post &&
+            (user.callsign === post.fromUser?.callsign || user.isAdmin) && (
+              <Button
+                color="failure"
+                onClick={e => deletePost(e, post)}
+                disabled={deleteDisabled}
+              >
+                <FaTrash className="p-0" />
+              </Button>
+            )}
         </div>
       </div>
 

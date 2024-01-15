@@ -53,7 +53,7 @@ router.get(
             const joinRequests = await JoinRequest.find({
                 forEvent: req.params.id
             })
-                .populate("fromUser")
+                .populate({ path: "fromUser", select: "callsign" })
                 .sort({ createdAt: -1 });
             res.json(joinRequests);
         } catch (err) {

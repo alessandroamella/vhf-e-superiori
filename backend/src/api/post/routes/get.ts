@@ -8,6 +8,7 @@ import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import { qrz } from "../../qrz";
 import { BasePost } from "../models";
+import { Comment } from "../../comment/models";
 
 const router = Router();
 
@@ -54,9 +55,18 @@ const router = Router();
  */
 router.get("/:_id", param("_id").isMongoId(), validate, async (req, res) => {
     try {
-        const post = await BasePost.findOne({ _id: req.params?._id }).populate(
-            "fromUser"
-        );
+        const post = await BasePost.findOne({ _id: req.params?._id })
+            .populate({ path: "fromUser", select: "callsign" })
+            .populate({
+                path: "comments",
+                select: "fromUser content createdAt"
+            })
+            .sort({ "comments.createdAt": -1 });
+        await Comment.populate(post, {
+            path: "comments.fromUser",
+            model: "User",
+            select: "callsign"
+        });
 
         logger.debug("Fetched post " + post?._id);
 
