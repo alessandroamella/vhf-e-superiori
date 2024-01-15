@@ -14,6 +14,7 @@ import { Errors } from "../../errors";
 import mongoose from "mongoose";
 import { s3Client } from "../../aws";
 import { BasePost } from "../models";
+import { Comment } from "../../comment/models";
 
 const router = Router();
 
@@ -57,11 +58,16 @@ router.delete(
             const post = await BasePost.findOne({
                 _id: req.params._id
             }).populate("fromUser");
+
             if (!post) {
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.POST_NOT_FOUND));
             }
+
+            const comments = await Comment.find({
+                forPost: post._id
+            }).populate("fromUser");
 
             if (!isDocument(post?.fromUser)) {
                 logger.error("Post fromUser not populated");
@@ -92,6 +98,16 @@ router.delete(
                     user.posts as mongoose.Types.Array<mongoose.Types.ObjectId>
                 ).pull(post._id);
                 await user.save();
+            }
+
+            for (const comment of comments) {
+                // pull from user
+                const user = comment.fromUser as unknown as UserDoc;
+                (
+                    user.comments as mongoose.Types.Array<mongoose.Types.ObjectId>
+                ).pull(comment._id);
+                await user.save();
+                await comment.deleteOne();
             }
 
             const filePaths = [...post.pictures, ...post.videos].map(url => {

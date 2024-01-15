@@ -72,7 +72,17 @@ const FileUploader = ({
   };
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: ["image/*", "video/*"],
+    accept: [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+      "image/heic",
+      "video/mp4",
+      "video/quicktime",
+      "video/x-msvideo",
+      "video/x-ms-wmv"
+    ],
     onDrop: handleDrop
   });
 
