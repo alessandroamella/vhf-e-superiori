@@ -56,7 +56,7 @@ const router = Router();
 router.get("/:_id", param("_id").isMongoId(), validate, async (req, res) => {
     try {
         const post = await BasePost.findOne({ _id: req.params?._id })
-            .populate({ path: "fromUser", select: "callsign" })
+            .populate({ path: "fromUser", select: "callsign name" })
             .populate({
                 path: "comments",
                 select: "fromUser content createdAt"
@@ -65,7 +65,7 @@ router.get("/:_id", param("_id").isMongoId(), validate, async (req, res) => {
         await Comment.populate(post, {
             path: "comments.fromUser",
             model: "User",
-            select: "callsign"
+            select: "callsign name"
         });
 
         logger.debug("Fetched post " + post?._id);

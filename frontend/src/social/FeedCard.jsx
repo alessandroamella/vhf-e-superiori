@@ -69,8 +69,8 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert }) => {
 
   return (
     <div
-      onClick={() => post && navigate(post?._id)}
-      className="transition-transform hover:scale-105 cursor-pointer relative max-w-md mx-auto bg-white dark:bg-gray-800 md:rounded-xl shadow-md overflow-hidden mb-8"
+      onClick={() => post && navigate(`/social/${post?._id}`)}
+      className="w-full transition-transform hover:scale-105 cursor-pointer relative max-w-md mx-auto bg-white dark:bg-gray-800 md:rounded-xl shadow-md overflow-hidden mb-8"
     >
       {/* Header */}
       <div className="flex items-center p-4">
@@ -175,6 +175,36 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert }) => {
           </p>
         </ReactPlaceholder>
       </div>
+
+      {/* Comments */}
+      {Array.isArray(post?.comments) && post?.comments.length > 0 && (
+        <div className="border-t p-2 border-gray-100 dark:border-gray-700">
+          {/* <p className="text-sm font-bold tracking-tighter">Commenti</p> */}
+          <div
+            key={post.comments[0]._id}
+            className="flex items-center gap-2 p-2"
+          >
+            <div className="flex flex-col w-full">
+              <div className="flex justify-between w-full">
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                  {post.comments[0].fromUser?.callsign}
+                </p>
+                <p className="text-sm text-gray-600 darkt:text-gray-400">
+                  <TimeAgo createdAt={post.comments[0].createdAt} />
+                </p>
+              </div>
+
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-300">
+                {post.comments[0].content}
+              </p>
+            </div>
+          </div>
+
+          {/* <pre>
+        <code>{JSON.stringify(post?.comments)}</code>
+      </pre> */}
+        </div>
+      )}
     </div>
   );
 };

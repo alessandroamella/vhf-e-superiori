@@ -19,7 +19,7 @@ import Description from "./Description";
 import { UserContext, getErrorStr } from "..";
 import { Alert, Card, Spinner, Textarea } from "flowbite-react";
 import { Button } from "@material-tailwind/react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaTrash } from "react-icons/fa";
 
@@ -149,15 +149,20 @@ const ViewPostContent = React.memo(
                   >
                     <p className="uppercase tracking-tight font-semibold text-lg text-gray-700">
                       {post?.fromUser?.callsign && (
-                        <a
-                          href={
-                            "https://www.qrz.com/db/" + post?.fromUser?.callsign
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <Link
+                          to={`/social/by/${post?.fromUser?._id}?callsign=${post?.fromUser?.callsign}&name=${post?.fromUser?.name}`}
                         >
                           {post?.fromUser?.callsign}
-                        </a>
+                        </Link>
+                        // <a
+                        //   href={
+                        //     "https://www.qrz.com/db/" + post?.fromUser?.callsign
+                        //   }
+                        //   target="_blank"
+                        //   rel="noopener noreferrer"
+                        // >
+                        //   {post?.fromUser?.callsign}
+                        // </a>
                       )}
                     </p>
                   </ReactPlaceholder>
@@ -246,9 +251,12 @@ const ViewPostContent = React.memo(
                   /> */}
                       <div className="flex justify-between w-full">
                         <div className="flex flex-col">
-                          <p className="text-gray-700 dark:text-gray-300 font-semibold">
+                          <Link
+                            to={`/social/by/${comment?.fromUser?._id}`}
+                            className="text-blue-500 hover:text-blue-700 transition-colors dark:text-gray-300 font-semibold"
+                          >
                             {comment?.fromUser?.callsign || "Anonimo"}
-                          </p>
+                          </Link>
                           <p className="text-gray-600 dark:text-gray-400">
                             {comment?.content}
                           </p>

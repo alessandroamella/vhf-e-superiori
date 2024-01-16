@@ -18,6 +18,7 @@ import Social from "./social";
 import NewPost from "./social/NewPost";
 import ViewPost from "./social/ViewPost";
 import ProgettiGianni from "./homepage/ProgettiGianni";
+import ViewPublished from "./social/ViewPublished";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
   { path: "/profile", element: <Profile /> },
   { path: "/social", element: <Social /> },
   { path: "/social/new", element: <NewPost /> },
+  { path: "/social/by/:id", element: <ViewPublished /> },
   { path: "/social/:id", element: <ViewPost /> },
   { path: "/eventmanager", element: <AdminManager /> },
   // { path: "/regolamento", element: <Regolamento /> },

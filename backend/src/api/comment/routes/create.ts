@@ -92,7 +92,7 @@ router.post(
                 fromUser: user._id,
                 forPost: post._id,
                 content
-            }).populate({ path: "fromUser", select: "callsign" });
+            }).populate({ path: "fromUser", select: "callsign name" });
 
             try {
                 await comment.validate();

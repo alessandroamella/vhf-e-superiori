@@ -7,6 +7,8 @@ import { createError } from "../../helpers";
 import { qrz } from "../../qrz";
 import { BasePost } from "../models";
 import { Comment } from "../../comment/models";
+import { FilterQuery, isValidObjectId } from "mongoose";
+import { BasePostClass } from "../models/BasePost";
 
 const router = Router();
 
@@ -31,6 +33,13 @@ const router = Router();
  *          minimum: 0
  *        description: Number of posts to skip
  *        required: true
+ *      - in: query
+ *        name: fromUser
+ *        schema:
+ *          type: string
+ *          format: ObjectId
+ *        description: ObjectId of the user to filter by
+ *        required: false
  *    tags:
  *      - post
  *    responses:
@@ -69,14 +78,21 @@ router.get(
     "/",
     query("limit").isInt({ gt: 0, max: 100 }),
     query("offset").isInt({ min: 0 }),
+    query("fromUser").isMongoId().optional(),
     async (req, res) => {
         try {
             const user = req.user as unknown as UserDoc | undefined;
-            const query = user?.isAdmin
+            const query: FilterQuery<BasePostClass> = user?.isAdmin
                 ? {}
                 : { isApproved: true, isProcessing: false };
+            if (
+                typeof req.query?.fromUser === "string" &&
+                isValidObjectId(req.query.fromUser)
+            ) {
+                query.fromUser = req.query.fromUser;
+            }
             const posts = await BasePost.find(query)
-                .populate({ path: "fromUser", select: "callsign" })
+                .populate({ path: "fromUser", select: "callsign name" })
                 .populate({
                     path: "comments",
                     select: "fromUser content createdAt"
@@ -88,7 +104,7 @@ router.get(
             await Comment.populate(posts, {
                 path: "comments.fromUser",
                 model: "User",
-                select: "callsign"
+                select: "callsign name"
             });
 
             logger.debug("Fetched " + posts.length + " posts");
