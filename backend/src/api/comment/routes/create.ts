@@ -8,6 +8,7 @@ import createSchema from "../schemas/createSchema";
 import User, { UserDoc } from "../../auth/models";
 import { BasePost } from "../../post/models";
 import { Comment } from "../models";
+import EmailService from "../../../email";
 
 const router = Router();
 
@@ -115,6 +116,12 @@ router.post(
                 { _id: user._id },
                 { $push: { comments: comment._id } }
             );
+
+            const postUser = await User.findById(post.fromUser);
+            if (!postUser) {
+                throw new Error("Post user not found in comment create");
+            }
+            await EmailService.sendCommentMail(postUser, user, post, comment);
 
             res.json(comment.toObject());
         } catch (err) {

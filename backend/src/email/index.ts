@@ -6,6 +6,10 @@ import { JoinRequestDoc } from "../api/joinRequest/models";
 import { envs, logger } from "../shared";
 import { formatInTimeZone } from "date-fns-tz";
 import { it } from "date-fns/locale";
+import { CommentDoc } from "../api/comment/models";
+import { BasePostDoc } from "../api/post/models";
+import { isDocument } from "@typegoose/typegoose";
+import { qrz } from "../api/qrz";
 
 export class EmailService {
     private static transporter: nodemailer.Transporter | null = null;
@@ -214,6 +218,60 @@ export class EmailService {
         logger.info(
             "Join request mail sent to admin for user " + user.callsign
         );
+    }
+
+    /*
+     * @description Comment must have fromUser and forPost populated!!
+     * @param forUser User to send the mail to
+     * @param fromUser User who sent the message
+     */
+    public static async sendCommentMail(
+        fromUser: UserDoc,
+        forUser: UserDoc,
+        post: BasePostDoc,
+        comment: CommentDoc
+    ) {
+        const message: Mail.Options = {
+            from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
+            to: fromUser.email,
+            subject: `Nuovo commento da ${fromUser.callsign} al tuo post`,
+            html:
+                "<p>Ciao " +
+                forUser.name +
+                ' <span style="font-weight: 600">' +
+                forUser.callsign +
+                "</span>, l'utente " +
+                fromUser.name +
+                ' <span style="font-weight: 600">' +
+                fromUser.callsign +
+                '</span> ha commentato il tuo post <span style="font-weight: 600">' +
+                post.description +
+                "</span>.<br />" +
+                // add card with comment
+                '<div style="padding: 1rem; border: 1px solid #ccc; border-radius: 0.5rem; margin-top: 1rem; margin-bottom: 1rem">' +
+                '<div style="display: flex; align-items: center; margin-bottom: 1rem">' +
+                '<img src="' +
+                (await qrz.scrapeProfilePicture(fromUser.callsign)) +
+                '" style="width: 3rem; height: 3rem; border-radius: 50%; margin-right: 1rem" />' +
+                '<span style="font-weight: 600">' +
+                fromUser.callsign +
+                "</span>" +
+                "</div>" +
+                '<div style="margin-bottom: 1rem">' +
+                comment.content +
+                "</div>" +
+                "</div>" +
+                // end card with comment
+                'Puoi vedere il tuo post <a href="https://www.vhfesuperiori.eu/social/' +
+                post._id +
+                "#comment-" +
+                comment._id +
+                '">qui</a>.<br />' +
+                'Buona giornata da <a href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>'
+        };
+
+        await EmailService.sendMail(message);
+        logger.info("Comment mail sent to user " + fromUser.callsign);
     }
 }
 

@@ -9,7 +9,7 @@ export default Event;
 
 // DEBUG - use this to save test events
 
-import moment from "moment";
+// import moment from "moment";
 
 // const prossimiEventi = [
 //     { i: 13, d: new Date(2023, 1 - 1, 29) },
