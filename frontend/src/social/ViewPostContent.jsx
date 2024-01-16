@@ -217,6 +217,7 @@ const ViewPostContent = React.memo(
                     className="w-full"
                     placeholder="Scrivi un commento"
                     value={content}
+                    maxLength={300}
                     onChange={e => setContent(e.target.value)}
                     disabled={disabled}
                   />
