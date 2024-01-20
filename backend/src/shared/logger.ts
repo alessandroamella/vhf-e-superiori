@@ -19,7 +19,11 @@ export const logger = createLogger({
                 colorize(),
                 printf(
                     info =>
-                        `${info.timestamp} ${info.level} [${info.label}]: ${info.message}`
+                        `${info.timestamp} ${info.level} [${info.label}]: ${
+                            info.message && typeof info.message === "object"
+                                ? JSON.stringify(info.message)
+                                : info.message
+                        }`
                 )
             )
         }),

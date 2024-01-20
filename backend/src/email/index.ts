@@ -8,7 +8,6 @@ import { formatInTimeZone } from "date-fns-tz";
 import { it } from "date-fns/locale";
 import { CommentDoc } from "../api/comment/models";
 import { BasePostDoc } from "../api/post/models";
-import { isDocument } from "@typegoose/typegoose";
 import { qrz } from "../api/qrz";
 
 export class EmailService {
