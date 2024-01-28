@@ -3,7 +3,7 @@ import { query } from "express-validator";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
 import { UserDoc } from "../../auth/models";
-import { createError } from "../../helpers";
+import { createError, validate } from "../../helpers";
 import { qrz } from "../../qrz";
 import { BasePost } from "../models";
 import { Comment } from "../../comment/models";
@@ -76,9 +76,10 @@ const router = Router();
  */
 router.get(
     "/",
-    query("limit").isInt({ gt: 0, max: 100 }),
-    query("offset").isInt({ min: 0 }),
+    query("limit").isInt({ gt: 0, max: 100 }).optional(),
+    query("offset").isInt({ min: 0 }).optional(),
     query("fromUser").isMongoId().optional(),
+    validate,
     async (req, res) => {
         try {
             const user = req.user as unknown as UserDoc | undefined;
@@ -91,16 +92,30 @@ router.get(
             ) {
                 query.fromUser = req.query.fromUser;
             }
-            const posts = await BasePost.find(query)
+            const postsQuery = BasePost.find(query)
                 .populate({ path: "fromUser", select: "callsign name" })
                 .populate({
                     path: "comments",
                     select: "fromUser content createdAt"
-                })
-                .limit(req.query?.limit)
-                .skip(req.query?.offset)
+                });
+
+            if (
+                typeof req.query?.limit === "string" &&
+                !Number.isNaN(parseInt(req.query.limit))
+            )
+                postsQuery.limit(parseInt(req.query.limit));
+
+            if (
+                typeof req.query?.offset === "string" &&
+                !Number.isNaN(parseInt(req.query.offset))
+            )
+                postsQuery.skip(parseInt(req.query.offset));
+
+            const posts = await postsQuery
                 .sort({ createdAt: -1 })
-                .sort({ "comments.createdAt": -1 });
+                .sort({ "comments.createdAt": -1 })
+                .exec();
+
             await Comment.populate(posts, {
                 path: "comments.fromUser",
                 model: "User",

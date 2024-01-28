@@ -39,6 +39,10 @@ import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
  *            type: string
  *            format: uri
  *            description: URL of the logo of this event
+ *          eqslUrl:
+ *            type: string
+ *            format: uri
+ *            description: URL of the eQSL image of this event (base image without callsign nor QSO data)
  *          joinRequests:
  *            type: array
  *            items:
@@ -70,6 +74,9 @@ export class EventClass {
 
     @prop({ required: false })
     public logoUrl?: string;
+
+    @prop({ required: false })
+    public eqslUrl?: string;
 
     @prop({ required: true, default: [], ref: "JoinRequest" })
     public joinRequests!: Ref<"JoinRequest">[];

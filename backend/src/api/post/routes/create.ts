@@ -1,17 +1,15 @@
 import { Request, Response, Router } from "express";
 import { checkSchema } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
-import { S3Client } from "../../aws";
+import { s3Client as s3 } from "../../aws";
 import { BasePost } from "../models";
 import { logger } from "../../../shared";
 import { createError, validate } from "../../helpers";
 import { Errors } from "../../errors";
-import createSchema from "./schemas/createSchema";
+import createSchema from "../schemas/createSchema";
 import User, { UserDoc } from "../../auth/models";
 
 const router = Router();
-
-const s3 = new S3Client();
 
 /**
  * @openapi

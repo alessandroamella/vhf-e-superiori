@@ -9,17 +9,9 @@ const router = Router();
 
 /**
  * @openapi
- * /event/{id}:
+ * /event:
  *  get:
- *    summary: Gets an existing event
- *    parameters:
- *      - in: path
- *        name: id
- *        schema:
- *          type: string
- *          format: ObjectId
- *        required: true
- *        description: ObjectId of the event to fetch
+ *    summary: Get an event, with the field joinRequests.callsign populated
  *    tags:
  *      - event
  *    responses:
@@ -42,13 +34,20 @@ router.get(
     validate,
     async (req: Request, res: Response) => {
         try {
-            const event = await EventModel.findOne(
-                { _id: req.params._id },
-                { joinRequests: 0, __v: 0, createdAt: 0, updatedAt: 0 }
-            );
-            res.json(event?.toObject());
+            const event = await EventModel.findOne({ _id: req.params._id })
+                .sort({ date: 1 })
+                .populate({
+                    path: "joinRequests",
+                    select: "fromUser isApproved",
+                    populate: {
+                        path: "fromUser",
+                        select: "callsign"
+                    }
+                })
+                .lean();
+            res.json(event);
         } catch (err) {
-            logger.error("Error while finding event");
+            logger.error("Error while finding events");
             logger.error(err);
             res.status(INTERNAL_SERVER_ERROR).json(createError());
         }

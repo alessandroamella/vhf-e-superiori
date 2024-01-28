@@ -7,6 +7,8 @@ import qrzRoutes from "../qrz/routes";
 import counterRoutes from "../counter/routes";
 import postRoutes from "../post/routes";
 import commentRoutes from "../comment/routes";
+import qsoRoutes from "../qso/routes";
+import eqslRoutes from "../eqsl/routes";
 import notFound from "./notFound";
 
 import errorHandler from "../middlewares/errorHandler";
@@ -86,6 +88,8 @@ router.use("/qrz", qrzRoutes);
 router.use("/counter", counterRoutes);
 router.use("/post", postRoutes);
 router.use("/comment", commentRoutes);
+router.use("/qso", qsoRoutes);
+router.use("/eqsl", eqslRoutes);
 
 router.use(errorHandler);
 router.use(notFound);

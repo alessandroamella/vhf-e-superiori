@@ -74,7 +74,7 @@ router.delete(
             const joinRequest = await JoinRequest.findOne(obj);
             if (!joinRequest) {
                 return res
-                    .status(400)
+                    .status(BAD_REQUEST)
                     .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
             }
 

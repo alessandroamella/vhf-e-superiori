@@ -9,6 +9,9 @@ import { it } from "date-fns/locale";
 import { CommentDoc } from "../api/comment/models";
 import { BasePostDoc } from "../api/post/models";
 import { qrz } from "../api/qrz";
+import { QsoDoc } from "../api/qso/models";
+import EqslPic from "../api/eqsl/eqsl";
+import { unlink } from "fs/promises";
 
 export class EmailService {
     private static transporter: nodemailer.Transporter | null = null;
@@ -271,6 +274,55 @@ export class EmailService {
 
         await EmailService.sendMail(message);
         logger.info("Comment mail sent to user " + fromUser.callsign);
+    }
+
+    // allega immagine in qso.imageHref
+    public static async sendEqslEmail(
+        qso: QsoDoc,
+        fromStation: UserDoc,
+        toEmail: string,
+        eqslBuffer?: Buffer
+    ) {
+        if (!qso.imageHref) {
+            throw new Error("Qso has no imageHref");
+        }
+        logger.debug(
+            "Sending eQSL email to " +
+                toEmail +
+                " with imageHref: " +
+                qso.imageHref
+        );
+        const eqslPic = new EqslPic(qso.imageHref);
+        await eqslPic.fetchImage(eqslBuffer);
+        const filePath = await eqslPic.saveImageToFile();
+        const callsignAlphanum = qso.callsign
+            .replace(/[^a-zA-Z0-9]/g, "")
+            .toLowerCase();
+        const message: Mail.Options = {
+            from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
+            to: toEmail,
+            subject: "eQSL",
+            html:
+                '<p>Ciao <span style="font-weight: 600">' +
+                qso.callsign +
+                '</span>, ecco la tua eQSL per il QSO con <span style="font-weight: 600">' +
+                fromStation.callsign +
+                "</span>!<br />" +
+                'Puoi vedere il tuo QSO <a href="https://www.vhfesuperiori.eu/eqsl/' +
+                qso._id +
+                '">qui</a>.<br />' +
+                'Buona giornata da <a href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>',
+            attachments: [
+                {
+                    filename: `eqsl_${callsignAlphanum}.png`,
+                    path: filePath
+                }
+            ]
+        };
+
+        await EmailService.sendMail(message);
+        logger.info("eQSL mail sent to user " + qso.callsign);
+        await unlink(filePath);
     }
 }
 

@@ -35,6 +35,11 @@ const createSchema: Schema = {
         // isURL: { options: [] },
         optional: true
     },
+    eqslUrl: {
+        trim: { options: [] },
+        // isURL: { options: [] },
+        optional: true
+    },
     joinStart: {
         isISO8601: { options: [] },
         trim: { options: [] }

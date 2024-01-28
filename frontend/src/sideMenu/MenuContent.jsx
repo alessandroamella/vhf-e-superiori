@@ -96,7 +96,6 @@ const MenuContent = ({ isSideBar }) => {
   useEffect(() => {
     if (joinOpen) {
       setMenuOpen(false);
-      if (window.location.pathname !== "/") navigate("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [joinOpen]);

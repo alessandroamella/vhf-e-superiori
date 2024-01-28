@@ -20,9 +20,10 @@ const requiredEnvs = [
     "AWS_SECRET_ACCESS_KEY",
     "BASE_TEMP_DIR",
     "VID_COMPRESS_TMP_FOLDER",
-    "FILE_UPLOAD_TMP_FOLDER"
+    "FILE_UPLOAD_TMP_FOLDER",
+    "QSL_CARD_TMP_FOLDER"
 ] as const;
-export type Env = typeof requiredEnvs[number];
+export type Env = (typeof requiredEnvs)[number];
 
 for (const e of requiredEnvs) {
     logger.debug("Checking env " + e);

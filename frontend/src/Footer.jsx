@@ -14,7 +14,7 @@ const Footer = () => {
         <span className="text-center">
           Sito sviluppato da Alessandro Amella{" "}
           <a
-            href="https://www.qrz.com/db/IU4QSG"
+            href="https://www.bitrey.it"
             target="_blank"
             rel="noopener noreferrer"
             className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"

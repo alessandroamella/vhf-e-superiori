@@ -23,21 +23,7 @@ const router = Router();
  *      content:
  *        application/json:
  *          schema:
- *            type: object
- *            properties:
- *              antenna:
- *                type: string
- *                minLength: 1
- *                maxLength: 300
- *                description: Info about the antenna used for this event
- *              forEvent:
- *                type: string
- *                format: objectid
- *                minLength: 1
- *                description: ObjectId of the event
- *            required:
- *              - antenna
- *              - forEvent
+ *            $ref: '#/components/schemas/JoinRequest'
  *    tags:
  *      - joinrequest
  *    responses:

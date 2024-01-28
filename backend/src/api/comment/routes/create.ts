@@ -22,20 +22,7 @@ const router = Router();
  *      content:
  *        application/json:
  *          schema:
- *           type: object
- *           required:
- *             - forPost
- *             - content
- *           properties:
- *             forPost:
- *               type: string
- *               format: objectid
- *               description: ObjectId of the post this comment is for
- *             content:
- *               type: string
- *               minLength: 1
- *               maxLength: 300
- *               description: Content of the comment
+ *            $ref: '#/components/schemas/Comment'
  *    tags:
  *      - comment
  *    responses:

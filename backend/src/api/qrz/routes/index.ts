@@ -4,7 +4,8 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { qrz } from "..";
 import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
-import { createError } from "../../helpers";
+import { createError, validate } from "../../helpers";
+import isLoggedIn from "../../middlewares/isLoggedIn";
 
 const router = Router();
 
@@ -50,6 +51,8 @@ router.get(
         .trim()
         .isAlphanumeric()
         .toUpperCase(),
+    validate,
+    isLoggedIn,
     async (req, res) => {
         try {
             const info = await qrz.getInfo(

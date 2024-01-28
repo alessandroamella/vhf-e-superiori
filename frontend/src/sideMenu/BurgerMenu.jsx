@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { JoinOpenContext, ReadyContext, SidebarOpenContext } from "..";
 import { reveal as BurgerMenuComponent } from "react-burger-menu";
 import MenuContent from "./MenuContent";
@@ -19,12 +19,9 @@ const BurgerMenu = () => {
   useEffect(() => {
     if (joinOpen) {
       setSidebarOpen(false);
-      if (window.location.pathname !== "/") navigate("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [joinOpen]);
-
-  const navigate = useNavigate();
 
   return (
     <div

@@ -1,11 +1,6 @@
 import { Router } from "express";
-import passport from "passport";
-import { Errors } from "../../errors";
-import jwt from "jsonwebtoken";
-import { envs } from "../../../shared/envs";
-import { AuthOptions } from "../shared";
 import { logger } from "../../../shared/logger";
-import { body, query } from "express-validator";
+import { query } from "express-validator";
 import { createError, validate } from "../../helpers";
 import User from "../models";
 import { INTERNAL_SERVER_ERROR } from "http-status";
@@ -25,6 +20,12 @@ const router = Router();
  *          minimum: 1
  *          maximum: 100
  *        description: Number of users to return (all users if not specified)
+ *        required: false
+ *      - in: query
+ *        name: sortByCallsign
+ *        schema:
+ *          type: boolean
+ *        description: Whether to sort by callsign instead of signup date
  *        required: false
  *    tags:
  *      - auth
@@ -53,6 +54,7 @@ const router = Router();
 router.get(
     "/",
     query("limit").optional().isInt({ min: 1 }).toInt(),
+    query("sortByCallsign").optional().isBoolean().toBoolean(),
     validate,
     async (req, res) => {
         try {
@@ -68,7 +70,12 @@ router.get(
                 }
             );
             if (limit) users.limit(limit);
-            res.json(await users.sort({ createdAt: -1 }).lean());
+            if (req.query.sortByCallsign && req.query.sortByCallsign === "true")
+                users.sort({ callsign: 1 });
+            else users.sort({ createdAt: -1 });
+
+            const result = await users.exec();
+            return res.json(result);
         } catch (err) {
             logger.error("Error in users all");
             logger.error(err);

@@ -138,6 +138,16 @@ const ViewPublished = () => {
                       <h2 className="font-bold text-xl">{callsign}</h2>
                     )}
                     {name && <p>{name}</p>}
+                    {/* if callsign, add qrz link */}
+                    {callsign && (
+                      <a
+                        href={`https://www.qrz.com/db/${callsign}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        qrz.com/{callsign}
+                      </a>
+                    )}
                   </div>
                 </div>
               </Card>

@@ -79,6 +79,7 @@ router.post(
         passport.authenticate(
             "signup",
             { session: false },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             async (_err: any, user: any) => {
                 if (_err || !user) {
                     logger.debug("Error in user signup");

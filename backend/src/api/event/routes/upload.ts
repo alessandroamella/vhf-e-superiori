@@ -9,6 +9,7 @@ import { UserDoc } from "../../auth/models";
 import { s3Client } from "../../aws";
 import { unlink } from "fs/promises";
 import path from "path";
+import { query } from "express-validator";
 
 const router = Router();
 
@@ -17,6 +18,19 @@ const router = Router();
  * /event/upload:
  *  post:
  *    summary: Upload event picture to S3
+ *    parameters:
+ *      - in: query
+ *        name: dontCompress
+ *        schema:
+ *          type: boolean
+ *        description: Whether to compress the image or not
+ *        required: false
+ *      - in: query
+ *        name: isEqsl
+ *        schema:
+ *          type: boolean
+ *        description: Whether the picture is an EQSL picture or not
+ *        required: false
  *    requestBody:
  *      required: true
  *      content:
@@ -66,6 +80,7 @@ const router = Router();
  */
 router.post(
     "/",
+    query("dontCompress").isBoolean().optional(),
     // body("pictures").isArray(),
     // validate,
     async (req: Request, res: Response) => {
@@ -116,31 +131,33 @@ router.post(
         }
 
         // Minify images here
-        try {
-            const minifiedImg = await sharp(f.tempFilePath)
-                .toFormat("jpeg")
-                .toBuffer();
+        if (!req.query.dontCompress) {
+            try {
+                const minifiedImg = await sharp(f.tempFilePath)
+                    .toFormat("jpeg")
+                    .toBuffer();
 
-            // Delete old file, replace new path as jpeg
-            await unlink(f.tempFilePath);
-            f.tempFilePath = path.format({
-                dir: path.dirname(f.tempFilePath),
-                name: path.basename(
-                    f.tempFilePath,
-                    path.extname(f.tempFilePath)
-                ),
-                ext: ".jpeg"
-            });
-            f.mimetype = "image/jpeg";
+                // Delete old file, replace new path as jpeg
+                await unlink(f.tempFilePath);
+                f.tempFilePath = path.format({
+                    dir: path.dirname(f.tempFilePath),
+                    name: path.basename(
+                        f.tempFilePath,
+                        path.extname(f.tempFilePath)
+                    ),
+                    ext: ".jpeg"
+                });
+                f.mimetype = "image/jpeg";
 
-            await sharp(minifiedImg)
-                .jpeg({ quality: 69 })
-                .toFile(f.tempFilePath);
-        } catch (err) {
-            logger.error("Error minifying image");
-            logger.error(err);
-            await unlink(f.tempFilePath);
-            return res.status(INTERNAL_SERVER_ERROR).json(createError());
+                await sharp(minifiedImg)
+                    .jpeg({ quality: 69 })
+                    .toFile(f.tempFilePath);
+            } catch (err) {
+                logger.error("Error minifying image");
+                logger.error(err);
+                await unlink(f.tempFilePath);
+                return res.status(INTERNAL_SERVER_ERROR).json(createError());
+            }
         }
 
         let awsPath: string;
@@ -153,7 +170,7 @@ router.post(
                 }),
                 filePath: f.tempFilePath,
                 mimeType: f.mimetype,
-                folder: "posters"
+                folder: req.query.isEqsl ? "eqsl" : "posters"
             });
             if (!awsPath) throw new Error("No awsPath in event picture upload");
             logger.info("Event picture file uploaded: " + f.name);

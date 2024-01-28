@@ -19,6 +19,7 @@ import NewPost from "./social/NewPost";
 import ViewPost from "./social/ViewPost";
 import ProgettiGianni from "./homepage/ProgettiGianni";
 import ViewPublished from "./social/ViewPublished";
+import QsoManager from "./event/QsoManager";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
@@ -40,6 +41,8 @@ const router = createBrowserRouter([
   { path: "/social/by/:id", element: <ViewPublished /> },
   { path: "/social/:id", element: <ViewPost /> },
   { path: "/eventmanager", element: <AdminManager /> },
+  { path: "/qsomanager/:id", element: <QsoManager /> },
+  { path: "/eqsl/:id", element: <QsoManager /> },
   // { path: "/regolamento", element: <Regolamento /> },
   // { path: "/info", element: <Info /> },
   { path: "/resetpw", element: <ResetPw /> },
@@ -108,7 +111,14 @@ export const errors = {
   MUST_BE_POST_OWNER: "Devi essere il proprietario del post per procedere",
   VIDEO_COMPRESS_NO_OUTPUT_PATH:
     "Percorso di output per compressione video non presente",
-  NO_CONTENT: "Nessun contenuto"
+  NO_CONTENT: "Nessun contenuto",
+  INVALID_QSO: "QSO non valido",
+  JOIN_REQUEST_NOT_APPROVED: "Richiesta di partecipazione non approvata",
+  QSO_NOT_FOUND: "QSO non trovato",
+  QSO_NOT_OWNED: "Devi essere il proprietario del QSO per procedere",
+  ERROR_CREATING_IMAGE: "Errore nella creazione dell'immagine",
+  NOT_AUTHORIZED_TO_EQSL: "Non sei autorizzato a creare una eQSL",
+  NO_IMAGE_TO_EQSL: "Nessuna immagine da usare per la eQSL"
 };
 
 export function getErrorStr(str) {

@@ -18,40 +18,7 @@ const router = Router();
  *      content:
  *        application/json:
  *          schema:
- *            type: object
- *            properties:
- *              name:
- *                type: string
- *                minLength: 1
- *                description: Name of the event
- *              description:
- *                type: string
- *                minLength: 1
- *                description: Description of the event
- *              band:
- *                type: string
- *                minLength: 1
- *                description: Radio band of the event
- *              date:
- *                type: string
- *                format: date-time
- *                description: Date of the event
- *              logoUrl:
- *                type: string
- *                format: uri
- *                description: URL of the logo of this event
- *              joinStart:
- *                type: string
- *                format: date-time
- *                description: Start date to join the event
- *              joinDeadline:
- *                type: string
- *                format: date-time
- *                description: Deadline to join the event
- *            required:
- *              - name
- *              - date
- *              - joinDeadline
+ *            $ref: '#/components/schemas/Event'
  *    tags:
  *      - event
  *    responses:
@@ -92,6 +59,7 @@ router.post(
                 description,
                 date,
                 logoUrl,
+                eqslUrl,
                 joinStart,
                 joinDeadline
             } = req.body;
@@ -102,6 +70,7 @@ router.post(
                 description,
                 date,
                 logoUrl,
+                eqslUrl,
                 joinStart,
                 joinDeadline
             });
@@ -111,6 +80,7 @@ router.post(
                 description,
                 date,
                 logoUrl,
+                eqslUrl,
                 joinStart,
                 joinDeadline
             });

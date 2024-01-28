@@ -30,9 +30,12 @@ import {
   FaDownload,
   FaPlusCircle,
   FaTimes,
-  FaUndo
+  FaUndo,
+  FaExternalLinkAlt,
+  FaClipboardCheck,
+  FaClipboard
 } from "react-icons/fa";
-import { createSearchParams, useNavigate } from "react-router-dom";
+import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import ReactHTMLTableToExcel from "react-html-table-to-excel";
 import { Navigation, Pagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -64,6 +67,7 @@ const AdminManager = () => {
     new Date().toISOString().slice(0, -14) + "T10:00"
   );
   const [logoUrl, setLogoUrl] = useState("/logo-min.png");
+  const [eqslUrl, setEqslUrl] = useState("/logo-min.png");
 
   const [joinRequests, setJoinRequests] = useState(null);
 
@@ -73,6 +77,7 @@ const AdminManager = () => {
   const [isCompressingPic, setIsCompressingPic] = useState(false);
 
   const pictureInputRef = createRef(null);
+  const eqslInputRef = createRef(null);
 
   useEffect(() => {
     async function getUsers() {
@@ -122,7 +127,8 @@ const AdminManager = () => {
         date,
         joinStart,
         joinDeadline,
-        logoUrl
+        logoUrl,
+        eqslUrl
       };
 
       const { data } = !eventEditing
@@ -193,6 +199,7 @@ const AdminManager = () => {
       formatInTimeZone(e.joinDeadline, "Europe/Rome", "yyyy-MM-dd'T'HH:mm")
     );
     setLogoUrl(e.logoUrl);
+    setEqslUrl(e.eqslUrl);
     setShowModal(true);
   }
 
@@ -354,10 +361,16 @@ const AdminManager = () => {
   const navigate = useNavigate();
 
   const [uploadedPic, setUploadedPic] = useState(null);
+  const [eqslPic, setEqslPic] = useState(null);
 
   function resetPicture() {
     pictureInputRef.current.value = null;
     setUploadedPic(null);
+  }
+
+  function resetEqsl() {
+    eqslInputRef.current.value = null;
+    setEqslPic(null);
   }
 
   const compressPic = f => {
@@ -424,7 +437,67 @@ const AdminManager = () => {
     }
   };
 
+  // don't have to compress eqsl
+  const handleEqslChange = async event => {
+    const { files } = event.target;
+    if (!files || files.length <= 0) return;
+    else if (files.length > 1) {
+      window.alert("Solo una foto per evento");
+      resetPicture();
+      return;
+    }
+    setDisabled(true);
+
+    try {
+      const formData = new FormData();
+      console.log({ files });
+      formData.append("content", files[0]);
+
+      const { data } = await axios.post("/api/event/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        },
+        timeout: 2 * 60 * 1000, // 2 minutes timeout,
+        params: { isEqsl: true, dontCompress: true }
+      });
+      console.log("filesPath", data);
+      setEqslPic(data.path);
+      window.alert(
+        "Path immagine: " +
+          data.path +
+          '\nRICORDA DI PREMERE IL TASTO "Applica modifiche"'
+      );
+      setEqslUrl(data.path);
+    } catch (err) {
+      window.alert("ERRORE upload immagine (outer): " + getErrorStr(err));
+    } finally {
+      setDisabled(false);
+    }
+  };
+
   const [hidePastEvents, setHidePastEvents] = useState(false);
+
+  const [copiedError, setCopiedError] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  let copyTimeout = null;
+  async function copyText() {
+    if (copyTimeout) clearTimeout(copyTimeout);
+    copyTimeout = setTimeout(() => {
+      setCopied(false);
+      setCopiedError(false);
+    }, 1000);
+    try {
+      await navigator.clipboard.writeText(
+        window.location.origin + "/qsomanager/" + eventEditing
+      );
+      setCopied(true);
+      setCopiedError(false);
+    } catch (err) {
+      console.log("copy error", err);
+      setCopiedError(true);
+    }
+  }
 
   return user === null || (user && !user.isAdmin) ? (
     navigate({
@@ -448,14 +521,27 @@ const AdminManager = () => {
           <Modal.Body>
             <div className="space-y-2 flex flex-col gap-4 overflow-y-auto max-h-[60vh] pr-4">
               <div className="grid grid-cols-1 md:grid-cols-2 md:gap-2">
-                <LazyLoadImage
-                  src={logoUrl}
-                  alt="Logo URL"
-                  className="w-96 max-w-full max-h-96 object-contain mx-auto"
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div className="flex flex-col items-center">
+                    <p className="mb-2 block">Locandina</p>
+                    <LazyLoadImage
+                      src={logoUrl}
+                      alt="Logo URL"
+                      className="w-96 max-w-full max-h-96 object-contain m-auto drop-shadow-lg"
+                    />
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <p className="mb-2 block">EQSL</p>
+                    <LazyLoadImage
+                      src={eqslUrl}
+                      alt="EQSL URL"
+                      className="w-96 max-w-full max-h-96 object-contain m-auto drop-shadow-lg"
+                    />
+                  </div>
+                </div>
                 <div className="my-auto">
                   <div className="mb-2 block">
-                    <Label htmlFor="event-logo-url" value="URL logo" />
+                    <Label htmlFor="event-logo-url" value="URL locandina" />
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -485,7 +571,9 @@ const AdminManager = () => {
                     <div className="flex items-center gap-2">
                       <FileInput
                         disabled={disabled}
-                        helperText={isCompressingPic && <Spinner />}
+                        helperText={
+                          (isCompressingPic || disabled) && <Spinner />
+                        }
                         id="uploadedPic"
                         accept="image/*"
                         onChange={handlePictureChange}
@@ -501,8 +589,110 @@ const AdminManager = () => {
                       </Button>
                     </div>
                   </div>
+
+                  <div className="my-auto">
+                    <div className="mb-2 block">
+                      <Label htmlFor="event-eqsl-url" value="URL EQSL" />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <TextInput
+                        id="event-eqsl-url"
+                        type="text"
+                        required={true}
+                        className="w-full"
+                        value={eqslUrl}
+                        onChange={e => setEqslUrl(e.target.value)}
+                        disabled={disabled}
+                      />
+
+                      <Button
+                        onClick={() => setEqslUrl("/logo-min.png")}
+                        disabled={disabled}
+                      >
+                        Resetta
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="my-4">
+                    <Label
+                      htmlFor="eqslPic"
+                      value="EQSL (MAX 10MB COMPRESSA)"
+                    />
+                    <div className="flex items-center gap-2">
+                      <FileInput
+                        disabled={disabled}
+                        helperText={disabled && <Spinner />}
+                        id="eqslPic"
+                        accept="image/*"
+                        onChange={handleEqslChange}
+                        className="w-full"
+                        ref={eqslInputRef}
+                      />
+                      <Button
+                        color="dark"
+                        onClick={resetEqsl}
+                        disabled={disabled || !eqslPic}
+                      >
+                        <FaUndo />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {eventEditing ? (
+                <div className="flex flex-col">
+                  <hr className="mb-2" />
+                  <p>URL da condividere con stazioni attivatrici:</p>
+
+                  <div className="flex items-center gap-2">
+                    <TextInput
+                      className="font-bold w-full"
+                      color={
+                        copied ? "success" : copiedError ? "failure" : "light"
+                      }
+                      onClick={copyText}
+                      onChange={() => {}}
+                      value={
+                        window.location.origin + "/qsomanager/" + eventEditing
+                      }
+                    />
+                    <Button
+                      onClick={copyText}
+                      size="sm"
+                      color={
+                        copied ? "success" : copiedError ? "failure" : "dark"
+                      }
+                      disabled={copied}
+                    >
+                      {copied ? <FaClipboardCheck /> : <FaClipboard />}
+                      <span className="ml-1">
+                        {copied ? "Copiato" : copiedError ? "Errore" : "Copia"}
+                      </span>
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-2 mt-4">
+                    <Link
+                      to={"/qsomanager/" + eventEditing}
+                      className="flex items-center gap-2 hover:text-red-600 transition-colors"
+                    >
+                      <FaExternalLinkAlt />
+                      <span>Apri QSO Manager</span>
+                    </Link>
+                  </div>
+                  <hr className="mt-2" />
+                </div>
+              ) : (
+                <p>
+                  <span className="font-bold">QSO Manager</span>:{" "}
+                  <span className="font-normal">
+                    disponibile solo dopo la creazione dell'evento
+                  </span>
+                </p>
+              )}
+
               <div>
                 <div className="mb-2 block">
                   <Label htmlFor="event-name" value="Nome" />

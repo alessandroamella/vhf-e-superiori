@@ -67,6 +67,11 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert }) => {
     }
   }
 
+  const lastComment =
+    Array.isArray(post?.comments) &&
+    post.comments.length > 0 &&
+    post.comments[post.comments.length - 1];
+
   return (
     <div
       onClick={() => post && navigate(`/social/${post?._id}`)}
@@ -180,22 +185,19 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert }) => {
       {Array.isArray(post?.comments) && post?.comments.length > 0 && (
         <div className="border-t p-2 border-gray-100 dark:border-gray-700">
           {/* <p className="text-sm font-bold tracking-tighter">Commenti</p> */}
-          <div
-            key={post.comments[0]._id}
-            className="flex items-center gap-2 p-2"
-          >
+          <div key={lastComment._id} className="flex items-center gap-2 p-2">
             <div className="flex flex-col w-full">
               <div className="flex justify-between w-full">
                 <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                  {post.comments[0].fromUser?.callsign}
+                  {lastComment.fromUser?.callsign}
                 </p>
                 <p className="text-sm text-gray-600 darkt:text-gray-400">
-                  <TimeAgo createdAt={post.comments[0].createdAt} />
+                  <TimeAgo createdAt={lastComment.createdAt} />
                 </p>
               </div>
 
               <p className="text-xs font-medium text-gray-500 dark:text-gray-300">
-                {post.comments[0].content}
+                {lastComment.content}
               </p>
             </div>
           </div>

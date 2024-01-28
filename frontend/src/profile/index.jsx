@@ -164,6 +164,7 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("check user", user);
     if (user === null)
       return navigate({
         pathname: "/login",

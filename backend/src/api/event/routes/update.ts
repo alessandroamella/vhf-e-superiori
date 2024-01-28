@@ -27,32 +27,7 @@ const router = Router();
  *      content:
  *        application/json:
  *          schema:
- *            type: object
- *            properties:
- *              name:
- *                type: string
- *                minLength: 1
- *                description: Name of the event
- *              description:
- *                type: string
- *                minLength: 1
- *                description: Description of the event
- *              band:
- *                type: string
- *                minLength: 1
- *                description: Radio band of the event
- *              date:
- *                type: string
- *                format: date-time
- *                description: Date of the event
- *              joinStart:
- *                type: string
- *                format: date-time
- *                description: Start date to join the event
- *              joinDeadline:
- *                type: string
- *                format: date-time
- *                description: Deadline to join the event
+ *            $ref: '#/components/schemas/Event'
  *    tags:
  *      - event
  *    responses:
@@ -94,6 +69,7 @@ router.put(
                 description,
                 date,
                 logoUrl,
+                eqslUrl,
                 joinStart,
                 joinDeadline
             } = req.body;
@@ -105,6 +81,7 @@ router.put(
                     description,
                     date,
                     logoUrl,
+                    eqslUrl,
                     joinStart,
                     joinDeadline
                 },
