@@ -20,6 +20,7 @@ import ViewPost from "./social/ViewPost";
 import ProgettiGianni from "./homepage/ProgettiGianni";
 import ViewPublished from "./social/ViewPublished";
 import QsoManager from "./event/QsoManager";
+import Eqsl from "./event/Eqsl";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
@@ -42,7 +43,7 @@ const router = createBrowserRouter([
   { path: "/social/:id", element: <ViewPost /> },
   { path: "/eventmanager", element: <AdminManager /> },
   { path: "/qsomanager/:id", element: <QsoManager /> },
-  { path: "/eqsl/:id", element: <QsoManager /> },
+  { path: "/eqsl/:id", element: <Eqsl /> },
   // { path: "/regolamento", element: <Regolamento /> },
   // { path: "/info", element: <Info /> },
   { path: "/resetpw", element: <ResetPw /> },

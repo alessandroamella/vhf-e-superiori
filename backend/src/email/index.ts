@@ -301,7 +301,7 @@ export class EmailService {
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
             to: toEmail,
-            subject: "eQSL",
+            subject: "eQSL per il QSO con " + fromStation.callsign,
             html:
                 '<p>Ciao <span style="font-weight: 600">' +
                 qso.callsign +
