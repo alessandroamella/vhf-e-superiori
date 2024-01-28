@@ -38,8 +38,6 @@ const QsoManager = () => {
 
   const [hasPermission, setHasPermission] = useState(false);
 
-  const [eqsl, setEqsl] = useState(null);
-
   const isEventStation =
     event &&
     user &&
@@ -212,7 +210,6 @@ const QsoManager = () => {
 
     setDisabled(true);
 
-    let qso = null;
     try {
       const obj = {
         // fromStation,
@@ -233,7 +230,6 @@ const QsoManager = () => {
 
       const { data } = await axios.post("/api/qso", obj);
       console.log("QSO", data);
-      qso = data;
 
       setAlert({
         color: "success",
@@ -260,20 +256,6 @@ const QsoManager = () => {
       // setUser(null);
     }
     setDisabled(false);
-
-    if (!qso) return;
-    try {
-      const { data } = await axios.post("/api/eqsl", {
-        qso: qso._id
-      });
-      console.log("EQSL", data);
-      setEqsl(data?.href || null);
-    } catch (err) {
-      console.log(err.response?.data?.err || err);
-      window.alert(
-        "ERRORE crea EQSL: " + getErrorStr(err?.response?.data?.err || err)
-      );
-    }
   }
 
   async function deleteQso(qso) {
@@ -582,16 +564,6 @@ const QsoManager = () => {
                         </Button>
                       </div>
                     </form>
-                    {/* anteprima EQSL */}
-                    {eqsl && (
-                      <div className="mt-4 flex justify-center">
-                        <LazyLoadImage
-                          src={eqsl}
-                          alt="EQSL"
-                          className="w-96 max-w-full max-h-96 object-contain m-auto drop-shadow-lg"
-                        />
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
