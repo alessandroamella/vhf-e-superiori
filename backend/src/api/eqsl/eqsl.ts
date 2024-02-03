@@ -93,7 +93,16 @@ class EqslPic {
         )} ora:${moment(qso.qsoDate).format("HH:mm")} modo:${qso.mode} freq:${
             qso.frequency
         }`.toUpperCase();
-        const args = [
+
+        // offset2 should be height / 2.35
+        const height = await sharp(filePath)
+            .metadata()
+            .then(data => data.height);
+        const offset2 = height
+            ? Math.round(Math.min(height, 1920) / 2.35)
+            : 460;
+
+        const args: string[] = [
             tempPath, // temp image with text
             outPath, // output image
             path.join(process.cwd(), "fonts/coors.ttf"), // font path
@@ -105,7 +114,7 @@ class EqslPic {
             "black", // text stroke color
             text2, // text 2
             path.join(process.cwd(), "fonts/Roboto-Black.ttf"), // font path 2
-            "460", // +y offset from center 2
+            offset2.toString(), // +y offset from center 2
             "55", // font size 2
             "black", // text color 2
             "white" // text stroke color 2
