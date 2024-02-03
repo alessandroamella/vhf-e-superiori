@@ -107,7 +107,7 @@ class EqslPic {
             outPath, // output image
             path.join(process.cwd(), "fonts/coors.ttf"), // font path
             "100", // +y offset from center
-            qso.callsign, // text
+            qso.callsign.toLowerCase(), // TODO not lowercase if other font
             filePath, // input image (eQSL card template)
             "300", // font size
             "green", // text color
