@@ -66,7 +66,8 @@ export const errors = {
   QRZ_NO_KEY: "Chiave di QRZ non trovata (server)",
   QRZ_OM_NOT_FOUND: "Utente non trovato su QRZ",
   QTH_NOT_FOUND: "QTH non trovato",
-  INVALID_OBJECT_ID: "ObjectId non valido",
+  INVALID_OBJECT_ID:
+    "ObjectId non valido. Il documento potrebbe non esistere o essere stato cancellato",
   INVALID_LOGIN: "Login non valido",
   NOT_LOGGED_IN: "Devi fare il login per procedere",
   MALFORMED_REQUEST_BODY: "Corpo della richiesta malformato",

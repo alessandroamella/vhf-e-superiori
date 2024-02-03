@@ -77,7 +77,7 @@ export class EmailService {
                 "</span>, abbiamo ricevuto la tua richiesta di reset della password.<br />" +
                 'Se non sei stato tu, faccelo sapere ad <a style="text-decoration: none;" href="mailto:alexlife@tiscali.it">alexlife@tiscali.it</a>, altrimenti<br />' +
                 `<br /><span style="margin-top: 1rem; margin-bottom: 1rem; font-size: 1.2rem">Altrimenti, procedi alla verifica del tuo account <a href="https://www.vhfesuperiori.eu/resetpw?user=${user._id}&code=${code}&callsign=${user.callsign}" style="font-weight: 800">cliccando qui</a>.</span><br /><br />` +
-                'Buona giornata da <a style="text-decoration: none;" href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>'
+                'Buona giornata da <a style="text-decoration: none;" href="https://www.vhfesuperiori.eu">vhfesuperiori.eu</a>!</p>'
         };
 
         await EmailService.sendMail(message);
@@ -105,7 +105,7 @@ export class EmailService {
                 (isNewUser ? "registrazione" : "cambio email") +
                 '.<br />Se non sei stato tu, faccelo sapere ad <a style="text-decoration: none;" href="mailto:alexlife@tiscali.it">alexlife@tiscali.it</a>, altrimenti<br />' +
                 `<br /><span style="margin-top: 1rem; margin-bottom: 1rem; font-size: 1.2rem">procedi alla verifica del tuo account <a href="https://www.vhfesuperiori.eu/api/auth/verify/${user._id}/${code}" style="font-weight: 800">cliccando qui</a>.</span><br /><br />` +
-                'Buona giornata da <a style="text-decoration: none;" href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>'
+                'Buona giornata da <a style="text-decoration: none;" href="https://www.vhfesuperiori.eu">vhfesuperiori.eu</a>!</p>'
         };
 
         await EmailService.sendMail(message);
@@ -136,7 +136,7 @@ export class EmailService {
                 'Potrai essere ricontattato nei giorni a seguire al numero indicato durante la registrazione (<span style="font-weight: 600">' +
                 user.phoneNumber +
                 "</span>) da un amministratore.<br />" +
-                'Buona giornata da <a href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>'
+                'Buona giornata da <a href="https://www.vhfesuperiori.eu">vhfesuperiori.eu</a>!</p>'
         };
 
         await EmailService.sendMail(message);
@@ -178,7 +178,7 @@ export class EmailService {
                     locale: it
                 }) +
                 "</span>.<br />" +
-                'Buona giornata da <a href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>'
+                'Buona giornata da <a href="https://www.vhfesuperiori.eu">vhfesuperiori.eu</a>!</p>'
         };
 
         await EmailService.sendMail(message);
@@ -269,7 +269,7 @@ export class EmailService {
                 "#comment-" +
                 comment._id +
                 '">qui</a>.<br />' +
-                'Buona giornata da <a href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>'
+                'Buona giornata da <a href="https://www.vhfesuperiori.eu">vhfesuperiori.eu</a>!</p>'
         };
 
         await EmailService.sendMail(message);
@@ -311,7 +311,7 @@ export class EmailService {
                 'Puoi vedere il tuo QSO <a href="https://www.vhfesuperiori.eu/eqsl/' +
                 qso._id +
                 '">qui</a>.<br />' +
-                'Buona giornata da <a href="https://www.vhfesuperiori.eu">www.vhfesuperiori.eu</a>!</p>',
+                'Grazie per aver partecipato all\'evento e buona giornata da <a href="https://www.vhfesuperiori.eu">vhfesuperiori.eu</a>!</p>',
             attachments: [
                 {
                     filename: `eqsl_${callsignAlphanum}.png`,

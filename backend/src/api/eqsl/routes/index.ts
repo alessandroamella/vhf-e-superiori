@@ -18,7 +18,7 @@ const router = Router();
  * @openapi
  * /api/eqsl:
  *  post:
- *    summary: Create a new eQSL image
+ *    summary: (Forcibly) create a new eQSL image
  *    requestBody:
  *      required: true
  *      content:
@@ -45,7 +45,7 @@ const router = Router();
  *                  type: string
  *                  format: uri
  *      '401':
- *        description: Not an admin
+ *        description: Not authorized to create eQSL
  *        content:
  *          application/json:
  *            schema:
@@ -98,7 +98,7 @@ router.post(
 
             if (
                 !user.isAdmin &&
-                moment().add(1, "days").isAfter(joinRequest.forEvent.date)
+                moment().subtract(1, "days").isAfter(joinRequest.forEvent.date)
             ) {
                 logger.debug(
                     "User is not admin and event is over 1 day in the past"
@@ -119,7 +119,8 @@ router.post(
             await eqslPic.fetchImage();
             await eqslPic.addQsoInfo(qso);
             const href = await eqslPic.uploadImage(
-                (req.user as unknown as UserDoc)._id.toString()
+                (req.user as unknown as UserDoc)._id.toString(),
+                true
             );
 
             res.status(200).json({ href });

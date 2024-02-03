@@ -8,8 +8,8 @@ import isLoggedIn from "../../middlewares/isLoggedIn";
 
 const router = Router();
 
-router.use("/", allRoute);
 router.use("/", getRoute);
+router.use("/", allRoute);
 router.use("/", isLoggedIn, allRoute);
 router.use("/", isLoggedIn, createRoute);
 router.use("/", isLoggedIn, deleteRoute);

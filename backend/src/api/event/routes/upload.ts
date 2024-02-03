@@ -20,10 +20,12 @@ const router = Router();
  *    summary: Upload event picture to S3
  *    parameters:
  *      - in: query
- *        name: dontCompress
+ *        name: quality
  *        schema:
- *          type: boolean
- *        description: Whether to compress the image or not
+ *          type: integer
+ *          minimum: 1
+ *          maximum: 100
+ *        description: Quality of the picture (defaults to 69)
  *        required: false
  *      - in: query
  *        name: isEqsl
@@ -80,7 +82,7 @@ const router = Router();
  */
 router.post(
     "/",
-    query("dontCompress").isBoolean().optional(),
+    query("quality").isInt({ min: 1, max: 100 }).optional(),
     // body("pictures").isArray(),
     // validate,
     async (req: Request, res: Response) => {
@@ -131,33 +133,31 @@ router.post(
         }
 
         // Minify images here
-        if (!req.query.dontCompress) {
-            try {
-                const minifiedImg = await sharp(f.tempFilePath)
-                    .toFormat("jpeg")
-                    .toBuffer();
+        const quality = parseInt(req.query.quality as string) || 69;
 
-                // Delete old file, replace new path as jpeg
-                await unlink(f.tempFilePath);
-                f.tempFilePath = path.format({
-                    dir: path.dirname(f.tempFilePath),
-                    name: path.basename(
-                        f.tempFilePath,
-                        path.extname(f.tempFilePath)
-                    ),
-                    ext: ".jpeg"
-                });
-                f.mimetype = "image/jpeg";
+        try {
+            const minifiedImg = await sharp(f.tempFilePath)
+                .toFormat("jpeg")
+                .toBuffer();
 
-                await sharp(minifiedImg)
-                    .jpeg({ quality: 69 })
-                    .toFile(f.tempFilePath);
-            } catch (err) {
-                logger.error("Error minifying image");
-                logger.error(err);
-                await unlink(f.tempFilePath);
-                return res.status(INTERNAL_SERVER_ERROR).json(createError());
-            }
+            // Delete old file, replace new path as jpeg
+            await unlink(f.tempFilePath);
+            f.tempFilePath = path.format({
+                dir: path.dirname(f.tempFilePath),
+                name: path.basename(
+                    f.tempFilePath,
+                    path.extname(f.tempFilePath)
+                ),
+                ext: ".jpeg"
+            });
+            f.mimetype = "image/jpeg";
+
+            await sharp(minifiedImg).jpeg({ quality }).toFile(f.tempFilePath);
+        } catch (err) {
+            logger.error("Error minifying image");
+            logger.error(err);
+            await unlink(f.tempFilePath);
+            return res.status(INTERNAL_SERVER_ERROR).json(createError());
         }
 
         let awsPath: string;

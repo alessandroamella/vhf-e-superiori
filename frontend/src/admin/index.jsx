@@ -458,7 +458,7 @@ const AdminManager = () => {
           "Content-Type": "multipart/form-data"
         },
         timeout: 2 * 60 * 1000, // 2 minutes timeout,
-        params: { isEqsl: true, dontCompress: true }
+        params: { isEqsl: true, quality: 80 } // higher quality for eqsl
       });
       console.log("filesPath", data);
       setEqslPic(data.path);
