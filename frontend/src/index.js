@@ -63,6 +63,7 @@ export const errors = {
   UNKNOWN_ERROR: "Errore sconosciuto",
   MISSING_ENV: "Variabile d'ambiente mancante (server)",
   ALREADY_REGISTERED: "Utente già registrato (fai il login)",
+  INVALID_LOCATION: "Posizione non valida",
   QRZ_NO_KEY: "Chiave di QRZ non trovata (server)",
   QRZ_OM_NOT_FOUND: "Utente non trovato su QRZ",
   QTH_NOT_FOUND: "QTH non trovato",
@@ -120,7 +121,10 @@ export const errors = {
   QSO_NOT_OWNED: "Devi essere il proprietario del QSO per procedere",
   ERROR_CREATING_IMAGE: "Errore nella creazione dell'immagine",
   NOT_AUTHORIZED_TO_EQSL: "Non sei autorizzato a creare una eQSL",
-  NO_IMAGE_TO_EQSL: "Nessuna immagine da usare per la eQSL"
+  NO_IMAGE_TO_EQSL: "Nessuna immagine da usare per la eQSL",
+  INVALID_ADIF: "File ADIF non valido",
+  INVALID_NAME: "Nome non valido",
+  INVALID_CALLSIGN: "Nominativo non valido"
 };
 
 export function getErrorStr(str) {

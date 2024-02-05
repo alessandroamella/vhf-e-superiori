@@ -5,7 +5,6 @@ import { qrz } from "..";
 import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
-import isLoggedIn from "../../middlewares/isLoggedIn";
 
 const router = Router();
 
@@ -52,7 +51,6 @@ router.get(
         .isAlphanumeric()
         .toUpperCase(),
     validate,
-    isLoggedIn,
     async (req, res) => {
         try {
             const info = await qrz.getInfo(

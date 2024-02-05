@@ -101,6 +101,21 @@ export class UserClass {
     @prop({ required: true, minlength: 1, maxlength: 10, uppercase: true })
     public callsign!: string; // without prefix or suffix
 
+    @prop({ required: false })
+    public address?: string;
+
+    @prop({ required: false })
+    public city?: string;
+
+    @prop({ required: false })
+    public province?: string;
+
+    @prop({ required: false })
+    public lat?: number;
+
+    @prop({ required: false })
+    public lon?: number;
+
     @prop({ required: true, minlength: 1, maxlength: 50 })
     public name!: string;
 

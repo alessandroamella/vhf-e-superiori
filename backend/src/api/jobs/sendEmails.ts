@@ -29,14 +29,6 @@ async function sendEqslEmail() {
             .sort({ createdAt: 1 })
             .exec();
 
-        // DEBUG
-        // const qsos = [
-        //     (await Qso.findOne()
-        //         .populate("fromStation")
-        //         .populate("event")
-        //         .exec()) as any
-        // ];
-
         logger.info(`Found ${qsos.length} QSOs to send`);
 
         if (qsos.some(qso => !isDocument(qso.fromStation))) {
@@ -103,7 +95,7 @@ async function sendEqslEmail() {
                 logger.debug(
                     "Adding QSO info to image buffer for QSO " + qso._id
                 );
-                await eqslPic.addQsoInfo(qso, imgFilePath);
+                await eqslPic.addQsoInfo(qso, fromStation, imgFilePath);
                 const href = await eqslPic.uploadImage(
                     fromStation._id.toString()
                 );
@@ -123,6 +115,7 @@ async function sendEqslEmail() {
                 eqslBuff ?? undefined
             );
             qso.emailSent = true;
+            qso.emailSentDate = new Date();
             await qso.save();
 
             logger.info(`Sent eQSL email to ${email} for QSO ${qso._id}`);

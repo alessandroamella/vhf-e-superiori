@@ -121,6 +121,38 @@ async function cleanUnusedFiles() {
         logger.error(err);
     }
 
+    // delete all inside ./eqslpreview
+    try {
+        const _s3EqslPreview = await s3Client.listFiles({
+            folder: "eqslpreview"
+        });
+        const s3EqslPreview = _s3EqslPreview.Contents?.map(c => c.Key).filter(
+            (f): f is string => typeof f === "string"
+        );
+
+        if (!s3EqslPreview) {
+            logger.error(
+                "Error while listing files in AWS S3 in cleanUnusedFiles"
+            );
+            return;
+        }
+
+        if (s3EqslPreview.length > 0) {
+            logger.warn("Deleting unused files in AWS eqslpreview:");
+            logger.warn(s3EqslPreview);
+
+            await s3Client.deleteMultiple({
+                filePaths: s3EqslPreview
+            });
+            logger.info("Unused files deleted successfully");
+        } else {
+            logger.info("No files to delete from AWS eqslpreview");
+        }
+    } catch (err) {
+        logger.error("Error while deleting unused files from AWS eqslpreview");
+        logger.error(err);
+    }
+
     logger.info("Cron Job to delete unused files on AWS S3 completed");
 }
 

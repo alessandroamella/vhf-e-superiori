@@ -66,12 +66,12 @@ router.post(
                 throw new Error("User not found in QSO create");
             }
 
-            let fromStation = user._id;
+            const _fromStation: UserDoc = user;
             if (user.isAdmin && req.body.fromStation) {
-                const _fromStation = await User.findOne({
+                const fromStation = await User.findOne({
                     _id: req.body.fromStation
                 });
-                if (!_fromStation) {
+                if (!fromStation) {
                     logger.debug(
                         `User ${req.body.fromStation} not found in QSO admin create`
                     );
@@ -79,7 +79,6 @@ router.post(
                         .status(BAD_REQUEST)
                         .json(createError(Errors.USER_NOT_FOUND));
                 }
-                fromStation = _fromStation._id;
             } else {
                 // find join request with same event and user to check for permissions
                 const joinRequest = await JoinRequest.findOne({
@@ -107,7 +106,16 @@ router.post(
                 }
             }
 
+            if (!_fromStation.city || !_fromStation.province) {
+                logger.debug("User address not found in QSO create");
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.INVALID_LOCATION));
+            }
+
             const { callsign, event, frequency, mode, qsoDate } = req.body;
+
+            const fromStation = _fromStation._id.toString();
 
             logger.info("Creating QDO with following params");
             logger.info({
@@ -116,7 +124,11 @@ router.post(
                 event,
                 frequency,
                 mode,
-                qsoDate
+                qsoDate,
+                fromStationCity: _fromStation.city,
+                fromStationProvince: _fromStation.province,
+                fromStationLat: _fromStation.lat,
+                fromStationLon: _fromStation.lon
             });
             const qso = new Qso({
                 fromStation,
@@ -124,7 +136,11 @@ router.post(
                 event,
                 frequency,
                 mode,
-                qsoDate
+                qsoDate,
+                fromStationCity: _fromStation.city,
+                fromStationProvince: _fromStation.province,
+                fromStationLat: _fromStation.lat,
+                fromStationLon: _fromStation.lon
             });
             try {
                 await qso.validate();

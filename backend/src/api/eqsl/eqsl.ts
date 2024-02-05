@@ -1,5 +1,4 @@
 import axios, { isAxiosError } from "axios";
-// import Jimp from "jimp";
 import { envs, logger } from "../../shared";
 import { s3Client } from "../aws";
 import path from "path";
@@ -9,6 +8,7 @@ import { QsoDoc } from "../qso/models";
 import moment from "moment";
 import { existsSync } from "fs";
 import { unlink } from "fs/promises";
+import { UserDoc } from "../auth/models";
 
 class EqslPic {
     private href: string | null = null;
@@ -72,11 +72,17 @@ class EqslPic {
 
     public async addQsoInfo(
         qso: QsoDoc,
+        fromStation: UserDoc,
         templatePath: string | null = null
     ): Promise<void> {
         if (!this.image) {
             throw new Error("Image not buffered in addQsoInfo");
+        } else if (!fromStation.city || !fromStation.province) {
+            throw new Error(
+                "City or province not set in fromStation in addQsoInfo"
+            );
         }
+
         // spawn subprocess with ImageMagick
         const tempDir = path.join(envs.BASE_TEMP_DIR, envs.QSL_CARD_TMP_FOLDER);
         const epoch = moment(qso.qsoDate).unix();
@@ -99,25 +105,36 @@ class EqslPic {
             .metadata()
             .then(data => data.height);
         const offset2 = height
-            ? Math.round(Math.min(height, 1920) / 2.35)
+            ? Math.round(Math.min(height, 1920) / 2.15)
             : 460;
+
+        const text3 = `Da: ${fromStation.callsign} (${fromStation.city}, ${fromStation.province})`;
+
+        // offset3 should be height / 2.1
+        const offset3 = height ? Math.round(Math.min(height, 1920) / 2.5) : 500;
 
         const args: string[] = [
             tempPath, // temp image with text
             outPath, // output image
             path.join(process.cwd(), "fonts/coors.ttf"), // font path
-            "100", // +y offset from center
+            "69", // +y offset from center
             qso.callsign.toLowerCase(), // TODO not lowercase if other font
             filePath, // input image (eQSL card template)
-            "300", // font size
-            "green", // text color
+            "350", // font size
+            "#f05252", // text color
             "black", // text stroke color
             text2, // text 2
             path.join(process.cwd(), "fonts/Roboto-Black.ttf"), // font path 2
             offset2.toString(), // +y offset from center 2
             "55", // font size 2
             "black", // text color 2
-            "white" // text stroke color 2
+            "white", // text stroke color 2
+            text3, // text 3
+            path.join(process.cwd(), "fonts/Roboto-Black.ttf"), // font path 3
+            offset3.toString(), // +y offset from center 3
+            "69", // font size 3
+            "black", // text color 3
+            "white" // text stroke color 3
         ];
         logger.debug(
             "Calling ImageMagick to add text to eQSL image with args: "
@@ -175,7 +192,8 @@ class EqslPic {
 
     public async uploadImage(
         stationId: string,
-        isEqslTemplate = false
+        isEqslTemplate = false,
+        isPreview = false
     ): Promise<string> {
         if (!this.image) {
             throw new Error("Image not fetched in uploadImage");
@@ -204,7 +222,11 @@ class EqslPic {
                 }),
                 filePath,
                 mimeType,
-                folder: isEqslTemplate ? "eqslbase" : "eqsl"
+                folder: isPreview
+                    ? "eqslpreview"
+                    : isEqslTemplate
+                    ? "eqslbase"
+                    : "eqsl"
             });
             if (!awsPath) throw new Error("No awsPath in eQSL picture upload");
             logger.info("eQSL picture file uploaded: " + awsPath);

@@ -3,8 +3,8 @@
 # PER QUALCHE MOTIVO TEMP IMAGE VUOLE PNG E NON JPG
 
 # Verifica la presenza dei parametri richiesti
-if [ "$#" -ne 15 ]; then
-    echo "Usage: $0 <temp_image> <final_image> <font_path> <offset> <text> <bg_image> <font_size> <font_color> <stroke_color> <text2> <font_path2> <offset2> <font_size2> <font_color2> <stroke_color2>"
+if [ "$#" -ne 21 ]; then
+    echo "Usage: $0 <temp_image> <final_image> <font_path> <offset> <text> <bg_image> <font_size> <font_color> <stroke_color> <text2> <font_path2> <offset2> <font_size2> <font_color2> <stroke_color2> <text3> <font_path3> <offset3> <font_size3> <font_color3> <stroke_color3>"
     exit 1
 fi
 
@@ -23,6 +23,12 @@ offset2="${12}"
 font_size2="${13}"
 font_color2="${14}"
 stroke_color2="${15}"
+text3="${16}"
+font_path3="${17}"
+offset3="${18}"
+font_size3="${19}"
+font_color3="${20}"
+stroke_color3="${21}"
 
 max_width=1920
 
@@ -46,6 +52,9 @@ convert -size "$width"x"$height" xc:none -fill "$font_color" -font "$font_path" 
 
 # Aggiungi il secondo testo senza ombra
 convert "$temp_image" -fill "$font_color2" -font "$font_path2" -pointsize "$font_size2" -gravity center -stroke "$stroke_color2" -strokewidth 1 -annotate +0+"$offset2" "$text2" "$temp_image"
+
+# Aggiungi il terzo testo senza ombra
+convert "$temp_image" -fill "$font_color3" -font "$font_path3" -pointsize "$font_size3" -gravity center -stroke "$stroke_color3" -strokewidth 1 -annotate +0+"$offset3" "$text3" "$temp_image"
 
 composite -gravity center -dissolve 100% -geometry +0+0 "$temp_image" "$bg_image_2" "$final_image"
 

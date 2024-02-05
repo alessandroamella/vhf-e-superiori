@@ -18,7 +18,12 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { formatInTimeZone } from "date-fns-tz";
 import { getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
-import { createSearchParams, useNavigate, useParams } from "react-router-dom";
+import {
+  Link,
+  createSearchParams,
+  useNavigate,
+  useParams
+} from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { FaCircle, FaInfoCircle, FaPlusCircle, FaSync } from "react-icons/fa";
 import { useCookies } from "react-cookie";
@@ -37,6 +42,8 @@ const QsoManager = () => {
   const [qsos, setQsos] = useState(false);
 
   const [hasPermission, setHasPermission] = useState(false);
+
+  const [highlighted, setHighlighted] = useState(null);
 
   const isEventStation =
     event &&
@@ -73,6 +80,8 @@ const QsoManager = () => {
     // }
   }, [event, isEventStation, user, users]);
 
+  const [showAddressWarning, setShowAddressWarning] = useState(true);
+
   useEffect(() => {
     async function getEvent() {
       try {
@@ -97,6 +106,7 @@ const QsoManager = () => {
           }
         });
         console.log("QSOs", data);
+        data.sort((a, b) => new Date(a.qsoDate) - new Date(b.qsoDate));
         setQsos(data);
       } catch (err) {
         console.log("Errore nel caricamento dei QSO", err);
@@ -210,6 +220,13 @@ const QsoManager = () => {
 
     setDisabled(true);
 
+    console.log("create qso", {
+      callsign,
+      frequency,
+      mode,
+      qsoDate: new Date(qsoDate)
+    });
+
     try {
       const obj = {
         // fromStation,
@@ -236,9 +253,14 @@ const QsoManager = () => {
         msg: "QSO creato con successo"
       });
 
-      setQsos([...qsos, data]);
+      setHighlighted(data._id);
+      setTimeout(() => setHighlighted(null), 1000);
+
+      const newQsos = [...qsos, data];
+      newQsos.sort((a, b) => new Date(a.qsoDate) - new Date(b.qsoDate));
+      setQsos(newQsos);
       setCallsign("");
-      resetDate();
+      // resetDate();
 
       setTimeout(() => {
         callsignRef?.current?.focus();
@@ -370,7 +392,12 @@ const QsoManager = () => {
                           </Table.Head>
                           <Table.Body>
                             {qsos?.map(q => (
-                              <Table.Row key={q._id}>
+                              <Table.Row
+                                key={q._id}
+                                className={`transition-colors duration-1000 ${
+                                  highlighted === q._id ? "bg-green-200" : ""
+                                }`}
+                              >
                                 <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                   <div className="flex items-center gap-2">
                                     <Button
@@ -391,9 +418,9 @@ const QsoManager = () => {
                                 </Table.Cell>
                                 <Table.Cell>
                                   {formatInTimeZone(
-                                    q.createdAt,
+                                    q.qsoDate,
                                     "Europe/Rome",
-                                    "yyyy-MM-dd HH:mm:ss"
+                                    "yyyy-MM-dd HH:mm"
                                   )}
                                 </Table.Cell>
                                 <Table.Cell>{q.frequency} MHz</Table.Cell>
@@ -418,153 +445,197 @@ const QsoManager = () => {
                   <Typography variant="h2" className="mb-2 flex items-center">
                     Crea QSO
                   </Typography>
-                  <div className="mb-6">
-                    <form onSubmit={createQso}>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {!isEventStation && user.isAdmin && users && (
-                          <div>
-                            <Label
-                              htmlFor="fromStation"
-                              value="Da stazione attivatrice"
-                            />
-                            <Dropdown
-                              label={fromStation.callsign}
-                              disabled={disabled}
-                              id="fromStation"
-                              className="w-full"
-                              required
-                              color="light"
-                            >
-                              {users.map(u => (
-                                <Dropdown.Item
-                                  key={u._id}
-                                  onClick={() => setFromStation(u)}
-                                >
-                                  <span
-                                    className={
-                                      u._id === fromStation._id
-                                        ? "font-bold"
-                                        : ""
-                                    }
-                                  >
-                                    {u.callsign}
-                                  </span>
-                                </Dropdown.Item>
-                              ))}
-                            </Dropdown>
-                            <p className="flex items-center gap-1">
-                              <FaInfoCircle />
-                              Vedi questo in quanto sei un{" "}
-                              <span className="font-bold">amministratore</span>
-                            </p>
-                          </div>
+                  {user ? (
+                    !user.address ? (
+                      <Alert color="failure">
+                        <span>
+                          ⚠️ Devi prima completare il tuo profilo con
+                          l'indirizzo:{" "}
+                          <Link to="/profile" className="underline font-bold">
+                            clicca qui
+                          </Link>{" "}
+                          per navigare al tuo profilo, poi clicca su "Modifica
+                          profilo" e completa l'indirizzo
+                        </span>
+                      </Alert>
+                    ) : (
+                      <div className="mb-6">
+                        {showAddressWarning && (
+                          <Alert
+                            color="info"
+                            className="mb-4"
+                            onDismiss={() => setShowAddressWarning(false)}
+                          >
+                            <span>
+                              ⚠️ La tua città è attualmente impostata a{" "}
+                              <span className="font-bold">{user.city}</span> con
+                              codice di provincia{" "}
+                              <span className="font-bold">{user.province}</span>
+                              , assicurati che sia corretta. In caso contrario,{" "}
+                              <Link
+                                to="/profile"
+                                className="underline font-bold"
+                              >
+                                clicca qui
+                              </Link>{" "}
+                              per navigare al tuo profilo, poi clicca su
+                              "Modifica profilo" e modifica la città
+                            </span>
+                          </Alert>
                         )}
 
-                        <div>
-                          <Label
-                            htmlFor="frequency"
-                            value="Frequenza (in MHz)"
-                          />
-                          <TextInput
-                            disabled={disabled}
-                            id="frequency"
-                            label="Frequenza"
-                            placeholder="144.205"
-                            type="number"
-                            value={frequency}
-                            onChange={e => {
-                              setFrequency(e.target.value);
-                              setCookie("frequency", e.target.value, {
-                                path: "/qsomanager",
-                                maxAge: 60 * 60 * 4
-                              });
-                            }}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label
-                            htmlFor="mode"
-                            value="Modo (CW, SSB, FT8, ecc.)"
-                          />
-                          <TextInput
-                            disabled={disabled}
-                            id="mode"
-                            label="Modo"
-                            minLength={1}
-                            maxLength={10}
-                            placeholder="SSB"
-                            value={mode}
-                            onChange={e => {
-                              setMode(e.target.value);
-                              setCookie("mode", e.target.value, {
-                                path: "/qsomanager",
-                                maxAge: 60 * 60 * 4
-                              });
-                            }}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="qsoDate" value="Data QSO" />
-                          <div className="flex gap-1 justify-center items-center">
-                            <TextInput
-                              disabled={disabled}
-                              id="qsoDate"
-                              label="Data"
-                              type="datetime-local"
-                              className="w-full"
-                              value={qsoDate}
-                              onChange={e => setQsoDate(e.target.value)}
-                              required
-                            />
-                            <Button
-                              color="light"
-                              // size="sm"
-                              className="h-max"
-                              onClick={resetDate}
-                            >
-                              <FaSync />
+                        <form onSubmit={createQso}>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {!isEventStation && user.isAdmin && users && (
+                              <div>
+                                <Label
+                                  htmlFor="fromStation"
+                                  value="Da stazione attivatrice"
+                                />
+                                <Dropdown
+                                  label={fromStation.callsign}
+                                  disabled={disabled}
+                                  id="fromStation"
+                                  className="w-full"
+                                  required
+                                  color="light"
+                                >
+                                  {users.map(u => (
+                                    <Dropdown.Item
+                                      key={u._id}
+                                      onClick={() => setFromStation(u)}
+                                    >
+                                      <span
+                                        className={
+                                          u._id === fromStation._id
+                                            ? "font-bold"
+                                            : ""
+                                        }
+                                      >
+                                        {u.callsign}
+                                      </span>
+                                    </Dropdown.Item>
+                                  ))}
+                                </Dropdown>
+                                <p className="flex items-center gap-1">
+                                  <FaInfoCircle />
+                                  Vedi questo in quanto sei un{" "}
+                                  <span className="font-bold">
+                                    amministratore
+                                  </span>
+                                </p>
+                              </div>
+                            )}
+
+                            <div>
+                              <Label
+                                htmlFor="frequency"
+                                value="Frequenza (in MHz)"
+                              />
+                              <TextInput
+                                disabled={disabled}
+                                id="frequency"
+                                label="Frequenza"
+                                placeholder="144.205"
+                                type="number"
+                                value={frequency}
+                                onChange={e => {
+                                  setFrequency(e.target.value);
+                                  setCookie("frequency", e.target.value, {
+                                    path: "/qsomanager",
+                                    maxAge: 60 * 60 * 4
+                                  });
+                                }}
+                                required
+                              />
+                            </div>
+                            <div>
+                              <Label
+                                htmlFor="mode"
+                                value="Modo (CW, SSB, FT8, ecc.)"
+                              />
+                              <TextInput
+                                disabled={disabled}
+                                id="mode"
+                                label="Modo"
+                                minLength={1}
+                                maxLength={10}
+                                placeholder="SSB"
+                                value={mode}
+                                onChange={e => {
+                                  setMode(e.target.value);
+                                  setCookie("mode", e.target.value, {
+                                    path: "/qsomanager",
+                                    maxAge: 60 * 60 * 4
+                                  });
+                                }}
+                                required
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="qsoDate" value="Data QSO" />
+                              <div className="flex gap-1 justify-center items-center">
+                                <TextInput
+                                  disabled={disabled}
+                                  id="qsoDate"
+                                  label="Data"
+                                  type="datetime-local"
+                                  className="w-full"
+                                  value={qsoDate}
+                                  onChange={e => setQsoDate(e.target.value)}
+                                  required
+                                />
+                                <Button
+                                  color="light"
+                                  // size="sm"
+                                  className="h-max"
+                                  onClick={resetDate}
+                                >
+                                  <FaSync />
+                                </Button>
+                              </div>
+                            </div>
+                            <div>
+                              <Label htmlFor="callsign" value="Nominativo" />
+                              <TextInput
+                                disabled={disabled}
+                                id="callsign"
+                                label="Nominativo"
+                                minLength={1}
+                                maxLength={10}
+                                ref={callsignRef}
+                                placeholder={user ? user.callsign : "IU4QSG"}
+                                value={callsign}
+                                className="uppercase"
+                                onChange={e => {
+                                  setCallsign(e.target.value);
+                                  setCookie("callsign", e.target.value, {
+                                    path: "/qsomanager",
+                                    maxAge: 60 * 60 * 4
+                                  });
+                                }}
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div className="mt-4 flex justify-center">
+                            <Button type="submit" disabled={disabled} size="lg">
+                              {disabled ? (
+                                <Spinner />
+                              ) : (
+                                <span className="flex items-center gap-2">
+                                  <FaPlusCircle />
+                                  Salva QSO
+                                </span>
+                              )}
                             </Button>
                           </div>
-                        </div>
-                        <div>
-                          <Label htmlFor="callsign" value="Nominativo" />
-                          <TextInput
-                            disabled={disabled}
-                            id="callsign"
-                            label="Nominativo"
-                            minLength={1}
-                            maxLength={10}
-                            ref={callsignRef}
-                            placeholder={user ? user.callsign : "IU4QSG"}
-                            value={callsign}
-                            className="uppercase"
-                            onChange={e => {
-                              setCallsign(e.target.value);
-                              setCookie("callsign", e.target.value, {
-                                path: "/qsomanager",
-                                maxAge: 60 * 60 * 4
-                              });
-                            }}
-                            required
-                          />
-                        </div>
+                        </form>
                       </div>
-                      <div className="mt-4 flex justify-center">
-                        <Button type="submit" disabled={disabled} size="lg">
-                          {disabled ? (
-                            <Spinner />
-                          ) : (
-                            <span className="flex items-center gap-2">
-                              <FaPlusCircle />
-                              Salva QSO
-                            </span>
-                          )}
-                        </Button>
-                      </div>
-                    </form>
-                  </div>
+                    )
+                  ) : (
+                    <Spinner />
+                  )}
                 </div>
               </div>
             </>

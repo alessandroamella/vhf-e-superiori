@@ -8,18 +8,21 @@ const createSchema: Schema = {
         trim: { options: [] },
         isLength: { options: { min: 1, max: 10 } },
         toUpperCase: { options: [] },
-        isAlphanumeric: { options: [] }
+        isAlphanumeric: { options: [] },
+        errorMessage: Errors.INVALID_CALLSIGN
     },
     name: {
         isString: { options: [] },
         trim: { options: [] },
-        isLength: { options: { min: 1, max: 50 } }
+        isLength: { options: { min: 1, max: 50 } },
+        errorMessage: Errors.INVALID_NAME
     },
     email: {
         isString: { options: [] },
         trim: { options: [] },
         isEmail: { options: [], errorMessage: Errors.INVALID_EMAIL },
-        toLowerCase: { options: [] }
+        toLowerCase: { options: [] },
+        errorMessage: Errors.INVALID_EMAIL
     },
     phoneNumber: {
         isString: { options: [] },
@@ -36,7 +39,36 @@ const createSchema: Schema = {
         isStrongPassword: {
             options: [{ minLength: 8 }],
             errorMessage: Errors.WEAK_PW
-        }
+        },
+        errorMessage: Errors.WEAK_PW
+    },
+    address: {
+        isString: { options: [] },
+        trim: { options: [] },
+        optional: true,
+        errorMessage: Errors.INVALID_LOCATION
+    },
+    lat: {
+        isFloat: { options: [] },
+        optional: true,
+        errorMessage: Errors.INVALID_LOCATION
+    },
+    lon: {
+        isFloat: { options: [] },
+        optional: true,
+        errorMessage: Errors.INVALID_LOCATION
+    },
+    city: {
+        isString: { options: [] },
+        trim: { options: [] },
+        optional: true,
+        errorMessage: Errors.INVALID_LOCATION
+    },
+    province: {
+        isString: { options: [] },
+        trim: { options: [] },
+        optional: true,
+        errorMessage: Errors.INVALID_LOCATION
     }
 };
 export default createSchema;

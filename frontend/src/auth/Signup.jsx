@@ -12,6 +12,7 @@ import {
 import { getErrorStr, UserContext } from "..";
 import { useCookies } from "react-cookie";
 import ReCAPTCHA from "react-google-recaptcha";
+import { usePlacesWidget } from "react-google-autocomplete";
 import Layout from "../Layout";
 
 const useFocus = () => {
@@ -30,6 +31,12 @@ const Signup = () => {
   const [name, setName] = useState(cookies.name || "");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
+  const [addressInput, setAddressInput] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [province, setProvince] = useState("");
+  const [lat, setLat] = useState("");
+  const [lon, setLon] = useState("");
   const [phoneNumber, setPhoneNumber] = useState(cookies.phoneNumber || "+39");
   const [email, setEmail] = useState(cookies.email || "");
 
@@ -74,6 +81,28 @@ const Signup = () => {
 
   const [searchParams] = useSearchParams();
 
+  const placesWidget = usePlacesWidget({
+    apiKey: "AIzaSyAiPVD_IqTn5kMi2GFXwYQCTYaxznEbCfk",
+    onPlaceSelected: place => {
+      console.log("place", place);
+      const addr = place.formatted_address;
+      const cityIndex =
+        place.address_components.findIndex(c =>
+          c.types.includes("administrative_area_level_3")
+        ) || 1;
+      const city = place.address_components[cityIndex].long_name;
+      const prov = place.address_components[cityIndex + 1].short_name;
+      setAddress(addr);
+      setAddressInput(addr);
+      setCity(city);
+      setProvince(prov);
+      setLat(place.geometry.location.lat());
+      setLon(place.geometry.location.lng());
+    },
+    language: "it"
+  });
+  const mapsRef = placesWidget.ref;
+
   async function fetchQrz() {
     if (
       name ||
@@ -91,9 +120,7 @@ const Signup = () => {
       console.log("QRZ data", data);
       if (!name) {
         setName(
-          toTitleCase(
-            (data?.qrz?.firstName || "") + " " + (data?.qrz?.lastName || "")
-          )
+          toTitleCase((data?.firstName || "") + " " + (data?.lastName || ""))
         );
       }
     } catch (err) {
@@ -135,14 +162,23 @@ const Signup = () => {
 
     setDisabled(true);
     try {
-      await axios.post("/api/auth/signup", {
+      const obj = {
         callsign,
         name,
         password,
         phoneNumber,
         email,
         token: captchaRef.current.getValue()
-      });
+      };
+      if (address) {
+        obj.address = address;
+        obj.lat = lat;
+        obj.lon = lon;
+        obj.city = city;
+        obj.province = province;
+      }
+      console.log("signup obj", { ...obj, password: "********" });
+      await axios.post("/api/auth/signup", obj);
       removeCookie("callsign", { path: "/signup" });
       removeCookie("name", { path: "/signup" });
       removeCookie("phoneNumber", { path: "/signup" });
@@ -164,7 +200,12 @@ const Signup = () => {
         top: 0,
         behavior: "smooth"
       });
-      setAlert(getErrorStr(err.response?.data?.err));
+      const str = err.response?.data?.err;
+      if (typeof str === "string" && str.includes(",")) {
+        setAlert([...new Set(str.split(","))].map(getErrorStr).join(", "));
+      } else {
+        setAlert(getErrorStr(str));
+      }
       setDisabled(false);
     }
   }
@@ -222,45 +263,73 @@ const Signup = () => {
               maxLength={10}
               onBlur={fetchQrz}
               value={callsign}
-              onChange={e => setCallsign(e.target.value.toUpperCase())}
+              // replace non alphanumeric characters with empty string
+              onChange={e =>
+                setCallsign(
+                  e.target.value.toUpperCase().replace(/[^a-zA-Z0-9]/g, "")
+                )
+              }
               disabled={disabled}
               autoFocus
+              required
             />
             <div className="my-4" />
-            <div className="mb-2 block">
-              <Label htmlFor="name" value="Nome pubblico" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="name" value="Nome pubblico" />
+                </div>
+                <TextInput
+                  type="text"
+                  name="name"
+                  id="name"
+                  autoComplete="name"
+                  label="Nome"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  disabled={disabled}
+                  ref={inputRef}
+                  required
+                />
+              </div>
+              <div>
+                {/* DEBUG in traduzione estera, specifica di inserire il prefisso */}
+                <Label
+                  htmlFor="phoneNumber"
+                  value="Numero di telefono (con prefisso nazionale)"
+                />
+                <TextInput
+                  type="tel"
+                  name="phoneNumber"
+                  id="phoneNumber"
+                  autoComplete="tel"
+                  label="Numero di telefono"
+                  value={phoneNumber}
+                  onChange={e => setPhoneNumber(e.target.value)}
+                  disabled={disabled}
+                  required
+                />
+              </div>
             </div>
-            <TextInput
-              type="text"
-              name="name"
-              id="name"
-              autoComplete="name"
-              label="Nome"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              disabled={disabled}
-              ref={inputRef}
-            />
             <div className="my-4" />
-            <div className="mb-2 block">
-              {/* DEBUG in traduzione estera, specifica di inserire il prefisso */}
-              <Label
-                htmlFor="phoneNumber"
-                value="Numero di telefono (con prefisso nazionale)"
+
+            <div className="mb-2">
+              <Label htmlFor="addressInput" value="Città (opzionale)" />
+              <TextInput
+                type="text"
+                name="addressInput"
+                id="addressInput"
+                autoComplete="address-level2"
+                label="Indirizzo"
+                value={addressInput}
+                onChange={e => setAddressInput(e.target.value)}
+                onBlur={() => setAddressInput(address)}
+                ref={mapsRef}
+                helperText="Usato per la visualizzazione dei QSO sulla mappa"
+                disabled={disabled}
               />
             </div>
-            <TextInput
-              type="tel"
-              name="phoneNumber"
-              id="phoneNumber"
-              autoComplete="tel"
-              label="Numero di telefono"
-              value={phoneNumber}
-              onChange={e => setPhoneNumber(e.target.value)}
-              helperText="In caso di candidatura ad un Radio Flash Mob, verrai ricontattato qui"
-              disabled={disabled}
-            />
-            <div className="my-4" />
+
             <div className="mb-2 block">
               <Label htmlFor="email" value="Email" />
             </div>
@@ -273,38 +342,46 @@ const Signup = () => {
               value={email}
               onChange={e => setEmail(e.target.value)}
               disabled={disabled}
+              required
             />
             <div className="my-4" />
-            <div className="mb-2 block">
-              <Label htmlFor="password" value="Password" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="password" value="Password" />
+                </div>
+                <TextInput
+                  type="password"
+                  name="password"
+                  id="password"
+                  autoComplete="new-password"
+                  label="Password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  helperText="Minimo 8 caratteri, almeno un numero, una maiuscola e un carattere speciale"
+                  disabled={disabled}
+                  maxLength={100}
+                  required
+                />
+              </div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="password-2" value="Ripeti password" />
+                </div>
+                <TextInput
+                  type="password"
+                  name="password"
+                  id="password-2"
+                  autoComplete="new-password"
+                  label="Password"
+                  value={repeatPassword}
+                  onChange={e => setRepeatPassword(e.target.value)}
+                  disabled={disabled}
+                  maxLength={100}
+                  required
+                />
+              </div>
             </div>
-            <TextInput
-              type="password"
-              name="password"
-              id="password"
-              autoComplete="new-password"
-              label="Password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              helperText="Minimo 8 caratteri, almeno un numero, una maiuscola e un carattere speciale"
-              disabled={disabled}
-              maxLength={100}
-            />
-            <div className="my-4" />
-            <div className="mb-2 block">
-              <Label htmlFor="password" value="Ripeti password" />
-            </div>
-            <TextInput
-              type="password"
-              name="password"
-              id="password"
-              autoComplete="new-password"
-              label="Password"
-              value={repeatPassword}
-              onChange={e => setRepeatPassword(e.target.value)}
-              disabled={disabled}
-              maxLength={100}
-            />
             <div className="my-4" />
             <ReCAPTCHA
               sitekey="6LfdByQkAAAAALGExGRPnH8i16IyKNaUXurnW1rm"

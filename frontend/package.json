@@ -28,6 +28,7 @@
         "react-cookie": "^4.1.1",
         "react-dom": "^18.2.0",
         "react-dropzone": "^14.2.3",
+        "react-google-autocomplete": "^2.7.3",
         "react-google-recaptcha": "^2.1.0",
         "react-hook-form": "^7.43.9",
         "react-html-table-to-excel": "^2.0.0",

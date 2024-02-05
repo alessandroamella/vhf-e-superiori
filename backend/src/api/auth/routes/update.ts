@@ -56,7 +56,7 @@ const router = Router();
  *      '500':
  *        description: Server error
  *        content:
- *          application/json:
+ *          appliwcation/json:
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  */
@@ -70,7 +70,16 @@ router.put(
         }
         try {
             // DEBUG email conferma
-            const { name, email, phoneNumber } = req.body;
+            const {
+                name,
+                email,
+                phoneNumber,
+                address,
+                lat,
+                lon,
+                city,
+                province
+            } = req.body;
             if (email) {
                 const emailExists = await User.exists({
                     email,
@@ -95,11 +104,37 @@ router.put(
             }
 
             const oldEmail = (req.user as unknown as UserDoc).email;
+            const obj = {
+                name,
+                email,
+                phoneNumber
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } as any;
+            if (address) {
+                obj.address = address;
+                obj.lat = lat;
+                obj.lon = lon;
+                obj.city = city;
+                obj.province = province;
+            }
+
             const user = await User.findOneAndUpdate(
                 { _id: (req.user as unknown as UserDoc)._id },
-                { name, email },
+                obj,
                 { new: true }
             );
+
+            logger.debug("Updated user with data:");
+            logger.debug({
+                name,
+                email,
+                phoneNumber,
+                address,
+                lat,
+                lon,
+                city,
+                province
+            });
 
             if (!user) {
                 throw new Error("User in user update not found");

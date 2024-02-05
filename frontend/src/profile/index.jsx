@@ -18,14 +18,9 @@ import axios from "axios";
 import { createSearchParams, Link, useNavigate } from "react-router-dom";
 import { isAfter } from "date-fns/esm";
 import { it, itCH } from "date-fns/locale";
-import {
-  FaCheck,
-  FaExclamation,
-  FaInfoCircle,
-  FaLink,
-  FaTrash
-} from "react-icons/fa";
+import { FaCheck, FaExclamation, FaLink, FaTrash } from "react-icons/fa";
 import { formatInTimeZone } from "date-fns-tz";
+import ReactGoogleAutocomplete from "react-google-autocomplete";
 
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);
@@ -35,7 +30,7 @@ const Profile = () => {
 
   const [showChangePwModal, setShowChangePwModal] = useState(false);
   const [changePwBtnDisabled, setChangePwBtnDisabled] = useState(false);
-  const [changeDataBtnDisabled, setChangeDataBtnDisabled] = useState(true);
+  const [changeDataBtnDisabled, setChangeDataBtnDisabled] = useState(false);
 
   const [alert, setAlert] = useState(null);
   const [pwError, setPwError] = useState(null);
@@ -48,18 +43,28 @@ const Profile = () => {
 
   const [joinRequests, setJoinRequests] = useState(null);
 
+  const [addressInput, setAddressInput] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [province, setProvince] = useState("");
+  const [lat, setLat] = useState("");
+  const [lon, setLon] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+
   useEffect(() => {
     if (!user) return;
     setName(user.name);
     setEmail(user.email);
+    setPhoneNumber(user.phoneNumber);
+    if (user.address) {
+      setAddress(user.address);
+      setAddressInput(user.address);
+      setLat(user.lat);
+      setLon(user.lon);
+      setCity(user.city);
+      setProvince(user.province);
+    }
   }, [user]);
-
-  useEffect(() => {
-    console.log({ name, email, user });
-    setChangeDataBtnDisabled(
-      !user || (name?.trim() === user.name && email?.trim() === user.email)
-    );
-  }, [name, email, user]);
 
   async function changePassword(e) {
     e.preventDefault();
@@ -92,7 +97,17 @@ const Profile = () => {
     setAlert(null);
 
     try {
-      const { data } = await axios.put("/api/auth", { name, email });
+      const obj = { name, email, phoneNumber };
+      if (address) {
+        obj.address = address;
+        obj.lat = lat;
+        obj.lon = lon;
+        obj.city = city;
+        obj.province = province;
+      }
+      console.log("obj", obj);
+      const { data } = await axios.put("/api/auth", obj);
+      console.log("data", data);
       if (data.email === user.email) {
         setAlert({ color: "success", msg: "Dati modificati con successo" });
       } else {
@@ -108,6 +123,9 @@ const Profile = () => {
         color: "failure",
         msg: getErrorStr(err?.response?.data?.err)
       });
+    } finally {
+      // scroll a bit up
+      window.scrollTo({ top: 350, behavior: "smooth" });
     }
 
     setChangeDataBtnDisabled(false);
@@ -413,7 +431,11 @@ const Profile = () => {
                       </Typography>
                     )}
                   </div>
-                  <div className="mb-2 flex items-center">
+                  <div
+                    className={`mb-2 items-center ${
+                      isEditing ? "block" : "flex"
+                    }`}
+                  >
                     <div className="block">
                       <Label htmlFor="email" value="Email" />
                     </div>
@@ -432,13 +454,7 @@ const Profile = () => {
                     ) : (
                       <div className="flex items-center gap-2">
                         <Typography variant="paragraph" className="ml-2">
-                          <a
-                            href={"mailto:" + user?.email}
-                            target="_blank"
-                            rel="noreferrer noopener"
-                          >
-                            {user?.email || <Spinner />}
-                          </a>
+                          {user?.email || <Spinner />}
                         </Typography>
                         {user?.isVerified ? (
                           <span className="flex items-center gap-1 text-green-600">
@@ -450,6 +466,81 @@ const Profile = () => {
                           </span>
                         )}
                       </div>
+                    )}
+                  </div>
+                  <div className={isEditing ? "block" : "flex"}>
+                    <div className="mb-2 block">
+                      <Label htmlFor="phone" value="Numero di telefono" />
+                    </div>
+                    {isEditing ? (
+                      <TextInput
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="+393471234567"
+                        autoComplete="tel"
+                        required
+                        value={phoneNumber}
+                        onChange={e => setPhoneNumber(e.target.value)}
+                        disabled={!user}
+                        helperText="Inserisci il tuo numero di telefono, compreso di prefisso internazionale"
+                      />
+                    ) : (
+                      <Typography variant="paragraph" className="ml-2 mb-2">
+                        {user?.phoneNumber || <Spinner />}
+                      </Typography>
+                    )}
+                  </div>
+                  <div className={isEditing ? "block" : "flex"}>
+                    <div className="mb-2 block">
+                      <Label htmlFor="address" value="Città" />
+                    </div>
+                    {isEditing ? (
+                      <ReactGoogleAutocomplete
+                        apiKey="AIzaSyAiPVD_IqTn5kMi2GFXwYQCTYaxznEbCfk"
+                        onPlaceSelected={place => {
+                          console.log("place", place);
+                          const addr = place.formatted_address;
+                          const cityIndex =
+                            place.address_components.findIndex(c =>
+                              c.types.includes("administrative_area_level_3")
+                            ) || 1;
+                          const city =
+                            place.address_components[cityIndex].long_name;
+                          const prov =
+                            place.address_components[cityIndex + 1].short_name;
+                          setAddress(addr);
+                          setAddressInput(addr);
+                          setCity(city);
+                          setProvince(prov);
+                          setLat(place.geometry.location.lat());
+                          setLon(place.geometry.location.lng());
+                        }}
+                        className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 rounded-lg p-2.5 text-sm"
+                        id="address"
+                        name="addressInput"
+                        lang="it"
+                        language="it"
+                        type="text"
+                        placeholder="Modena"
+                        autoComplete="address-level2"
+                        value={addressInput}
+                        onChange={e => setAddressInput(e.target.value)}
+                        onBlur={() => setAddressInput(address)}
+                        disabled={!user}
+                        helperText="Inserisci la tua città di residenza (opzionale)"
+                      />
+                    ) : user?.address ? (
+                      <div>
+                        <Typography variant="paragraph" className="ml-2 mb-2">
+                          {user.city} (
+                          <span className="font-bold">{user.province}</span>)
+                        </Typography>
+                      </div>
+                    ) : (
+                      <Typography variant="paragraph" className="ml-2 mb-2">
+                        <span className="text-gray-500">Non specificata</span>
+                      </Typography>
                     )}
                   </div>
 
@@ -471,7 +562,7 @@ const Profile = () => {
                           {/* {!user || changeDataBtnDisabled ? (
                             <Spinner />
                           ) : ( */}
-                          <span>Modifica dati</span>
+                          <span>Salva dati</span>
                           {/* )} */}
                         </Button>
                       </>
@@ -603,20 +694,7 @@ const Profile = () => {
                             )}
                             <span>{p.description}</span>
                           </Link>
-                          <span className="ml-auto flex items-center gap-1">
-                            {p.isApproved ? (
-                              <>
-                                <FaCheck className="text-green-500" />
-                                <span>Approvato</span>
-                              </>
-                            ) : (
-                              <>
-                                <FaInfoCircle className="text-red-600" />
-                                <span>In attesa</span>
-                              </>
-                            )}
-                          </span>
-                          <p className="ml-3 text-gray-500">
+                          <p className="ml-auto text-gray-500">
                             {p.createdAt &&
                               formatInTimeZone(
                                 p.createdAt,

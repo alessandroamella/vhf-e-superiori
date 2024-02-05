@@ -68,11 +68,26 @@ export class QsoClass {
     @prop({ required: true, ref: () => UserClass })
     public fromStation!: Ref<UserClass>;
 
+    @prop({ required: false })
+    public fromStationLat?: number;
+
+    @prop({ required: false })
+    public fromStationLon?: number;
+
+    @prop({ required: true })
+    public fromStationCity!: string;
+
+    @prop({ required: true })
+    public fromStationProvince!: string;
+
     @prop({ required: true, minlength: 1, maxlength: 10, uppercase: true })
     public callsign!: string; // without prefix or suffix
 
-    @prop({ required: false, validate: IsEmail.validate })
-    public email?: string;
+    @prop({ required: false })
+    public toStationLat?: number;
+
+    @prop({ required: false })
+    public toStationLon?: number;
 
     @prop({ required: true, ref: () => EventClass })
     public event!: Ref<EventClass>;

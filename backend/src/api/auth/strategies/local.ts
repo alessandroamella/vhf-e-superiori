@@ -40,6 +40,17 @@ passport.use(
                 });
                 if (exists) return done(new Error(Errors.ALREADY_REGISTERED));
 
+                const { address, lat, lon, city, province } = req.body;
+                logger.debug("Address: " + address);
+                logger.debug("Lat: " + lat);
+                logger.debug("Lon: " + lon);
+                logger.debug("City: " + city);
+                logger.debug("Province: " + province);
+
+                if (address && (!lat || !lon || !city || !province)) {
+                    return done(new Error(Errors.INVALID_LOCATION));
+                }
+
                 const plainPw = password;
                 const salt = await bcrypt.genSalt(10);
 
@@ -48,7 +59,7 @@ passport.use(
                     charset: "alphanumeric"
                 });
 
-                const user = (await User.create({
+                const obj = {
                     callsign: req.body.callsign,
                     name: req.body.name,
                     email,
@@ -58,7 +69,18 @@ passport.use(
                     isVerified: false,
                     verificationCode: bcrypt.hashSync(verificationCode, 10),
                     joinRequests: []
-                })) as UserDoc;
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } as any;
+
+                if (address) {
+                    obj.address = address;
+                    obj.lat = lat;
+                    obj.lon = lon;
+                    obj.city = city;
+                    obj.province = province;
+                }
+
+                const user = (await User.create(obj)) as UserDoc;
 
                 await EmailService.sendVerifyMail(user, verificationCode, true);
 

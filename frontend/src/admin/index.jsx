@@ -68,6 +68,7 @@ const AdminManager = () => {
   );
   const [logoUrl, setLogoUrl] = useState("/logo-min.png");
   const [eqslUrl, setEqslUrl] = useState("/logo-min.png");
+  const [eqslExample, setEqslExample] = useState(null);
 
   const [joinRequests, setJoinRequests] = useState(null);
 
@@ -468,6 +469,10 @@ const AdminManager = () => {
           '\nRICORDA DI PREMERE IL TASTO "Applica modifiche"'
       );
       setEqslUrl(data.path);
+
+      const res2 = await axios.post("/api/eqsl/preview", { href: data.path });
+      console.log("eqsl preview", res2.data);
+      setEqslExample(res2.data.href);
     } catch (err) {
       window.alert("ERRORE upload immagine (outer): " + getErrorStr(err));
     } finally {
@@ -537,6 +542,17 @@ const AdminManager = () => {
                       alt="EQSL URL"
                       className="w-96 max-w-full max-h-96 object-contain m-auto drop-shadow-lg"
                     />
+
+                    {eqslExample && (
+                      <div className="flex flex-col items-center">
+                        <p className="mb-2 block">Esempio EQSL</p>
+                        <LazyLoadImage
+                          src={eqslExample}
+                          alt="EQSL example"
+                          className="w-96 max-w-full max-h-96 object-contain m-auto drop-shadow-lg"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="my-auto">
@@ -607,7 +623,10 @@ const AdminManager = () => {
                       />
 
                       <Button
-                        onClick={() => setEqslUrl("/logo-min.png")}
+                        onClick={() => {
+                          setEqslUrl("/logo-min.png");
+                          setEqslExample(null);
+                        }}
                         disabled={disabled}
                       >
                         Resetta

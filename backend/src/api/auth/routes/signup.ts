@@ -35,6 +35,14 @@ const router = Router();
  *                minLength: 8
  *                maxLength: 64
  *                format: password
+ *              address:
+ *                type: string
+ *              lat:
+ *                type: number
+ *                format: float
+ *              lon:
+ *                type: number
+ *                format: float
  *              email:
  *                type: string
  *                format: email

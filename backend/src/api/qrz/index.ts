@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance } from "axios";
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
@@ -8,6 +9,8 @@ import { envs } from "../../shared/envs";
 import { logger } from "../../shared/logger";
 import { Errors } from "../errors";
 import moment from "moment";
+import { writeFileSync } from "fs";
+import { join } from "path";
 
 interface _RawData {
     call: [string];
@@ -40,11 +43,11 @@ interface _RawData {
  *          country:
  *            type: string
  */
-interface Data {
+interface QrzData {
     callsign: string;
     firstName: string;
     lastName: string;
-    address: string;
+    address?: string;
     state?: string;
     country: string;
 }
@@ -93,26 +96,26 @@ interface Data {
  *          label:
  *            type: string
  */
-// interface Qth {
-//     latitude: number;
-//     longitude: number;
-//     type: string;
-//     name: string;
-//     number?: any;
-//     postal_code?: any;
-//     street?: any;
-//     confidence: number;
-//     region: string;
-//     region_code: string;
-//     county?: any;
-//     locality: string;
-//     administrative_area: string;
-//     neighbourhood?: any;
-//     country: string;
-//     country_code: string;
-//     continent: string;
-//     label: string;
-// }
+interface QthData {
+    latitude: number;
+    longitude: number;
+    type: string;
+    name: string;
+    number?: any;
+    postal_code?: any;
+    street?: any;
+    confidence: number;
+    region: string;
+    region_code: string;
+    county?: any;
+    locality: string;
+    administrative_area: string;
+    neighbourhood?: any;
+    country: string;
+    country_code: string;
+    continent: string;
+    label: string;
+}
 
 /**
  * @swagger
@@ -126,15 +129,9 @@ interface Data {
  *        properties:
  *          qrz:
  *            $ref: '#/components/schemas/QrzData'
+ *          qth:
+ *            $ref: '#/components/schemas/QthData'
  */
-
-// DEBUG rimosso
-// *          qth:
-// *            $ref: '#/components/schemas/QthData'
-interface QrzInfo {
-    qrz: Data;
-    // qth: Qth;
-}
 
 interface CachedData {
     url?: string;
@@ -302,8 +299,8 @@ class Qrz {
         }
     }
 
-    private _convertRawData(d: _RawData): Data {
-        const obj: Data = {
+    private _convertRawData(d: _RawData): QrzData {
+        const obj: QrzData = {
             callsign: d.call[0],
             firstName: d.fname[0],
             lastName: d.name[0],
@@ -314,49 +311,74 @@ class Qrz {
         return obj;
     }
 
-    // private async _fetchPos(_d: _RawData): Promise<any | null> {
-    //     const d = this._convertRawData(_d);
+    private async _fetchPos(_d: _RawData): Promise<any | null> {
+        const d = this._convertRawData(_d);
 
-    //     try {
-    //         logger.info(
-    //             `Positionstack q: ${d.address} ${d.state || ""} ${d.country}`
-    //         );
-    //         const qthReq = await axios.get(
-    //             "http://api.positionstack.com/v1/forward",
-    //             {
-    //                 params: {
-    //                     access_key: envs.POSITIONSTACK_KEY,
-    //                     query: `${d.address} ${d.state || ""} ${d.country}`
-    //                 }
-    //             }
-    //         );
+        if (!d.address && !d.state) {
+            logger.debug("Address not found for callsign " + d.callsign);
+            return null;
+        }
 
-    //         return qthReq.data.data[0];
-    //     } catch (err) {
-    //         logger.error("Error while fetching info from Positionstack");
-    //         if (axios.isAxiosError(err)) {
-    //             logger.error(err.response?.data || err.response || err);
-    //         } else {
-    //             logger.error(err as any);
-    //         }
-    //         return null;
-    //     }
-    // }
+        try {
+            logger.info(
+                `Positionstack q: ${d.address} ${d.state || ""} ${d.country}`
+            );
+            // TODO: use Google Maps API instead of Positionstack
+            const qthReq = await axios.get(
+                "https://maps.googleapis.com/maps/api/geocode/json",
+                {
+                    params: {
+                        key: envs.GOOGLE_MAPS_API_KEY,
+                        address: `${d.address} ${d.state || ""} ${d.country}`
+                    }
+                }
+            );
 
-    async getInfo(callsign: string): Promise<QrzInfo> {
+            writeFileSync(
+                join(process.cwd(), "sasssss.json"),
+                JSON.stringify(qthReq.data, null, 2)
+            );
+
+            if (qthReq.data.error_message) {
+                logger.error(
+                    "Error while fetching info from Google Maps: " +
+                        qthReq.data.status +
+                        " - " +
+                        qthReq.data.error_message
+                );
+                return null;
+            }
+
+            return qthReq.data.data[0];
+        } catch (err) {
+            logger.error("Error while fetching info from Google Maps");
+            if (axios.isAxiosError(err)) {
+                logger.error(err.response?.data || err.response || err);
+            } else {
+                logger.error(err as any);
+            }
+            return null;
+        }
+    }
+
+    private async _getRawInfo(callsign: string): Promise<_RawData> {
         const key = await this.key;
         if (!key) throw new Error(Errors.QRZ_NO_KEY);
 
         const om = await this._fetchQrz(callsign, key);
         if (!om) throw new Error(Errors.QRZ_OM_NOT_FOUND);
 
-        // const qth = await this._fetchPos(om);
-        // if (!qth) throw new Error(Errors.QTH_NOT_FOUND);
+        return om;
+    }
 
-        return {
-            qrz: this._convertRawData(om)
-            // qth
-        };
+    public async getInfo(callsign: string): Promise<QrzData> {
+        const om = await this._getRawInfo(callsign);
+        return this._convertRawData(om);
+    }
+
+    public async getQth(callsign: string): Promise<QthData | null> {
+        const om = await this._getRawInfo(callsign);
+        return this._fetchPos(om);
     }
 
     private _decodeEmail(qmail: string): string {
@@ -446,7 +468,7 @@ class Qrz {
         return data?.url;
     }
 
-    async scrapeEmail(callsign: string): Promise<string | undefined> {
+    public async scrapeEmail(callsign: string): Promise<string | undefined> {
         const data = await this._getDataForCallsign(callsign);
         return data?.email;
     }
