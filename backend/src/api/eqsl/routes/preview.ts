@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { body } from "express-validator";
-import { INTERNAL_SERVER_ERROR } from "http-status";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
@@ -72,6 +72,13 @@ router.post(
             });
             if (!user) {
                 throw new Error("User not found in eqsl create");
+            }
+
+            if (!user.city || !user.province) {
+                logger.debug("User has no city or province");
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.INVALID_LOCATION));
             }
 
             const qso = new Qso({

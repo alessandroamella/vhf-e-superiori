@@ -470,9 +470,15 @@ const AdminManager = () => {
       );
       setEqslUrl(data.path);
 
-      const res2 = await axios.post("/api/eqsl/preview", { href: data.path });
-      console.log("eqsl preview", res2.data);
-      setEqslExample(res2.data.href);
+      if (!user.city || !user.province) {
+        window.alert(
+          "Ricordati di aggiornare la tua città e provincia per poter visualizzare l'anteprima dell'EQSL"
+        );
+      } else {
+        const res2 = await axios.post("/api/eqsl/preview", { href: data.path });
+        console.log("eqsl preview", res2.data);
+        setEqslExample(res2.data.href);
+      }
     } catch (err) {
       window.alert("ERRORE upload immagine (outer): " + getErrorStr(err));
     } finally {
