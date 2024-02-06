@@ -219,24 +219,7 @@ const Homepage = () => {
                       >
                         FT8ACTIVITY
                       </a>
-                      ) e{" "}
-                      <a
-                        href="https://www.qrz.com/db/IU0FBK"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
-                      >
-                        <strong>IU0FBK</strong> Marco Naccari
-                      </a>{" "}
-                      creatore del sito
-                      <a
-                        href="https://www.diplomiradio.it"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="ml-1 text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
-                      >
-                        diplomiradio.it
-                      </a>
+                      ).
                     </p>
 
                     <p>
@@ -294,12 +277,6 @@ const Homepage = () => {
                       "cacciatori" che delle stazioni "attivatrici" e attribuito
                       un punteggio pari ad un punto per ogni collegamento
                       avvenuto
-                    </p>
-
-                    <p>
-                      Viene stilata da <strong>IU0FBK</strong> una seconda
-                      classifica in base alla distanza coperta da ogni stazione
-                      attivatrice (<i>QRB</i>).
                     </p>
 
                     <p>
