@@ -40,7 +40,7 @@ import ReactHTMLTableToExcel from "react-html-table-to-excel";
 import { Navigation, Pagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Zoom from "react-medium-image-zoom";
-import ReactPlayer from "react-player/lazy";
+import ReactPlayer from "react-player";
 import Compressor from "compressorjs";
 import { isFuture } from "date-fns";
 import { LazyLoadImage } from "react-lazy-load-image-component";
