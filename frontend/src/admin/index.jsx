@@ -1,6 +1,7 @@
 import { Typography } from "@material-tailwind/react";
 import axios from "axios";
 import {
+  Accordion,
   Alert,
   Badge,
   Button,
@@ -79,6 +80,10 @@ const AdminManager = () => {
 
   const pictureInputRef = createRef(null);
   const eqslInputRef = createRef(null);
+
+  const [userOpen, setUserOpen] = useState(false);
+  const [postOpen, setPostOpen] = useState(false);
+  const [eventOpen, setEventOpen] = useState(true);
 
   useEffect(() => {
     async function getUsers() {
@@ -989,200 +994,211 @@ const AdminManager = () => {
             </Badge>
           </Typography>
 
-          <Typography variant="h2" className="mb-4 flex items-center">
-            Utenti
-          </Typography>
-          <div className="mb-6">
-            {users ? (
-              <Table>
-                <Table.Head>
-                  <Table.HeadCell>callsign</Table.HeadCell>
-                  <Table.HeadCell>name</Table.HeadCell>
-                  <Table.HeadCell>email</Table.HeadCell>
-                  <Table.HeadCell>phoneNumber</Table.HeadCell>
-                  <Table.HeadCell>createdAt</Table.HeadCell>
-                  <Table.HeadCell>isAdmin</Table.HeadCell>
-                  <Table.HeadCell>joinRequests</Table.HeadCell>
-                </Table.Head>
-                <Table.Body>
-                  {users?.map(u => (
-                    <Table.Row key={u._id}>
-                      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                        {u.callsign}
-                      </Table.Cell>
-                      <Table.Cell>{u.name}</Table.Cell>
-                      <Table.Cell>{u.email}</Table.Cell>
-                      <Table.Cell>{u.phoneNumber}</Table.Cell>
-                      <Table.Cell>
-                        {formatInTimeZone(
-                          u.createdAt,
-                          "Europe/Rome",
-                          "yyyy-MM-dd HH:mm:ss"
-                        )}
-                      </Table.Cell>
-                      <Table.Cell>
-                        {u.isAdmin ? (
-                          <FaCheck className="text-green-500" />
-                        ) : (
-                          <FaTimes className="text-red-600" />
-                        )}
-                      </Table.Cell>
-                      <Table.Cell>
-                        <ListGroup>
-                          {u.joinRequests.length ? (
-                            u.joinRequests.map(j => (
-                              <ListGroup.Item>{j}</ListGroup.Item>
-                            ))
-                          ) : (
-                            <FaTimes />
-                          )}
-                        </ListGroup>
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table>
-            ) : users === false ? (
-              <Spinner />
-            ) : (
-              <p>Errore nel caricamento degli utenti</p>
-            )}
-          </div>
+          <Accordion collapseAll>
+            <Accordion.Panel>
+              <Accordion.Title>
+                {/* <Typography variant="h2" className="mb-4 flex items-center"> */}
+                Utenti
+                {/* </Typography> */}
+              </Accordion.Title>
+              <Accordion.Content>
+                {users ? (
+                  <Table>
+                    <Table.Head>
+                      <Table.HeadCell>callsign</Table.HeadCell>
+                      <Table.HeadCell>name</Table.HeadCell>
+                      <Table.HeadCell>email</Table.HeadCell>
+                      <Table.HeadCell>phoneNumber</Table.HeadCell>
+                      <Table.HeadCell>createdAt</Table.HeadCell>
+                      <Table.HeadCell>isAdmin</Table.HeadCell>
+                      <Table.HeadCell>joinRequests</Table.HeadCell>
+                    </Table.Head>
+                    <Table.Body>
+                      {users?.map(u => (
+                        <Table.Row key={u._id}>
+                          <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                            {u.callsign}
+                          </Table.Cell>
+                          <Table.Cell>{u.name}</Table.Cell>
+                          <Table.Cell>{u.email}</Table.Cell>
+                          <Table.Cell>{u.phoneNumber}</Table.Cell>
+                          <Table.Cell>
+                            {formatInTimeZone(
+                              u.createdAt,
+                              "Europe/Rome",
+                              "yyyy-MM-dd HH:mm:ss"
+                            )}
+                          </Table.Cell>
+                          <Table.Cell>
+                            {u.isAdmin ? (
+                              <FaCheck className="text-green-500" />
+                            ) : (
+                              <FaTimes className="text-red-600" />
+                            )}
+                          </Table.Cell>
+                          <Table.Cell>
+                            <ListGroup>
+                              {u.joinRequests.length ? (
+                                u.joinRequests.map(j => (
+                                  <ListGroup.Item>{j}</ListGroup.Item>
+                                ))
+                              ) : (
+                                <FaTimes />
+                              )}
+                            </ListGroup>
+                          </Table.Cell>
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </Table>
+                ) : users === false ? (
+                  <Spinner />
+                ) : (
+                  <p>Errore nel caricamento degli utenti</p>
+                )}
+              </Accordion.Content>
+            </Accordion.Panel>
 
-          <Typography variant="h2" className="mb-4 flex items-center">
-            Post (ultimi 100)
-          </Typography>
-          <div className="mb-6">
-            {posts ? (
-              <Table>
-                <Table.Head>
-                  <Table.HeadCell>Azioni</Table.HeadCell>
-                  <Table.HeadCell>fromUser</Table.HeadCell>
-                  <Table.HeadCell>description</Table.HeadCell>
-                  <Table.HeadCell>pictures</Table.HeadCell>
-                  <Table.HeadCell>videos</Table.HeadCell>
-                  <Table.HeadCell>createdAt</Table.HeadCell>
-                </Table.Head>
-                <Table.Body>
-                  {posts?.map(u => (
-                    <Table.Row key={u._id}>
-                      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                        <div className="flex items-center gap-2">
-                          <Button
-                            color="failure"
-                            disabled={isDeleting}
-                            onClick={() => deletePost(u)}
-                          >
-                            {isDeleting ? <Spinner /> : <span>Elimina</span>}
-                          </Button>
-                        </div>
-                      </Table.Cell>
-                      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                        {u.fromUser.callsign}
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Tooltip content={u.description}>
-                          <span className="line-clamp-3">{u.description}</span>
-                        </Tooltip>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Swiper
-                          spaceBetween={30}
-                          slidesPerView="auto"
-                          navigation
-                          pagination={{
-                            clickable: true
-                          }}
-                          modules={[Navigation, Pagination]}
+            <Accordion.Panel>
+              <Accordion.Title>Post (ultimi 100)</Accordion.Title>
+              <Accordion.Content>
+                {posts ? (
+                  <Table>
+                    <Table.Head>
+                      <Table.HeadCell>Azioni</Table.HeadCell>
+                      <Table.HeadCell>fromUser</Table.HeadCell>
+                      <Table.HeadCell>description</Table.HeadCell>
+                      <Table.HeadCell>pictures</Table.HeadCell>
+                      <Table.HeadCell>videos</Table.HeadCell>
+                      <Table.HeadCell>createdAt</Table.HeadCell>
+                    </Table.Head>
+                    <Table.Body>
+                      {posts?.map(u => (
+                        <Table.Row key={u._id}>
+                          <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                            <div className="flex items-center gap-2">
+                              <Button
+                                color="failure"
+                                disabled={isDeleting}
+                                onClick={() => deletePost(u)}
+                              >
+                                {isDeleting ? (
+                                  <Spinner />
+                                ) : (
+                                  <span>Elimina</span>
+                                )}
+                              </Button>
+                            </div>
+                          </Table.Cell>
+                          <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                            {u.fromUser.callsign}
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Tooltip content={u.description}>
+                              <span className="line-clamp-3">
+                                {u.description}
+                              </span>
+                            </Tooltip>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Swiper
+                              spaceBetween={30}
+                              slidesPerView="auto"
+                              navigation
+                              pagination={{
+                                clickable: true
+                              }}
+                              modules={[Navigation, Pagination]}
+                            >
+                              {u.pictures.map(p => (
+                                <SwiperSlide key={p}>
+                                  <Zoom>
+                                    <LazyLoadImage
+                                      className="select-none w-full max-h-32 object-center object-contain"
+                                      src={p}
+                                      alt="Post pic"
+                                    />
+                                  </Zoom>
+                                </SwiperSlide>
+                              ))}
+                            </Swiper>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <div className="w-[228px]">
+                              <Swiper
+                                spaceBetween={30}
+                                slidesPerView="auto"
+                                navigation
+                                pagination={{
+                                  clickable: true
+                                }}
+                                modules={[Navigation, Pagination]}
+                              >
+                                {u.videos.map(v => (
+                                  <SwiperSlide key={v}>
+                                    <ReactPlayer
+                                      controls
+                                      height={128}
+                                      width={228}
+                                      url={v}
+                                    />
+                                  </SwiperSlide>
+                                ))}
+                              </Swiper>
+                            </div>
+                          </Table.Cell>
+                          <Table.Cell>
+                            {formatInTimeZone(
+                              u.createdAt,
+                              "Europe/Rome",
+                              "yyyy-MM-dd HH:mm:ss"
+                            )}
+                          </Table.Cell>
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </Table>
+                ) : posts === false ? (
+                  <Spinner />
+                ) : (
+                  <p>Errore nel caricamento degli utenti</p>
+                )}
+              </Accordion.Content>
+            </Accordion.Panel>
+
+            <Accordion.Panel>
+              <Accordion.Title>Eventi</Accordion.Title>
+
+              <Accordion.Content>
+                <div className="flex items-center gap-2 mb-4">
+                  <Checkbox
+                    onChange={e => setHidePastEvents(e.target.checked)}
+                    id="remove-passed-events"
+                  />
+                  <Label htmlFor="remove-passed-events" className="select-none">
+                    Escludi eventi passati
+                  </Label>
+                </div>
+
+                {events === null ? (
+                  <p>Eventi non caricati</p>
+                ) : events ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 md:gap-4">
+                    {events
+                      .filter(e =>
+                        hidePastEvents ? isFuture(new Date(e.date)) : true
+                      )
+                      .map(e => (
+                        <Card
+                          className="cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-700 hover:scale-105 transition-all"
+                          key={e._id}
+                          imgSrc={e.logoUrl || "/logo-min.png"}
+                          onClick={() => editEventModal(e)}
                         >
-                          {u.pictures.map(p => (
-                            <SwiperSlide key={p}>
-                              <Zoom>
-                                <LazyLoadImage
-                                  className="select-none w-full max-h-32 object-center object-contain"
-                                  src={p}
-                                  alt="Post pic"
-                                />
-                              </Zoom>
-                            </SwiperSlide>
-                          ))}
-                        </Swiper>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <div className="w-[228px]">
-                          <Swiper
-                            spaceBetween={30}
-                            slidesPerView="auto"
-                            navigation
-                            pagination={{
-                              clickable: true
-                            }}
-                            modules={[Navigation, Pagination]}
-                          >
-                            {u.videos.map(v => (
-                              <SwiperSlide key={v}>
-                                <ReactPlayer
-                                  controls
-                                  height={128}
-                                  width={228}
-                                  url={v}
-                                />
-                              </SwiperSlide>
-                            ))}
-                          </Swiper>
-                        </div>
-                      </Table.Cell>
-                      <Table.Cell>
-                        {formatInTimeZone(
-                          u.createdAt,
-                          "Europe/Rome",
-                          "yyyy-MM-dd HH:mm:ss"
-                        )}
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table>
-            ) : posts === false ? (
-              <Spinner />
-            ) : (
-              <p>Errore nel caricamento degli utenti</p>
-            )}
-          </div>
-
-          <Typography variant="h2" className="mb-4 flex items-center">
-            Eventi
-          </Typography>
-
-          <div className="flex items-center gap-2 mb-4">
-            <Checkbox
-              onChange={e => setHidePastEvents(e.target.checked)}
-              id="remove-passed-events"
-            />
-            <Label htmlFor="remove-passed-events" className="select-none">
-              Escludi eventi passati
-            </Label>
-          </div>
-
-          {events === null ? (
-            <p>Eventi non caricati</p>
-          ) : events ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 md:gap-4">
-              {events
-                .filter(e =>
-                  hidePastEvents ? isFuture(new Date(e.date)) : true
-                )
-                .map(e => (
-                  <Card
-                    className="cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-700 hover:scale-105 transition-all"
-                    key={e._id}
-                    imgSrc={e.logoUrl || "/logo-min.png"}
-                    onClick={() => editEventModal(e)}
-                  >
-                    <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                      {e.name}
-                    </h5>
-                    {/* {e.description ? (
+                          <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                            {e.name}
+                          </h5>
+                          {/* {e.description ? (
                     <div
                       className="line-clamp-3"
                       dangerouslySetInnerHTML={{
@@ -1195,59 +1211,62 @@ const AdminManager = () => {
                     </p>
                   )} */}
 
-                    <p className="font-bold text-gray-700 dark:text-gray-400">
-                      📅{" "}
-                      {formatInTimeZone(
-                        new Date(e.date),
-                        "Europe/Rome",
-                        "eee d MMMM Y",
-                        {
-                          locale: it
-                        }
-                      )}
-                      <br />
-                      🕒{" "}
-                      {formatInTimeZone(
-                        new Date(e.date),
-                        "Europe/Rome",
-                        "HH:mm",
-                        {
-                          locale: it
-                        }
-                      )}
-                    </p>
-                    <p className="font-normal text-gray-700 dark:text-gray-400">
-                      📡 <strong>{e.band}</strong>
-                    </p>
-                    <p className="font-normal text-gray-700 dark:text-gray-400">
-                      Scadenza per partecipare{" "}
-                      <strong>
-                        {formatInTimeZone(
-                          new Date(e.joinDeadline),
-                          "Europe/Rome",
-                          "eee d MMMM Y",
-                          {
-                            locale: it
-                          }
-                        )}
-                      </strong>
-                    </p>
-                  </Card>
-                ))}
-              {events.length === 0 && <p>Nessun evento salvato</p>}
-              <Button
-                className="flex h-full text-md flex-col justify-center items-center"
-                onClick={newEventModal}
-              >
-                <span className="text-5xl mb-1 mr-2">
-                  <FaPlusCircle />
-                </span>{" "}
-                Nuovo evento
-              </Button>
-            </div>
-          ) : (
-            <Spinner />
-          )}
+                          <p className="font-bold text-gray-700 dark:text-gray-400">
+                            📅{" "}
+                            {formatInTimeZone(
+                              new Date(e.date),
+                              "Europe/Rome",
+                              "eee d MMMM Y",
+                              {
+                                locale: it
+                              }
+                            )}
+                            <br />
+                            🕒{" "}
+                            {formatInTimeZone(
+                              new Date(e.date),
+                              "Europe/Rome",
+                              "HH:mm",
+                              {
+                                locale: it
+                              }
+                            )}
+                          </p>
+                          <p className="font-normal text-gray-700 dark:text-gray-400">
+                            📡 <strong>{e.band}</strong>
+                          </p>
+                          <p className="font-normal text-gray-700 dark:text-gray-400">
+                            Scadenza per partecipare{" "}
+                            <strong>
+                              {formatInTimeZone(
+                                new Date(e.joinDeadline),
+                                "Europe/Rome",
+                                "eee d MMMM Y",
+                                {
+                                  locale: it
+                                }
+                              )}
+                            </strong>
+                          </p>
+                        </Card>
+                      ))}
+                    {events.length === 0 && <p>Nessun evento salvato</p>}
+                    <Button
+                      className="flex h-full text-md flex-col justify-center items-center"
+                      onClick={newEventModal}
+                    >
+                      <span className="text-5xl mb-1 mr-2">
+                        <FaPlusCircle />
+                      </span>{" "}
+                      Nuovo evento
+                    </Button>
+                  </div>
+                ) : (
+                  <Spinner />
+                )}
+              </Accordion.Content>
+            </Accordion.Panel>
+          </Accordion>
 
           {/* <form action="#" method="post" onSubmit={login}>
                     <Input
