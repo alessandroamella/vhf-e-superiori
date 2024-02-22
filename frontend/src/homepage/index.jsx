@@ -609,16 +609,19 @@ const Homepage = () => {
                   {stationEventToShow &&
                     Object.keys(stationEventToShow).length > 0 && (
                       <div className="mt-4">
-                        <LazyLoadImage
-                          src={stationEventToShow.logoUrl}
-                          alt={`Stazione attivatrice per ${stationEventToShow.name}`}
-                          className="w-full fit max-w-md md:max-w-xl lg:max-w-2xl py-4 mx-auto"
-                        />
                         {/* aggiungi link a /qsomanager/:idevento */}
                         <Card className="text-center">
                           <p className="text-gray-600 dark:text-gray-200">
                             Sei stato accettato come stazione attivatrice per:
                           </p>
+
+                          {stationEventToShow.logoUrl && (
+                            <LazyLoadImage
+                              src={stationEventToShow.logoUrl}
+                              alt={`Stazione attivatrice per ${stationEventToShow.name}`}
+                              className="w-full mx-auto mb-2 object-contain max-h-48"
+                            />
+                          )}
                           <h2 className="text-2xl font-bold">
                             {stationEventToShow.name}
                           </h2>
