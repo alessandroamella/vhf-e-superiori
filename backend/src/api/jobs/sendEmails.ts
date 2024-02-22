@@ -66,7 +66,7 @@ async function sendEqslEmail() {
 
             const email = user
                 ? user.email
-                : await qrz.scrapeEmail(fromStation.callsign);
+                : await qrz.scrapeEmail(qso.callsign);
             if (!email) {
                 logger.warn(
                     `Event ${event.name} QSO ${qso._id} no email found for ${fromStation.callsign}`
