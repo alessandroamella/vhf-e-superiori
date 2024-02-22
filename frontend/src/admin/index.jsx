@@ -11,6 +11,7 @@ import {
   Label,
   ListGroup,
   Modal,
+  Pagination,
   Spinner,
   Table,
   TextInput,
@@ -38,7 +39,7 @@ import {
 } from "react-icons/fa";
 import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import ReactHTMLTableToExcel from "react-html-table-to-excel";
-import { Navigation, Pagination } from "swiper";
+import { Navigation, Pagination as SwiperPagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Zoom from "react-medium-image-zoom";
 import ReactPlayer from "react-player";
@@ -81,9 +82,28 @@ const AdminManager = () => {
   const pictureInputRef = createRef(null);
   const eqslInputRef = createRef(null);
 
-  const [userOpen, setUserOpen] = useState(false);
-  const [postOpen, setPostOpen] = useState(false);
-  const [eventOpen, setEventOpen] = useState(true);
+  const [userPage, setUserPage] = useState(1);
+  const [postPage, setPostPage] = useState(1);
+  const [eventPage, setEventPage] = useState(1);
+
+  const usersPerPage = 10;
+  const userCurPage = Math.ceil((users?.length || 0) / usersPerPage);
+  const userInterval = [
+    (userPage - 1) * usersPerPage,
+    (userPage - 1) * usersPerPage + usersPerPage
+  ];
+  const postsPerPage = 10;
+  const postsCurPage = Math.ceil((posts?.length || 0) / postsPerPage);
+  const postsInterval = [
+    (postPage - 1) * postsPerPage,
+    (postPage - 1) * postsPerPage + postsPerPage
+  ];
+  const eventsPerPage = 10;
+  const eventsCurPage = Math.ceil((events?.length || 0) / eventsPerPage);
+  const eventsInterval = [
+    (eventPage - 1) * eventsPerPage,
+    (eventPage - 1) * eventsPerPage + eventsPerPage
+  ];
 
   useEffect(() => {
     async function getUsers() {
@@ -91,6 +111,8 @@ const AdminManager = () => {
         const { data } = await axios.get("/api/auth/all");
         console.log("users", data);
         setUsers(data);
+        // set page to last
+        setUserPage(Math.ceil(data.length / usersPerPage));
       } catch (err) {
         console.log("Errore nel caricamento degli utenti", err);
         setAlert({
@@ -102,11 +124,10 @@ const AdminManager = () => {
     }
     async function getPosts() {
       try {
-        const { data } = await axios.get("/api/post", {
-          params: { limit: 100 }
-        });
+        const { data } = await axios.get("/api/post");
         console.log("posts", data);
         setPosts(data.posts);
+        setPostPage(Math.ceil(data.posts.length / postsPerPage));
       } catch (err) {
         console.log("Errore nel caricamento dei post", err);
         setAlert({
@@ -119,6 +140,12 @@ const AdminManager = () => {
     getUsers();
     getPosts();
   }, []);
+
+  useEffect(() => {
+    if (!events) return;
+    // set to last page
+    setEventPage(Math.ceil(events.length / eventsPerPage));
+  }, [events]);
 
   async function createEvent(e) {
     e.preventDefault();
@@ -1003,54 +1030,62 @@ const AdminManager = () => {
               </Accordion.Title>
               <Accordion.Content>
                 {users ? (
-                  <Table>
-                    <Table.Head>
-                      <Table.HeadCell>callsign</Table.HeadCell>
-                      <Table.HeadCell>name</Table.HeadCell>
-                      <Table.HeadCell>email</Table.HeadCell>
-                      <Table.HeadCell>phoneNumber</Table.HeadCell>
-                      <Table.HeadCell>createdAt</Table.HeadCell>
-                      <Table.HeadCell>isAdmin</Table.HeadCell>
-                      <Table.HeadCell>joinRequests</Table.HeadCell>
-                    </Table.Head>
-                    <Table.Body>
-                      {users?.map(u => (
-                        <Table.Row key={u._id}>
-                          <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                            {u.callsign}
-                          </Table.Cell>
-                          <Table.Cell>{u.name}</Table.Cell>
-                          <Table.Cell>{u.email}</Table.Cell>
-                          <Table.Cell>{u.phoneNumber}</Table.Cell>
-                          <Table.Cell>
-                            {formatInTimeZone(
-                              u.createdAt,
-                              "Europe/Rome",
-                              "yyyy-MM-dd HH:mm:ss"
-                            )}
-                          </Table.Cell>
-                          <Table.Cell>
-                            {u.isAdmin ? (
-                              <FaCheck className="text-green-500" />
-                            ) : (
-                              <FaTimes className="text-red-600" />
-                            )}
-                          </Table.Cell>
-                          <Table.Cell>
-                            <ListGroup>
-                              {u.joinRequests.length ? (
-                                u.joinRequests.map(j => (
-                                  <ListGroup.Item>{j}</ListGroup.Item>
-                                ))
-                              ) : (
-                                <FaTimes />
+                  <div>
+                    <Table>
+                      <Table.Head>
+                        <Table.HeadCell>callsign</Table.HeadCell>
+                        <Table.HeadCell>name</Table.HeadCell>
+                        <Table.HeadCell>email</Table.HeadCell>
+                        <Table.HeadCell>phoneNumber</Table.HeadCell>
+                        <Table.HeadCell>createdAt</Table.HeadCell>
+                        <Table.HeadCell>isAdmin</Table.HeadCell>
+                        <Table.HeadCell>joinRequests</Table.HeadCell>
+                      </Table.Head>
+                      <Table.Body>
+                        {users?.slice(...userInterval)?.map(u => (
+                          <Table.Row key={u._id}>
+                            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                              {u.callsign}
+                            </Table.Cell>
+                            <Table.Cell>{u.name}</Table.Cell>
+                            <Table.Cell>{u.email}</Table.Cell>
+                            <Table.Cell>{u.phoneNumber}</Table.Cell>
+                            <Table.Cell>
+                              {formatInTimeZone(
+                                u.createdAt,
+                                "Europe/Rome",
+                                "yyyy-MM-dd HH:mm:ss"
                               )}
-                            </ListGroup>
-                          </Table.Cell>
-                        </Table.Row>
-                      ))}
-                    </Table.Body>
-                  </Table>
+                            </Table.Cell>
+                            <Table.Cell>
+                              {u.isAdmin ? (
+                                <FaCheck className="text-green-500" />
+                              ) : (
+                                <FaTimes className="text-red-600" />
+                              )}
+                            </Table.Cell>
+                            <Table.Cell>
+                              <ListGroup>
+                                {u.joinRequests.length ? (
+                                  u.joinRequests.map(j => (
+                                    <ListGroup.Item>{j}</ListGroup.Item>
+                                  ))
+                                ) : (
+                                  <FaTimes />
+                                )}
+                              </ListGroup>
+                            </Table.Cell>
+                          </Table.Row>
+                        ))}
+                      </Table.Body>
+                    </Table>
+                    <Pagination
+                      showIcons
+                      currentPage={userPage}
+                      totalPages={userCurPage}
+                      onPageChange={e => setUserPage(e)}
+                    />
+                  </div>
                 ) : users === false ? (
                   <Spinner />
                 ) : (
@@ -1060,71 +1095,48 @@ const AdminManager = () => {
             </Accordion.Panel>
 
             <Accordion.Panel>
-              <Accordion.Title>Post (ultimi 100)</Accordion.Title>
+              <Accordion.Title>Post</Accordion.Title>
               <Accordion.Content>
                 {posts ? (
-                  <Table>
-                    <Table.Head>
-                      <Table.HeadCell>Azioni</Table.HeadCell>
-                      <Table.HeadCell>fromUser</Table.HeadCell>
-                      <Table.HeadCell>description</Table.HeadCell>
-                      <Table.HeadCell>pictures</Table.HeadCell>
-                      <Table.HeadCell>videos</Table.HeadCell>
-                      <Table.HeadCell>createdAt</Table.HeadCell>
-                    </Table.Head>
-                    <Table.Body>
-                      {posts?.map(u => (
-                        <Table.Row key={u._id}>
-                          <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                            <div className="flex items-center gap-2">
-                              <Button
-                                color="failure"
-                                disabled={isDeleting}
-                                onClick={() => deletePost(u)}
-                              >
-                                {isDeleting ? (
-                                  <Spinner />
-                                ) : (
-                                  <span>Elimina</span>
-                                )}
-                              </Button>
-                            </div>
-                          </Table.Cell>
-                          <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                            {u.fromUser.callsign}
-                          </Table.Cell>
-                          <Table.Cell>
-                            <Tooltip content={u.description}>
-                              <span className="line-clamp-3">
-                                {u.description}
-                              </span>
-                            </Tooltip>
-                          </Table.Cell>
-                          <Table.Cell>
-                            <Swiper
-                              spaceBetween={30}
-                              slidesPerView="auto"
-                              navigation
-                              pagination={{
-                                clickable: true
-                              }}
-                              modules={[Navigation, Pagination]}
-                            >
-                              {u.pictures.map(p => (
-                                <SwiperSlide key={p}>
-                                  <Zoom>
-                                    <LazyLoadImage
-                                      className="select-none w-full max-h-32 object-center object-contain"
-                                      src={p}
-                                      alt="Post pic"
-                                    />
-                                  </Zoom>
-                                </SwiperSlide>
-                              ))}
-                            </Swiper>
-                          </Table.Cell>
-                          <Table.Cell>
-                            <div className="w-[228px]">
+                  <div>
+                    <Table>
+                      <Table.Head>
+                        <Table.HeadCell>Azioni</Table.HeadCell>
+                        <Table.HeadCell>fromUser</Table.HeadCell>
+                        <Table.HeadCell>description</Table.HeadCell>
+                        <Table.HeadCell>pictures</Table.HeadCell>
+                        <Table.HeadCell>videos</Table.HeadCell>
+                        <Table.HeadCell>createdAt</Table.HeadCell>
+                      </Table.Head>
+                      <Table.Body>
+                        {posts?.slice(...postsInterval)?.map(u => (
+                          <Table.Row key={u._id}>
+                            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  color="failure"
+                                  disabled={isDeleting}
+                                  onClick={() => deletePost(u)}
+                                >
+                                  {isDeleting ? (
+                                    <Spinner />
+                                  ) : (
+                                    <span>Elimina</span>
+                                  )}
+                                </Button>
+                              </div>
+                            </Table.Cell>
+                            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                              {u.fromUser.callsign}
+                            </Table.Cell>
+                            <Table.Cell>
+                              <Tooltip content={u.description}>
+                                <span className="line-clamp-3">
+                                  {u.description}
+                                </span>
+                              </Tooltip>
+                            </Table.Cell>
+                            <Table.Cell>
                               <Swiper
                                 spaceBetween={30}
                                 slidesPerView="auto"
@@ -1132,36 +1144,67 @@ const AdminManager = () => {
                                 pagination={{
                                   clickable: true
                                 }}
-                                modules={[Navigation, Pagination]}
+                                modules={[Navigation, SwiperPagination]}
                               >
-                                {u.videos.map(v => (
-                                  <SwiperSlide key={v}>
-                                    <ReactPlayer
-                                      controls
-                                      height={128}
-                                      width={228}
-                                      url={v}
-                                    />
+                                {u.pictures.map(p => (
+                                  <SwiperSlide key={p}>
+                                    <Zoom>
+                                      <LazyLoadImage
+                                        className="select-none w-full max-h-32 object-center object-contain"
+                                        src={p}
+                                        alt="Post pic"
+                                      />
+                                    </Zoom>
                                   </SwiperSlide>
                                 ))}
                               </Swiper>
-                            </div>
-                          </Table.Cell>
-                          <Table.Cell>
-                            {formatInTimeZone(
-                              u.createdAt,
-                              "Europe/Rome",
-                              "yyyy-MM-dd HH:mm:ss"
-                            )}
-                          </Table.Cell>
-                        </Table.Row>
-                      ))}
-                    </Table.Body>
-                  </Table>
+                            </Table.Cell>
+                            <Table.Cell>
+                              <div className="w-[228px]">
+                                <Swiper
+                                  spaceBetween={30}
+                                  slidesPerView="auto"
+                                  navigation
+                                  pagination={{
+                                    clickable: true
+                                  }}
+                                  modules={[Navigation, SwiperPagination]}
+                                >
+                                  {u.videos.map(v => (
+                                    <SwiperSlide key={v}>
+                                      <ReactPlayer
+                                        controls
+                                        height={128}
+                                        width={228}
+                                        url={v}
+                                      />
+                                    </SwiperSlide>
+                                  ))}
+                                </Swiper>
+                              </div>
+                            </Table.Cell>
+                            <Table.Cell>
+                              {formatInTimeZone(
+                                u.createdAt,
+                                "Europe/Rome",
+                                "yyyy-MM-dd HH:mm:ss"
+                              )}
+                            </Table.Cell>
+                          </Table.Row>
+                        ))}
+                      </Table.Body>
+                    </Table>
+                    <Pagination
+                      showIcons
+                      currentPage={postPage}
+                      totalPages={postsCurPage}
+                      onPageChange={setPostPage}
+                    />
+                  </div>
                 ) : posts === false ? (
                   <Spinner />
                 ) : (
-                  <p>Errore nel caricamento degli utenti</p>
+                  <p>Errore nel caricamento dei post</p>
                 )}
               </Accordion.Content>
             </Accordion.Panel>
@@ -1183,22 +1226,24 @@ const AdminManager = () => {
                 {events === null ? (
                   <p>Eventi non caricati</p>
                 ) : events ? (
-                  <div className="grid grid-cols-1 md:grid-cols-3 md:gap-4">
-                    {events
-                      .filter(e =>
-                        hidePastEvents ? isFuture(new Date(e.date)) : true
-                      )
-                      .map(e => (
-                        <Card
-                          className="cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-700 hover:scale-105 transition-all"
-                          key={e._id}
-                          imgSrc={e.logoUrl || "/logo-min.png"}
-                          onClick={() => editEventModal(e)}
-                        >
-                          <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                            {e.name}
-                          </h5>
-                          {/* {e.description ? (
+                  <div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 md:gap-4">
+                      {events
+                        .filter(e =>
+                          hidePastEvents ? isFuture(new Date(e.date)) : true
+                        )
+                        .slice(...eventsInterval)
+                        .map(e => (
+                          <Card
+                            className="cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-700 hover:scale-105 transition-all"
+                            key={e._id}
+                            imgSrc={e.logoUrl || "/logo-min.png"}
+                            onClick={() => editEventModal(e)}
+                          >
+                            <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                              {e.name}
+                            </h5>
+                            {/* {e.description ? (
                     <div
                       className="line-clamp-3"
                       dangerouslySetInnerHTML={{
@@ -1211,55 +1256,64 @@ const AdminManager = () => {
                     </p>
                   )} */}
 
-                          <p className="font-bold text-gray-700 dark:text-gray-400">
-                            📅{" "}
-                            {formatInTimeZone(
-                              new Date(e.date),
-                              "Europe/Rome",
-                              "eee d MMMM Y",
-                              {
-                                locale: it
-                              }
-                            )}
-                            <br />
-                            🕒{" "}
-                            {formatInTimeZone(
-                              new Date(e.date),
-                              "Europe/Rome",
-                              "HH:mm",
-                              {
-                                locale: it
-                              }
-                            )}
-                          </p>
-                          <p className="font-normal text-gray-700 dark:text-gray-400">
-                            📡 <strong>{e.band}</strong>
-                          </p>
-                          <p className="font-normal text-gray-700 dark:text-gray-400">
-                            Scadenza per partecipare{" "}
-                            <strong>
+                            <p className="font-bold text-gray-700 dark:text-gray-400">
+                              📅{" "}
                               {formatInTimeZone(
-                                new Date(e.joinDeadline),
+                                new Date(e.date),
                                 "Europe/Rome",
                                 "eee d MMMM Y",
                                 {
                                   locale: it
                                 }
                               )}
-                            </strong>
-                          </p>
-                        </Card>
-                      ))}
-                    {events.length === 0 && <p>Nessun evento salvato</p>}
-                    <Button
-                      className="flex h-full text-md flex-col justify-center items-center"
-                      onClick={newEventModal}
-                    >
-                      <span className="text-5xl mb-1 mr-2">
-                        <FaPlusCircle />
-                      </span>{" "}
-                      Nuovo evento
-                    </Button>
+                              <br />
+                              🕒{" "}
+                              {formatInTimeZone(
+                                new Date(e.date),
+                                "Europe/Rome",
+                                "HH:mm",
+                                {
+                                  locale: it
+                                }
+                              )}
+                            </p>
+                            <p className="font-normal text-gray-700 dark:text-gray-400">
+                              📡 <strong>{e.band}</strong>
+                            </p>
+                            <p className="font-normal text-gray-700 dark:text-gray-400">
+                              Scadenza per partecipare{" "}
+                              <strong>
+                                {formatInTimeZone(
+                                  new Date(e.joinDeadline),
+                                  "Europe/Rome",
+                                  "eee d MMMM Y",
+                                  {
+                                    locale: it
+                                  }
+                                )}
+                              </strong>
+                            </p>
+                          </Card>
+                        ))}
+                      {events?.length === 0 && <p>Nessun evento salvato</p>}
+                    </div>
+                    <div className="w-full flex justify-center my-3 py-1 border-y border-gray-200">
+                      <Button
+                        className="flex h-full my-auto text-md flex-col justify-center items-center"
+                        onClick={newEventModal}
+                      >
+                        <span className="text-5xl mb-1 mr-2">
+                          <FaPlusCircle />
+                        </span>{" "}
+                        Nuovo evento
+                      </Button>
+                    </div>
+                    <Pagination
+                      showIcons
+                      currentPage={eventPage}
+                      totalPages={eventsCurPage}
+                      onPageChange={setEventPage}
+                    />
                   </div>
                 ) : (
                   <Spinner />

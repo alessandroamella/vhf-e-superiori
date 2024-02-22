@@ -150,7 +150,7 @@ const ViewPostContent = React.memo(
                     <p className="uppercase tracking-tight font-semibold text-lg text-gray-700">
                       {post?.fromUser?.callsign && (
                         <Link
-                          to={`/social/by/${post?.fromUser?._id}?callsign=${post?.fromUser?.callsign}&name=${post?.fromUser?.name}`}
+                          to={`/u/${post?.fromUser?._id}?callsign=${post?.fromUser?.callsign}&name=${post?.fromUser?.name}`}
                         >
                           {post?.fromUser?.callsign}
                         </Link>
@@ -257,7 +257,7 @@ const ViewPostContent = React.memo(
                       <div className="flex justify-between w-full">
                         <div className="flex flex-col">
                           <Link
-                            to={`/social/by/${comment?.fromUser?._id}`}
+                            to={`/u/${comment?.fromUser?._id}`}
                             className="text-blue-500 hover:text-blue-700 transition-colors dark:text-gray-300 font-semibold"
                           >
                             {comment?.fromUser?.callsign || "Anonimo"}

@@ -25,14 +25,14 @@ const router = Router();
  *          minimum: 1
  *          maximum: 100
  *        description: Number of posts to return
- *        required: true
+ *        required: false
  *      - in: query
  *        name: offset
  *        schema:
  *          type: integer
  *          minimum: 0
  *        description: Number of posts to skip
- *        required: true
+ *        required: false
  *      - in: query
  *        name: fromUser
  *        schema:

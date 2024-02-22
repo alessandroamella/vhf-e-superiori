@@ -94,7 +94,10 @@ router.get(
             if (limit) qsoQuery.limit(limit);
             if (skip) qsoQuery.skip(skip);
 
-            const qsos = await qsoQuery.sort({ qsoDate: -1 }).lean();
+            const qsos = await qsoQuery
+                .sort({ qsoDate: -1 })
+                .populate({ path: "fromStation", select: "callsign" })
+                .lean();
             res.json(qsos);
         } catch (err) {
             logger.error("Error in QSOs all");

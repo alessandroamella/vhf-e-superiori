@@ -101,12 +101,11 @@ class EqslPic {
         }`.toUpperCase();
 
         // offset2 should be height / 2.35
-        const height = await sharp(filePath)
-            .metadata()
-            .then(data => data.height);
+        const { height } = await sharp(filePath).metadata();
         const offset2 = height
             ? Math.round(Math.min(height, 1920) / 2.15)
             : 460;
+        logger.debug("Offset2: " + offset2);
 
         const text3 = `Da: ${fromStation.callsign} (${fromStation.city}, ${fromStation.province})`;
 
@@ -127,14 +126,15 @@ class EqslPic {
             path.join(process.cwd(), "fonts/Roboto-Black.ttf"), // font path 2
             offset2.toString(), // +y offset from center 2
             "55", // font size 2
-            "black", // text color 2
-            "white", // text stroke color 2
+            // "#ada41d", // text color 2
+            "#dbaf5e", // text color 2
+            "#332d23", // text stroke color 2
             text3, // text 3
             path.join(process.cwd(), "fonts/Roboto-Black.ttf"), // font path 3
             offset3.toString(), // +y offset from center 3
             "69", // font size 3
-            "black", // text color 3
-            "white" // text stroke color 3
+            "#f2db2c", // text color 3
+            "#423b0c" // text stroke color 3
         ];
         logger.debug(
             "Calling ImageMagick to add text to eQSL image with args: "

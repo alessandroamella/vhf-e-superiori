@@ -1,5 +1,4 @@
 import { modelOptions, prop, Ref } from "@typegoose/typegoose";
-import IsEmail from "isemail";
 import { UserClass } from "../../auth/models";
 import { EventClass } from "../../event/models";
 

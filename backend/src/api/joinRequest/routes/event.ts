@@ -69,7 +69,7 @@ router.get(
             if (!joinRequest) {
                 return res
                     .status(NOT_FOUND)
-                    .json(createError(Errors.EVENT_NOT_FOUND));
+                    .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
             }
             res.json(joinRequest);
         } catch (err) {

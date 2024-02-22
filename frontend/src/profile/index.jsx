@@ -501,10 +501,12 @@ const Profile = () => {
                         onPlaceSelected={place => {
                           console.log("place", place);
                           const addr = place.formatted_address;
-                          const cityIndex =
-                            place.address_components.findIndex(c =>
-                              c.types.includes("administrative_area_level_3")
-                            ) || 1;
+                          let cityIndex = place.address_components.findIndex(
+                            c => c.types.includes("administrative_area_level_3")
+                          );
+                          if (cityIndex === -1) {
+                            cityIndex = 1;
+                          }
                           const city =
                             place.address_components[cityIndex].long_name;
                           const prov =

@@ -8,7 +8,8 @@ import {
   Label,
   Spinner,
   Table,
-  TextInput
+  TextInput,
+  Tooltip
 } from "flowbite-react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -102,7 +103,7 @@ const QsoManager = () => {
         const { data } = await axios.get("/api/qso", {
           params: {
             event: id,
-            fromStation: user._id
+            fromStation: user.isAdmin ? undefined : user._id
           }
         });
         console.log("QSOs", data);
@@ -242,7 +243,10 @@ const QsoManager = () => {
         // imageHref
       };
       if (user.isAdmin && !isEventStation && fromStation) {
+        console.log("fromStation changed", fromStation);
         obj.fromStation = fromStation._id;
+      } else {
+        console.log("fromStation unchanged", user);
       }
 
       const { data } = await axios.post("/api/qso", obj);
@@ -281,7 +285,11 @@ const QsoManager = () => {
   }
 
   async function deleteQso(qso) {
-    if (!window.confirm("Vuoi ELIMINARE il QSO con ID " + qso._id + "?")) {
+    if (
+      !window.confirm(
+        `Vuoi ELIMINARE il QSO verso ${qso.callsign} con ID ${qso._id}?`
+      )
+    ) {
       return;
     }
 
@@ -380,6 +388,16 @@ const QsoManager = () => {
                     <span className="font-light">({event?.name || "..."})</span>
                   </Typography>
                   <div className="mb-6">
+                    {user?.isAdmin && (
+                      <Alert className="mb-4">
+                        <div className="flex items-center gap-1">
+                          Puoi vedere i QSO di tutte le altre stazioni
+                          attivatrici, indicate con <FaInfoCircle />, in quanto
+                          sei un{" "}
+                          <span className="font-bold">amministratore</span>.
+                        </div>
+                      </Alert>
+                    )}
                     {Array.isArray(qsos) ? (
                       qsos.length > 0 ? (
                         <Table>
@@ -413,8 +431,19 @@ const QsoManager = () => {
                                     </Button>
                                   </div>
                                 </Table.Cell>
-                                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex gap-1 items-center">
                                   {q.callsign}
+                                  {q.fromStation?.callsign &&
+                                    q.fromStation?.callsign !==
+                                      user?.callsign && (
+                                      <Tooltip
+                                        content={`QSO da ${q.fromStation.callsign}`}
+                                      >
+                                        <p className="text-xs font-light text-gray-600">
+                                          <FaInfoCircle />
+                                        </p>
+                                      </Tooltip>
+                                    )}
                                 </Table.Cell>
                                 <Table.Cell>
                                   {formatInTimeZone(

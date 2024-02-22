@@ -8,17 +8,18 @@ import {
   UserContext
 } from "..";
 import { useContext } from "react";
-import { Accordion, Alert, Spinner, Table } from "flowbite-react";
-import { differenceInDays, isAfter } from "date-fns";
+import { Accordion, Alert, Card, Spinner, Table } from "flowbite-react";
+import { differenceInDays, isAfter, addHours } from "date-fns";
 import { it } from "date-fns/locale";
 import {
+  Link,
   createSearchParams,
   useNavigate,
   useSearchParams
 } from "react-router-dom";
 import { useEffect } from "react";
 import Splash from "../Splash";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaInfo, FaWhatsapp } from "react-icons/fa";
 import { formatInTimeZone } from "date-fns-tz";
 import { Carousel } from "react-round-carousel";
 import Zoom, { Controlled as ControlledZoom } from "react-medium-image-zoom";
@@ -30,6 +31,7 @@ import "react-round-carousel/src/index.css";
 import Bandiere from "../Bandiere";
 import { adminsList } from "./Info";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import axios, { isAxiosError } from "axios";
 
 const Homepage = () => {
   const { user } = useContext(UserContext);
@@ -147,6 +149,46 @@ const Homepage = () => {
       if (element) element.scrollIntoView();
     }
   }, []);
+
+  const _stationEvent = useCallback(async () => {
+    if (!events || !user) return null;
+    const now = new Date();
+    // show for next 8 hours after event has started
+    const _events = [...events].filter(e =>
+      isAfter(addHours(new Date(e.date), 8), now)
+    );
+    _events.sort(
+      (a, b) =>
+        differenceInDays(now, new Date(b.date)) -
+        differenceInDays(now, new Date(a.date))
+    );
+    const e = _events[0];
+    if (!e) return null;
+
+    console.log("event to show", e);
+
+    try {
+      const { data } = await axios.get("/api/joinrequest/event/" + e._id);
+      if (!data?.isApproved) {
+        throw new Error("join request not found or approved");
+      }
+      console.log("join request found", data);
+    } catch (err) {
+      console.log(
+        "join request error",
+        isAxiosError(err) ? err?.response?.data : err
+      );
+      return null;
+    }
+
+    // here means user has join request approved
+    return e;
+  }, [events, user]);
+
+  const [stationEventToShow, setStationEventToShow] = useState(null);
+  useEffect(() => {
+    _stationEvent().then(setStationEventToShow);
+  }, [_stationEvent]);
 
   return (
     <Layout>
@@ -564,6 +606,34 @@ const Homepage = () => {
                       </Accordion.Content>
                     </Accordion.Panel>
                   </Accordion>
+                  {stationEventToShow &&
+                    Object.keys(stationEventToShow).length > 0 && (
+                      <div className="mt-4">
+                        <LazyLoadImage
+                          src={stationEventToShow.logoUrl}
+                          alt={`Stazione attivatrice per ${stationEventToShow.name}`}
+                          className="w-full fit max-w-md md:max-w-xl lg:max-w-2xl py-4 mx-auto"
+                        />
+                        {/* aggiungi link a /qsomanager/:idevento */}
+                        <Card className="text-center">
+                          <p className="text-gray-600 dark:text-gray-200">
+                            Sei stato accettato come stazione attivatrice per:
+                          </p>
+                          <h2 className="text-2xl font-bold">
+                            {stationEventToShow.name}
+                          </h2>
+
+                          <Link
+                            to={"/qsomanager/" + stationEventToShow._id}
+                            className="underline decoration-dotted hover:text-black transition-colors"
+                          >
+                            <Button className="text-lg mt-4">
+                              Gestisci QSO
+                            </Button>
+                          </Link>
+                        </Card>
+                      </div>
+                    )}
                 </div>
                 <div>
                   <div className="mt-4 mb-2">

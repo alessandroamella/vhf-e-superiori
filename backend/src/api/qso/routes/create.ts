@@ -66,7 +66,7 @@ router.post(
                 throw new Error("User not found in QSO create");
             }
 
-            const _fromStation: UserDoc = user;
+            let _fromStation: UserDoc = user;
             if (user.isAdmin && req.body.fromStation) {
                 const fromStation = await User.findOne({
                     _id: req.body.fromStation
@@ -79,6 +79,7 @@ router.post(
                         .status(BAD_REQUEST)
                         .json(createError(Errors.USER_NOT_FOUND));
                 }
+                _fromStation = fromStation;
             } else {
                 // find join request with same event and user to check for permissions
                 const joinRequest = await JoinRequest.findOne({
@@ -117,7 +118,7 @@ router.post(
 
             const fromStation = _fromStation._id.toString();
 
-            logger.info("Creating QDO with following params");
+            logger.info("Creating QSO with following params");
             logger.info({
                 fromStation,
                 callsign,
@@ -154,7 +155,12 @@ router.post(
 
             await qso.save();
 
-            res.json(qso.toObject());
+            const populated = await qso.populate({
+                path: "fromStation",
+                select: "callsign"
+            });
+
+            res.json(populated.toObject());
         } catch (err) {
             logger.error("Error while creating QSO");
             logger.error(err);

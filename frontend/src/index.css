@@ -164,3 +164,7 @@ div[data-testid='flowbite-tooltip'] ul {
 video {
     max-height: inherit;
 }
+
+nav ul {
+    @apply list-none;
+}
