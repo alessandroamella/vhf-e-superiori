@@ -28,21 +28,54 @@ const Header = () => {
       <div className="hidden md:block">
         <Bandiere />
       </div>
-      <div className="flex justify-center md:ml-6 lg:ml-12">
-        <Button className="uppercase" onClick={() => navigate("/social")}>
-          Foto / video
-        </Button>
-      </div>
-      {user?.isAdmin && (
-        <div className="flex justify-center">
-          <Link
-            to="/eventmanager"
-            className="bg-red-600 text-white p-2 ml-6 rounded font-medium"
-          >
-            Gestione eventi (admin)
-          </Link>
+      <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 md:ml-auto">
+        <div>
+          <Button className="uppercase" onClick={() => navigate("/social")}>
+            Foto / video
+          </Button>
         </div>
-      )}
+        <div className="mt-2 scale-110">
+          <form
+            action="https://www.paypal.com/donate"
+            method="post"
+            target="_top"
+          >
+            <input type="hidden" name="business" value="7AY7WF3G8SVHY" />
+            <input type="hidden" name="no_recurring" value="0" />
+            <input
+              type="hidden"
+              name="item_name"
+              value="Aiutaci a sostenere Vhfesuperiori, stiamo facendo il massimo per offrirti un servizio migliore. Grazie!"
+            />
+            <input type="hidden" name="currency_code" value="EUR" />
+            <input
+              type="image"
+              src="https://www.paypalobjects.com/it_IT/IT/i/btn/btn_donate_LG.gif"
+              border="0"
+              name="submit"
+              title="Aiutaci a sostenere VHF e superiori!"
+              alt="Fai una donazione con il pulsante PayPal"
+            />
+            <img
+              alt=""
+              border="0"
+              src="https://www.paypal.com/it_IT/i/scr/pixel.gif"
+              width="1"
+              height="1"
+            />
+          </form>
+        </div>
+        {user?.isAdmin && (
+          <div className="flex justify-center">
+            <Link
+              to="/eventmanager"
+              className="bg-red-600 text-white p-2 rounded font-medium"
+            >
+              Gestione eventi (admin)
+            </Link>
+          </div>
+        )}
+      </div>
     </header>
   );
 };
