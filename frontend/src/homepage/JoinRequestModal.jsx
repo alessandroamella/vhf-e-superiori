@@ -25,7 +25,8 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
   useEffect(() => {
     if (!events) return;
     const now = new Date();
-    setJoinableEvents(events.filter(e => isAfter(new Date(e.date), now)));
+    const joinable = events.filter(e => isAfter(new Date(e.date), now));
+    setJoinableEvents(joinable);
   }, [events]);
 
   const [joinError, setJoinError] = useState("");
@@ -107,6 +108,8 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event]);
 
+  console.log("event", event);
+
   return (
     <Modal
       position="center"
@@ -117,7 +120,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
       <form onSubmit={sendJoinRequest}>
         <Modal.Header>
           Richiesta di partecipazione{" "}
-          <span className="underline">{event?.name}</span>
+          <span className="underline">{!disabled && event?.name}</span>
         </Modal.Header>
         <Modal.Body>
           {event && (

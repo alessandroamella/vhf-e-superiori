@@ -9,7 +9,7 @@ import {
 } from "..";
 import { useContext } from "react";
 import { Accordion, Alert, Card, Spinner, Table } from "flowbite-react";
-import { differenceInDays, isAfter, addHours } from "date-fns";
+import { differenceInDays, isAfter, addDays } from "date-fns";
 import { it } from "date-fns/locale";
 import {
   Link,
@@ -19,7 +19,7 @@ import {
 } from "react-router-dom";
 import { useEffect } from "react";
 import Splash from "../Splash";
-import { FaInfo, FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "react-icons/fa";
 import { formatInTimeZone } from "date-fns-tz";
 import { Carousel } from "react-round-carousel";
 import Zoom, { Controlled as ControlledZoom } from "react-medium-image-zoom";
@@ -153,9 +153,9 @@ const Homepage = () => {
   const _stationEvent = useCallback(async () => {
     if (!events || !user) return null;
     const now = new Date();
-    // show for next 8 hours after event has started
+    // show for next 25 days after event has started
     const _events = [...events].filter(e =>
-      isAfter(addHours(new Date(e.date), 8), now)
+      isAfter(addDays(new Date(e.date), 8), now)
     );
     _events.sort(
       (a, b) =>

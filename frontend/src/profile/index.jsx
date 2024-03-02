@@ -18,7 +18,13 @@ import axios from "axios";
 import { createSearchParams, Link, useNavigate } from "react-router-dom";
 import { isAfter } from "date-fns/esm";
 import { it, itCH } from "date-fns/locale";
-import { FaCheck, FaExclamation, FaLink, FaTrash } from "react-icons/fa";
+import {
+  FaCheck,
+  FaExclamation,
+  FaExternalLinkAlt,
+  FaLink,
+  FaTrash
+} from "react-icons/fa";
 import { formatInTimeZone } from "date-fns-tz";
 import ReactGoogleAutocomplete from "react-google-autocomplete";
 
@@ -644,6 +650,17 @@ const Profile = () => {
                           <span>❌ Non approvata</span>
                         )}
                       </p>
+
+                      {j.isApproved && (
+                        <Link to={"/qsomanager/" + j.event._id}>
+                          <Button>
+                            <div className="flex items-center gap-1 transition-colors">
+                              <FaExternalLinkAlt />
+                              <span>Invia QSO</span>
+                            </div>
+                          </Button>
+                        </Link>
+                      )}
 
                       {isAfter(new Date(j.event.joinDeadline), new Date()) && (
                         <div>
