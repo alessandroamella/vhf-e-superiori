@@ -123,6 +123,7 @@ export const errors = {
   NOT_AUTHORIZED_TO_EQSL: "Non sei autorizzato a creare una eQSL",
   NO_IMAGE_TO_EQSL: "Nessuna immagine da usare per la eQSL",
   INVALID_ADIF: "File ADIF non valido",
+  INVALID_ADIF_EXCLUDE: "Esclusione ADIF non valida",
   INVALID_NAME: "Nome non valido",
   INVALID_CALLSIGN: "Nominativo non valido"
 };
