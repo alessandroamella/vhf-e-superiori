@@ -5,7 +5,10 @@ import {
   Badge,
   Button,
   Dropdown,
+  FileInput,
+  Checkbox,
   Label,
+  Modal,
   Spinner,
   Table,
   TextInput,
@@ -15,7 +18,13 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  createRef,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from "react";
 import { formatInTimeZone } from "date-fns-tz";
 import { getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
@@ -26,8 +35,15 @@ import {
   useParams
 } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { FaCircle, FaInfoCircle, FaPlusCircle, FaSync } from "react-icons/fa";
+import {
+  FaCircle,
+  FaInfoCircle,
+  FaPlusCircle,
+  FaSync,
+  FaUndo
+} from "react-icons/fa";
 import { useCookies } from "react-cookie";
+import ButtonGroup from "flowbite-react/lib/esm/components/Button/ButtonGroup";
 
 const QsoManager = () => {
   const { user } = useContext(UserContext);
@@ -284,24 +300,150 @@ const QsoManager = () => {
     setDisabled(false);
   }
 
-  async function deleteQso(qso) {
+  const [adifFile, setAdifFile] = useState(null);
+  const [adifQsos, setAdifQsos] = useState(null);
+  const [adifChecked, setAdifChecked] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [hasFile, setHasFile] = useState(false);
+
+  const adifInputRef = createRef(null);
+
+  function getAdifKey(qso, index) {
+    return JSON.stringify({
+      callsign: qso.callsign,
+      index
+    });
+  }
+
+  async function importAdif(_adifFile) {
+    if (!_adifFile) return;
+
+    setAdifFile(_adifFile);
+
+    setHasFile(true);
+    setDisabled(true);
+    console.log("import adif", _adifFile);
+    const formData = new FormData();
+    formData.append("adif", _adifFile);
+    formData.append("event", id);
+    try {
+      const { data } = await axios.post("/api/adif/import", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+      console.log("imported", { data });
+
+      setAdifQsos(data);
+      setAdifChecked(
+        data.reduce((acc, q, i) => {
+          acc[getAdifKey(q, i)] = true;
+          return acc;
+        }, {})
+      );
+      setShowModal(true);
+    } catch (err) {
+      console.log(err?.response?.data || err);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    } finally {
+      setDisabled(false);
+    }
+  }
+
+  async function importAdifSubmit(e) {
+    e.preventDefault();
+    console.log("import adif submit", adifQsos);
+
+    // send ADIF again, this time with checked QSOs and parameter save=true
+    setDisabled(true);
+    const formData = new FormData();
+    formData.append("adif", adifFile);
+    formData.append("event", id);
+    formData.append(
+      "exclude",
+      JSON.stringify(
+        adifQsos.map((q, i) => getAdifKey(q, i)).filter(k => !adifChecked[k])
+      )
+    );
+    formData.append("save", true);
+    try {
+      const { data } = await axios.post("/api/adif/import", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+      console.log("imported", { data });
+
+      setAdifQsos(null);
+      setAdifChecked({});
+      resetAdif();
+      setAlert({
+        color: "success",
+        msg: "QSO importati con successo"
+      });
+      setDisabled(false);
+      setQsos([...qsos, ...data]);
+    } catch (err) {
+      console.log(err?.response?.data || err);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+      setDisabled(false);
+    } finally {
+      setShowModal(false);
+    }
+  }
+
+  function resetAdif() {
+    if (adifInputRef.current) {
+      adifInputRef.current.value = null;
+      setHasFile(false);
+    }
+    setAdifFile(null);
+  }
+
+  const [selectedQsos, setSelectedQsos] = useState([]);
+  function selectQso(qso, checked) {
+    if (checked) {
+      setSelectedQsos([...selectedQsos, qso._id]);
+    } else {
+      setSelectedQsos(selectedQsos.filter(q => q !== qso._id));
+    }
+  }
+
+  async function deleteSelected() {
     if (
       !window.confirm(
-        `Vuoi ELIMINARE il QSO verso ${qso.callsign} con ID ${qso._id}?`
+        `Vuoi ELIMINARE i QSO selezionati (${selectedQsos.length})?\n⚠️⚠️ L'operazione è irrevocabile!`
       )
     ) {
       return;
     }
 
-    console.log("delete qso", qso);
     setDisabled(true);
+    const deleted = [];
     try {
-      await axios.delete("/api/qso/" + qso._id);
-      console.log("delete QSO", qso._id);
-      const _qsos = [...qsos];
-      const i = _qsos.findIndex(_q => _q._id === qso._id);
-      _qsos.splice(i, 1);
-      setQsos(_qsos);
+      for (const qso of selectedQsos) {
+        await axios.delete("/api/qso/" + qso);
+        deleted.push(qso);
+      }
+      console.log("deleted", deleted);
+      setQsos(qsos.filter(q => !deleted.includes(q._id)));
+      setSelectedQsos([]);
     } catch (err) {
       console.log(err?.response?.data || err);
       setAlert({
@@ -311,6 +453,18 @@ const QsoManager = () => {
     } finally {
       setDisabled(false);
     }
+  }
+
+  async function exportAdif() {
+    if (selectedQsos.length === 0) {
+      window.alert("Seleziona almeno un QSO");
+      return;
+    }
+
+    setDisabled(true);
+    const url = `/api/adif/export?qsos=${selectedQsos.join(",")}&event=${id}`;
+    window.open(url, "_blank");
+    setDisabled(false);
   }
 
   const navigate = useNavigate();
@@ -324,6 +478,116 @@ const QsoManager = () => {
     })
   ) : (
     <Layout>
+      <Modal
+        position="center"
+        size="7xl"
+        show={showModal}
+        onClose={() => setShowModal(false)}
+      >
+        <form onSubmit={importAdifSubmit}>
+          <Modal.Header>Importa QSO da file ADIF</Modal.Header>
+          <Modal.Body className="p-0">
+            {adifQsos ? (
+              <div className="max-h-[60vh] overflow-y-auto">
+                {/* seleziona - deseleziona tutti */}
+                <ButtonGroup className="mb-4 p-4 pb-2">
+                  <Button
+                    color="light"
+                    disabled={disabled}
+                    onClick={() => {
+                      setAdifChecked(
+                        adifQsos.reduce((acc, q, i) => {
+                          acc[getAdifKey(q, i)] = true;
+                          return acc;
+                        }, {})
+                      );
+                    }}
+                  >
+                    Seleziona tutti
+                  </Button>
+                  <Button
+                    color="light"
+                    disabled={disabled}
+                    onClick={() => {
+                      setAdifChecked(
+                        adifQsos.reduce((acc, q, i) => {
+                          acc[getAdifKey(q, i)] = false;
+                          return acc;
+                        }, {})
+                      );
+                    }}
+                  >
+                    Deseleziona tutti
+                  </Button>
+                </ButtonGroup>
+
+                <Table>
+                  <Table.Head>
+                    <Table.HeadCell>Nominativo</Table.HeadCell>
+                    <Table.HeadCell>Data</Table.HeadCell>
+                    <Table.HeadCell>Frequenza</Table.HeadCell>
+                    <Table.HeadCell>Modo</Table.HeadCell>
+                  </Table.Head>
+                  <Table.Body>
+                    {adifQsos.map((q, i) => (
+                      <Table.Row
+                        key={q._id}
+                        className={`transition-colors duration-300 ${
+                          adifChecked[getAdifKey(q, i)]
+                            ? "bg-green-100"
+                            : "bg-red-100 line-through"
+                        }`}
+                      >
+                        <Table.Cell className="flex gap-2 items-center">
+                          <Checkbox
+                            value={q._id}
+                            checked={adifChecked[getAdifKey(q, i)]}
+                            onChange={e => {
+                              setAdifChecked({
+                                ...adifChecked,
+                                [getAdifKey(q, i)]: e.target.checked
+                              });
+                            }}
+                          />{" "}
+                          {q.callsign}
+                        </Table.Cell>
+                        <Table.Cell>
+                          {formatInTimeZone(
+                            q.qsoDate,
+                            "Europe/Rome",
+                            "yyyy-MM-dd HH:mm"
+                          )}
+                        </Table.Cell>
+                        <Table.Cell>{q.frequency} MHz</Table.Cell>
+                        <Table.Cell>{q.mode}</Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table>
+              </div>
+            ) : (
+              <Spinner />
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <div className="w-full flex justify-center gap-2">
+              <Button
+                color="gray"
+                type="button"
+                // disabled={!user || changePwBtnDisabled}
+                disabled={disabled}
+                onClick={() => setShowModal(false)}
+              >
+                Chiudi
+              </Button>
+              <Button type="submit" disabled={disabled}>
+                Importa
+              </Button>
+            </div>
+          </Modal.Footer>
+        </form>
+      </Modal>
+
       <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           {alert && (
@@ -400,64 +664,113 @@ const QsoManager = () => {
                     )}
                     {Array.isArray(qsos) ? (
                       qsos.length > 0 ? (
-                        <Table>
-                          <Table.Head>
-                            <Table.HeadCell>Azioni</Table.HeadCell>
-                            <Table.HeadCell>Nominativo</Table.HeadCell>
-                            <Table.HeadCell>Data</Table.HeadCell>
-                            <Table.HeadCell>Frequenza</Table.HeadCell>
-                            <Table.HeadCell>Modo</Table.HeadCell>
-                          </Table.Head>
-                          <Table.Body>
-                            {qsos?.map(q => (
-                              <Table.Row
-                                key={q._id}
-                                className={`transition-colors duration-1000 ${
-                                  highlighted === q._id ? "bg-green-200" : ""
-                                }`}
-                              >
-                                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                  <div className="flex items-center gap-2">
-                                    <Button
-                                      color="failure"
-                                      disabled={disabled}
-                                      onClick={() => deleteQso(q)}
-                                    >
-                                      {disabled ? (
-                                        <Spinner />
-                                      ) : (
-                                        <span>Elimina</span>
+                        <div>
+                          {/* seleziona - deseleziona - esporta adif - elimina */}
+                          <ButtonGroup className="mb-2">
+                            <Button
+                              color="light"
+                              disabled={disabled}
+                              onClick={() => {
+                                setSelectedQsos(qsos.map(q => q._id));
+                              }}
+                            >
+                              Seleziona tutti
+                            </Button>
+                            <Button
+                              color="light"
+                              disabled={disabled}
+                              onClick={() => {
+                                setSelectedQsos([]);
+                              }}
+                            >
+                              Deseleziona tutti
+                            </Button>
+                            <Button
+                              color="dark"
+                              disabled={disabled || selectedQsos.length === 0}
+                              onClick={exportAdif}
+                            >
+                              {disabled ? (
+                                <Spinner size="sm" />
+                              ) : (
+                                <span>Esporta ADIF</span>
+                              )}
+                            </Button>
+                            <Button
+                              color="failure"
+                              disabled={disabled || selectedQsos.length === 0}
+                              onClick={deleteSelected}
+                            >
+                              {disabled ? (
+                                <Spinner size="sm" />
+                              ) : (
+                                <span>Elimina</span>
+                              )}
+                            </Button>
+                          </ButtonGroup>
+
+                          <div className="max-h-screen overflow-y-auto shadow-lg">
+                            <Table>
+                              <Table.Head>
+                                <Table.HeadCell>Azioni</Table.HeadCell>
+                                <Table.HeadCell>Nominativo</Table.HeadCell>
+                                <Table.HeadCell>Data</Table.HeadCell>
+                                <Table.HeadCell>Frequenza</Table.HeadCell>
+                                <Table.HeadCell>Modo</Table.HeadCell>
+                              </Table.Head>
+                              <Table.Body>
+                                {qsos?.map((q, i) => (
+                                  <Table.Row
+                                    key={q._id}
+                                    className={`transition-colors duration-1000 ${
+                                      highlighted === q._id
+                                        ? "bg-green-200"
+                                        : i % 2 === 0
+                                        ? "bg-gray-100 dark:bg-gray-800"
+                                        : "bg-gray-200 dark:bg-gray-700"
+                                    }`}
+                                  >
+                                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                      <div className="flex items-center gap-2">
+                                        <Checkbox
+                                          value={q._id}
+                                          disabled={disabled}
+                                          checked={selectedQsos.includes(q._id)}
+                                          onClick={e =>
+                                            selectQso(q, e.target.checked)
+                                          }
+                                        />
+                                      </div>
+                                    </Table.Cell>
+                                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex gap-1 items-center">
+                                      {q.callsign}
+                                      {q.fromStation?.callsign &&
+                                        q.fromStation?.callsign !==
+                                          user?.callsign && (
+                                          <Tooltip
+                                            content={`QSO da ${q.fromStation.callsign}`}
+                                          >
+                                            <p className="text-xs font-light text-gray-600">
+                                              <FaInfoCircle />
+                                            </p>
+                                          </Tooltip>
+                                        )}
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                      {formatInTimeZone(
+                                        q.qsoDate,
+                                        "Europe/Rome",
+                                        "yyyy-MM-dd HH:mm"
                                       )}
-                                    </Button>
-                                  </div>
-                                </Table.Cell>
-                                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex gap-1 items-center">
-                                  {q.callsign}
-                                  {q.fromStation?.callsign &&
-                                    q.fromStation?.callsign !==
-                                      user?.callsign && (
-                                      <Tooltip
-                                        content={`QSO da ${q.fromStation.callsign}`}
-                                      >
-                                        <p className="text-xs font-light text-gray-600">
-                                          <FaInfoCircle />
-                                        </p>
-                                      </Tooltip>
-                                    )}
-                                </Table.Cell>
-                                <Table.Cell>
-                                  {formatInTimeZone(
-                                    q.qsoDate,
-                                    "Europe/Rome",
-                                    "yyyy-MM-dd HH:mm"
-                                  )}
-                                </Table.Cell>
-                                <Table.Cell>{q.frequency} MHz</Table.Cell>
-                                <Table.Cell>{q.mode}</Table.Cell>
-                              </Table.Row>
-                            ))}
-                          </Table.Body>
-                        </Table>
+                                    </Table.Cell>
+                                    <Table.Cell>{q.frequency} MHz</Table.Cell>
+                                    <Table.Cell>{q.mode}</Table.Cell>
+                                  </Table.Row>
+                                ))}
+                              </Table.Body>
+                            </Table>
+                          </div>
+                        </div>
                       ) : (
                         <p>Nessun QSO registrato</p>
                       )
@@ -471,9 +784,32 @@ const QsoManager = () => {
                     )}
                   </div>
 
-                  <Typography variant="h2" className="mb-2 flex items-center">
-                    Crea QSO
-                  </Typography>
+                  <div className="flex flex-col md:flex-row justify-center md:justify-between gap-4 items-center">
+                    <Typography variant="h2" className="mb-2 flex items-center">
+                      Crea QSO
+                    </Typography>
+
+                    <div>
+                      <h3 className="font-bold">Importa QSO da file ADIF</h3>
+                      <div className="mb-8 flex items-center gap-2">
+                        <FileInput
+                          disabled={disabled}
+                          helperText={disabled && <Spinner />}
+                          accept=".adi"
+                          className="h-fit"
+                          onChange={e => importAdif(e.target.files[0])}
+                          ref={adifInputRef}
+                        />
+                        <Button
+                          color="dark"
+                          onClick={resetAdif}
+                          disabled={disabled || !hasFile}
+                        >
+                          <FaUndo />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                   {user ? (
                     !user.address ? (
                       <Alert color="failure">

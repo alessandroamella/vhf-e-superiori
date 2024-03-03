@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance } from "axios";
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
@@ -9,8 +8,8 @@ import { envs } from "../../shared/envs";
 import { logger } from "../../shared/logger";
 import { Errors } from "../errors";
 import moment from "moment";
-import { writeFileSync } from "fs";
-import { join } from "path";
+import { googleMaps } from "../maps";
+import { QthData } from "../maps/interfaces";
 
 interface _RawData {
     call: [string];
@@ -50,71 +49,6 @@ interface QrzData {
     address?: string;
     state?: string;
     country: string;
-}
-
-/**
- * @swagger
- *  components:
- *    schemas:
- *      QthData:
- *        type: object
- *        properties:
- *          latitude:
- *            type: string
- *          longitude:
- *            type: string
- *          type:
- *            type: string
- *          name:
- *            type: string
- *          number:
- *            type: number
- *          postal_code:
- *            type: string
- *          street:
- *            type: string
- *          confidence:
- *            type: number
- *          region:
- *            type: string
- *          region_code:
- *            type: string
- *          county:
- *            type: string
- *          locality:
- *            type: string
- *          administrative_area:
- *            type: string
- *          neighbourhood:
- *            type: string
- *          country:
- *            type: string
- *          country_code:
- *            type: string
- *          continent:
- *            type: string
- *          label:
- *            type: string
- */
-interface QthData {
-    latitude: number;
-    longitude: number;
-    type: string;
-    name: string;
-    number?: any;
-    postal_code?: any;
-    street?: any;
-    confidence: number;
-    region: string;
-    region_code: string;
-    county?: any;
-    locality: string;
-    administrative_area: string;
-    neighbourhood?: any;
-    country: string;
-    country_code: string;
-    continent: string;
-    label: string;
 }
 
 /**
@@ -311,7 +245,7 @@ class Qrz {
         return obj;
     }
 
-    private async _fetchPos(_d: _RawData): Promise<any | null> {
+    private async _fetchPos(_d: _RawData) {
         const d = this._convertRawData(_d);
 
         if (!d.address && !d.state) {
@@ -319,46 +253,9 @@ class Qrz {
             return null;
         }
 
-        try {
-            logger.info(
-                `Positionstack q: ${d.address} ${d.state || ""} ${d.country}`
-            );
-            // TODO: use Google Maps API instead of Positionstack
-            const qthReq = await axios.get(
-                "https://maps.googleapis.com/maps/api/geocode/json",
-                {
-                    params: {
-                        key: envs.GOOGLE_MAPS_API_KEY,
-                        address: `${d.address} ${d.state || ""} ${d.country}`
-                    }
-                }
-            );
-
-            writeFileSync(
-                join(process.cwd(), "sasssss.json"),
-                JSON.stringify(qthReq.data, null, 2)
-            );
-
-            if (qthReq.data.error_message) {
-                logger.error(
-                    "Error while fetching info from Google Maps: " +
-                        qthReq.data.status +
-                        " - " +
-                        qthReq.data.error_message
-                );
-                return null;
-            }
-
-            return qthReq.data.data[0];
-        } catch (err) {
-            logger.error("Error while fetching info from Google Maps");
-            if (axios.isAxiosError(err)) {
-                logger.error(err.response?.data || err.response || err);
-            } else {
-                logger.error(err as any);
-            }
-            return null;
-        }
+        return await googleMaps.geocode(
+            `${d.address} ${d.state || ""} ${d.country}`
+        );
     }
 
     private async _getRawInfo(callsign: string): Promise<_RawData> {
