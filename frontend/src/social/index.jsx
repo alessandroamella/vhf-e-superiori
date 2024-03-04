@@ -109,10 +109,10 @@ const Social = () => {
           // className="flex rounded-full w-16 h-16 aspect-square items-center fixed bottom-8 right-8 z-40"
           className="flex rounded-full uppercase items-center fixed bottom-8 right-8 z-40"
         >
-          <Link to="new" className="text-xl text-white font-bold">
-            {/* <FaPlus /> */}
-            Inserisci foto / video
-          </Link>
+          {/* <Link to="new" className="text-xl text-white font-bold"> */}
+          {/* <FaPlus /> */}
+          Inserisci foto / video
+          {/* </Link> */}
           {/* <span className="ml-1">Nuovo post</span> */}
         </Button>
 
