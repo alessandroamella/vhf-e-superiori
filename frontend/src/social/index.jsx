@@ -13,6 +13,7 @@ import axios from "axios";
 import { Alert, Button, Spinner } from "flowbite-react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MenuContent from "../sideMenu/MenuContent";
+import { FaExclamationTriangle } from "react-icons/fa";
 
 const Social = () => {
   const { splashPlayed } = useContext(SplashContext);
@@ -33,6 +34,12 @@ const Social = () => {
   const cursorLimit = 10;
 
   useEffect(() => {
+    // DEBUG
+    return setAlert({
+      color: "warning",
+      msg: "Il servizio è temporaneamente sospeso per manutenzione. Ci scusiamo per il disagio."
+    });
+
     async function fetchPosts() {
       console.log(
         "fetching posts from " + cursor + " to " + (cursor + cursorLimit)
@@ -114,7 +121,21 @@ const Social = () => {
             </div>
           </div>
           <div className="col-span-2">
-            {postsLoaded ? (
+            {/* DEBUG */}
+            <Alert className="mb-6" color="warning">
+              <div className="flex items-center gap-1">
+                <FaExclamationTriangle />{" "}
+                <h3 className="text-lg font-semibold">
+                  Sospensione temporanea
+                </h3>
+              </div>
+              <p>
+                Questa sezione è temporaneamente sospesa per manutenzione.
+                Prevediamo di rinnovare e riaprire il caricamento di contenuti
+                al più presto. Grazie per la comprensione.
+              </p>
+            </Alert>
+            {/* {postsLoaded ? (
               posts.length > 0 ? (
                 <InfiniteScroll
                   dataLength={posts.length}
@@ -157,7 +178,7 @@ const Social = () => {
                   <FeedCard key={e} />
                 ))}
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
