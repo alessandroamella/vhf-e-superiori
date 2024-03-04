@@ -65,7 +65,7 @@ const Homepage = () => {
     if (searchParams.get("toconfirm")) {
       setAlert({
         color: "info",
-        msg: "Per prenotarti, verifica il tuo account cliccando il link presente all'interno della mail"
+        msg: "Grazie per esserti registrato! Per favore verifica il tuo account cliccando il link presente all'interno della mail"
       });
       window.scrollTo({
         top: 0,
@@ -74,7 +74,7 @@ const Homepage = () => {
     } else if (searchParams.get("confirmed")) {
       setAlert({
         color: "success",
-        msg: "Email confermata con successo"
+        msg: "Email confermata con successo! Ora puoi prenotarti come stazione attivatrice, inviare foto e video e altro."
       });
     }
   }, [searchParams]);

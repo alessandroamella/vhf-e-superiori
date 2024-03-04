@@ -386,6 +386,10 @@ const AdminManager = () => {
         color: "failure",
         msg: getErrorStr(err?.response?.data?.err)
       });
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     } finally {
       setIsDeleting(false);
     }

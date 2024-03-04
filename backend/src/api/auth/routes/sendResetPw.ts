@@ -67,11 +67,6 @@ router.post(
                     "Email " + req.body.email + " not found in send reset pw"
                 );
                 return res.sendStatus(OK);
-            } else if (!user.isVerified) {
-                logger.debug("User not verified for send reset pw");
-                return res
-                    .status(UNAUTHORIZED)
-                    .json(createError(Errors.USER_NOT_VERIFIED));
             }
 
             const passwordResetCode = randomstring.generate({

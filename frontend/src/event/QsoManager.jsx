@@ -654,12 +654,10 @@ const QsoManager = () => {
                   <div className="mb-6">
                     {user?.isAdmin && (
                       <Alert className="mb-4">
-                        <div className="flex items-center gap-1">
-                          Puoi vedere i QSO di tutte le altre stazioni
-                          attivatrici, indicate con <FaInfoCircle />, in quanto
-                          sei un{" "}
-                          <span className="font-bold">amministratore</span>.
-                        </div>
+                        Puoi vedere i QSO di tutte le altre stazioni
+                        attivatrici, indicate con{" "}
+                        <FaInfoCircle className="inline" />, in quanto sei un{" "}
+                        <span className="font-bold">amministratore</span>.
                       </Alert>
                     )}
                     {Array.isArray(qsos) ? (

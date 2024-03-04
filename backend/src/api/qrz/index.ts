@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, isAxiosError } from "axios";
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
 import { parseStringPromise } from "xml2js";
@@ -208,6 +208,7 @@ class Qrz {
         callsign: string,
         key: string
     ): Promise<_RawData | null> {
+        let json;
         try {
             logger.debug(`QRZ callsign: ${callsign}`);
             const d = Date.parse(new Date().toString());
@@ -216,7 +217,7 @@ class Qrz {
             );
             logger.debug("QRZ raw data:");
             logger.debug(data);
-            const json = await parseStringPromise(data);
+            json = await parseStringPromise(data);
             if (JSON.stringify(json).includes("Not found:")) {
                 logger.debug("Callsign " + callsign + " not found");
                 return null;
@@ -228,6 +229,10 @@ class Qrz {
                 logger.error(err.response?.data || err.response || err);
             } else {
                 logger.error(err);
+            }
+            if (json) {
+                logger.error("JSON was:");
+                logger.error(json);
             }
             return null;
         }
@@ -355,7 +360,7 @@ class Qrz {
             return this.cachedData[callsign];
         } catch (err) {
             logger.error("Error while scraping HTML for callsign " + callsign);
-            logger.error(err);
+            logger.error(isAxiosError(err) ? err.response?.data : err);
             return null;
         }
     }

@@ -67,6 +67,7 @@
         "libphonenumber-js": "^1.10.36",
         "mime-types": "^2.1.35",
         "moment": "^2.29.4",
+        "moment-timezone": "^0.5.45",
         "mongoose": "^7.3.1",
         "morgan": "^1.10.0",
         "nodemailer": "^6.9.3",
