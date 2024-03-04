@@ -43,6 +43,6 @@ export const logger = createLogger({
 
 export class LoggerStream {
     public write(message: string) {
-        logger.info(message);
+        logger.debug(message);
     }
 }

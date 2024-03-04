@@ -12,7 +12,7 @@ import {
   Spinner,
   TextInput
 } from "flowbite-react";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { FaInfo } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { EventsContext, getErrorStr, UserContext } from "..";
@@ -54,6 +54,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
       setAlreadyJoined(true);
       setClosable(true);
     } catch (err) {
+      console.log("sendJoinRequest error", err);
       setJoinError(getErrorStr(err?.response?.data?.err));
       setDisabled(false);
     } finally {
@@ -103,12 +104,18 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
   }, [alreadyJoined]);
 
   useEffect(() => {
+    console.log("join request modal event", event);
+    console.log("join request modal joinable", joinableEvents);
+
     if (!event) return;
     if (!isBetweenDates()) setDisabled(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event]);
 
-  console.log("event", event);
+  const noEventsToJoin = useMemo(() => {
+    if (!Array.isArray(joinableEvents)) return false;
+    return joinableEvents.length === 0;
+  }, [joinableEvents]);
 
   return (
     <Modal
@@ -147,7 +154,18 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
           )}
 
           {alreadyJoined === null ? (
-            <Spinner />
+            noEventsToJoin ? (
+              <Alert color="info" className="mb-4">
+                <span>
+                  <span className="inline">
+                    <FaInfo className="inline" />
+                  </span>{" "}
+                  Non ci sono eventi a cui puoi fare richiesta al momento.
+                </span>
+              </Alert>
+            ) : (
+              <Spinner />
+            )
           ) : alreadyJoined ? (
             <Alert color="info" className="mb-4">
               <span>
@@ -259,7 +277,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
             <Button
               color="gray"
               type="button"
-              disabled={disabled && !closable}
+              disabled={disabled && !closable && !noEventsToJoin}
               onClick={() => setOpen(false)}
             >
               Chiudi

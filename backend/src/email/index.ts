@@ -4,14 +4,16 @@ import { UserDoc } from "../api/auth/models";
 import { EventDoc } from "../api/event/models";
 import { JoinRequestDoc } from "../api/joinRequest/models";
 import { envs, logger } from "../shared";
-import { formatInTimeZone } from "date-fns-tz";
-import { it } from "date-fns/locale";
 import { CommentDoc } from "../api/comment/models";
 import { BasePostDoc } from "../api/post/models";
 import { qrz } from "../api/qrz";
 import { QsoDoc } from "../api/qso/models";
 import EqslPic from "../api/eqsl/eqsl";
-import { unlink } from "fs/promises";
+import { readFile, unlink } from "fs/promises";
+import path from "path";
+import moment from "moment-timezone";
+
+moment.locale("it");
 
 export class EmailService {
     private static transporter: nodemailer.Transporter | null = null;
@@ -19,6 +21,18 @@ export class EmailService {
     private static adminEmails = Array.from(
         Array(parseInt(envs.TOT_ADMIN_EMAILS)).keys()
     ).map(i => process.env[`ADMIN_EMAIL_${i}`] as string);
+
+    private static async loadMailFromFile(name: string, ...params: string[]) {
+        const text = await readFile(path.join(process.cwd(), "emails", name), {
+            encoding: "utf-8"
+        });
+        // replace {0}, {1}, ... with params
+        return params.reduce(
+            (acc, param, i) =>
+                acc.replace(new RegExp(`\\{${i}\\}`, "g"), param),
+            text
+        );
+    }
 
     private static _initialize(): Promise<void> {
         return new Promise((resolve, reject) => {
@@ -65,19 +79,17 @@ export class EmailService {
     }
 
     public static async sendResetPwMail(user: UserDoc, code: string) {
+        const html = await EmailService.loadMailFromFile(
+            "resetPw.html",
+            user.callsign,
+            user._id.toString(),
+            code
+        );
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
             to: user.email,
             subject: "Reset password",
-            html:
-                "<p>Ciao " +
-                user.name +
-                ' <span style="font-weight: 600">' +
-                user.callsign +
-                "</span>, abbiamo ricevuto la tua richiesta di reset della password.<br />" +
-                'Se non sei stato tu, faccelo sapere ad <a style="text-decoration: none;" href="mailto:alexlife@tiscali.it">alexlife@tiscali.it</a>, altrimenti<br />' +
-                `<br /><span style="margin-top: 1rem; margin-bottom: 1rem; font-size: 1.2rem">Altrimenti, procedi alla verifica del tuo account <a href="https://www.vhfesuperiori.eu/resetpw?user=${user._id}&code=${code}&callsign=${user.callsign}" style="font-weight: 800">cliccando qui</a>.</span><br /><br />` +
-                'Buona giornata da <a style="text-decoration: none;" href="https://www.vhfesuperiori.eu">vhfesuperiori.eu</a>!</p>'
+            html
         };
 
         await EmailService.sendMail(message);
@@ -92,20 +104,18 @@ export class EmailService {
         logger.debug(
             "Sending verify mail to " + user.email + " with code: " + code
         );
+        const html = await EmailService.loadMailFromFile(
+            "verifyEmail.html",
+            user.callsign,
+            isNewUser ? "registrazione" : "cambio email",
+            user._id.toString(),
+            code
+        );
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
             to: user.email,
-            subject: "Verifica account",
-            html:
-                "<p>Ciao " +
-                user.name +
-                ' <span style="font-weight: 600">' +
-                user.callsign +
-                "</span>, abbiamo ricevuto la tua richiesta di " +
-                (isNewUser ? "registrazione" : "cambio email") +
-                '.<br />Se non sei stato tu, faccelo sapere ad <a style="text-decoration: none;" href="mailto:alexlife@tiscali.it">alexlife@tiscali.it</a>, altrimenti<br />' +
-                `<br /><span style="margin-top: 1rem; margin-bottom: 1rem; font-size: 1.2rem">procedi alla verifica del tuo account <a href="https://www.vhfesuperiori.eu/api/auth/verify/${user._id}/${code}" style="font-weight: 800">cliccando qui</a>.</span><br /><br />` +
-                'Buona giornata da <a style="text-decoration: none;" href="https://www.vhfesuperiori.eu">vhfesuperiori.eu</a>!</p>'
+            subject: "Verifica email VHF e superiori",
+            html
         };
 
         await EmailService.sendMail(message);
@@ -117,26 +127,20 @@ export class EmailService {
         event: EventDoc,
         user: UserDoc
     ) {
+        const html = await EmailService.loadMailFromFile(
+            "requestStation.html",
+            user.callsign,
+            event.name,
+            moment(event.date)
+                .tz("Europe/Rome")
+                .format("dddd D MMMM Y [alle] HH:mm")
+        );
+
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
             to: user.email,
             subject: "Richiesta per stazione attivatrice",
-            html:
-                "<p>Ciao " +
-                user.name +
-                ' <span style="font-weight: 600">' +
-                user.callsign +
-                "</span>, hai richiesto di partecipare come " +
-                'stazione attivatrice all\'evento <span style="font-weight: 600">' +
-                event.name +
-                '</span> con l\'antenna "<span style="font-style: italic">' +
-                joinRequest.antenna +
-                '</span>"<br />' +
-                'La tua richiesta è attualmente <span style="font-weight: 600">in attesa</span>.<br />' +
-                'Potrai essere ricontattato nei giorni a seguire al numero indicato durante la registrazione (<span style="font-weight: 600">' +
-                user.phoneNumber +
-                "</span>) da un amministratore.<br />" +
-                'Buona giornata da <a href="https://www.vhfesuperiori.eu">vhfesuperiori.eu</a>!</p>'
+            html
         };
 
         await EmailService.sendMail(message);
@@ -148,37 +152,20 @@ export class EmailService {
         event: EventDoc,
         user: UserDoc
     ) {
+        const html = await EmailService.loadMailFromFile(
+            "acceptedStation.html",
+            user.callsign,
+            event.name,
+            moment(event.date)
+                .tz("Europe/Rome")
+                .format("dddd D MMMM Y [alle] HH:mm")
+        );
+
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
             to: user.email,
             subject: "Accettazione richiesta stazione attivatrice",
-            html:
-                "<p>Ciao " +
-                user.name +
-                ' <span style="font-weight: 600">' +
-                user.callsign +
-                "</span>, hai richiesto di partecipare come " +
-                'stazione attivatrice all\'evento <span style="font-weight: 600">' +
-                event.name +
-                '</span> con l\'antenna "<span style="font-style: italic">' +
-                joinRequest.antenna +
-                '</span>"<br />' +
-                'La tua richiesta è stata <span style="font-weight: 600">accettata</span>! 🎉🎉<br />' +
-                'Ricordati di essere presente durante l\'evento <span style="font-weight: 600">' +
-                formatInTimeZone(
-                    new Date(event.date),
-                    "Europe/Rome",
-                    "eeee d MMMM Y",
-                    {
-                        locale: it
-                    }
-                ) +
-                '</span> alle ore <span style="font-weight: 600">' +
-                formatInTimeZone(new Date(event.date), "Europe/Rome", "HH:mm", {
-                    locale: it
-                }) +
-                "</span>.<br />" +
-                'Buona giornata da <a href="https://www.vhfesuperiori.eu">vhfesuperiori.eu</a>!</p>'
+            html
         };
 
         await EmailService.sendMail(message);

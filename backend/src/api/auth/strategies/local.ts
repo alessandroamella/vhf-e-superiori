@@ -35,10 +35,14 @@ passport.use(
                         " already exists"
                 );
                 logger.debug("Password = " + password);
-                const exists = await User.exists({
+                const exists = await User.findOne({
                     $or: [{ callsign }, { email }, { phoneNumber }]
                 });
-                if (exists) return done(new Error(Errors.ALREADY_REGISTERED));
+                if (exists) {
+                    logger.debug("User already exists:");
+                    logger.debug(exists);
+                    return done(new Error(Errors.ALREADY_REGISTERED));
+                }
 
                 const { address, lat, lon, city, province } = req.body;
                 logger.debug("Address: " + address);

@@ -28,7 +28,7 @@ const Header = () => {
       <div className="hidden md:block">
         <Bandiere />
       </div>
-      <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 md:ml-auto">
+      <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 md:justify-center md:w-full">
         <div>
           <Button className="uppercase" onClick={() => navigate("/social")}>
             Foto / video
