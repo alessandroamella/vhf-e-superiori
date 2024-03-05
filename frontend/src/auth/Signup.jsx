@@ -40,7 +40,7 @@ const OpenExternally = ({ doc }) => {
     >
       <FaExternalLinkAlt className="inline mr-1" />
       Apri
-      {doc === "tos" ? " i Termini e Condizioni" : " la Privacy Policy"}
+      {doc === "tos" ? " i Termini e Condizioni" : " la Privacy Policy"}{" "}
       esternamente
     </Link>
   );
