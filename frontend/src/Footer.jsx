@@ -27,27 +27,23 @@ const Footer = () => {
         <FaCircle className="hidden md:block scale-[.25] text-gray-700 dark:text-gray-300 mx-2" />
 
         <span className="text-center">
-          <a
-            href="/document/tos"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/document/tos"
             className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
           >
             Termini e Condizioni
-          </a>
+          </Link>
         </span>
 
         <FaCircle className="hidden md:block scale-[.25] text-gray-700 dark:text-gray-300 mx-2" />
 
         <span className="text-center">
-          <a
-            href="/document/privacy"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/document/privacy"
             className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
           >
             Privacy Policy
-          </a>
+          </Link>
         </span>
 
         <FaCircle className="hidden md:block scale-[.25] text-gray-700 dark:text-gray-300 mx-2" />

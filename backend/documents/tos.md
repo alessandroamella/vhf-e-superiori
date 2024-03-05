@@ -1,5 +1,7 @@
 # Termini e Condizioni - VHF e Superiori
 
+Ultima modifica: 5 Marzo 2024
+
 Benvenuto su VHF e Superiori (https://www.vhfesuperiori.eu/). L'accesso e l'utilizzo dei nostri servizi sono soggetti ai seguenti Termini e Condizioni. Leggi attentamente questo documento prima di utilizzare il nostro sito web e i relativi servizi. Utilizzando il nostro sito web e i servizi, accetti di essere vincolato dai seguenti Termini e Condizioni.
 
 ## 1. Registrazione e Gestione dei Dati
