@@ -360,7 +360,11 @@ class Qrz {
             return this.cachedData[callsign];
         } catch (err) {
             logger.error("Error while scraping HTML for callsign " + callsign);
-            logger.error(isAxiosError(err) ? err.response?.data : err);
+            logger.error(
+                isAxiosError(err)
+                    ? err.response?.data || err.response || err.status
+                    : err
+            );
             return null;
         }
     }

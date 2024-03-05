@@ -71,7 +71,7 @@ const Header = () => {
               to="/eventmanager"
               className="bg-red-600 text-white p-2 rounded font-medium"
             >
-              Gestione eventi (admin)
+              Admin
             </Link>
           </div>
         )}
