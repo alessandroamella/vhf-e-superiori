@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { FaCircle } from "react-icons/fa";
 // import { FaCircle, FaDotCircle } from "react-icons/fa";
 import { ReadyContext, ViewsContext } from ".";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const { ready } = useContext(ReadyContext);
@@ -20,6 +21,19 @@ const Footer = () => {
             className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
           >
             IU4QSG
+          </a>
+        </span>
+
+        <FaCircle className="hidden md:block scale-[.25] text-gray-700 dark:text-gray-300 mx-2" />
+
+        <span className="text-center">
+          <a
+            href="/api/document/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
+          >
+            Privacy Policy
           </a>
         </span>
 

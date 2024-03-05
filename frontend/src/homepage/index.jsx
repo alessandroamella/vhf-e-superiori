@@ -5,7 +5,8 @@ import {
   EventsContext,
   ReadyContext,
   SplashContext,
-  UserContext
+  UserContext,
+  getErrorStr
 } from "..";
 import { useContext } from "react";
 import { Accordion, Alert, Card, Spinner, Table } from "flowbite-react";
@@ -176,7 +177,7 @@ const Homepage = () => {
     } catch (err) {
       console.log(
         "join request error",
-        isAxiosError(err) ? err?.response?.data : err
+        getErrorStr(err?.response?.data?.err || err?.response?.data || err)
       );
       return null;
     }

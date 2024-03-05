@@ -1,13 +1,6 @@
 import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
-import {
-  Accordion,
-  Alert,
-  Card,
-  Label,
-  TextInput,
-  Tooltip
-} from "flowbite-react";
+import { Alert, Card, Label, TextInput, Tooltip } from "flowbite-react";
 import React, {
   createRef,
   useEffect,
@@ -37,6 +30,20 @@ const useFocus = () => {
   };
 
   return [htmlElRef, setFocus];
+};
+
+const OpenExternally = ({ doc }) => {
+  return (
+    <Link
+      to={`/document/${doc}`}
+      className="text-red-500 hover:text-red-600 transition-colors"
+    >
+      <FaExternalLinkAlt className="inline mr-1" />
+      Apri
+      {doc === "tos" ? " i Termini e Condizioni" : " la Privacy Policy"}
+      esternamente
+    </Link>
+  );
 };
 
 const Signup = () => {
@@ -233,26 +240,37 @@ const Signup = () => {
     });
   }
 
+  const [tos, setTos] = useState(null);
   const [privacyPolicy, setPrivacyPolicy] = useState(null);
-  const [privacyPolicyShown, setPrivacyPolicyShown] = useState(false);
-  const [privacyPolicyError, setPrivacyPolicyError] = useState(null);
+  const [tosPrivacyShown, setTosPrivacyShown] = useState(false);
+  const [tosPrivacyError, setTosPrivacyError] = useState(null);
 
-  async function togglePrivacyPolicy(e) {
+  async function toggleTosPrivacy(e) {
     e.preventDefault();
 
-    const isShown = privacyPolicyShown;
-    setPrivacyPolicyShown(!isShown);
+    const isShown = tosPrivacyShown;
+    setTosPrivacyShown(!isShown);
 
     if (isShown) return; // already loaded
 
     try {
+      const { data } = await axios.get("/api/document/tos");
+      setTos(data);
+    } catch (err) {
+      console.log("tos fetch failed:", err);
+      setTosPrivacyError("Errore nel caricamento dei Termini e Condizioni");
+      return;
+    }
+    try {
       const { data } = await axios.get("/api/document/privacy");
       setPrivacyPolicy(data);
-      setPrivacyPolicyError(null);
     } catch (err) {
       console.log("privacy policy fetch failed:", err);
-      setPrivacyPolicyError("Errore nel caricamento della Privacy Policy");
+      setTosPrivacyError("Errore nel caricamento della Privacy Policy");
+      return;
     }
+
+    setTosPrivacyError(null);
   }
 
   return (
@@ -424,40 +442,47 @@ const Signup = () => {
             <hr className="my-4" />
             {/* TOS */}
             <div className="mb-2">
-              Registrandoti accetti la
+              Registrandoti accetti i{" "}
               <button
-                onClick={togglePrivacyPolicy}
-                className="inline outline-none ml-1 hover:text-blue-600 font-semibold underline decoration-dashed transition-colors bg-transparent border-none text-sm"
+                onClick={toggleTosPrivacy}
+                className="inline outline-none hover:text-blue-600 font-semibold underline decoration-dashed transition-colors bg-transparent border-none text-sm"
+              >
+                Termini e Condizioni
+              </button>{" "}
+              e la{" "}
+              <button
+                onClick={toggleTosPrivacy}
+                className="inline outline-none hover:text-blue-600 font-semibold underline decoration-dashed transition-colors bg-transparent border-none text-sm"
               >
                 Privacy Policy (in inglese)
               </button>
             </div>
-            {privacyPolicyShown && (
+            {tosPrivacyShown && (
               <div className="mb-2">
-                {privacyPolicyError ? (
+                {tosPrivacyError ? (
                   <Alert color="failure">
-                    <span>{privacyPolicyError}</span>
+                    <span>{tosPrivacyError}</span>
+                    <OpenExternally doc="tos" />
+                    <OpenExternally doc="privacy" />
                   </Alert>
                 ) : (
-                  <Card>
-                    <ReactPlaceholder
-                      showLoadingAnimation
-                      type="text"
-                      rows={10}
-                      ready={!!privacyPolicy}
-                    >
-                      <Markdown>{privacyPolicy}</Markdown>
-                    </ReactPlaceholder>
-                    <a
-                      href="/api/document/privacy"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-red-500 hover:text-red-600 transition-colors"
-                    >
-                      <FaExternalLinkAlt className="inline mr-1" />
-                      Apri esternamente
-                    </a>
-                  </Card>
+                  <div className="grid grid-cols-1 gap-2">
+                    {["tos", "privacy"].map(doc => (
+                      <Card key={doc}>
+                        <ReactPlaceholder
+                          showLoadingAnimation
+                          type="text"
+                          rows={10}
+                          ready={!!(doc === "tos" ? tos : privacyPolicy)}
+                        >
+                          <Markdown className="markdown">
+                            {doc === "tos" ? tos : privacyPolicy}
+                          </Markdown>
+                        </ReactPlaceholder>
+                        <OpenExternally doc={doc} />
+                      </Card>
+                    ))}
+                  </div>
                 )}
               </div>
             )}

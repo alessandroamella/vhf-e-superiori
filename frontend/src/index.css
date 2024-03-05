@@ -168,3 +168,11 @@ video {
 nav ul {
     @apply list-none;
 }
+
+.markdown * {
+    font-size: revert!important;
+    margin: revert!important;
+    padding: revert!important;
+    list-style: revert!important;
+}
+  

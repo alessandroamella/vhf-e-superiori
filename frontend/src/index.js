@@ -21,6 +21,7 @@ import ProgettiGianni from "./homepage/ProgettiGianni";
 import ViewPublished from "./social/ViewPublished";
 import QsoManager from "./event/QsoManager";
 import Eqsl from "./event/Eqsl";
+import MdViewer from "./document/MdViewer";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
@@ -47,7 +48,8 @@ const router = createBrowserRouter([
   // { path: "/regolamento", element: <Regolamento /> },
   // { path: "/info", element: <Info /> },
   { path: "/resetpw", element: <ResetPw /> },
-  { path: "/event/:id", element: <ViewEvent /> }
+  { path: "/event/:id", element: <ViewEvent /> },
+  { path: "/document/:name", element: <MdViewer /> }
   // {
   //   path: "contacts/:contactId",
   //   element: <Contact />,

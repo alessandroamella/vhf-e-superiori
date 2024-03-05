@@ -5,9 +5,9 @@ const router = Router();
 
 /**
  * @openapi
- * /api/document/privacy:
+ * /api/document/tos:
  *  get:
- *    summary: Gets the privacy policy in Markdown format
+ *    summary: Gets the Terms and Conditions in Markdown format
  *    tags:
  *      - document
  *    responses:
@@ -21,7 +21,7 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get("/", (req, res) => {
-    res.sendFile("privacy.md", { root: path.join(process.cwd(), "documents") });
+    res.sendFile("tos.md", { root: path.join(process.cwd(), "documents") });
 });
 
 export default router;
