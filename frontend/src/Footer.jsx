@@ -28,7 +28,20 @@ const Footer = () => {
 
         <span className="text-center">
           <a
-            href="/api/document/privacy"
+            href="/document/tos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
+          >
+            Termini e Condizioni
+          </a>
+        </span>
+
+        <FaCircle className="hidden md:block scale-[.25] text-gray-700 dark:text-gray-300 mx-2" />
+
+        <span className="text-center">
+          <a
+            href="/document/privacy"
             target="_blank"
             rel="noopener noreferrer"
             className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
