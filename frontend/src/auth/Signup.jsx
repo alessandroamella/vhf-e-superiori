@@ -1,8 +1,20 @@
 import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
-import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
-import React, { createRef, useEffect, useRef, useState } from "react";
-import { useContext } from "react";
+import {
+  Accordion,
+  Alert,
+  Card,
+  Label,
+  TextInput,
+  Tooltip
+} from "flowbite-react";
+import React, {
+  createRef,
+  useEffect,
+  useRef,
+  useState,
+  useContext
+} from "react";
 import {
   Link,
   createSearchParams,
@@ -14,6 +26,9 @@ import { useCookies } from "react-cookie";
 import ReCAPTCHA from "react-google-recaptcha";
 import { usePlacesWidget } from "react-google-autocomplete";
 import Layout from "../Layout";
+import Markdown from "react-markdown";
+import ReactPlaceholder from "react-placeholder";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 const useFocus = () => {
   const htmlElRef = useRef(null);
@@ -218,6 +233,28 @@ const Signup = () => {
     });
   }
 
+  const [privacyPolicy, setPrivacyPolicy] = useState(null);
+  const [privacyPolicyShown, setPrivacyPolicyShown] = useState(false);
+  const [privacyPolicyError, setPrivacyPolicyError] = useState(null);
+
+  async function togglePrivacyPolicy(e) {
+    e.preventDefault();
+
+    const isShown = privacyPolicyShown;
+    setPrivacyPolicyShown(!isShown);
+
+    if (isShown) return; // already loaded
+
+    try {
+      const { data } = await axios.get("/api/document/privacy");
+      setPrivacyPolicy(data);
+      setPrivacyPolicyError(null);
+    } catch (err) {
+      console.log("privacy policy fetch failed:", err);
+      setPrivacyPolicyError("Errore nel caricamento della Privacy Policy");
+    }
+  }
+
   return (
     <Layout>
       <div className="w-full h-full dark:bg-gray-900 dark:text-white">
@@ -384,6 +421,46 @@ const Signup = () => {
                 />
               </div>
             </div>
+            <hr className="my-4" />
+            {/* TOS */}
+            <div className="mb-2">
+              Registrandoti accetti la
+              <button
+                onClick={togglePrivacyPolicy}
+                className="inline outline-none ml-1 hover:text-blue-600 font-semibold underline decoration-dashed transition-colors bg-transparent border-none text-sm"
+              >
+                Privacy Policy (in inglese)
+              </button>
+            </div>
+            {privacyPolicyShown && (
+              <div className="mb-2">
+                {privacyPolicyError ? (
+                  <Alert color="failure">
+                    <span>{privacyPolicyError}</span>
+                  </Alert>
+                ) : (
+                  <Card>
+                    <ReactPlaceholder
+                      showLoadingAnimation
+                      type="text"
+                      rows={10}
+                      ready={!!privacyPolicy}
+                    >
+                      <Markdown>{privacyPolicy}</Markdown>
+                    </ReactPlaceholder>
+                    <a
+                      href="/api/document/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-red-500 hover:text-red-600 transition-colors"
+                    >
+                      <FaExternalLinkAlt className="inline mr-1" />
+                      Apri esternamente
+                    </a>
+                  </Card>
+                )}
+              </div>
+            )}
             <div className="my-4" />
             <ReCAPTCHA
               sitekey="6LfdByQkAAAAALGExGRPnH8i16IyKNaUXurnW1rm"

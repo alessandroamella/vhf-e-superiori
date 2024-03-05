@@ -10,6 +10,7 @@ import postRoutes from "../post/routes";
 import commentRoutes from "../comment/routes";
 import qsoRoutes from "../qso/routes";
 import eqslRoutes from "../eqsl/routes";
+import documentRoutes from "../document/routes";
 import notFound from "./notFound";
 
 import errorHandler from "../middlewares/errorHandler";
@@ -92,6 +93,7 @@ router.use("/post", postRoutes);
 router.use("/comment", commentRoutes);
 router.use("/qso", qsoRoutes);
 router.use("/eqsl", eqslRoutes);
+router.use("/document", documentRoutes);
 
 router.use(errorHandler);
 router.use(notFound);
