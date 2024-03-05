@@ -57,6 +57,6 @@ Benvenuto su VHF e Superiori [https://www.vhfesuperiori.eu/](https://www.vhfesup
 -   VHF e Superiori si riserva il diritto di utilizzare le donazioni in qualsiasi modo ritenga opportuno per supportare il sito web e i servizi offerti.
 -   VHF e Superiori non è tenuta a fornire alcuna rendicontazione sull'utilizzo delle donazioni.
 
-    6.4. Effettuando una donazione, l'utente dichiara di aver letto e accettato le presenti Condizioni.
+6.4. Effettuando una donazione, l'utente dichiara di aver letto e accettato le presenti Condizioni.
 
 Accedendo e utilizzando i nostri servizi, accetti pienamente i Termini e Condizioni sopra indicati. Se non sei d'accordo con uno qualsiasi dei Termini e Condizioni, non utilizzare il nostro sito web o i nostri servizi.
