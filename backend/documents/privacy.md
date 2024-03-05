@@ -205,7 +205,11 @@ By using this platform, you acknowledge and consent to the potential visibility 
 
 
 
+### Obtaining Your Personal Data
 
+You have the right to obtain a copy of Your Personal Data that We hold about You and to confirm that We are processing it lawfully.
+
+Please contact the Webmaster to request access to Your Personal Data.
 
 
 
