@@ -248,10 +248,10 @@ You are advised to review this Privacy Policy periodically for any changes. Chan
 If you have any questions about this Privacy Policy, You can contact us:
 
 
-- By email: alexlife@tiscali.it
+- By email: [alexlife@tiscali.it](mailto:alexlife@tiscali.it)
 
 
 
 You can also contact the Webmaster:
 
-- By email: webmaster@bitrey.it
+- By email: [webmaster@bitrey.it](mailto:webmaster@bitrey.it)
