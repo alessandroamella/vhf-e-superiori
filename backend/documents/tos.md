@@ -1,12 +1,12 @@
-# Termini e Condizioni - VHF e Superiori
+# Termini e Condizioni - VHF e superiori
 
 Ultima modifica: 5 Marzo 2024
 
-Benvenuto su VHF e Superiori [https://www.vhfesuperiori.eu/](https://www.vhfesuperiori.eu/). L'accesso e l'utilizzo dei nostri servizi sono soggetti ai seguenti Termini e Condizioni. Leggi attentamente questo documento prima di utilizzare il nostro sito web e i relativi servizi. Utilizzando il nostro sito web e i servizi, accetti di essere vincolato dai seguenti Termini e Condizioni.
+Benvenuto su VHF e superiori [https://www.vhfesuperiori.eu/](https://www.vhfesuperiori.eu/). L'accesso e l'utilizzo dei nostri servizi sono soggetti ai seguenti Termini e Condizioni. Leggi attentamente questo documento prima di utilizzare il nostro sito web e i relativi servizi. Utilizzando il nostro sito web e i servizi, accetti di essere vincolato dai seguenti Termini e Condizioni.
 
 ## 1. Registrazione e Gestione dei Dati
 
-1.1. Tutti gli utenti possono registrarsi su VHF e Superiori.
+1.1. Tutti gli utenti possono registrarsi su VHF e superiori.
 
 1.2. La gestione dei dati personali è disciplinata dalla nostra Privacy Policy, disponibile all'indirizzo: [Privacy Policy](https://www.vhfesuperiori.eu/document/privacy).
 
@@ -38,7 +38,7 @@ Benvenuto su VHF e Superiori [https://www.vhfesuperiori.eu/](https://www.vhfesup
 
 ## 5. Responsabilità e Contenuti Vietati
 
-5.1. VHF e Superiori non si assumono alcuna responsabilità per i contenuti inseriti dagli utenti.
+5.1. VHF e superiori non si assumono alcuna responsabilità per i contenuti inseriti dagli utenti.
 
 5.2. È vietato: pubblicare contenuti offensivi, razzisti, discriminatori, politici o illegali, insultare o minacciare altri utenti, spam, pubblicare materiale protetto da copyright, qualunque altro comportamento che possa danneggiare il sito o la sua comunità.
 
@@ -46,16 +46,16 @@ Benvenuto su VHF e Superiori [https://www.vhfesuperiori.eu/](https://www.vhfesup
 
 ## 6. Donazioni
 
-6.1. È possibile supportare VHF e Superiori con una donazione libera cliccando sul pulsante "Donazione" presente nella parte superiore del sito web.
+6.1. È possibile supportare VHF e superiori con una donazione libera cliccando sul pulsante "Donazione" presente nella parte superiore del sito web.
 
-6.2. Tutte le donazioni saranno utilizzate per sostenere il team di VHF e Superiori e per migliorare il sito web e i servizi offerti.
+6.2. Tutte le donazioni saranno utilizzate per sostenere il team di VHF e superiori e per migliorare il sito web e i servizi offerti.
 
 6.3. Le donazioni sono soggette alle seguenti condizioni:
 
 -   Le donazioni sono libere e non vincolanti.
 -   Le donazioni non sono rimborsabili.
--   VHF e Superiori si riserva il diritto di utilizzare le donazioni in qualsiasi modo ritenga opportuno per supportare il sito web e i servizi offerti.
--   VHF e Superiori non è tenuta a fornire alcuna rendicontazione sull'utilizzo delle donazioni.
+-   VHF e superiori si riserva il diritto di utilizzare le donazioni in qualsiasi modo ritenga opportuno per supportare il sito web e i servizi offerti.
+-   VHF e superiori non è tenuta a fornire alcuna rendicontazione sull'utilizzo delle donazioni.
 
 6.4. Effettuando una donazione, l'utente dichiara di aver letto e accettato le presenti Condizioni.
 
