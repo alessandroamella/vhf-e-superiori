@@ -22,6 +22,10 @@ Benvenuto su VHF e superiori [https://www.vhfesuperiori.eu/](https://www.vhfesup
 
 2.5. Le candidature possono essere visualizzate nella sezione Profilo.
 
+2.6. Le candidature possono essere annullate dall'utente che le ha create. In caso di annullamento, l'utente si impegna a comunicare tempestivamente la decisione agli amministratori.
+
+2.7. L'utente, candidandosi come stazione attivatrice, accetta incondizionatamente il Regolamento, disponibile all'indirizzo: [Regolamento](https://www.vhfesuperiori.eu/Regolamento_FLASH_MOB_2023_01_23.pdf).
+
 ## 3. Creazione di Post nella Sezione Social
 
 3.1. Gli utenti possono creare post nella sezione social per condividere foto e video delle proprie attività riguardanti antenne, QSO, ecc...
