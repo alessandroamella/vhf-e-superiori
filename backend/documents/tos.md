@@ -52,6 +52,8 @@ Benvenuto su VHF e superiori [https://www.vhfesuperiori.eu/](https://www.vhfesup
 
 4.1. Gli utenti possono commentare i post di altri utenti.
 
+4.2. I commenti possono essere eliminati dall'utente che li ha creati.
+
 ## 5. Responsabilità e Contenuti Vietati
 
 5.1. VHF e superiori non si assumono alcuna responsabilità per i contenuti inseriti dagli utenti.
@@ -59,6 +61,8 @@ Benvenuto su VHF e superiori [https://www.vhfesuperiori.eu/](https://www.vhfesup
 5.2. È vietato: pubblicare contenuti offensivi, razzisti, discriminatori, politici o illegali, insultare o minacciare altri utenti, spam, pubblicare materiale protetto da copyright, qualunque altro comportamento che possa danneggiare il sito o la sua comunità, pubblicare contenuti falsi o fuorvianti, caricare virus o malware, promuovere attività illegali o dannose, violare i diritti di proprietà intellettuale di terzi, violare la privacy di terzi, pubblicare contenuti pornografici o sessualmente espliciti, pubblicare contenuti violenti o sanguinolenti, pubblicare contenuti che incitano all'odio o alla violenza, pubblicare contenuti che incitano al suicidio o all'autolesionismo, pubblicare contenuti che incitano all'uso di droghe o alcol, pubblicare contenuti che incitano all'anoressia o alla bulimia, pubblicare contenuti che incitano alla pedofilia, pubblicare contenuti che incitano alla truffa o all'inganno, pubblicare contenuti che incitano al furto o alla rapina, pubblicare contenuti che incitano alla violazione della legge.
 
 5.3. Ci riserviamo il diritto di cancellare qualsiasi contenuto o account a nostra discrezione, con o senza preavviso.
+
+5.4. VHF e superiori non è responsabile per la perdita o la cancellazione di qualsiasi contenuto o account.
 
 ## 6. Donazioni
 
