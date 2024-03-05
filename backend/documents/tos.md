@@ -44,9 +44,7 @@ Benvenuto su VHF e Superiori [https://www.vhfesuperiori.eu/](https://www.vhfesup
 
 5.3. Ci riserviamo il diritto di cancellare qualsiasi contenuto o account a nostra discrezione.
 
-## Donazioni
-
-**6. Donazioni**
+## 6. Donazioni
 
 6.1. È possibile supportare VHF e Superiori con una donazione libera cliccando sul pulsante "Donazione" presente nella parte superiore del sito web.
 
