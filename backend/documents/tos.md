@@ -2,7 +2,7 @@
 
 Ultima modifica: 5 Marzo 2024
 
-Benvenuto su VHF e Superiori (https://www.vhfesuperiori.eu/). L'accesso e l'utilizzo dei nostri servizi sono soggetti ai seguenti Termini e Condizioni. Leggi attentamente questo documento prima di utilizzare il nostro sito web e i relativi servizi. Utilizzando il nostro sito web e i servizi, accetti di essere vincolato dai seguenti Termini e Condizioni.
+Benvenuto su VHF e Superiori [https://www.vhfesuperiori.eu/](https://www.vhfesuperiori.eu/). L'accesso e l'utilizzo dei nostri servizi sono soggetti ai seguenti Termini e Condizioni. Leggi attentamente questo documento prima di utilizzare il nostro sito web e i relativi servizi. Utilizzando il nostro sito web e i servizi, accetti di essere vincolato dai seguenti Termini e Condizioni.
 
 ## 1. Registrazione e Gestione dei Dati
 
@@ -54,11 +54,11 @@ Benvenuto su VHF e Superiori (https://www.vhfesuperiori.eu/). L'accesso e l'util
 
 6.3. Le donazioni sono soggette alle seguenti condizioni:
 
-* Le donazioni sono libere e non vincolanti.
-* Le donazioni non sono rimborsabili.
-* VHF e Superiori si riserva il diritto di utilizzare le donazioni in qualsiasi modo ritenga opportuno per supportare il sito web e i servizi offerti.
-* VHF e Superiori non è tenuta a fornire alcuna rendicontazione sull'utilizzo delle donazioni.
+-   Le donazioni sono libere e non vincolanti.
+-   Le donazioni non sono rimborsabili.
+-   VHF e Superiori si riserva il diritto di utilizzare le donazioni in qualsiasi modo ritenga opportuno per supportare il sito web e i servizi offerti.
+-   VHF e Superiori non è tenuta a fornire alcuna rendicontazione sull'utilizzo delle donazioni.
 
-6.4. Effettuando una donazione, l'utente dichiara di aver letto e accettato le presenti Condizioni.
+    6.4. Effettuando una donazione, l'utente dichiara di aver letto e accettato le presenti Condizioni.
 
 Accedendo e utilizzando i nostri servizi, accetti pienamente i Termini e Condizioni sopra indicati. Se non sei d'accordo con uno qualsiasi dei Termini e Condizioni, non utilizzare il nostro sito web o i nostri servizi.
