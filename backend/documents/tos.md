@@ -46,15 +46,7 @@ Benvenuto su VHF e superiori [https://www.vhfesuperiori.eu/](https://www.vhfesup
 
 3.11. VHF e superiori non è responsabile per qualsiasi danno o perdita derivante dall'utilizzo dei Contenuti caricati dagli utenti.
 
-3.12. VHF e superiori non è responsabile per qualsiasi Contenuto caricato dagli utenti che violi i diritti di terzi.
-
-3.13. VHF e superiori non è responsabile per qualsiasi Contenuto caricato dagli utenti che violi i presenti Termini e Condizioni.
-
-3.14. VHF e superiori non è responsabile per qualsiasi Contenuto caricato dagli utenti che violi la legge.
-
-3.15. VHF e superiori non è responsabile per qualsiasi Contenuto caricato dagli utenti che violi i diritti di proprietà intellettuale di terzi.
-
-3.16. VHF e superiori non è responsabile per qualsiasi Contenuto caricato dagli utenti che violi la privacy di terzi.
+3.12. VHF e superiori non è responsabile per qualsiasi Contenuto caricato dagli utenti che violi i diritti di terzi, i presenti Termini e Condizioni, la legge, i diritti di proprietà intellettuale di terzi, la privacy di terzi, la pubblicità di terzi, la diffamazione di terzi, la violazione dei diritti di terzi, la violazione della legge.
 
 ## 4. Commenti sui Post
 
