@@ -195,7 +195,7 @@ const Homepage = () => {
   }, [events, user]);
 
   const _rankingsEvent = useCallback(async () => {
-    if (!events || !user) return null;
+    if (!events) return null;
     const now = new Date();
     // show for 2 hours after event has started and 20 days before
     const _events = [...events].filter(
@@ -209,7 +209,7 @@ const Homepage = () => {
         differenceInDays(now, new Date(a.date))
     );
     return _events[_events.length - 1] ?? null;
-  }, [events, user]);
+  }, [events]);
 
   const [rankingsEventToShow, setRankingsEventToShow] = useState(null);
   const [stationEventToShow, setStationEventToShow] = useState(null);

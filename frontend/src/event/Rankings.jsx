@@ -12,7 +12,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { getErrorStr } from "..";
 import Layout from "../Layout";
 import { useNavigate, useParams } from "react-router-dom";
@@ -132,7 +132,7 @@ const Rankings = () => {
               rankings
                 .filter(r => r.callsign === showRankings)
                 .map(r => (
-                  <Table striped>
+                  <Table striped className="max-h-[60vh]">
                     <Table.Head>
                       <Table.HeadCell>Stazione attivatrice</Table.HeadCell>
                       <Table.HeadCell>Data</Table.HeadCell>
