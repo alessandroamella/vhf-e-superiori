@@ -127,12 +127,12 @@ const Rankings = () => {
           QSO di <strong>{showRankings}</strong>
         </Modal.Header>
         <Modal.Body>
-          <div className="w-full flex flex-col gap-4">
+          <div className="w-full flex flex-col gap-4 max-h-[69vh] md:max-h-[60vh]">
             {rankings &&
               rankings
                 .filter(r => r.callsign === showRankings)
                 .map(r => (
-                  <Table striped className="max-h-[60vh]">
+                  <Table striped>
                     <Table.Head>
                       <Table.HeadCell>Stazione attivatrice</Table.HeadCell>
                       <Table.HeadCell>Data</Table.HeadCell>
