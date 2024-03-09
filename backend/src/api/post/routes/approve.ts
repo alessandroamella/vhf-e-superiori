@@ -10,7 +10,7 @@ const router = Router();
 
 /**
  * @openapi
- * /post/approve/{id}:
+ * /api/post/approve/{id}:
  *  post:
  *    summary: Approves a post (must be admin)
  *    parameters:

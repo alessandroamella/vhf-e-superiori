@@ -13,7 +13,7 @@ const router = Router();
 
 /**
  * @openapi
- * /post:
+ * /api/post:
  *  post:
  *    summary: Creates a new post
  *    requestBody:

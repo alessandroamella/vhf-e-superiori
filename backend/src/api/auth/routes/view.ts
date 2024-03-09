@@ -6,7 +6,7 @@ const router = Router();
 
 /**
  * @openapi
- * /auth:
+ * /api/auth:
  *  get:
  *    summary: Returns whether user is logged in
  *    tags:

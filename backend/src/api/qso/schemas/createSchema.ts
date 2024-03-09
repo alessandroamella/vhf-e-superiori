@@ -54,6 +54,19 @@ const createSchema: Schema = {
         trim: { options: [] },
         optional: true,
         errorMessage: "Notes must be a string"
+    },
+    locator: {
+        isString: { options: [] },
+        trim: { options: [] },
+        optional: true,
+        errorMessage: "Locator must be a string"
+    },
+    rst: {
+        isNumeric: { options: [] },
+        toInt: { options: [] },
+        isInt: { options: [] },
+        optional: true,
+        errorMessage: "RST must be a number"
     }
 };
 export default createSchema;

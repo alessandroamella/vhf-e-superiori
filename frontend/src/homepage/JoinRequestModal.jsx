@@ -1,7 +1,6 @@
 import { Option, Select } from "@material-tailwind/react";
 import axios from "axios";
 import { isAfter, isBefore } from "date-fns";
-import { formatInTimeZone } from "date-fns-tz";
 import { it } from "date-fns/locale";
 import {
   Alert,
@@ -16,6 +15,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { FaInfo } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { EventsContext, getErrorStr, UserContext } from "..";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
 
 const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
   const { user } = useContext(UserContext);

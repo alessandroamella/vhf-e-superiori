@@ -15,7 +15,7 @@ const router = Router();
 
 /**
  * @openapi
- * /joinrequest:
+ * /api/joinrequest:
  *  post:
  *    summary: Creates a new join request
  *    requestBody:

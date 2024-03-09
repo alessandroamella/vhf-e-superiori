@@ -14,7 +14,7 @@ const router = Router();
 
 /**
  * @openapi
- * /comment:
+ * /api/comment:
  *  post:
  *    summary: Creates a new comment
  *    requestBody:

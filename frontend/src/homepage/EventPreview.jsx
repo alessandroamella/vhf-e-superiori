@@ -1,8 +1,8 @@
 import { Button, Typography } from "@material-tailwind/react";
-import { formatInTimeZone } from "date-fns-tz";
 import { it } from "date-fns/locale";
 import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
 
 const EventPreview = ({ event, ...props }) => {
   return (

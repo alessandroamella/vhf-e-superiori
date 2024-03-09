@@ -6,7 +6,7 @@ const router = Router();
 
 /**
  * @openapi
- * /auth/logout:
+ * /api/auth/logout:
  *  post:
  *    summary: Logs out
  *    tags:

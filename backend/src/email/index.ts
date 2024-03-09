@@ -297,6 +297,8 @@ export class EmailService {
                 "</span>!<br />" +
                 'Puoi vedere il tuo QSO <a href="https://www.vhfesuperiori.eu/eqsl/' +
                 qso._id +
+                '">qui</a> e la classifica <a href="https://www.vhfesuperiori.eu/rankings/' +
+                (qso.event._id || qso.event) +
                 '">qui</a>.<br />' +
                 'Grazie per aver partecipato all\'evento e buona giornata da <a href="https://www.vhfesuperiori.eu">vhfesuperiori.eu</a>!</p>',
             attachments: [

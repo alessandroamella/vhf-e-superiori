@@ -14,7 +14,7 @@ const router = Router();
 
 /**
  * @openapi
- * /auth/login:
+ * /api/auth/login:
  *  post:
  *    summary: Logs in with given callsign and password
  *    requestBody:

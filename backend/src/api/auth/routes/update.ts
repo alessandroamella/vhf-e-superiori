@@ -15,7 +15,7 @@ const router = Router();
 
 /**
  * @openapi
- * /auth:
+ * /api/auth:
  *  put:
  *    summary: Updates currently logged in user
  *    requestBody:

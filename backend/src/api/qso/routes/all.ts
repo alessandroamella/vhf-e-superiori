@@ -11,7 +11,7 @@ const router = Router();
 
 /**
  * @openapi
- * /qso:
+ * /api/qso:
  *  get:
  *    summary: Gets all QSOs, ordered by QSO date (reverse order)
  *    parameters:

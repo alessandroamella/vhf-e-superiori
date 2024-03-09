@@ -13,7 +13,7 @@ const router = Router();
 
 /**
  * @openapi
- * /qso:
+ * /api/qso:
  *  post:
  *    summary: Creates a new QSO
  *    requestBody:
@@ -114,7 +114,16 @@ router.post(
                     .json(createError(Errors.INVALID_LOCATION));
             }
 
-            const { callsign, event, frequency, mode, qsoDate } = req.body;
+            const {
+                callsign,
+                event,
+                frequency,
+                mode,
+                qsoDate,
+                locator,
+                rst,
+                notes
+            } = req.body;
 
             const fromStation = _fromStation._id.toString();
 
@@ -129,7 +138,10 @@ router.post(
                 fromStationCity: _fromStation.city,
                 fromStationProvince: _fromStation.province,
                 fromStationLat: _fromStation.lat,
-                fromStationLon: _fromStation.lon
+                fromStationLon: _fromStation.lon,
+                locator,
+                rst,
+                notes
             });
             const qso = new Qso({
                 fromStation,
@@ -141,7 +153,10 @@ router.post(
                 fromStationCity: _fromStation.city,
                 fromStationProvince: _fromStation.province,
                 fromStationLat: _fromStation.lat,
-                fromStationLon: _fromStation.lon
+                fromStationLon: _fromStation.lon,
+                locator,
+                rst,
+                notes
             });
             try {
                 await qso.validate();

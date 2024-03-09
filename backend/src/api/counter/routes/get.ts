@@ -8,7 +8,7 @@ const router = Router();
 
 /**
  * @openapi
- * /counter:
+ * /api/counter:
  *  get:
  *    summary: Get number of views
  *    tags:

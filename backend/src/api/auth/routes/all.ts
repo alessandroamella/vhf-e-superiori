@@ -9,7 +9,7 @@ const router = Router();
 
 /**
  * @openapi
- * /auth/all:
+ * /api/auth/all:
  *  get:
  *    summary: Gets all registered users, ordered by signup date (reverse order), must be admin
  *    parameters:

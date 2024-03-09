@@ -25,7 +25,7 @@ import React, {
   useRef,
   useState
 } from "react";
-import { formatInTimeZone } from "date-fns-tz";
+import { format, zonedTimeToUtc } from "date-fns-tz";
 import { getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
 import {
@@ -44,6 +44,7 @@ import {
 } from "react-icons/fa";
 import { useCookies } from "react-cookie";
 import ButtonGroup from "flowbite-react/lib/esm/components/Button/ButtonGroup";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
 
 const QsoManager = () => {
   const { user } = useContext(UserContext);
@@ -184,19 +185,21 @@ const QsoManager = () => {
   const [cookies, setCookie] = useCookies(["qsoManagerCache"]);
 
   const [callsign, setCallsign] = useState(cookies.callsign || "");
+  const [locator, setLocator] = useState(cookies.locator || "");
+  const [rst, setRst] = useState(cookies.rst || "");
   const [frequency, setFrequency] = useState(cookies.frequency || "");
   const [mode, setMode] = useState(cookies.mode || "");
   const [qsoDate, setQsoDate] = useState(
     new Date().toISOString().slice(0, -14) +
       "T" +
-      formatInTimeZone(new Date(), "Europe/Rome", "HH:mm")
+      formatInTimeZone(new Date(), "UTC", "HH:mm")
   );
 
   function resetDate() {
     setQsoDate(
       new Date().toISOString().slice(0, -14) +
         "T" +
-        formatInTimeZone(new Date(), "Europe/Rome", "HH:mm")
+        formatInTimeZone(new Date(), "UTC", "HH:mm")
     );
   }
 
@@ -224,6 +227,11 @@ const QsoManager = () => {
       path: "/qsomanager",
       maxAge: 60 * 60 * 4
     });
+    setCookie("locator", locator, {
+      path: "/qsomanager",
+      maxAge: 60 * 60 * 4
+    });
+    setCookie("rst", rst, { path: "/qsomanager", maxAge: 60 * 60 * 4 });
     setCookie("frequency", frequency, {
       path: "/qsomanager",
       maxAge: 60 * 60 * 4
@@ -251,7 +259,9 @@ const QsoManager = () => {
         event: id,
         frequency: parseFloat(frequency),
         mode,
-        qsoDate: new Date(qsoDate)
+        qsoDate: zonedTimeToUtc(new Date(qsoDate), "UTC"),
+        locator,
+        rst
         // emailSent,
         // emailSentDate,
         // notes,
@@ -524,9 +534,11 @@ const QsoManager = () => {
                 <Table>
                   <Table.Head>
                     <Table.HeadCell>Nominativo</Table.HeadCell>
-                    <Table.HeadCell>Data</Table.HeadCell>
+                    <Table.HeadCell>Data UTC</Table.HeadCell>
                     <Table.HeadCell>Frequenza</Table.HeadCell>
                     <Table.HeadCell>Modo</Table.HeadCell>
+                    <Table.HeadCell>Locatore</Table.HeadCell>
+                    <Table.HeadCell>RST</Table.HeadCell>
                   </Table.Head>
                   <Table.Body>
                     {adifQsos.map((q, i) => (
@@ -554,12 +566,14 @@ const QsoManager = () => {
                         <Table.Cell>
                           {formatInTimeZone(
                             q.qsoDate,
-                            "Europe/Rome",
+                            "UTC",
                             "yyyy-MM-dd HH:mm"
                           )}
                         </Table.Cell>
                         <Table.Cell>{q.frequency} MHz</Table.Cell>
                         <Table.Cell>{q.mode}</Table.Cell>
+                        <Table.Cell>{q.locator}</Table.Cell>
+                        <Table.Cell>{q.rst}</Table.Cell>
                       </Table.Row>
                     ))}
                   </Table.Body>
@@ -712,9 +726,11 @@ const QsoManager = () => {
                               <Table.Head>
                                 <Table.HeadCell>Azioni</Table.HeadCell>
                                 <Table.HeadCell>Nominativo</Table.HeadCell>
-                                <Table.HeadCell>Data</Table.HeadCell>
+                                <Table.HeadCell>Data UTC</Table.HeadCell>
                                 <Table.HeadCell>Frequenza</Table.HeadCell>
                                 <Table.HeadCell>Modo</Table.HeadCell>
+                                <Table.HeadCell>Locatore</Table.HeadCell>
+                                <Table.HeadCell>RST</Table.HeadCell>
                               </Table.Head>
                               <Table.Body>
                                 {qsos?.map((q, i) => (
@@ -730,14 +746,18 @@ const QsoManager = () => {
                                   >
                                     <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                       <div className="flex items-center gap-2">
-                                        <Checkbox
-                                          value={q._id}
-                                          disabled={disabled}
-                                          checked={selectedQsos.includes(q._id)}
-                                          onClick={e =>
-                                            selectQso(q, e.target.checked)
-                                          }
-                                        />
+                                        <Tooltip content={"Id: " + q._id}>
+                                          <Checkbox
+                                            value={q._id}
+                                            disabled={disabled}
+                                            checked={selectedQsos.includes(
+                                              q._id
+                                            )}
+                                            onClick={e =>
+                                              selectQso(q, e.target.checked)
+                                            }
+                                          />
+                                        </Tooltip>
                                       </div>
                                     </Table.Cell>
                                     <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex gap-1 items-center">
@@ -757,12 +777,14 @@ const QsoManager = () => {
                                     <Table.Cell>
                                       {formatInTimeZone(
                                         q.qsoDate,
-                                        "Europe/Rome",
+                                        "UTC",
                                         "yyyy-MM-dd HH:mm"
                                       )}
                                     </Table.Cell>
                                     <Table.Cell>{q.frequency} MHz</Table.Cell>
                                     <Table.Cell>{q.mode}</Table.Cell>
+                                    <Table.Cell>{q.locator}</Table.Cell>
+                                    <Table.Cell>{q.rst}</Table.Cell>
                                   </Table.Row>
                                 ))}
                               </Table.Body>
@@ -853,7 +875,7 @@ const QsoManager = () => {
                               <div>
                                 <Label
                                   htmlFor="fromStation"
-                                  value="Da stazione attivatrice"
+                                  value="Da stazione attivatrice*"
                                 />
                                 <Dropdown
                                   label={fromStation.callsign}
@@ -893,7 +915,7 @@ const QsoManager = () => {
                             <div>
                               <Label
                                 htmlFor="frequency"
-                                value="Frequenza (in MHz)"
+                                value="Frequenza (in MHz)*"
                               />
                               <TextInput
                                 disabled={disabled}
@@ -915,7 +937,7 @@ const QsoManager = () => {
                             <div>
                               <Label
                                 htmlFor="mode"
-                                value="Modo (CW, SSB, FT8, ecc.)"
+                                value="Modo (CW, SSB, FT8, ecc.)*"
                               />
                               <TextInput
                                 disabled={disabled}
@@ -936,18 +958,38 @@ const QsoManager = () => {
                               />
                             </div>
                             <div>
-                              <Label htmlFor="qsoDate" value="Data QSO" />
+                              <Label
+                                htmlFor="qsoDate"
+                                value="Data QSO in UTC*"
+                              />
                               <div className="flex gap-1 justify-center items-center">
-                                <TextInput
-                                  disabled={disabled}
-                                  id="qsoDate"
-                                  label="Data"
-                                  type="datetime-local"
-                                  className="w-full"
-                                  value={qsoDate}
-                                  onChange={e => setQsoDate(e.target.value)}
-                                  required
-                                />
+                                <div className="w-full relative">
+                                  <TextInput
+                                    disabled={disabled}
+                                    id="qsoDate"
+                                    label="Data"
+                                    type="datetime-local"
+                                    className="w-full"
+                                    value={qsoDate}
+                                    onChange={e => setQsoDate(e.target.value)}
+                                    required
+                                    helperText={
+                                      <>
+                                        {format(new Date(qsoDate), "HH:mm")} UTC
+                                        {", "}
+                                        {formatInTimeZone(
+                                          zonedTimeToUtc(
+                                            new Date(qsoDate),
+                                            "UTC"
+                                          ),
+                                          "Europe/Rome",
+                                          "HH:mm"
+                                        )}{" "}
+                                        Roma
+                                      </>
+                                    }
+                                  />
+                                </div>
                                 <Button
                                   color="light"
                                   // size="sm"
@@ -959,7 +1001,7 @@ const QsoManager = () => {
                               </div>
                             </div>
                             <div>
-                              <Label htmlFor="callsign" value="Nominativo" />
+                              <Label htmlFor="callsign" value="Nominativo*" />
                               <TextInput
                                 disabled={disabled}
                                 id="callsign"
@@ -980,18 +1022,70 @@ const QsoManager = () => {
                                 required
                               />
                             </div>
+                            <div>
+                              <Label htmlFor="locator" value="Locatore" />
+                              <TextInput
+                                disabled={disabled}
+                                id="locator"
+                                label="Locatore"
+                                minLength={1}
+                                maxLength={20}
+                                placeholder="JN54mn"
+                                value={locator}
+                                onChange={e => {
+                                  setLocator(e.target.value);
+                                  setCookie("locator", e.target.value, {
+                                    path: "/qsomanager",
+                                    maxAge: 60 * 60 * 4
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="rst" value="RST" />
+                              <TextInput
+                                disabled={disabled}
+                                id="rst"
+                                label="RST"
+                                minLength={1}
+                                maxLength={20}
+                                placeholder="59"
+                                value={rst}
+                                onChange={e => {
+                                  setRst(parseInt(e.target.value) || undefined);
+                                  setCookie("rst", e.target.value, {
+                                    path: "/qsomanager",
+                                    maxAge: 60 * 60 * 4
+                                  });
+                                }}
+                              />
+                            </div>
                           </div>
-                          <div className="mt-4 flex justify-center">
-                            <Button type="submit" disabled={disabled} size="lg">
-                              {disabled ? (
-                                <Spinner />
-                              ) : (
-                                <span className="flex items-center gap-2">
-                                  <FaPlusCircle />
-                                  Salva QSO
-                                </span>
-                              )}
-                            </Button>
+                          <div className="mt-4 flex flex-col items-center gap-2">
+                            <div className="flex justify-center">
+                              <Button
+                                type="submit"
+                                disabled={disabled}
+                                size="lg"
+                                color={highlighted ? "success" : "info"}
+                                className="transition-colors duration-500"
+                              >
+                                {disabled ? (
+                                  <Spinner />
+                                ) : (
+                                  <span className="flex items-center gap-2">
+                                    <FaPlusCircle />
+                                    Salva QSO
+                                  </span>
+                                )}
+                              </Button>
+                            </div>
+                            <Alert color="gray">
+                              <span>
+                                <FaInfoCircle className="inline" /> I campi
+                                contrassegnati con * sono obbligatori
+                              </span>
+                            </Alert>
                           </div>
                         </form>
                       </div>

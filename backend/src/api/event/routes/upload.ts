@@ -15,7 +15,7 @@ const router = Router();
 
 /**
  * @openapi
- * /event/upload:
+ * /api/event/upload:
  *  post:
  *    summary: Upload event picture to S3
  *    parameters:

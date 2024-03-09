@@ -10,7 +10,7 @@ const router = Router();
 
 /**
  * @openapi
- * /counter:
+ * /api/counter:
  *  post:
  *    summary: New view to save in counter and returns views counter
  *    tags:

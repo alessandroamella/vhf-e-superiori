@@ -25,8 +25,8 @@ import {
   FaLink,
   FaTrash
 } from "react-icons/fa";
-import { formatInTimeZone } from "date-fns-tz";
 import ReactGoogleAutocomplete from "react-google-autocomplete";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
 
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);

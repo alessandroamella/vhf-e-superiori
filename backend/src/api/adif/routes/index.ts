@@ -210,7 +210,9 @@ router.post(
                     toStationLat: lat,
                     toStationLon: lon,
                     event: event._id,
-                    notes: q.comment
+                    notes: q.comment,
+                    locator: q.gridsquare,
+                    rst: parseInt(q.rst_sent) || undefined
                 });
                 if (shouldSave) await qso.save();
                 qsos.push(qso);

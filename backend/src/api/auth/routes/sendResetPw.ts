@@ -14,7 +14,7 @@ const router = Router();
 
 /**
  * @openapi
- * /auth/sendresetpw:
+ * /api/auth/sendresetpw:
  *  post:
  *    summary: Sends reset password email
  *    requestBody:
