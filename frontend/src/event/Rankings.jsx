@@ -260,7 +260,10 @@ const Rankings = () => {
                               (ranking, index) =>
                                 ranking.callsign === r.callsign && index < 3
                             )
-                          ] || i + 1}
+                          ] ||
+                            rankings.findIndex(
+                              ranking => ranking.callsign === r.callsign
+                            )}
                         </Table.Cell>
                         <Table.Cell className="font-semibold">
                           {r.callsign}
