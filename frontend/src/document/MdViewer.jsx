@@ -37,7 +37,7 @@ const MdViewer = () => {
             rows={10}
             ready={!!doc}
           >
-            <Markdown className="markdown">{doc}</Markdown>
+            <Markdown className="markdown dark:text-white">{doc}</Markdown>
           </ReactPlaceholder>
         )}
       </Card>
