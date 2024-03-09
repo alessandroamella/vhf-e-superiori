@@ -9,7 +9,7 @@ const router = Router();
 
 /**
  * @openapi
- * /event/{id}:
+ * /api/event/{id}:
  *  delete:
  *    summary: Deletes an existing event
  *    parameters:

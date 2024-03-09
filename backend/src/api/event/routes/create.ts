@@ -10,7 +10,7 @@ const router = Router();
 
 /**
  * @openapi
- * /event:
+ * /api/event:
  *  post:
  *    summary: Creates a new event
  *    requestBody:

@@ -20,7 +20,7 @@ const router = Router();
 
 /**
  * @openapi
- * /post/{id}:
+ * /api/post/{id}:
  *  delete:
  *    summary: Deletes an existing post (must be post owner or admin)
  *    parameters:

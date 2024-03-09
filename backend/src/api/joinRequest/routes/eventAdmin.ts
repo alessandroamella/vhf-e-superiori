@@ -9,7 +9,7 @@ const router = Router();
 
 /**
  * @openapi
- * /joinrequest/eventadmin/{id}:
+ * /api/joinrequest/eventadmin/{id}:
  *  get:
  *    summary: Gets all joinRequests for a specific event, user must be admin
  *    parameters:

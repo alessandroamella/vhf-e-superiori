@@ -10,7 +10,13 @@ import {
 } from "..";
 import { useContext } from "react";
 import { Accordion, Alert, Card, Spinner, Table } from "flowbite-react";
-import { differenceInDays, isAfter, addDays } from "date-fns";
+import {
+  differenceInDays,
+  isAfter,
+  isBefore,
+  addDays,
+  addHours
+} from "date-fns";
 import { it } from "date-fns/locale";
 import {
   Link,
@@ -20,8 +26,7 @@ import {
 } from "react-router-dom";
 import { useEffect } from "react";
 import Splash from "../Splash";
-import { FaWhatsapp } from "react-icons/fa";
-import { formatInTimeZone } from "date-fns-tz";
+import { FaExternalLinkAlt, FaWhatsapp } from "react-icons/fa";
 import { Carousel } from "react-round-carousel";
 import Zoom, { Controlled as ControlledZoom } from "react-medium-image-zoom";
 import JoinRequestModal from "./JoinRequestModal";
@@ -29,10 +34,11 @@ import { Button } from "@material-tailwind/react";
 
 import "react-medium-image-zoom/dist/styles.css";
 import "react-round-carousel/src/index.css";
-import Bandiere from "../Bandiere";
+import Flags from "../Flags";
 import { adminsList } from "./Info";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import axios, { isAxiosError } from "axios";
+import axios from "axios";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
 
 const Homepage = () => {
   const { user } = useContext(UserContext);
@@ -154,9 +160,11 @@ const Homepage = () => {
   const _stationEvent = useCallback(async () => {
     if (!events || !user) return null;
     const now = new Date();
-    // show for next 25 days after event has started
-    const _events = [...events].filter(e =>
-      isAfter(addDays(new Date(e.date), 8), now)
+    // show for next 25 days after event has started and 10 days before
+    const _events = [...events].filter(
+      e =>
+        isAfter(new Date(e.date), addDays(now, -25)) &&
+        isBefore(new Date(e.date), addDays(now, 10))
     );
     _events.sort(
       (a, b) =>
@@ -186,10 +194,30 @@ const Homepage = () => {
     return e;
   }, [events, user]);
 
+  const _rankingsEvent = useCallback(async () => {
+    if (!events || !user) return null;
+    const now = new Date();
+    // show for 2 hours after event has started and 20 days before
+    const _events = [...events].filter(
+      e =>
+        isAfter(now, addHours(new Date(e.date), 2)) &&
+        isBefore(new Date(e.date), addDays(now, 20))
+    );
+    _events.sort(
+      (a, b) =>
+        differenceInDays(now, new Date(b.date)) -
+        differenceInDays(now, new Date(a.date))
+    );
+    return _events[_events.length - 1] ?? null;
+  }, [events, user]);
+
+  const [rankingsEventToShow, setRankingsEventToShow] = useState(null);
   const [stationEventToShow, setStationEventToShow] = useState(null);
   useEffect(() => {
+    // returns [rankingsEventToShow, stationEventToShow]
     _stationEvent().then(setStationEventToShow);
-  }, [_stationEvent]);
+    _rankingsEvent().then(setRankingsEventToShow);
+  }, [_stationEvent, _rankingsEvent]);
 
   return (
     <Layout>
@@ -219,7 +247,7 @@ const Homepage = () => {
               <div className="flex dark:mb-3 flex-col justify-center md:hidden">
                 <hr />
                 <div className="mx-auto">
-                  <Bandiere />
+                  <Flags />
                 </div>
                 <hr />
               </div>
@@ -356,14 +384,15 @@ const Homepage = () => {
                                     key={e._id}
                                     className="bg-white dark:border-gray-700 dark:bg-gray-800"
                                   >
-                                    <Table.Cell className="py-2 pr-2 whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                      {getNumbersFromString(e.name)
-                                        .join("")
-                                        .substring(0, 2)}
-                                      °
+                                    <Table.Cell className="py-2 pr-2 whitespace-nowrap font-medium text-gray-900 dark:text-white max-w-[6.5rem] text-ellipsis overflow-hidden">
+                                      {getNumbersFromString(e.name).length > 0
+                                        ? getNumbersFromString(e.name)
+                                            .join("")
+                                            .substring(0, 2) + "°"
+                                        : e.name}
                                     </Table.Cell>
                                     <Table.Cell className="py-2">
-                                      {e.band}
+                                      {e.band.toUpperCase()}
                                     </Table.Cell>
                                     <Table.Cell className="py-2 font-semibold">
                                       <span className="block xl:hidden">
@@ -380,7 +409,7 @@ const Homepage = () => {
                                         {formatInTimeZone(
                                           e.date,
                                           "Europe/Rome",
-                                          "dd MMMM yyyy",
+                                          "dd/MM/yyyy",
                                           {
                                             locale: it
                                           }
@@ -390,50 +419,30 @@ const Homepage = () => {
                                   </Table.Row>
                                 ))
                             )}
-                            {/* {prossimiEventi.map((e, i) => (
-                              <Table.Row
-                                key={e.i.toString()}
-                                className="bg-white dark:border-gray-700 dark:bg-gray-800"
-                              >
-                                <Table.Cell className="py-2 pr-2 whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                  {e.i}°
-                                </Table.Cell>
-                                <Table.Cell className="py-2">
-                                  {e.i % 3 === 1
-                                    ? "2m"
-                                    : e.i % 3 === 2
-                                    ? "70cm"
-                                    : "23cm"}
-                                </Table.Cell>
-                                <Table.Cell className="py-2 font-semibold">
-                                  <span className="block xl:hidden">
-                                    {formatInTimeZone(
-                                      e.d,
-                                      "Europe/Rome",
-                                      "dd/MM",
-                                      {
-                                        locale: it
-                                      }
-                                    )}
-                                  </span>
-                                  <span className="hidden xl:block">
-                                    {formatInTimeZone(
-                                      e.d,
-                                      "Europe/Rome",
-                                      "dd MMMM yyyy",
-                                      {
-                                        locale: it
-                                      }
-                                    )}
-                                  </span>
-                                </Table.Cell>
-                              </Table.Row>
-                            ))} */}
                           </Table.Body>
                         </Table>
                       </Accordion.Content>
                     </Accordion.Panel>
                   </Accordion>
+
+                  {rankingsEventToShow && (
+                    <div className="mt-4">
+                      <Card className="text-center">
+                        <h2 className="text-2xl font-bold">
+                          🏆 Classifica {rankingsEventToShow.name}
+                        </h2>
+                        <Link
+                          to={"/rankings/" + rankingsEventToShow._id}
+                          className="underline decoration-dotted hover:text-black transition-colors"
+                        >
+                          <Button className="text-md mt-4">
+                            <FaExternalLinkAlt className="inline mr-1 mb-1" />{" "}
+                            Visualizza classifica
+                          </Button>
+                        </Link>
+                      </Card>
+                    </div>
+                  )}
                 </div>
                 <div className="md:px-4">
                   <div
@@ -669,7 +678,7 @@ const Homepage = () => {
 
                     {/* storia flash mob */}
                     <div className="text-justify text-gray-600 dark:text-gray-200">
-                      <h3 className="text-left text-3xl mb-2 font-bold text-red-600 tracking-tight uppercase">
+                      <h3 className="text-center md:text-left text-3xl mb-2 font-bold text-red-600 tracking-tight uppercase">
                         LA CHAT VHFESUPERIORI
                       </h3>
 

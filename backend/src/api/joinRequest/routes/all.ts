@@ -9,7 +9,7 @@ const router = Router();
 
 /**
  * @openapi
- * /joinrequest:
+ * /api/joinrequest:
  *  get:
  *    summary: Gets all joinRequests for logged in user
  *    tags:

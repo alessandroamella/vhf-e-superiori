@@ -23,7 +23,6 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import React, { createRef, useContext, useEffect, useState } from "react";
 import { it } from "date-fns/locale";
-import { formatInTimeZone } from "date-fns-tz";
 import { EventsContext, getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
 // import { DefaultEditor } from "react-simple-wysiwyg";
@@ -46,6 +45,7 @@ import ReactPlayer from "react-player";
 import Compressor from "compressorjs";
 import { isFuture } from "date-fns";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
 
 const AdminManager = () => {
   const { user } = useContext(UserContext);

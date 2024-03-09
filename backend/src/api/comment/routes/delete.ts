@@ -12,7 +12,7 @@ const router = Router();
 
 /**
  * @openapi
- * /comment/{id}:
+ * /api/comment/{id}:
  *  delete:
  *    summary: Deletes an existing comment
  *    parameters:

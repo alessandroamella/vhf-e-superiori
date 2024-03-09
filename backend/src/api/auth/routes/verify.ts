@@ -11,7 +11,7 @@ const router = Router();
 
 /**
  * @openapi
- * /auth/verify/{userId}/{verificationCode}:
+ * /api/auth/verify/{userId}/{verificationCode}:
  *  get:
  *    summary: Verifies an account
  *    parameters:

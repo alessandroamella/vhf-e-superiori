@@ -49,6 +49,7 @@ import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
  *              type: string
  *            description: ObjectIds of the join requests
  */
+
 @modelOptions({
     schemaOptions: { timestamps: true },
     options: { allowMixed: Severity.ERROR, customName: "Event" }

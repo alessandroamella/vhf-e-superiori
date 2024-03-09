@@ -11,7 +11,7 @@ const router = Router();
 
 /**
  * @openapi
- * /auth/changepw:
+ * /api/auth/changepw:
  *  post:
  *    summary: Changes password (needs to be logged in)
  *    requestBody:

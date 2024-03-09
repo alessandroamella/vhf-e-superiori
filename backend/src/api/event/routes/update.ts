@@ -11,7 +11,7 @@ const router = Router();
 
 /**
  * @openapi
- * /event/{id}:
+ * /api/event/{id}:
  *  put:
  *    summary: Updates an existing event
  *    parameters:

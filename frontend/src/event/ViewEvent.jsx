@@ -1,7 +1,6 @@
 import { Alert as MTAlert, Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { isAfter } from "date-fns";
-import { formatInTimeZone } from "date-fns-tz";
 import it from "date-fns/locale/it";
 import { Alert, Checkbox, Label, Modal, TextInput } from "flowbite-react";
 import React, { useContext } from "react";
@@ -21,6 +20,7 @@ import {
 import { EventsContext, getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
 
 const EventContainer = ({ event, children }) =>
   event?.logoUrl ? (

@@ -10,7 +10,7 @@ const router = Router();
 
 /**
  * @openapi
- * /qso/{id}:
+ * /api/qso/{id}:
  *  get:
  *    summary: Get a QSO by ID
  *    parameters:

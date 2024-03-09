@@ -30,7 +30,7 @@ export const getUploadStatus = (md5: string): UploadStatus | undefined => {
 
 /**
  * @openapi
- * /post/upload:
+ * /api/post/upload:
  *  post:
  *    summary: Upload files
  *    requestBody:

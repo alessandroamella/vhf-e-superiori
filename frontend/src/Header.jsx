@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from ".";
-import Bandiere from "./Bandiere";
+import Flags from "./Flags";
 import { Button } from "flowbite-react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
@@ -11,22 +11,22 @@ const Header = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-2 md:px-8 flex flex-col lg:flex-row md:items-center">
+    <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-2 md:px-8 flex flex-col lg:flex-row md:items-center gap-4">
       <Link
         to="/"
-        className="flex items-center hover:scale-105 transition-transform w-fit"
+        className="flex gap-2 items-center hover:scale-105 transition-transform w-fit"
       >
         <LazyLoadImage
           className="w-20 md:w-36"
           src="/logo-min.png"
           alt="Logo"
         />
-        <h1 className="font-bold text-xl md:text-3xl ml-2 md:ml-3 block text-red-500 dark:text-white">
+        <h1 className="font-bold text-xl md:text-3xl block text-red-500 dark:text-white">
           www.vhfesuperiori.eu
         </h1>
       </Link>
       <div className="hidden md:block">
-        <Bandiere />
+        <Flags />
       </div>
       <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 md:justify-center md:w-full">
         <div>

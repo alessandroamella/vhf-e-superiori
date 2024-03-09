@@ -16,7 +16,7 @@ const router = Router();
 
 /**
  * @openapi
- * /qso/{id}:
+ * /api/qso/{id}:
  *  delete:
  *    summary: Deletes an existing QSO
  *    parameters:

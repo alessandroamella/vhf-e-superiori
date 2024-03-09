@@ -26,9 +26,30 @@ import { EventClass } from "../../event/models";
  *            minLength: 1
  *            maxLength: 10
  *            example: IU4QSG
- *          email:
+ *          fromStationLat:
+ *            type: number
+ *            description: Latitude of the station that sent the QSO
+ *          fromStationLon:
+ *            type: number
+ *            description: Longitude of the station that sent the QSO
+ *          fromStationCity:
  *            type: string
- *            description: The email of the station contacted
+ *            description: City of the station that sent the QSO
+ *          fromStationProvince:
+ *            type: string
+ *            description: Province of the station that sent the QSO
+ *          locator:
+ *            type: string
+ *            description: Locator of the station contacted
+ *          toStationLat:
+ *            type: number
+ *            description: Latitude of the station contacted
+ *          toStationLon:
+ *            type: number
+ *            description: Longitude of the station contacted
+ *          rst:
+ *            type: number
+ *            description: RST code of the QSO
  *          event:
  *            type: string
  *            description: The event the QSO is related to
@@ -52,6 +73,7 @@ import { EventClass } from "../../event/models";
  *            description: Whether the email with the EQSL has been sent
  *          emailSentDate:
  *            type: string
+ *            format: date-time
  *            description: The date the email with the EQSL has been sent
  *          notes:
  *            type: string
@@ -83,10 +105,16 @@ export class QsoClass {
     public callsign!: string; // without prefix or suffix
 
     @prop({ required: false })
+    public locator?: string;
+
+    @prop({ required: false })
     public toStationLat?: number;
 
     @prop({ required: false })
     public toStationLon?: number;
+
+    @prop({ required: false })
+    public rst?: number;
 
     @prop({ required: true, ref: () => EventClass })
     public event!: Ref<EventClass>;

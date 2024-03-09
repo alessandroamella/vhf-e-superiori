@@ -8,7 +8,7 @@ const router = Router();
 
 /**
  * @openapi
- * /event:
+ * /api/event:
  *  get:
  *    summary: Gets all existing events
  *    tags:

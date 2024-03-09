@@ -9,7 +9,7 @@ const router = Router();
 
 /**
  * @openapi
- * /event:
+ * /api/event:
  *  get:
  *    summary: Get an event, with the field joinRequests.callsign populated
  *    tags:

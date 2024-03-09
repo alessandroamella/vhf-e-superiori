@@ -13,7 +13,7 @@ const router = Router();
 
 /**
  * @openapi
- * /joinrequest/{id}:
+ * /api/joinrequest/{id}:
  *  post:
  *    summary: Toggle a join request approval (must be admin)
  *    parameters:

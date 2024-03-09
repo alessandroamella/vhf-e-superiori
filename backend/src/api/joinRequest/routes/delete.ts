@@ -13,7 +13,7 @@ const router = Router();
 
 /**
  * @openapi
- * /joinrequest/{id}:
+ * /api/joinrequest/{id}:
  *  delete:
  *    summary: Deletes an existing join request
  *    parameters:

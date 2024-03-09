@@ -7,7 +7,7 @@ const router = Router();
 
 /**
  * @openapi
- * /post/uploadstatus:
+ * /api/post/uploadstatus:
  *  post:
  *    summary: File upload status
  *    requestBody:

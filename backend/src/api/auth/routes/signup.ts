@@ -12,7 +12,7 @@ const router = Router();
 
 /**
  * @openapi
- * /auth/signup:
+ * /api/auth/signup:
  *  post:
  *    summary: Creates a new account
  *    requestBody:

@@ -14,7 +14,7 @@ const router = Router();
 
 /**
  * @openapi
- * /post/{id}:
+ * /api/post/{id}:
  *  get:
  *    summary: Get a post and the related profile pictures from QRZ
  *    parameters:

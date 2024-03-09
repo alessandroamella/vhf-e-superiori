@@ -11,7 +11,7 @@ const router = Router();
 
 /**
  * @openapi
- * /joinrequest/event/{id}:
+ * /api/joinrequest/event/{id}:
  *  get:
  *    summary: Gets a joinRequest for a specific event (for a logged in user)
  *    parameters:
