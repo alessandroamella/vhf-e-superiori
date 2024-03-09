@@ -15,7 +15,7 @@ import "swiper/css/scrollbar";
 import React, { useEffect, useMemo, useState } from "react";
 import { getErrorStr } from "..";
 import Layout from "../Layout";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ReactPlaceholder from "react-placeholder";
 import { it } from "date-fns/locale";
 import {
@@ -143,27 +143,26 @@ const Rankings = () => {
                     </Table.Head>
                     <Table.Body>
                       {r.qsos.map(qso => (
-                        <Link to={`/qso/${qso._id}`}>
-                          <Table.Row
-                            key={qso._id}
-                            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                          >
-                            <Table.Cell className="font-semibold">
-                              {qso.fromStation?.callsign || "-- errore --"}
-                            </Table.Cell>
-                            <Table.Cell>
-                              {formatInTimeZone(
-                                new Date(qso.qsoDate),
-                                "Europe/Rome",
-                                "dd/MM/yyyy HH:mm"
-                              )}
-                            </Table.Cell>
-                            <Table.Cell>{qso.frequency} MHz</Table.Cell>
-                            <Table.Cell>{qso.mode}</Table.Cell>
-                            <Table.Cell>{qso.locator}</Table.Cell>
-                            <Table.Cell>{qso.rst}</Table.Cell>
-                          </Table.Row>
-                        </Link>
+                        <Table.Row
+                          key={qso._id}
+                          onClick={() => navigate(`/qso/${qso._id}`)}
+                          className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        >
+                          <Table.Cell className="font-semibold">
+                            {qso.fromStation?.callsign || "-- errore --"}
+                          </Table.Cell>
+                          <Table.Cell>
+                            {formatInTimeZone(
+                              new Date(qso.qsoDate),
+                              "Europe/Rome",
+                              "dd/MM/yyyy HH:mm"
+                            )}
+                          </Table.Cell>
+                          <Table.Cell>{qso.frequency} MHz</Table.Cell>
+                          <Table.Cell>{qso.mode}</Table.Cell>
+                          <Table.Cell>{qso.locator}</Table.Cell>
+                          <Table.Cell>{qso.rst}</Table.Cell>
+                        </Table.Row>
                       ))}
                     </Table.Body>
                   </Table>
