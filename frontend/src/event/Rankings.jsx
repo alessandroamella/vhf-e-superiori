@@ -127,7 +127,7 @@ const Rankings = () => {
           QSO di <strong>{showRankings}</strong>
         </Modal.Header>
         <Modal.Body>
-          <div className="w-full flex flex-col gap-4 max-h-[69vh] md:max-h-[60vh]">
+          <div className="w-full flex flex-col gap-4 max-h-[60vh]">
             {rankings &&
               rankings
                 .filter(r => r.callsign === showRankings)
@@ -146,7 +146,7 @@ const Rankings = () => {
                         <Table.Row
                           key={qso._id}
                           onClick={() => navigate(`/qso/${qso._id}`)}
-                          className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >
                           <Table.Cell className="font-semibold">
                             {qso.fromStation?.callsign || "-- errore --"}
@@ -251,7 +251,7 @@ const Rankings = () => {
                       <Table.Row
                         key={r.callsign}
                         onClick={() => setShowRankings(r.callsign)}
-                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                       >
                         <Table.Cell>
                           {/* show 🥇, 🥈 or 🥉 if r.callsign === rankings[0,1,2].callsign, else i + 1 */}

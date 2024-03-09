@@ -127,7 +127,7 @@ const Qso = () => {
                         <Table.HeadCell>Modo</Table.HeadCell>
                       </Table.Head>
                       <Table.Body>
-                        <Table.Row>
+                        <Table.Row className="dark:text-white dark:bg-gray-800">
                           <Table.Cell>{qso?.event?.name}</Table.Cell>
                           <Table.Cell>{qso?.callsign}</Table.Cell>
                           <Table.Cell>{qso?.fromStation?.callsign}</Table.Cell>
