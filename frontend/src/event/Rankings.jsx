@@ -250,15 +250,13 @@ const Rankings = () => {
                         className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                       >
                         <Table.Cell>
-                          {rankingsPage === 1
-                            ? i === 0
-                              ? "🥇 "
-                              : i === 1
-                              ? "🥈 "
-                              : i === 2
-                              ? "🥉 "
-                              : i + 1
-                            : i + 1 + (rankingsPage - 1) * rankingsPerPage}
+                          {/* show 🥇, 🥈 or 🥉 if r.callsign === rankings[0,1,2].callsign, else i + 1 */}
+                          {["🥇", "🥈", "🥉"][
+                            rankings.findIndex(
+                              (ranking, index) =>
+                                ranking.callsign === r.callsign && index < 3
+                            )
+                          ] || i + 1}
                         </Table.Cell>
                         <Table.Cell className="font-semibold">
                           {r.callsign}
