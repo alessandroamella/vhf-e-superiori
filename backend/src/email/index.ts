@@ -80,7 +80,7 @@ export class EmailService {
 
     public static async sendResetPwMail(user: UserDoc, code: string) {
         const html = await EmailService.loadMailFromFile(
-            "resetPw.html",
+            "changePw.html",
             user.callsign,
             user._id.toString(),
             code
