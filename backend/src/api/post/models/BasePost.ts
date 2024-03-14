@@ -79,21 +79,21 @@ export class BasePostClass {
 
     @prop({
         type: () => [String],
-        required: true
-        // validate: [
-        //     (v: unknown[]) => v.length >= 0 && v.length <= 5,
-        //     Errors.INVALID_PICS_NUM
-        // ]
+        required: true,
+        validate: [
+            (v: unknown[]) => v.length >= 0 && v.length <= 5,
+            Errors.INVALID_PICS_NUM
+        ]
     })
     public pictures!: string[];
 
     @prop({
         type: () => [String],
-        required: true
-        // validate: [
-        //     (v: unknown[]) => v.length >= 0 && v.length <= 2,
-        //     Errors.INVALID_VIDS_NUM
-        // ]
+        required: true,
+        validate: [
+            (v: unknown[]) => v.length >= 0 && v.length <= 2,
+            Errors.INVALID_VIDS_NUM
+        ]
     })
     public videos!: string[];
 

@@ -176,7 +176,9 @@ router.post(
 
                     compressedImgPaths.push(minifiedPath);
                 } else {
-                    logger.info(`Picture ${p} is small enough, not minifying`);
+                    logger.info(
+                        `Picture ${p} is small enough (${originalSizeKb}Kb), not minifying`
+                    );
                     compressedImgPaths.push(p);
                 }
             }
@@ -205,7 +207,7 @@ router.post(
             const compressedVidUrls: string[] = [];
 
             for (const f of [...compressedImgPaths, ...compressedVidPaths]) {
-                const isImage = f.endsWith(".jpg");
+                const isImage = !f.endsWith(".mp4");
 
                 const mimeType = isImage ? "image/jpeg" : "video/mp4";
                 const awsPath = await s3.uploadFile({
