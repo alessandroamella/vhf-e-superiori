@@ -3,16 +3,12 @@ import {
     modelOptions,
     pre,
     prop,
-    Ref,
     Severity
 } from "@typegoose/typegoose";
 import IsEmail from "isemail";
 import bcrypt from "bcrypt";
-import { JoinRequestClass } from "../../joinRequest/models";
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { logger } from "../../../shared";
-import { BasePostClass } from "../../post/models/BasePost";
-import { CommentClass } from "../../comment/models/Comment";
 
 /**
  * @swagger
