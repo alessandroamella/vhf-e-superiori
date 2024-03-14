@@ -158,22 +158,27 @@ router.post(
             const compressedVidPaths: string[] = [];
 
             for (const p of picTempPaths) {
-                logger.debug(`Compressing picture ${p}`);
-                const minifiedPath = p + ".min.jpg";
-                await sharp(p).jpeg({ quality: 80 }).toFile(minifiedPath);
-
                 const originalStat = await stat(p);
                 const originalSizeKb = originalStat.size / 1024;
 
-                const newStat = await stat(minifiedPath);
-                const newSizeKb = newStat.size / 1024;
+                if (originalSizeKb > 1024 * 3) {
+                    logger.debug(`Compressing picture ${p}`);
+                    const minifiedPath = p + ".min.jpg";
+                    await sharp(p).jpeg({ quality: 80 }).toFile(minifiedPath);
 
-                logger.info(
-                    `Minified picture for post ${post._id} saved to ${minifiedPath} (${originalSizeKb}Kb -> ${newSizeKb}Kb)`
-                );
-                await unlink(p);
+                    const newStat = await stat(minifiedPath);
+                    const newSizeKb = newStat.size / 1024;
 
-                compressedImgPaths.push(minifiedPath);
+                    logger.info(
+                        `Minified picture for post ${post._id} saved to ${minifiedPath} (${originalSizeKb}Kb -> ${newSizeKb}Kb)`
+                    );
+                    await unlink(p);
+
+                    compressedImgPaths.push(minifiedPath);
+                } else {
+                    logger.info(`Picture ${p} is small enough, not minifying`);
+                    compressedImgPaths.push(p);
+                }
             }
 
             for (const v of vidTempPaths) {
