@@ -55,20 +55,15 @@ const router = Router();
  */
 router.get("/:_id", param("_id").isMongoId(), validate, async (req, res) => {
     try {
-        const post = await BasePost.findOne({ _id: req.params?._id })
-            .populate({ path: "fromUser", select: "callsign name" })
-            .populate({
-                path: "comments",
-                select: "fromUser content createdAt"
-            })
-            .sort({ "comments.createdAt": -1 });
-        await Comment.populate(post, {
-            path: "comments.fromUser",
-            model: "User",
+        const post = await BasePost.findOne({ _id: req.params?._id }).populate({
+            path: "fromUser",
             select: "callsign name"
         });
-
-        logger.debug("Fetched post " + post?._id);
+        if (post?.isProcessing) {
+            return res
+                .status(BAD_REQUEST)
+                .json(createError(Errors.POST_IS_PROCESSING));
+        }
 
         if (!post) {
             return res
@@ -80,12 +75,18 @@ router.get("/:_id", param("_id").isMongoId(), validate, async (req, res) => {
                 .json(createError(Errors.USER_NOT_FOUND));
         }
 
+        logger.debug("Fetched post " + post?._id);
+
+        const comments = await Comment.find({
+            forPost: post._id
+        }).populate({ path: "fromUser", select: "callsign name" });
+
         const pp = await qrz.scrapeProfilePicture(
             (post.fromUser as unknown as UserDoc).callsign
         );
 
         res.json({
-            post: post.toObject(),
+            post: { ...post.toJSON(), comments },
             pp
         });
     } catch (err) {

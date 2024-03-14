@@ -11,8 +11,7 @@ import { ParsedAdif } from "../interfaces";
 import { Qso } from "../../qso/models";
 import moment from "moment";
 import Event from "../../event/models";
-import { JoinRequestDoc } from "../../joinRequest/models";
-import { isDocumentArray } from "@typegoose/typegoose";
+import JoinRequest from "../../joinRequest/models";
 import User, { UserDoc } from "../../auth/models";
 import { googleMaps } from "../../maps";
 import { readFile, unlink, writeFile } from "fs/promises";
@@ -126,34 +125,21 @@ router.post(
 
         const event = await Event.findOne({
             _id: req.body.event
-        }).populate("joinRequests");
+        });
         if (!event) {
             return res
                 .status(BAD_REQUEST)
                 .json(createError(Errors.EVENT_NOT_FOUND));
         }
 
-        if (!isDocumentArray(event.joinRequests)) {
-            throw new Error("Event joinRequests not populated");
-        }
-
-        if (!user.isAdmin) {
-            const joinRequest = (
-                event.joinRequests as unknown as JoinRequestDoc[]
-            ).find(
-                e =>
-                    e.fromUser._id.toString() ===
-                    (req.user as unknown as UserDoc)._id.toString()
-            );
-            if (!joinRequest) {
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
-            } else if (!joinRequest.isApproved) {
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.JOIN_REQUEST_NOT_APPROVED));
-            }
+        const joinRequest = await JoinRequest.findOne({
+            forEvent: event._id,
+            fromUser: user.isAdmin ? undefined : user._id
+        });
+        if (!joinRequest) {
+            return res
+                .status(BAD_REQUEST)
+                .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
         }
 
         const shouldSave = req.body.save === "true";
@@ -300,34 +286,22 @@ router.get(
 
         const event = await Event.findOne({
             _id: req.query.event
-        }).populate("joinRequests");
+        });
         if (!event) {
             return res
                 .status(BAD_REQUEST)
                 .json(createError(Errors.EVENT_NOT_FOUND));
         }
 
-        if (!isDocumentArray(event.joinRequests)) {
-            throw new Error("Event joinRequests not populated");
-        }
+        const joinRequest = await JoinRequest.findOne({
+            forEvent: event._id,
+            fromUser: user.isAdmin ? undefined : user._id
+        });
 
-        if (!user.isAdmin) {
-            const joinRequest = (
-                event.joinRequests as unknown as JoinRequestDoc[]
-            ).find(
-                e =>
-                    e.fromUser._id.toString() ===
-                    (req.user as unknown as UserDoc)._id.toString()
-            );
-            if (!joinRequest) {
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
-            } else if (!joinRequest.isApproved) {
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.JOIN_REQUEST_NOT_APPROVED));
-            }
+        if (!joinRequest) {
+            return res
+                .status(BAD_REQUEST)
+                .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
         }
 
         const qsos = await Qso.find({

@@ -4,6 +4,7 @@ import { query } from "express-validator";
 import { createError, validate } from "../../helpers";
 import User from "../models";
 import { INTERNAL_SERVER_ERROR } from "http-status";
+import JoinRequest from "../../joinRequest/models";
 
 const router = Router();
 
@@ -75,7 +76,22 @@ router.get(
             else users.sort({ createdAt: -1 });
 
             const result = await users.exec();
-            return res.json(result);
+
+            const joinRequests = await JoinRequest.find({
+                fromUser: { $in: result.map(u => u._id) }
+            });
+
+            return res.json(
+                result.map(u => {
+                    const _joinRequests = joinRequests.filter(
+                        jr => jr.fromUser.toString() === u._id.toString()
+                    );
+                    return {
+                        ...u.toJSON(),
+                        joinRequests: _joinRequests
+                    };
+                })
+            );
         } catch (err) {
             logger.error("Error in users all");
             logger.error(err);

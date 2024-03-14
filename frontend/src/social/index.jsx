@@ -13,7 +13,7 @@ import axios from "axios";
 import { Alert, Button, Spinner } from "flowbite-react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MenuContent from "../sideMenu/MenuContent";
-import { FaExclamationTriangle } from "react-icons/fa";
+import { FaExclamationTriangle, FaPlus } from "react-icons/fa";
 
 const Social = () => {
   const { splashPlayed } = useContext(SplashContext);
@@ -35,10 +35,10 @@ const Social = () => {
 
   useEffect(() => {
     // DEBUG
-    return setAlert({
-      color: "warning",
-      msg: "Il servizio è temporaneamente sospeso per manutenzione. Ci scusiamo per il disagio."
-    });
+    // return setAlert({
+    //   color: "warning",
+    //   msg: "Il servizio è temporaneamente sospeso per manutenzione. Ci scusiamo per il disagio."
+    // });
 
     async function fetchPosts() {
       console.log(
@@ -96,24 +96,33 @@ const Social = () => {
               <span className="font-semibold">
                 {searchParams?.get("created")}
               </span>{" "}
-              creato con successo!
+              creato con successo! 🎉
             </p>
-            {/* <p>Dovrà essere approvato prima di essere visibile pubblicamente</p> */}
+
+            <p>
+              I contenuti sono in fase di elaborazione, il post sarà visibile
+              tra pochi minuti.
+            </p>
           </Alert>
         )}
 
         <Button
           // DEBUG
-          disabled
-          // onClick={() => navigate("new")}
-          // className="flex rounded-full w-16 h-16 aspect-square items-center fixed bottom-8 right-8 z-40"
+          // disabled
           className="flex rounded-full uppercase items-center fixed bottom-8 right-8 z-40"
+          onClick={() => navigate("new")}
+          // className="flex rounded-full w-16 h-16 aspect-square items-center fixed bottom-8 right-8 z-40"
         >
-          {/* <Link to="new" className="text-xl text-white font-bold"> */}
-          {/* <FaPlus /> */}
-          Inserisci foto / video
-          {/* </Link> */}
-          {/* <span className="ml-1">Nuovo post</span> */}
+          <Link
+            to="new"
+            className="text-xl text-white font-bold flex items-center gap-2"
+          >
+            {/* <span className="text-xl text-white font-bold flex items-center gap-2"> */}
+            <FaPlus />
+            Inserisci foto / video
+          </Link>
+          {/* </span> */}
+          {/* <span className="ml-1">Nuovo post</span>*/}
         </Button>
 
         <div className="grid md:gap-8 grid-cols-1 md:grid-cols-3">
@@ -124,7 +133,7 @@ const Social = () => {
           </div>
           <div className="col-span-2">
             {/* DEBUG */}
-            <Alert className="mb-6" color="warning">
+            {/* <Alert className="mb-6" color="warning">
               <div className="flex items-center gap-1">
                 <FaExclamationTriangle />{" "}
                 <h3 className="text-lg font-semibold">
@@ -136,8 +145,8 @@ const Social = () => {
                 Prevediamo di rinnovare e riaprire il caricamento di contenuti
                 al più presto. Grazie per la comprensione.
               </p>
-            </Alert>
-            {/* {postsLoaded ? (
+            </Alert> */}
+            {postsLoaded ? (
               posts.length > 0 ? (
                 <InfiniteScroll
                   dataLength={posts.length}
@@ -180,7 +189,7 @@ const Social = () => {
                   <FeedCard key={e} />
                 ))}
               </div>
-            )} */}
+            )}
           </div>
         </div>
       </div>

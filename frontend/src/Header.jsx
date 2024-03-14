@@ -1,13 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import { UserContext } from ".";
 import Flags from "./Flags";
-import { Button } from "flowbite-react";
+import { Button, Tooltip } from "flowbite-react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const Header = () => {
-  const { user } = useContext(UserContext);
-
   const navigate = useNavigate();
 
   return (
@@ -29,11 +25,6 @@ const Header = () => {
         <Flags />
       </div>
       <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 md:justify-center md:w-full">
-        <div>
-          <Button className="uppercase" onClick={() => navigate("/social")}>
-            Foto / video
-          </Button>
-        </div>
         <div className="mt-2 scale-110">
           <form
             action="https://www.paypal.com/donate"
@@ -65,16 +56,23 @@ const Header = () => {
             />
           </form>
         </div>
-        {user?.isAdmin && (
-          <div className="flex justify-center">
-            <Link
-              to="/eventmanager"
-              className="bg-red-600 text-white p-2 rounded font-medium"
+        <div>
+          <Button className="uppercase" onClick={() => navigate("/social")}>
+            Foto / video
+          </Button>
+        </div>
+        <div>
+          <Tooltip content="In arrivo a breve">
+            <Button
+              color="purple"
+              className="uppercase"
+              disabled
+              onClick={() => navigate("/beacon")}
             >
-              Admin
-            </Link>
-          </div>
-        )}
+              Beacon
+            </Button>
+          </Tooltip>
+        </div>
       </div>
     </header>
   );

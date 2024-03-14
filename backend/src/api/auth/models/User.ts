@@ -27,9 +27,6 @@ import { CommentClass } from "../../comment/models/Comment";
  *          - phoneNumber
  *          - password
  *          - isAdmin
- *          - joinRequests
- *          - posts
- *          - comments
  *        properties:
  *          callsign:
  *            type: string
@@ -66,24 +63,6 @@ import { CommentClass } from "../../comment/models/Comment";
  *          passwordResetCode:
  *            type: string
  *            description: Password reset code
- *          joinRequests:
- *            type: array
- *            items:
- *              type: string
- *              format: ObjectId
- *            description: ObjectIds of the join requests
- *          posts:
- *            type: array
- *            items:
- *              type: string
- *              format: ObjectId
- *            description: ObjectIds of published posts
- *          comments:
- *            type: array
- *            items:
- *              type: string
- *              format: ObjectId
- *            description: ObjectIds of published comments
  */
 
 @modelOptions({
@@ -139,18 +118,6 @@ export class UserClass {
 
     @prop({ required: false })
     public verificationCode?: string;
-
-    @prop({ required: true, default: [], ref: () => JoinRequestClass })
-    public joinRequests!: Ref<JoinRequestClass>[];
-
-    @prop({ required: true, default: [], ref: () => BasePostClass })
-    public posts!: Ref<BasePostClass>[];
-
-    @prop({ required: true, default: [], ref: () => CommentClass })
-    public comments!: Ref<CommentClass>[];
-
-    // @prop({ required: true, default: [], ref: "Comment" })
-    // public comments!: Ref<"Comment">[];
 
     public async isValidPw(this: DocumentType<UserClass>, plainPw: string) {
         return await bcrypt.compare(plainPw, this.password);

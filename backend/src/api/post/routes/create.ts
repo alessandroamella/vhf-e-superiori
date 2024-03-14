@@ -8,6 +8,10 @@ import { createError, validate } from "../../helpers";
 import { Errors } from "../../errors";
 import createSchema from "../schemas/createSchema";
 import User, { UserDoc } from "../../auth/models";
+import fileUpload from "express-fileupload";
+import VideoCompressor from "../../compressor";
+import sharp from "sharp";
+import { stat, unlink } from "fs/promises";
 
 const router = Router();
 
@@ -19,22 +23,23 @@ const router = Router();
  *    requestBody:
  *      required: true
  *      content:
- *        application/json:
+ *        application/x-www-form-urlencoded:
  *          schema:
  *           type: object
  *           required:
  *             - description
- *             - filesPath
+ *             - files
  *           properties:
  *             description:
  *               type: string
  *               minLength: 1
  *               description: Description of the event
- *             filesPath:
+ *             files:
  *               type: array
  *               items:
  *                 type: string
- *               description: Paths of the files uploaded by the user
+ *                 format: binary
+ *               description: Pictures or vidTempPaths of the post
  *    tags:
  *      - post
  *    responses:
@@ -68,6 +73,8 @@ router.post(
     checkSchema(createSchema),
     validate,
     async (req: Request, res: Response) => {
+        let responseSent = false;
+
         if (!req.user) {
             throw new Error("No req.user in post create");
         }
@@ -79,81 +86,52 @@ router.post(
                 throw new Error("User not found in post create");
             }
 
-            const { description, filesPath } = req.body;
+            const { description } = req.body;
 
-            logger.info("Checking files");
+            const _files = req.files?.content ?? [];
+            const files: fileUpload.UploadedFile[] = Array.isArray(_files)
+                ? _files
+                : [_files];
 
-            const metas: [path: string, meta: AWS.S3.HeadObjectOutput][] = [];
-            for (const _p of filesPath) {
-                const p = _p.split("/").slice(-2).join("/");
-                logger.debug("Getting meta of file " + p);
-                try {
-                    const meta = await s3.getFileMeta({ filePath: p });
-                    metas.push([_p, meta]);
-                } catch (err) {
-                    if ((err as Error).name === "NotFound") {
-                        logger.debug("File not found");
-                        return res
-                            .status(BAD_REQUEST)
-                            .json(createError(Errors.FILE_NOT_FOUND));
-                    }
-                    logger.error(
-                        `Error while getting file meta for file "${_p} ("${p}")`
-                    );
-                    logger.error(err);
-                    return res
-                        .status(INTERNAL_SERVER_ERROR)
-                        .json(createError());
-                }
-            }
+            logger.info("Checking files: ");
+            logger.info(files);
 
-            const pictures: string[] = [];
-            const videos: string[] = [];
-            for (const [path, m] of metas) {
-                if (m.ContentType?.includes("image")) {
-                    pictures.push(path);
-                } else if (m.ContentType?.includes("video")) {
-                    videos.push(path);
+            const picTempPaths: string[] = [];
+            const vidTempPaths: string[] = [];
+
+            for (const f of files) {
+                if (f.mimetype.includes("image")) {
+                    picTempPaths.push(f.tempFilePath);
+                } else if (f.mimetype.includes("video")) {
+                    vidTempPaths.push(f.tempFilePath);
                 } else {
-                    logger.error("Error while reading meta of file");
-                    logger.error(path);
-                    // DEBUG delete all other files
+                    logger.error("File MIME type not allowed");
                     return res
-                        .status(INTERNAL_SERVER_ERROR)
-                        .json(createError());
+                        .status(BAD_REQUEST)
+                        .json(createError(Errors.INVALID_FILE_MIME_TYPE));
                 }
             }
 
-            if (pictures.length > 5) {
+            if (picTempPaths.length > 5) {
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.INVALID_PICS_NUM));
-            } else if (videos.length > 2) {
+            } else if (vidTempPaths.length > 2) {
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.INVALID_VIDS_NUM));
-            } else if (pictures.length + videos.length === 0) {
+            } else if (picTempPaths.length + vidTempPaths.length === 0) {
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.NO_CONTENT));
             }
 
-            logger.info("Creating post with following params");
-            logger.info({
-                fromUser: user._id,
-                description,
-                pictures,
-                videos
-            });
             logger.debug("fromUser");
             logger.debug(user);
             const post = new BasePost({
                 fromUser: user._id,
                 description,
-                isApproved: true,
-                isProcessing: false,
-                pictures,
-                videos
+                isProcessing: true
             });
             try {
                 await post.validate();
@@ -165,19 +143,99 @@ router.post(
                     .json(createError(Errors.INVALID_POST));
             }
 
-            // user.posts.push(post._id);
-            // await user.save();
-            await post.save();
-            await User.updateOne(
-                { _id: user._id },
-                { $push: { posts: post._id } }
+            logger.info("Creating post:");
+            logger.info(post);
+            logger.info(
+                `${picTempPaths.length} pictures and ${vidTempPaths.length} videos`
             );
 
+            await post.save();
+
             res.json(post.toObject());
+            responseSent = true;
+
+            const compressedImgPaths: string[] = [];
+            const compressedVidPaths: string[] = [];
+
+            for (const p of picTempPaths) {
+                logger.debug(`Compressing picture ${p}`);
+                const minifiedPath = p + ".min.jpg";
+                await sharp(p).jpeg({ quality: 80 }).toFile(minifiedPath);
+
+                const originalStat = await stat(p);
+                const originalSizeKb = originalStat.size / 1024;
+
+                const newStat = await stat(minifiedPath);
+                const newSizeKb = newStat.size / 1024;
+
+                logger.info(
+                    `Minified picture for post ${post._id} saved to ${minifiedPath} (${originalSizeKb}Kb -> ${newSizeKb}Kb)`
+                );
+                await unlink(p);
+
+                compressedImgPaths.push(minifiedPath);
+            }
+
+            for (const v of vidTempPaths) {
+                logger.debug(`Compressing video ${v}`);
+                const compressedPath = v + ".compressed.mp4";
+                const compressor = new VideoCompressor(v, compressedPath);
+                await compressor.compress();
+
+                const originalStat = await stat(v);
+                const originalSizeMb = originalStat.size / 1024 / 1024;
+
+                const newStat = await stat(compressedPath);
+                const newSizeMb = newStat.size / 1024 / 1024;
+
+                logger.info(
+                    `Compressed video for post ${post._id} saved to ${compressedPath} (${originalSizeMb}Mb -> ${newSizeMb}Mb)`
+                );
+                await unlink(v);
+
+                compressedVidPaths.push(compressedPath);
+            }
+
+            const compressedImgUrls: string[] = [];
+            const compressedVidUrls: string[] = [];
+
+            for (const f of [...compressedImgPaths, ...compressedVidPaths]) {
+                const isImage = f.endsWith(".jpg");
+
+                const mimeType = isImage ? "image/jpeg" : "video/mp4";
+                const awsPath = await s3.uploadFile({
+                    fileName: s3.generateFileName({
+                        userId: user._id.toString(),
+                        mimeType
+                    }),
+                    filePath: f,
+                    mimeType,
+                    folder: isImage ? "pics" : "vids"
+                });
+
+                if (isImage) {
+                    compressedImgUrls.push(awsPath);
+                } else {
+                    compressedVidUrls.push(awsPath);
+                }
+
+                logger.info(
+                    `Minified file for post ${post._id} uploaded to ${awsPath}`
+                );
+            }
+
+            post.isProcessing = false;
+            post.pictures.push(...compressedImgUrls);
+            post.videos.push(...compressedVidUrls);
+            logger.info("Post after processing:");
+            logger.info(post);
+            await post.save();
         } catch (err) {
             logger.error("Error while creating post");
             logger.error(err);
-            res.status(INTERNAL_SERVER_ERROR).json(createError());
+            if (!responseSent) {
+                res.status(INTERNAL_SERVER_ERROR).json(createError());
+            }
         }
     }
 );

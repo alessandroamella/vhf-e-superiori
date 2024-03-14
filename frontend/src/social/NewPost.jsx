@@ -18,17 +18,10 @@ import { FaBackward, FaInfoCircle, FaPlus } from "react-icons/fa";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { Typography } from "@material-tailwind/react";
 import ViewPostContent from "./ViewPostContent";
-import BMF from "browser-md5-file";
 import FileUploader from "./FileUploader";
-
-let statusInterval = null;
 
 const FileUploaderMemo = React.memo(
   ({ files, setFiles, disabled, maxPhotos, maxVideos }) => {
-    // const pictures = useMemo(() => {
-    //   return files.filter(file => file.type.includes("image"));
-    // }, [files]);
-
     return (
       <FileUploader
         disabled={disabled}
@@ -48,8 +41,6 @@ const NewPost = () => {
 
   const { user } = useContext(UserContext);
 
-  const [uploadMap, setUploadMap] = useState(new Map());
-
   const [alert, setAlert] = useState(null);
   const [disabled, setDisabled] = useState(false);
 
@@ -66,26 +57,6 @@ const NewPost = () => {
   const { register, handleSubmit, formState, watch } = useForm();
 
   const watchedDescription = watch("description");
-
-  async function calculateMd5(f) {
-    return new Promise((resolve, reject) => {
-      const bmf = new BMF();
-      bmf.md5(
-        f,
-        (err, md5) => {
-          if (err) {
-            console.log("err in md5 calculation:", err);
-            return reject(err);
-          } else {
-            return resolve(md5);
-          }
-        },
-        progress => {
-          // console.log("progress number:", progress);
-        }
-      );
-    });
-  }
 
   useEffect(() => {
     if (user === null)
@@ -118,9 +89,9 @@ const NewPost = () => {
   }, [files]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploadingFiles, setIsUploadingFiles] = useState(false);
-
   const [createdAt, setCreatedAt] = useState(null);
+
+  const [uploadPercent, setUploadPercent] = useState(0);
 
   const onSubmit = async data => {
     console.log(data);
@@ -131,7 +102,7 @@ const NewPost = () => {
     ) {
       setAlert({
         color: "failure",
-        msg: "Devi aggiungere almeno una foto"
+        msg: "Devi aggiungere almeno una foto o un video per creare un post."
       });
 
       return;
@@ -140,44 +111,44 @@ const NewPost = () => {
     setDisabled(true);
     setIsSubmitting(true);
 
-    uploadMap.clear();
-    setUploadMap(new Map());
-
-    for (const f of [...pictures, ...videos]) {
-      try {
-        const md5 = await calculateMd5(f);
-
-        setUploadMap(new Map(uploadMap.set(md5, { name: f.name, percent: 0 })));
-
-        console.log("md5 string of " + f.name + ":", md5);
-      } catch (err) {
-        console.log("err in md5 calculation:", err);
-      }
-    }
-
-    setIsUploadingFiles(true);
     setCreatedAt(new Date());
 
-    // This will take a very long time to complete
-    const filesPath = await uploadPicturesAndVideos();
+    const formData = new FormData();
+    formData.append("description", data.description);
 
-    setIsUploadingFiles(false);
-    uploadMap.clear();
-    setUploadMap(new Map());
-
-    if (!filesPath) {
-      setDisabled(false);
-      setIsSubmitting(false);
-      setCreatedAt(null);
-      return;
+    // append "content" files
+    for (const f of files) {
+      formData.append("content", f);
     }
 
-    const postCreated = await createPost({ filesPath, formValues: data });
-    if (!postCreated) {
+    try {
+      const res1 = await axios.post("/api/post", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        },
+        onUploadProgress: e => {
+          const percent = (e.loaded / e.total) * 100;
+          console.log("uploading...", percent);
+          setUploadPercent(percent);
+        }
+      });
+      console.log(res1.data);
+      const res2 = await axios.get(`/api/post/${res1.data._id}`);
+      console.log(res2.data);
+    } catch (err) {
+      console.log(err);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    } finally {
       setDisabled(false);
       setIsSubmitting(false);
       setCreatedAt(null);
-      return;
     }
 
     navigate({
@@ -187,100 +158,6 @@ const NewPost = () => {
       }).toString()
     });
   };
-
-  const uploadPicturesAndVideos = async () => {
-    const formData = new FormData();
-    console.log(pictures);
-    const content = [...pictures, ...videos];
-    content.forEach(f => formData.append("content", f));
-
-    try {
-      const { data } = await axios.post("/api/post/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        },
-        timeout: 5 * 60 * 1000 // 5 minutes timeout
-      });
-      console.log("filesPath", data);
-      return data;
-    } catch (err) {
-      console.log(err);
-      setAlert({
-        color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
-      });
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-      return null;
-    }
-  };
-
-  /**
-   * Creates a post with the specified file paths and URL type.
-   *
-   * @param {Object} options - The options for the post.
-   * @param {string[]} options.filesPath - An array of file paths to be sent with the post.
-   * @returns {Promise<any>} A Promise that resolves to any value.
-   */
-  const createPost = async ({ filesPath, formValues }) => {
-    try {
-      const { data } = await axios.post(`/api/post`, {
-        ...formValues,
-        filesPath
-      });
-      console.log(data);
-      return true;
-    } catch (err) {
-      console.log(err);
-      setAlert({
-        color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
-      });
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-      return false;
-    }
-  };
-
-  useEffect(() => {
-    if (!isUploadingFiles) {
-      clearInterval(statusInterval);
-      statusInterval = null;
-      return;
-    }
-
-    // emit a upload status socket event every 5 seconds
-    if (!statusInterval) {
-      statusInterval = setInterval(async () => {
-        console.log(
-          "emit upload status",
-          [...uploadMap.keys()],
-          [...uploadMap.values()]
-        );
-        try {
-          const { data } = await axios.post("/api/post/uploadstatus", {
-            md5s: [...uploadMap.keys()]
-          });
-          for (const e of data) {
-            setUploadMap(
-              new Map(
-                uploadMap.set(e.md5, {
-                  ...uploadMap.get(e.md5),
-                  percent: e.percent
-                })
-              )
-            );
-          }
-        } catch (err) {}
-      }, 1000);
-      console.log("Starting emit status interval");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isUploadingFiles]);
 
   function navigateBack() {
     window.confirm(
@@ -334,11 +211,7 @@ const NewPost = () => {
           }).toString()
         })}
       <div className="px-4 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
-        <Button
-          onClick={navigateBack}
-          disabled={isSubmitting || isUploadingFiles}
-          color="light"
-        >
+        <Button onClick={navigateBack} disabled={isSubmitting} color="light">
           <FaBackward />
         </Button>
         {alert && (
@@ -404,37 +277,25 @@ const NewPost = () => {
                     <FaPlus className="dark:text-white dark:fill-white" />
                   )}
                   <span className="ml-1 font-semibold">
-                    {!isSubmitting
-                      ? "Inserisci"
-                      : isUploadingFiles
-                      ? "Caricamento foto e video..."
-                      : "Inserimento in corso..."}
+                    {!isSubmitting ? "Inserisci" : "Inserimento in corso..."}
                   </span>
                 </Button>
-                {[...uploadMap.keys()].length > 0 && (
-                  <>
-                    <p className="text-center">È normale che ci metta un po'</p>
-                    {[...uploadMap.entries()].map(
-                      ([md5, { name, percent }]) => (
-                        <div key={md5} className="mb-2 w-56">
-                          <Typography
-                            variant="h5"
-                            className="text-center truncate max-w-full dark:text-gray-200"
-                            style={{ maxWidth: "calc(100% - 3rem)" }}
-                            title={name}
-                          >
-                            {name}: {Math.round(percent)}%
-                          </Typography>
-                          <Progress
-                            progress={percent || 0}
-                            size="sm"
-                            className="w-full"
-                            color="dark"
-                          />
-                        </div>
-                      )
-                    )}
-                  </>
+                {isSubmitting && (
+                  <div className="mt-4 mb-2 w-56">
+                    <Typography
+                      variant="h5"
+                      className="text-center truncate max-w-full dark:text-gray-200"
+                      style={{ maxWidth: "calc(100% - 3rem)" }}
+                    >
+                      Caricamento file: {Math.round(uploadPercent)}%
+                    </Typography>
+                    <Progress
+                      progress={uploadPercent || 0}
+                      // size="sm"
+                      className="w-full"
+                      color="dark"
+                    />
+                  </div>
                 )}
               </div>
             </form>

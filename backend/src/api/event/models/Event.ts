@@ -9,7 +9,6 @@ import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
  *          - name
  *          - date
  *          - joinDeadline
- *          - joinRequests
  *        properties:
  *          name:
  *            type: string
@@ -43,11 +42,6 @@ import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
  *            type: string
  *            format: uri
  *            description: URL of the eQSL image of this event (base image without callsign nor QSO data)
- *          joinRequests:
- *            type: array
- *            items:
- *              type: string
- *            description: ObjectIds of the join requests
  */
 
 @modelOptions({
@@ -78,7 +72,4 @@ export class EventClass {
 
     @prop({ required: false })
     public eqslUrl?: string;
-
-    @prop({ required: true, default: [], ref: "JoinRequest" })
-    public joinRequests!: Ref<"JoinRequest">[];
 }

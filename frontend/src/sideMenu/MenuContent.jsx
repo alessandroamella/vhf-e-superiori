@@ -14,7 +14,12 @@ import {
   FaUserShield,
   FaWhatsapp
 } from "react-icons/fa";
-import { createSearchParams, Link, useNavigate } from "react-router-dom";
+import {
+  createSearchParams,
+  Link,
+  useLocation,
+  useNavigate
+} from "react-router-dom";
 import {
   getErrorStr,
   JoinOpenContext,
@@ -26,9 +31,11 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 const SectionHref = ({ href, wip, children }) => {
   const { setSidebarOpen } = useContext(SidebarOpenContext);
 
+  const location = useLocation();
+
   // const navigate = useNavigate();
 
-  return window.location.pathname === "/" || wip ? (
+  return location.pathname === "/" || wip ? (
     <a
       href={href}
       className={`flex items-center gap-2 ${
@@ -52,6 +59,8 @@ const SectionHref = ({ href, wip, children }) => {
 const SectionLink = ({ to, children, redirectBack, ...rest }) => {
   const { setSidebarOpen } = useContext(SidebarOpenContext);
 
+  const location = useLocation();
+
   return (
     <Link
       to={
@@ -61,7 +70,7 @@ const SectionLink = ({ to, children, redirectBack, ...rest }) => {
               pathname: to,
               search: redirectBack
                 ? createSearchParams({
-                    to: window.location.pathname
+                    to: location.pathname
                   }).toString()
                 : undefined
             }
@@ -92,6 +101,8 @@ const MenuContent = ({ isSideBar }) => {
   const { user, setUser } = useContext(UserContext);
   const { joinOpen, setJoinOpen } = useContext(JoinOpenContext);
   const [, setMenuOpen] = useState(false);
+
+  const location = useLocation();
 
   useEffect(() => {
     if (joinOpen) {
@@ -125,6 +136,16 @@ const MenuContent = ({ isSideBar }) => {
         </h3>
       </Link>
 
+      {user?.isAdmin && (
+        <Button
+          color="failure"
+          size="lg"
+          onClick={() => navigate("/eventmanager")}
+        >
+          Area admin
+        </Button>
+      )}
+
       <SectionTitle
         className={isSideBar ? "text-gray-700 mb-1 dark:text-white" : ""}
       >
@@ -132,10 +153,10 @@ const MenuContent = ({ isSideBar }) => {
       </SectionTitle>
       {user === null ? (
         <>
-          <SectionLink to="/login">
+          <SectionLink to="/login" redirectBack>
             <FaSignInAlt /> <span>Login</span>
           </SectionLink>
-          <SectionLink to="/signup">
+          <SectionLink to="/signup" redirectBack>
             <FaUserPlus /> <span>Registrati</span>
           </SectionLink>
         </>
@@ -201,7 +222,7 @@ const MenuContent = ({ isSideBar }) => {
             navigate({
               pathname: "/login",
               search: createSearchParams({
-                to: window.location.pathname
+                to: location.pathname
               }).toString()
             })
           }
@@ -237,6 +258,16 @@ const MenuContent = ({ isSideBar }) => {
       >
         Beacon
       </a>
+
+      {/* DEBUG */}
+      {/* <Button
+        className="text-xl mb-4"
+        color="purple"
+        disabled
+        onClick={() => navigate("/beacon")}
+      >
+        Lista beacon
+      </Button> */}
     </>
   );
 };

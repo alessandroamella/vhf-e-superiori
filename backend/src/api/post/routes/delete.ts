@@ -11,7 +11,6 @@ import { param } from "express-validator";
 import { UserDoc } from "../../auth/models";
 import { isDocument } from "@typegoose/typegoose";
 import { Errors } from "../../errors";
-import mongoose from "mongoose";
 import { s3Client } from "../../aws";
 import { BasePost } from "../models";
 import { Comment } from "../../comment/models";
@@ -67,7 +66,7 @@ router.delete(
 
             const comments = await Comment.find({
                 forPost: post._id
-            }).populate("fromUser");
+            });
 
             if (!isDocument(post?.fromUser)) {
                 logger.error("Post fromUser not populated");
@@ -94,19 +93,10 @@ router.delete(
                         .json(createError(Errors.MUST_BE_POST_OWNER));
                 }
 
-                (
-                    user.posts as mongoose.Types.Array<mongoose.Types.ObjectId>
-                ).pull(post._id);
                 await user.save();
             }
 
             for (const comment of comments) {
-                // pull from user
-                const user = comment.fromUser as unknown as UserDoc;
-                (
-                    user.comments as mongoose.Types.Array<mongoose.Types.ObjectId>
-                ).pull(comment._id);
-                await user.save();
                 await comment.deleteOne();
             }
 
@@ -114,6 +104,9 @@ router.delete(
                 const parts = url.split("/");
                 return parts.slice(-2).join("/");
             });
+            logger.info(
+                "Post delete deleting files from S3: " + filePaths.join(", ")
+            );
             s3Client.deleteMultiple({ filePaths });
 
             await post.deleteOne();
