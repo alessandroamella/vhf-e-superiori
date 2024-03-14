@@ -36,7 +36,9 @@ async function returnUserWithPosts(
 
         const posts = await BasePost.find(
             {
-                fromUser: user._id
+                fromUser: user._id,
+                isProcessing: false,
+                hidden: false
             },
             {
                 fromUser: 0,

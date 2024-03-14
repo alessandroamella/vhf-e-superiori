@@ -99,4 +99,7 @@ export class BasePostClass {
 
     @prop({ required: true, default: true })
     public isProcessing!: boolean;
+
+    @prop({ required: false, default: false })
+    public hidden?: boolean;
 }

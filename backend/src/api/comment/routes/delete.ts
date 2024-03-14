@@ -4,9 +4,8 @@ import { logger } from "../../../shared";
 import { INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { param } from "express-validator";
 import { Comment } from "../models";
-import User, { UserDoc } from "../../auth/models";
+import { UserDoc } from "../../auth/models";
 import { Errors } from "../../errors";
-import { BasePost } from "../../post/models";
 
 const router = Router();
 

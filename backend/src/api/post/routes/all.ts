@@ -82,7 +82,10 @@ router.get(
     validate,
     async (req, res) => {
         try {
-            const query: FilterQuery<BasePostClass> = { isProcessing: false };
+            const query: FilterQuery<BasePostClass> = {
+                isProcessing: false,
+                hidden: false
+            };
             if (
                 typeof req.query?.fromUser === "string" &&
                 isValidObjectId(req.query.fromUser)

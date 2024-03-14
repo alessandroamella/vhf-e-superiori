@@ -55,7 +55,11 @@ const router = Router();
  */
 router.get("/:_id", param("_id").isMongoId(), validate, async (req, res) => {
     try {
-        const post = await BasePost.findOne({ _id: req.params?._id }).populate({
+        const post = await BasePost.findOne({
+            _id: req.params?._id,
+            isProcessing: false,
+            hidden: false
+        }).populate({
             path: "fromUser",
             select: "callsign name"
         });
