@@ -47,7 +47,11 @@ router.use(
         limits: { fileSize: 300 * 1024 * 1024 },
         abortOnLimit: true,
         // useTempFiles: false,
-        tempFileDir: join(cwd(), "temp", "uploads"),
+        tempFileDir: join(
+            cwd(),
+            envs.BASE_TEMP_DIR,
+            envs.FILE_UPLOAD_TMP_FOLDER
+        ),
         useTempFiles: true,
         safeFileNames: true,
         preserveExtension: false,

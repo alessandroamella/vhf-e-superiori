@@ -19,7 +19,6 @@ import { adminNames, ownerNames } from "../homepage/Info";
  * @property {string} fromUser - The ObjectId of the user who made the post.
  * @property {string[]} pictures - An array of file paths for the pictures uploaded by the user.
  * @property {string[]} videos - An array of file paths for the videos uploaded by the user.
- * @property {boolean} isApproved - Whether the post has been approved.
  * @property {string} createdAt - The date and time the post was created.
  * @property {string} updatedAt - The date and time the post was last updated.
  */
@@ -42,7 +41,15 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert }) => {
   async function deletePost(e, p) {
     e.stopPropagation(); // Fermare la propagazione del click
 
-    if (!window.confirm(`Vuoi davvero eliminare il post "${p.description}"?`)) {
+    if (
+      !window.confirm(
+        `Vuoi davvero eliminare il post "${p.description}"${
+          user?.isAdmin && p.fromUser._id !== user._id
+            ? ` di ${p.fromUser.callsign}`
+            : ""
+        }?`
+      )
+    ) {
       return;
     }
 

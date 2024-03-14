@@ -703,14 +703,10 @@ const Profile = () => {
                       <ListGroup.Item key={p._id}>
                         <div className="flex items-center gap-1 w-full">
                           <Link
-                            to={p.isApproved ? "/social/" + p._id : "#"}
-                            className={`w-fit hover:scale-105 transition-transform flex items-center gap-1 p-1 ${
-                              p.isApproved ? "" : "ml-5"
-                            }`}
+                            to={"/social/" + p._id}
+                            className="w-fit hover:scale-105 transition-transform flex items-center gap-1 p-1"
                           >
-                            {p.isApproved && (
-                              <FaLink className="text-gray-500" />
-                            )}
+                            <FaLink className="text-gray-500" />
                             <span>{p.description}</span>
                           </Link>
                           <p className="ml-auto text-gray-500">

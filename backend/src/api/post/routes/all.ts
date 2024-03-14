@@ -82,22 +82,17 @@ router.get(
     validate,
     async (req, res) => {
         try {
-            const user = req.user as unknown as UserDoc | undefined;
-            const query: FilterQuery<BasePostClass> = user?.isAdmin
-                ? {}
-                : { isApproved: true, isProcessing: false };
+            const query: FilterQuery<BasePostClass> = { isProcessing: false };
             if (
                 typeof req.query?.fromUser === "string" &&
                 isValidObjectId(req.query.fromUser)
             ) {
                 query.fromUser = req.query.fromUser;
             }
-            const postsQuery = BasePost.find(query)
-                .populate({ path: "fromUser", select: "callsign name" })
-                .populate({
-                    path: "comments",
-                    select: "fromUser content createdAt"
-                });
+            const postsQuery = BasePost.find(query).populate({
+                path: "fromUser",
+                select: "callsign name"
+            });
 
             if (
                 typeof req.query?.limit === "string" &&
@@ -116,11 +111,9 @@ router.get(
                 .sort({ "comments.createdAt": -1 })
                 .exec();
 
-            await Comment.populate(posts, {
-                path: "comments.fromUser",
-                model: "User",
-                select: "callsign name"
-            });
+            const comments = await Comment.find({
+                forPost: { $in: posts.map(p => p._id) }
+            }).populate({ path: "fromUser", select: "callsign name" });
 
             logger.debug("Fetched " + posts.length + " posts");
 
@@ -139,8 +132,18 @@ router.get(
                 url: urls[i]
             }));
 
+            const postsMapped = posts.map(p => {
+                const _comments = comments.filter(
+                    c => c.forPost.toString() === p._id.toString()
+                );
+                return {
+                    ...p.toJSON(),
+                    comments: _comments
+                };
+            });
+
             res.json({
-                posts: posts.map(p => p.toObject()),
+                posts: postsMapped,
                 pp: pps.filter(p => p.url)
             });
         } catch (err) {

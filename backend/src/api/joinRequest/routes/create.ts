@@ -102,12 +102,6 @@ router.post(
                 isApproved: false
             });
 
-            event.joinRequests.push(joinRequest._id);
-            await event.save();
-
-            user.joinRequests.push(joinRequest._id);
-            await user.save();
-
             await EmailService.sendJoinRequestMail(joinRequest, event, user);
             await EmailService.sendAdminJoinRequestMail(
                 joinRequest,

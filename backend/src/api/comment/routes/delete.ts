@@ -69,25 +69,6 @@ router.delete(
                     .json(createError(Errors.COMMENT_NOT_OWNED));
             }
 
-            // pull from user
-            await User.updateOne(
-                { _id: comment.fromUser._id },
-                {
-                    $pull: {
-                        comments: comment._id
-                    }
-                }
-            );
-            // pull from post
-            await BasePost.updateOne(
-                { _id: comment.forPost },
-                {
-                    $pull: {
-                        comments: comment._id
-                    }
-                }
-            );
-
             await comment.deleteOne();
 
             logger.info(`Comment ${comment._id} deleted successfully`);

@@ -4,6 +4,8 @@ import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { param } from "express-validator";
+import JoinRequest from "../../joinRequest/models";
+import { UserDoc } from "../../auth/models";
 
 const router = Router();
 
@@ -36,16 +38,23 @@ router.get(
         try {
             const event = await EventModel.findOne({ _id: req.params._id })
                 .sort({ date: 1 })
-                .populate({
-                    path: "joinRequests",
-                    select: "fromUser isApproved",
-                    populate: {
-                        path: "fromUser",
-                        select: "callsign"
-                    }
-                })
                 .lean();
-            res.json(event);
+            const joinRequests = await JoinRequest.find(
+                {
+                    forEvent: req.params._id,
+                    isApproved: (req.user as unknown as UserDoc)?.isAdmin
+                        ? undefined
+                        : true
+                },
+                {
+                    fromUser: 1,
+                    isApproved: 1
+                }
+            ).populate({
+                path: "fromUser",
+                select: "callsign"
+            });
+            res.json({ ...event, joinRequests });
         } catch (err) {
             logger.error("Error while finding events");
             logger.error(err);

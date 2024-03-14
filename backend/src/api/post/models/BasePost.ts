@@ -1,13 +1,6 @@
-import {
-    modelOptions,
-    mongoose,
-    pre,
-    prop,
-    Ref,
-    Severity
-} from "@typegoose/typegoose";
+import { modelOptions, pre, prop, Ref, Severity } from "@typegoose/typegoose";
 import { Errors } from "../../errors";
-import { CommentClass } from "../../comment/models/Comment";
+import { logger } from "../../../shared";
 
 /**
  * @swagger
@@ -20,7 +13,6 @@ import { CommentClass } from "../../comment/models/Comment";
  *          - description
  *          - pictures
  *          - videos
- *          - isApproved
  *          - isProcessing
  *          - comments
  *          - createdAt
@@ -49,9 +41,6 @@ import { CommentClass } from "../../comment/models/Comment";
  *            description: Path of the videos uploaded by the user (will be compressed)
  *            minItems: 0
  *            maxItems: 2
- *          isApproved:
- *            type: boolean
- *            description: Whether this post was approved (send email)
  *          isProcessing:
  *            type: boolean
  *            description: Whether this post is currently being processed (video compression)
@@ -66,7 +55,12 @@ import { CommentClass } from "../../comment/models/Comment";
  */
 @pre<BasePostClass>("save", function (next) {
     // Controlla che ci sia almeno una foto o un video
-    if (this.pictures.length === 0 && this.videos.length === 0) {
+    if (
+        this.pictures.length === 0 &&
+        this.videos.length === 0 &&
+        this.isProcessing === false
+    ) {
+        logger.error("No content uploaded for post " + this._id);
         next(new Error(Errors.NO_CONTENT));
     } else {
         next();
@@ -91,7 +85,7 @@ export class BasePostClass {
             Errors.INVALID_PICS_NUM
         ]
     })
-    public pictures!: mongoose.Types.Array<string>;
+    public pictures!: string[];
 
     @prop({
         type: () => [String],
@@ -101,17 +95,8 @@ export class BasePostClass {
             Errors.INVALID_VIDS_NUM
         ]
     })
-    public videos!: mongoose.Types.Array<string>;
+    public videos!: string[];
 
-    @prop({ required: true, default: false })
-    public isApproved!: boolean;
-
-    @prop({ required: true, default: false })
+    @prop({ required: true, default: true })
     public isProcessing!: boolean;
-
-    @prop({ ref: () => CommentClass, required: true, default: [] })
-    public comments?: Ref<CommentClass>[];
-
-    // @prop({ ref: "Comment", default: [] })
-    // public comments?: Ref<"Comment">[];
 }

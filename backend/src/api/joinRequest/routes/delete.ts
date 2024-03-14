@@ -95,12 +95,6 @@ router.delete(
                     .json(createError(Errors.EVENT_JOIN_TIME_EXPIRED));
             }
 
-            await event.updateOne({ $pull: { joinRequests: joinRequest._id } });
-
-            await user.updateOne({
-                $pull: { joinRequests: joinRequest._id }
-            });
-
             await JoinRequest.deleteOne({ _id: req.params._id });
             res.sendStatus(OK);
         } catch (err) {

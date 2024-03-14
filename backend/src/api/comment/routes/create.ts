@@ -95,14 +95,6 @@ router.post(
             // user.posts.push(post._id);
             // await user.save();
             await comment.save();
-            await BasePost.updateOne(
-                { _id: post._id },
-                { $push: { comments: comment._id } }
-            );
-            await User.updateOne(
-                { _id: user._id },
-                { $push: { comments: comment._id } }
-            );
 
             const postUser = await User.findById(post.fromUser);
             if (!postUser) {

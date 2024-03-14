@@ -131,7 +131,8 @@ export const errors = {
   INVALID_ADIF: "File ADIF non valido",
   INVALID_ADIF_EXCLUDE: "Esclusione ADIF non valida",
   INVALID_NAME: "Nome non valido",
-  INVALID_CALLSIGN: "Nominativo non valido"
+  INVALID_CALLSIGN: "Nominativo non valido",
+  POST_IS_PROCESSING: "Il post è in fase di elaborazione"
 };
 
 export function getErrorStr(str) {
