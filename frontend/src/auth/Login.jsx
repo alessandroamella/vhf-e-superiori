@@ -158,6 +158,7 @@ const Login = () => {
               ref={loginInput}
               autoComplete="callsign"
               autoFocus
+              required
             />
             <div className="my-4" />
 
@@ -174,6 +175,7 @@ const Login = () => {
               onChange={e => setPassword(e.target.value)}
               disabled={disabled}
               maxLength={100}
+              required
             />
             <div className="my-4" />
             <Button type="submit" disabled={disabled}>
@@ -208,6 +210,7 @@ const Login = () => {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   disabled={disabled}
+                  required
                 />
                 <div className="my-4" />
                 <ReCAPTCHA

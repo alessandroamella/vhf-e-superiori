@@ -34,7 +34,11 @@ import {
   FaUndo,
   FaExternalLinkAlt,
   FaClipboardCheck,
-  FaClipboard
+  FaClipboard,
+  FaTrash,
+  FaBan,
+  FaExclamation,
+  FaStamp
 } from "react-icons/fa";
 import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import ReactHTMLTableToExcel from "react-html-table-to-excel";
@@ -46,6 +50,200 @@ import Compressor from "compressorjs";
 import { isFuture } from "date-fns";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+
+const ViewJoinRequest = ({
+  disabled,
+  setDisabled,
+  joinRequests,
+  setJoinRequests,
+  setAlert
+}) => {
+  async function approveJoinRequests(j) {
+    if (
+      !window.confirm(
+        `Vuoi ${
+          j.isApproved ? "ANNULLARE" : "APPROVARE"
+        } la richiesta di partecipazione con ID ${j._id}?`
+      )
+    ) {
+      return;
+    }
+    setDisabled(true);
+    try {
+      await axios.post("/api/joinrequest/" + j._id);
+      console.log("approved joinRequest", j);
+      setJoinRequests([
+        ...joinRequests.filter(_j => _j._id !== j._id),
+        { ...j, isApproved: !j.isApproved, updatedAt: new Date() }
+      ]);
+    } catch (err) {
+      console.log(err.response.data);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+    } finally {
+      setDisabled(false);
+    }
+  }
+
+  async function deleteJoinRequests(j) {
+    if (
+      !window.confirm(
+        "Vuoi ELIMINARE la richiesta di partecipazione con ID " + j._id + "?"
+      )
+    ) {
+      return;
+    }
+
+    setDisabled(true);
+    try {
+      await axios.delete("/api/joinrequest/" + j._id);
+      console.log("deleted joinRequest", j);
+      setJoinRequests([...joinRequests.filter(_j => _j._id !== j._id)]);
+    } catch (err) {
+      console.log(err.response.data);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+    } finally {
+      setDisabled(false);
+    }
+  }
+
+  return (
+    <>
+      <Button className="mx-auto mb-2 flex items-center">
+        <FaDownload className="mr-1" />
+        <ReactHTMLTableToExcel
+          className="download-table-xls-button"
+          table={`join-requests-list-${JSON.stringify(joinRequests?.length)}`}
+          filename={"lista-richieste"}
+          sheet="lista"
+          buttonText="Scarica come Excel"
+        />
+      </Button>
+      <Table
+        id={`join-requests-list-${JSON.stringify(joinRequests?.length)}`}
+        striped
+      >
+        <Table.Head>
+          <Table.HeadCell>Nominativo</Table.HeadCell>
+          <Table.HeadCell>Nome</Table.HeadCell>
+          <Table.HeadCell>Telefono</Table.HeadCell>
+          <Table.HeadCell>Stato richiesta</Table.HeadCell>
+          <Table.HeadCell>Data creazione</Table.HeadCell>
+          <Table.HeadCell>Antenna</Table.HeadCell>
+          <Table.HeadCell>
+            <span className="sr-only">Azioni</span>
+          </Table.HeadCell>
+        </Table.Head>
+        <Table.Body className="divide-y">
+          {(console.log("joinRequestsModal", joinRequests), null)}
+          {joinRequests?.map(j => (
+            <Table.Row key={j._id}>
+              <Table.Cell className="whitespace-nowrap font-medium">
+                <Link
+                  to={`/u/${j.fromUser._id}`}
+                  className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
+                >
+                  {j.fromUser.callsign}
+                </Link>
+              </Table.Cell>
+              <Table.Cell>
+                <Tooltip content={j.fromUser.email}>
+                  <a
+                    href={"mailto:" + j.fromUser.email}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
+                  >
+                    {j.fromUser.name}
+                  </a>
+                </Tooltip>
+              </Table.Cell>
+              <Table.Cell>
+                <a
+                  href={"tel:" + j.fromUser.phoneNumber}
+                  className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
+                >
+                  {j.fromUser.phoneNumber}
+                </a>
+              </Table.Cell>
+              <Table.Cell>
+                {j.isApproved ? (
+                  <span className="ml-1 font-semibold dark:text-gray-300">
+                    ✅ Approvata
+                  </span>
+                ) : (
+                  <span className="ml-1 flex items-center gap-1 font-bold dark:text-gray-300">
+                    ⌛ In attesa{" "}
+                    <Badge color="failure">
+                      <FaExclamation />
+                    </Badge>
+                  </span>
+                )}
+              </Table.Cell>
+              <Table.Cell className="dark:text-gray-300">
+                {formatInTimeZone(
+                  new Date(j.updatedAt),
+                  "Europe/Rome",
+                  "d MMM HH:mm",
+                  {
+                    locale: it
+                  }
+                )}
+              </Table.Cell>
+              <Table.Cell className="max-w-xs dark:text-gray-300">
+                <Tooltip content={j.antenna}>
+                  <p className="whitespace-nowrap overflow-hidden text-ellipsis">
+                    {j.antenna}
+                  </p>
+                </Tooltip>
+              </Table.Cell>
+              <Table.Cell>
+                <Button.Group>
+                  {j.isApproved ? (
+                    <Button
+                      color="warning"
+                      onClick={() => approveJoinRequests(j)}
+                      disabled={disabled}
+                    >
+                      <Tooltip content="Annulla approvazione">
+                        <FaBan />
+                      </Tooltip>
+                    </Button>
+                  ) : (
+                    <Button
+                      color="success"
+                      onClick={() => approveJoinRequests(j)}
+                      disabled={disabled}
+                    >
+                      <Tooltip content="Approva richiesta">
+                        <FaStamp />
+                      </Tooltip>
+                    </Button>
+                  )}
+
+                  <Button
+                    color="failure"
+                    onClick={() => deleteJoinRequests(j)}
+                    disabled={disabled}
+                  >
+                    <Tooltip content="Elimina richiesta">
+                      <FaTrash />
+                    </Tooltip>
+                  </Button>
+                </Button.Group>
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table>
+    </>
+  );
+};
 
 const AdminManager = () => {
   const { user } = useContext(UserContext);
@@ -252,60 +450,6 @@ const AdminManager = () => {
         msg: getErrorStr(err?.response?.data?.err)
       });
       setJoinRequests(false);
-    }
-  }
-
-  async function approveJoinRequests(j) {
-    if (
-      !window.confirm(
-        `Vuoi ${
-          j.isApproved ? "ANNULLARE" : "APPROVARE"
-        } la richiesta di partecipazione con ID ${j._id}?`
-      )
-    ) {
-      return;
-    }
-    setDisabled(true);
-    try {
-      await axios.post("/api/joinrequest/" + j._id);
-      console.log("approved joinRequest", j);
-      setJoinRequests([
-        ...joinRequests.filter(_j => _j._id !== j._id),
-        { ...j, isApproved: !j.isApproved, updatedAt: new Date() }
-      ]);
-    } catch (err) {
-      console.log(err.response.data);
-      setAlert({
-        color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
-      });
-    } finally {
-      setDisabled(false);
-    }
-  }
-
-  async function deleteJoinRequests(j) {
-    if (
-      !window.confirm(
-        "Vuoi ELIMINARE la richiesta di partecipazione con ID " + j._id + "?"
-      )
-    ) {
-      return;
-    }
-
-    setDisabled(true);
-    try {
-      await axios.delete("/api/joinrequest/" + j._id);
-      console.log("deleted joinRequest", j);
-      setJoinRequests([...joinRequests.filter(_j => _j._id !== j._id)]);
-    } catch (err) {
-      console.log(err.response.data);
-      setAlert({
-        color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
-      });
-    } finally {
-      setDisabled(false);
     }
   }
 
@@ -545,6 +689,8 @@ const AdminManager = () => {
       setCopiedError(true);
     }
   }
+
+  const [joinRequestsModal, setJoinRequestsModal] = useState(null);
 
   return user === null || (user && !user.isAdmin) ? (
     navigate({
@@ -855,130 +1001,7 @@ const AdminManager = () => {
                   ) : joinRequests === false ? (
                     <p className="dark:text-gray-300">Errore nel caricamento</p>
                   ) : joinRequests.length > 0 ? (
-                    <>
-                      <Button className="mx-auto mb-2 flex items-center">
-                        <FaDownload className="mr-1" />
-                        <ReactHTMLTableToExcel
-                          className="download-table-xls-button"
-                          table="join-requests-list"
-                          filename={
-                            "lista-richieste-" + name.replace(/\W/g, "")
-                          }
-                          sheet="lista"
-                          buttonText="Scarica come Excel"
-                        />
-                      </Button>
-                      <Table id="join-requests-list" striped>
-                        <Table.Head>
-                          <Table.HeadCell>Nominativo</Table.HeadCell>
-                          <Table.HeadCell>Nome</Table.HeadCell>
-                          <Table.HeadCell>Telefono</Table.HeadCell>
-                          <Table.HeadCell>Stato richiesta</Table.HeadCell>
-                          <Table.HeadCell>Data creazione</Table.HeadCell>
-                          <Table.HeadCell>Antenna</Table.HeadCell>
-                          <Table.HeadCell>
-                            <span className="sr-only">Azioni</span>
-                          </Table.HeadCell>
-                        </Table.Head>
-                        <Table.Body className="divide-y">
-                          {(console.log(joinRequests), null)}
-                          {joinRequests.map(j => (
-                            <Table.Row key={j._id}>
-                              <Table.Cell className="whitespace-nowrap font-medium">
-                                <a
-                                  href={
-                                    "https://www.qrz.com/db/" +
-                                    j.fromUser.callsign
-                                  }
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
-                                >
-                                  {j.fromUser.callsign}
-                                </a>
-                              </Table.Cell>
-                              <Table.Cell>
-                                <Tooltip content={j.fromUser.email}>
-                                  <a
-                                    href={"mailto:" + j.fromUser.email}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
-                                  >
-                                    {j.fromUser.name}
-                                  </a>
-                                </Tooltip>
-                              </Table.Cell>
-                              <Table.Cell>
-                                <a
-                                  href={"tel:" + j.fromUser.phoneNumber}
-                                  className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
-                                >
-                                  {j.fromUser.phoneNumber}
-                                </a>
-                              </Table.Cell>
-                              <Table.Cell>
-                                {j.isApproved ? (
-                                  <span className="ml-1 font-medium dark:text-gray-300">
-                                    ✅ Approvata
-                                  </span>
-                                ) : (
-                                  <span className="ml-1 font-medium dark:text-gray-300">
-                                    ⌛ In attesa
-                                  </span>
-                                )}
-                              </Table.Cell>
-                              <Table.Cell className="dark:text-gray-300">
-                                {formatInTimeZone(
-                                  new Date(j.updatedAt),
-                                  "Europe/Rome",
-                                  "d MMM HH:mm",
-                                  {
-                                    locale: it
-                                  }
-                                )}
-                              </Table.Cell>
-                              <Table.Cell className="max-w-xs dark:text-gray-300">
-                                <Tooltip content={j.antenna}>
-                                  <p className="whitespace-nowrap overflow-hidden text-ellipsis">
-                                    {j.antenna}
-                                  </p>
-                                </Tooltip>
-                              </Table.Cell>
-                              <Table.Cell>
-                                <Button.Group>
-                                  {j.isApproved ? (
-                                    <Button
-                                      color="warning"
-                                      onClick={() => approveJoinRequests(j)}
-                                      disabled={disabled}
-                                    >
-                                      Annulla approvazione
-                                    </Button>
-                                  ) : (
-                                    <Button
-                                      color="success"
-                                      onClick={() => approveJoinRequests(j)}
-                                      disabled={disabled}
-                                    >
-                                      Approva richiesta
-                                    </Button>
-                                  )}
-
-                                  <Button
-                                    color="failure"
-                                    onClick={() => deleteJoinRequests(j)}
-                                    disabled={disabled}
-                                  >
-                                    Cancella richiesta
-                                  </Button>
-                                </Button.Group>
-                              </Table.Cell>
-                            </Table.Row>
-                          ))}
-                        </Table.Body>
-                      </Table>
-                    </>
+                    <ViewJoinRequest j={joinRequests} />
                   ) : (
                     <p className="dark:text-gray-300">
                       Ancora nessuna richiesta
@@ -1007,6 +1030,24 @@ const AdminManager = () => {
         </form>
       </Modal>
 
+      <Modal
+        position="center"
+        size="7xl"
+        show={joinRequestsModal}
+        onClose={() => setJoinRequestsModal(null)}
+      >
+        <Modal.Header>Richiesta di partecipazione</Modal.Header>
+        <Modal.Body>
+          <ViewJoinRequest
+            disabled={disabled}
+            joinRequests={joinRequestsModal}
+            setAlert={setAlert}
+            setDisabled={setDisabled}
+            setJoinRequests={setJoinRequestsModal}
+          />
+        </Modal.Body>
+      </Modal>
+
       <div className="w-full h-full pb-24 dark:text-white dark:bg-gray-900">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           {alert && (
@@ -1025,7 +1066,7 @@ const AdminManager = () => {
             </Badge>
           </Typography>
 
-          <Accordion collapseAll>
+          <Accordion>
             <Accordion.Panel>
               <Accordion.Title>
                 {/* <Typography variant="h2" className="mb-4 flex items-center"> */}
@@ -1069,15 +1110,23 @@ const AdminManager = () => {
                               )}
                             </Table.Cell>
                             <Table.Cell>
-                              <ListGroup>
-                                {u.joinRequests.length ? (
-                                  u.joinRequests.map(j => (
-                                    <ListGroup.Item>{j}</ListGroup.Item>
-                                  ))
-                                ) : (
-                                  <FaTimes />
-                                )}
-                              </ListGroup>
+                              {u.joinRequests.length !== 0 ? (
+                                <Button
+                                  color="info"
+                                  onClick={() =>
+                                    setJoinRequestsModal(u.joinRequests)
+                                  }
+                                >
+                                  <Badge color="info">
+                                    {u.joinRequests.length}
+                                  </Badge>
+                                  <span className="ml-1">
+                                    <FaExternalLinkAlt />
+                                  </span>
+                                </Button>
+                              ) : (
+                                <FaTimes />
+                              )}
                             </Table.Cell>
                           </Table.Row>
                         ))}

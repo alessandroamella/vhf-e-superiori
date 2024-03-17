@@ -24,6 +24,8 @@ import EqslRedirect from "./event/EqslRedirect";
 import Qso from "./event/Qso";
 import MdViewer from "./document/MdViewer";
 import Rankings from "./event/Rankings";
+import BeaconHomepage from "./beacon";
+import BeaconEditor from "./beacon/Editor";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
@@ -53,7 +55,9 @@ const router = createBrowserRouter([
   // { path: "/info", element: <Info /> },
   { path: "/resetpw", element: <ResetPw /> },
   { path: "/event/:id", element: <ViewEvent /> },
-  { path: "/document/:name", element: <MdViewer /> }
+  { path: "/document/:name", element: <MdViewer /> },
+  { path: "/beacon", element: <BeaconHomepage /> },
+  { path: "beacon/editor", element: <BeaconEditor /> }
   // {
   //   path: "contacts/:contactId",
   //   element: <Contact />,
@@ -132,7 +136,10 @@ export const errors = {
   INVALID_ADIF_EXCLUDE: "Esclusione ADIF non valida",
   INVALID_NAME: "Nome non valido",
   INVALID_CALLSIGN: "Nominativo non valido",
-  POST_IS_PROCESSING: "Il post è in fase di elaborazione"
+  INVALID_COMMENT: "Commento non valido",
+  POST_IS_PROCESSING: "Il post è in fase di elaborazione",
+  BEACON_EXISTS: "Beacon già esistente",
+  INVALID_BEACON: "Beacon non valido"
 };
 
 export function getErrorStr(str) {

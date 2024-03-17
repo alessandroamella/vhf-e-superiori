@@ -79,12 +79,18 @@ router.get(
 
             const joinRequests = await JoinRequest.find({
                 fromUser: { $in: result.map(u => u._id) }
-            });
+            })
+                .populate({
+                    path: "fromUser",
+                    select: "callsign name email phoneNumber"
+                })
+                .populate({ path: "forEvent", select: "name" })
+                .sort({ createdAt: -1 });
 
             return res.json(
                 result.map(u => {
                     const _joinRequests = joinRequests.filter(
-                        jr => jr.fromUser.toString() === u._id.toString()
+                        jr => jr.fromUser._id.toString() === u._id.toString()
                     );
                     return {
                         ...u.toJSON(),

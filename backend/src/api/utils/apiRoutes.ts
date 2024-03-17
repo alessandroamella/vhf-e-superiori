@@ -12,6 +12,7 @@ import qsoRoutes from "../qso/routes";
 import eqslRoutes from "../eqsl/routes";
 import documentRoutes from "../document/routes";
 import rankingsRoutes from "../rankings/routes";
+import beaconRoutes from "../beacon/routes";
 import notFound from "./notFound";
 
 import errorHandler from "../middlewares/errorHandler";
@@ -100,6 +101,7 @@ router.use("/qso", qsoRoutes);
 router.use("/eqsl", eqslRoutes);
 router.use("/document", documentRoutes);
 router.use("/rankings", rankingsRoutes);
+router.use("/beacon", beaconRoutes);
 
 router.use(errorHandler);
 router.use(notFound);
