@@ -46,10 +46,10 @@ const createSchema: Schema = {
         errorMessage: "Mode must be between 1 and 100 characters"
     },
     qtf: {
-        isNumeric: { options: [] },
-        isFloat: { options: [] },
-        toFloat: { options: [] },
-        errorMessage: "QTF must be a number"
+        isString: { options: [] },
+        trim: { options: [] },
+        isLength: { options: { min: 1, max: 100 } },
+        errorMessage: "QTF must be between 1 and 100 characters"
     },
     power: {
         isNumeric: { options: [] },
