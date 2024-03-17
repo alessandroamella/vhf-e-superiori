@@ -6,32 +6,30 @@ import { createError, validate } from "../../helpers";
 import { Errors } from "../../errors";
 import createSchema from "../schemas/createSchema";
 import User, { UserDoc } from "../../auth/models";
-import { BasePost } from "../../post/models";
-import { Comment } from "../models";
-import EmailService from "../../../email";
+import { Beacon, BeaconProperties } from "../models";
 
 const router = Router();
 
 /**
  * @openapi
- * /api/comment:
+ * /api/beacon/{id}:
  *  post:
- *    summary: Creates a new comment
+ *    summary: Creates a new beacon
  *    requestBody:
  *      required: true
  *      content:
  *        application/json:
  *          schema:
- *            $ref: '#/components/schemas/Comment'
+ *            $ref: '#/components/schemas/Beacon'
  *    tags:
- *      - comment
+ *      - beacon
  *    responses:
  *      '200':
- *        description: Comment created successfully
+ *        description: Beacon created
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/Comment'
+ *              $ref: '#/components/schemas/Beacon'
  *      '400':
  *        description: Data validation failed
  *        content:
@@ -57,54 +55,76 @@ router.post(
     validate,
     async (req: Request, res: Response) => {
         if (!req.user) {
-            throw new Error("No req.user in comment create");
+            throw new Error("No req.user in beacon create");
         }
         try {
             const user = await User.findOne({
                 _id: (req.user as unknown as UserDoc)._id
             });
             if (!user) {
-                throw new Error("User not found in post create");
+                throw new Error("User not found in beacon create");
             }
 
-            const { forPost, content } = req.body;
+            const {
+                callsign,
+                frequency,
+                qthStr,
+                locator,
+                hamsl,
+                antenna,
+                mode,
+                qtf,
+                power
+            } = req.body;
 
-            const post = await BasePost.findById(forPost);
-            if (!post) {
+            const existing = await Beacon.findOne({ callsign });
+            if (existing) {
                 return res
                     .status(BAD_REQUEST)
-                    .json(createError(Errors.INVALID_POST));
+                    .json(createError(Errors.BEACON_EXISTS));
             }
 
-            const comment = await new Comment({
-                fromUser: user._id,
-                forPost: post._id,
-                content
-            }).populate({ path: "fromUser", select: "callsign name" });
+            const beaconProps = new BeaconProperties({
+                callsign,
+                frequency,
+                qthStr,
+                locator,
+                hamsl,
+                antenna,
+                mode,
+                qtf,
+                power,
+                editAuthor: user._id,
+                editDate: new Date(),
+                isVerified: user.isAdmin ? user._id : undefined
+            });
+
+            const beacon = new Beacon({
+                callsign,
+                properties: beaconProps._id
+            });
+
+            beaconProps.forBeacon = beacon._id;
 
             try {
-                await comment.validate();
+                await beaconProps.validate();
+                await beacon.validate();
             } catch (err) {
-                logger.debug("Error while validating comment");
+                logger.debug("Error while validating beacon");
                 logger.debug(err);
                 return res
                     .status(BAD_REQUEST)
-                    .json(createError(Errors.INVALID_COMMENT));
+                    .json(createError(Errors.INVALID_BEACON));
             }
 
-            // user.posts.push(post._id);
-            // await user.save();
-            await comment.save();
+            await beaconProps.save();
+            await beacon.save();
 
-            const postUser = await User.findById(post.fromUser);
-            if (!postUser) {
-                throw new Error("Post user not found in comment create");
-            }
-            await EmailService.sendCommentMail(postUser, user, post, comment);
+            // TODO invia mail di conferma
 
-            res.json(comment.toObject());
+            res.json(beacon.toObject());
         } catch (err) {
-            logger.error("Error while creating comment");
+            logger.error("Error while creating beacon");
             logger.error(err);
             res.status(INTERNAL_SERVER_ERROR).json(createError());
         }

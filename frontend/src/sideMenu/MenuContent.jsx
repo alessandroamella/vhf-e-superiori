@@ -259,15 +259,13 @@ const MenuContent = ({ isSideBar }) => {
         Beacon
       </a>
 
-      {/* DEBUG */}
-      {/* <Button
+      <Button
         className="text-xl mb-4"
         color="purple"
-        disabled
         onClick={() => navigate("/beacon")}
       >
         Lista beacon
-      </Button> */}
+      </Button>
     </>
   );
 };

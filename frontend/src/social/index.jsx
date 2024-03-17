@@ -127,7 +127,7 @@ const Social = () => {
 
         <div className="grid md:gap-8 grid-cols-1 md:grid-cols-3">
           <div className="hidden h-screen sticky top-0 md:block dark:bg-gray-700 rounded-xl px-8 pt-4">
-            <div className="overflow-y-scroll overflow-x-hidden h-[95vh] hide-scrollbar">
+            <div className="overflow-y-scroll overflow-x-hidden hide-scrollbar">
               <MenuContent isSideBar />
             </div>
           </div>

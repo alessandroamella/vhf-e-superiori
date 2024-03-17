@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import Flags from "./Flags";
-import { Button, Tooltip } from "flowbite-react";
+import { Button } from "flowbite-react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const Header = () => {
@@ -62,16 +62,13 @@ const Header = () => {
           </Button>
         </div>
         <div>
-          <Tooltip content="In arrivo a breve">
-            <Button
-              color="purple"
-              className="uppercase"
-              disabled
-              onClick={() => navigate("/beacon")}
-            >
-              Beacon
-            </Button>
-          </Tooltip>
+          <Button
+            color="purple"
+            className="uppercase"
+            onClick={() => navigate("/beacon")}
+          >
+            Beacon
+          </Button>
         </div>
       </div>
     </header>
