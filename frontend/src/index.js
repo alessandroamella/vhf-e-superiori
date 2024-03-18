@@ -139,7 +139,8 @@ export const errors = {
   INVALID_COMMENT: "Commento non valido",
   POST_IS_PROCESSING: "Il post è in fase di elaborazione",
   BEACON_EXISTS: "Beacon già esistente",
-  INVALID_BEACON: "Beacon non valido"
+  INVALID_BEACON: "Beacon non valido",
+  BEACON_NOT_FOUND: "Beacon non trovato"
 };
 
 export function getErrorStr(str) {

@@ -114,6 +114,7 @@ const BeaconHomepage = () => {
                   <Table striped>
                     <Table.Head>
                       <Table.HeadCell>Nominativo</Table.HeadCell>
+                      <Table.HeadCell>Nome</Table.HeadCell>
                       <Table.HeadCell>Frequenza</Table.HeadCell>
                       <Table.HeadCell>QTH</Table.HeadCell>
                       <Table.HeadCell>Locatore</Table.HeadCell>
@@ -132,12 +133,13 @@ const BeaconHomepage = () => {
                           <Table.Cell>
                             <strong>{beacon.callsign}</strong>
                           </Table.Cell>
+                          <Table.Cell>{beacon.properties?.name}</Table.Cell>
                           <Table.Cell>
                             {beacon.properties?.frequency}
                           </Table.Cell>
                           <Table.Cell>{beacon.properties?.qthStr}</Table.Cell>
                           <Table.Cell>{beacon.properties?.locator}</Table.Cell>
-                          <Table.Cell>{beacon.properties?.hamsl}</Table.Cell>
+                          <Table.Cell>{beacon.properties?.hamsl}m</Table.Cell>
                           <Table.Cell>{beacon.properties?.antenna}</Table.Cell>
                           <Table.Cell>{beacon.properties?.mode}</Table.Cell>
                           <Table.Cell>{beacon.properties?.qtf}</Table.Cell>

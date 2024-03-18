@@ -19,6 +19,7 @@ import { modelOptions, prop, Severity } from "@typegoose/typegoose";
  *          properties:
  *            type: object
  *            required:
+ *              - name
  *              - frequency
  *              - qthStr
  *              - locator
@@ -30,6 +31,9 @@ import { modelOptions, prop, Severity } from "@typegoose/typegoose";
  *              - editAuthor
  *              - editDate
  *            properties:
+ *              name:
+ *                type: string
+ *                description: Name of the beacon
  *              frequency:
  *                type: number
  *                description: Frequency in MHz

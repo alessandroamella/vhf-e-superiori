@@ -56,7 +56,10 @@ router.post(
     "/",
     body("user").isString().trim().isMongoId(),
     body("passwordResetCode").isString().trim().notEmpty(),
-    body("newPassword").isString().trim().isStrongPassword({ minLength: 8 }),
+    body("newPassword")
+        .isString()
+        .trim()
+        .isStrongPassword({ minLength: 8, minSymbols: 0 }),
     validate,
     async (req, res) => {
         try {

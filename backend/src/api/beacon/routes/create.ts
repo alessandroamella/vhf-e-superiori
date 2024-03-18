@@ -66,6 +66,7 @@ router.post(
             }
 
             const {
+                name,
                 callsign,
                 frequency,
                 qthStr,
@@ -85,7 +86,7 @@ router.post(
             }
 
             const beaconProps = new BeaconProperties({
-                callsign,
+                name,
                 frequency,
                 qthStr,
                 locator,

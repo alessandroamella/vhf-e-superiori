@@ -37,7 +37,7 @@ const createSchema: Schema = {
         trim: { options: [] },
         isLength: { options: { min: 8, max: 64 } },
         isStrongPassword: {
-            options: [{ minLength: 8 }],
+            options: [{ minLength: 8, minSymbols: 0 }],
             errorMessage: Errors.WEAK_PW
         },
         errorMessage: Errors.WEAK_PW

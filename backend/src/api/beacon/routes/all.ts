@@ -40,13 +40,16 @@ router.get("/", validate, async (req, res) => {
     try {
         const beacons: BeaconDocWithProp[] = await Beacon.find().lean();
         for (const beacon of beacons) {
-            const props = await BeaconProperties.findOne({
+            const propsArr = await BeaconProperties.find({
                 forBeacon: beacon._id
-            });
+            })
+                .limit(1)
+                .sort({ editDate: -1 });
+            const props = propsArr[0];
             if (!props) {
                 logger.error(`Beacon ${beacon._id} has no properties`);
                 logger.error(beacon);
-                continue;
+                return res.status(INTERNAL_SERVER_ERROR).json(createError());
             }
             beacon.properties = props;
         }

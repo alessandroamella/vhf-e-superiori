@@ -50,8 +50,14 @@ const router = Router();
  */
 router.post(
     "/",
-    body("oldPassword").isString().trim().isStrongPassword({ minLength: 8 }),
-    body("newPassword").isString().trim().isStrongPassword({ minLength: 8 }),
+    body("oldPassword")
+        .isString()
+        .trim()
+        .isStrongPassword({ minLength: 8, minSymbols: 0 }),
+    body("newPassword")
+        .isString()
+        .trim()
+        .isStrongPassword({ minLength: 8, minSymbols: 0 }),
     validate,
     async (req, res) => {
         if (!req.user) {

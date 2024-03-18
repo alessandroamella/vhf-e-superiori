@@ -72,7 +72,7 @@ const ResetPw = () => {
             disabled={disabled}
             value={pw}
             onChange={e => setPw(e.target.value)}
-            helperText="Minimo 8 caratteri, almeno un numero, una maiuscola e un carattere speciale"
+            helperText="Minimo 8 caratteri, almeno un numero e una maiuscola"
           />
           <div className="my-4" />
           <Button type="submit" disabled={disabled}>
