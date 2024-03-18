@@ -80,6 +80,9 @@ export class BeaconPropertiesClass {
     public forBeacon!: Ref<"Beacon">;
 
     @prop({ required: true })
+    public name!: string;
+
+    @prop({ required: true })
     public frequency!: number; // in MHz
 
     @prop({ required: true })
@@ -102,9 +105,6 @@ export class BeaconPropertiesClass {
 
     @prop({ required: true })
     public power!: number; // in watts
-
-    @prop({ required: false })
-    public name?: string;
 
     @prop({ required: false })
     public lat?: number;

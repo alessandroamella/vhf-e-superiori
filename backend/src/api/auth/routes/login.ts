@@ -63,7 +63,7 @@ router.post(
         .isString()
         .trim()
         .isLength({ min: 8, max: 64 })
-        .isStrongPassword({ minLength: 8 }),
+        .isStrongPassword({ minLength: 8, minSymbols: 0 }),
     validate,
     async (req, res, next) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -9,7 +9,6 @@ import {
   Checkbox,
   FileInput,
   Label,
-  ListGroup,
   Modal,
   Pagination,
   Spinner,
@@ -28,222 +27,23 @@ import Layout from "../Layout";
 // import { DefaultEditor } from "react-simple-wysiwyg";
 import {
   FaCheck,
-  FaDownload,
   FaPlusCircle,
   FaTimes,
   FaUndo,
   FaExternalLinkAlt,
   FaClipboardCheck,
-  FaClipboard,
-  FaTrash,
-  FaBan,
-  FaExclamation,
-  FaStamp
+  FaClipboard
 } from "react-icons/fa";
 import { Link, createSearchParams, useNavigate } from "react-router-dom";
-import ReactHTMLTableToExcel from "react-html-table-to-excel";
 import { Navigation, Pagination as SwiperPagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Zoom from "react-medium-image-zoom";
 import ReactPlayer from "react-player";
 import Compressor from "compressorjs";
+import ViewJoinRequest from "./ViewJoinRequest";
 import { isFuture } from "date-fns";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
-
-const ViewJoinRequest = ({
-  disabled,
-  setDisabled,
-  joinRequests,
-  setJoinRequests,
-  setAlert
-}) => {
-  async function approveJoinRequests(j) {
-    if (
-      !window.confirm(
-        `Vuoi ${
-          j.isApproved ? "ANNULLARE" : "APPROVARE"
-        } la richiesta di partecipazione con ID ${j._id}?`
-      )
-    ) {
-      return;
-    }
-    setDisabled(true);
-    try {
-      await axios.post("/api/joinrequest/" + j._id);
-      console.log("approved joinRequest", j);
-      setJoinRequests([
-        ...joinRequests.filter(_j => _j._id !== j._id),
-        { ...j, isApproved: !j.isApproved, updatedAt: new Date() }
-      ]);
-    } catch (err) {
-      console.log(err.response.data);
-      setAlert({
-        color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
-      });
-    } finally {
-      setDisabled(false);
-    }
-  }
-
-  async function deleteJoinRequests(j) {
-    if (
-      !window.confirm(
-        "Vuoi ELIMINARE la richiesta di partecipazione con ID " + j._id + "?"
-      )
-    ) {
-      return;
-    }
-
-    setDisabled(true);
-    try {
-      await axios.delete("/api/joinrequest/" + j._id);
-      console.log("deleted joinRequest", j);
-      setJoinRequests([...joinRequests.filter(_j => _j._id !== j._id)]);
-    } catch (err) {
-      console.log(err.response.data);
-      setAlert({
-        color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
-      });
-    } finally {
-      setDisabled(false);
-    }
-  }
-
-  return (
-    <>
-      <Button className="mx-auto mb-2 flex items-center">
-        <FaDownload className="mr-1" />
-        <ReactHTMLTableToExcel
-          className="download-table-xls-button"
-          table={`join-requests-list-${JSON.stringify(joinRequests?.length)}`}
-          filename={"lista-richieste"}
-          sheet="lista"
-          buttonText="Scarica come Excel"
-        />
-      </Button>
-      <Table
-        id={`join-requests-list-${JSON.stringify(joinRequests?.length)}`}
-        striped
-      >
-        <Table.Head>
-          <Table.HeadCell>Nominativo</Table.HeadCell>
-          <Table.HeadCell>Nome</Table.HeadCell>
-          <Table.HeadCell>Telefono</Table.HeadCell>
-          <Table.HeadCell>Stato richiesta</Table.HeadCell>
-          <Table.HeadCell>Data creazione</Table.HeadCell>
-          <Table.HeadCell>Antenna</Table.HeadCell>
-          <Table.HeadCell>
-            <span className="sr-only">Azioni</span>
-          </Table.HeadCell>
-        </Table.Head>
-        <Table.Body className="divide-y">
-          {(console.log("joinRequestsModal", joinRequests), null)}
-          {joinRequests?.map(j => (
-            <Table.Row key={j._id}>
-              <Table.Cell className="whitespace-nowrap font-medium">
-                <Link
-                  to={`/u/${j.fromUser._id}`}
-                  className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
-                >
-                  {j.fromUser.callsign}
-                </Link>
-              </Table.Cell>
-              <Table.Cell>
-                <Tooltip content={j.fromUser.email}>
-                  <a
-                    href={"mailto:" + j.fromUser.email}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
-                  >
-                    {j.fromUser.name}
-                  </a>
-                </Tooltip>
-              </Table.Cell>
-              <Table.Cell>
-                <a
-                  href={"tel:" + j.fromUser.phoneNumber}
-                  className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
-                >
-                  {j.fromUser.phoneNumber}
-                </a>
-              </Table.Cell>
-              <Table.Cell>
-                {j.isApproved ? (
-                  <span className="ml-1 font-semibold dark:text-gray-300">
-                    ✅ Approvata
-                  </span>
-                ) : (
-                  <span className="ml-1 flex items-center gap-1 font-bold dark:text-gray-300">
-                    ⌛ In attesa{" "}
-                    <Badge color="failure">
-                      <FaExclamation />
-                    </Badge>
-                  </span>
-                )}
-              </Table.Cell>
-              <Table.Cell className="dark:text-gray-300">
-                {formatInTimeZone(
-                  new Date(j.updatedAt),
-                  "Europe/Rome",
-                  "d MMM HH:mm",
-                  {
-                    locale: it
-                  }
-                )}
-              </Table.Cell>
-              <Table.Cell className="max-w-xs dark:text-gray-300">
-                <Tooltip content={j.antenna}>
-                  <p className="whitespace-nowrap overflow-hidden text-ellipsis">
-                    {j.antenna}
-                  </p>
-                </Tooltip>
-              </Table.Cell>
-              <Table.Cell>
-                <Button.Group>
-                  {j.isApproved ? (
-                    <Button
-                      color="warning"
-                      onClick={() => approveJoinRequests(j)}
-                      disabled={disabled}
-                    >
-                      <Tooltip content="Annulla approvazione">
-                        <FaBan />
-                      </Tooltip>
-                    </Button>
-                  ) : (
-                    <Button
-                      color="success"
-                      onClick={() => approveJoinRequests(j)}
-                      disabled={disabled}
-                    >
-                      <Tooltip content="Approva richiesta">
-                        <FaStamp />
-                      </Tooltip>
-                    </Button>
-                  )}
-
-                  <Button
-                    color="failure"
-                    onClick={() => deleteJoinRequests(j)}
-                    disabled={disabled}
-                  >
-                    <Tooltip content="Elimina richiesta">
-                      <FaTrash />
-                    </Tooltip>
-                  </Button>
-                </Button.Group>
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
-    </>
-  );
-};
 
 const AdminManager = () => {
   const { user } = useContext(UserContext);
@@ -280,16 +80,9 @@ const AdminManager = () => {
   const pictureInputRef = createRef(null);
   const eqslInputRef = createRef(null);
 
-  const [userPage, setUserPage] = useState(1);
   const [postPage, setPostPage] = useState(1);
   const [eventPage, setEventPage] = useState(1);
 
-  const usersPerPage = 10;
-  const userCurPage = Math.ceil((users?.length || 0) / usersPerPage);
-  const userInterval = [
-    (userPage - 1) * usersPerPage,
-    (userPage - 1) * usersPerPage + usersPerPage
-  ];
   const postsPerPage = 10;
   const postsCurPage = Math.ceil((posts?.length || 0) / postsPerPage);
   const postsInterval = [
@@ -310,7 +103,6 @@ const AdminManager = () => {
         console.log("users", data);
         setUsers(data);
         // set page to last
-        setUserPage(Math.ceil(data.length / usersPerPage));
       } catch (err) {
         console.log("Errore nel caricamento degli utenti", err);
         setAlert({
@@ -1001,7 +793,13 @@ const AdminManager = () => {
                   ) : joinRequests === false ? (
                     <p className="dark:text-gray-300">Errore nel caricamento</p>
                   ) : joinRequests.length > 0 ? (
-                    <ViewJoinRequest j={joinRequests} />
+                    <ViewJoinRequest
+                      disabled={disabled}
+                      joinRequests={joinRequests}
+                      setAlert={setAlert}
+                      setDisabled={setDisabled}
+                      setJoinRequests={setJoinRequests}
+                    />
                   ) : (
                     <p className="dark:text-gray-300">
                       Ancora nessuna richiesta
@@ -1044,6 +842,7 @@ const AdminManager = () => {
             setAlert={setAlert}
             setDisabled={setDisabled}
             setJoinRequests={setJoinRequestsModal}
+            showEvent
           />
         </Modal.Body>
       </Modal>
@@ -1076,7 +875,7 @@ const AdminManager = () => {
               <Accordion.Content>
                 {users ? (
                   <div>
-                    <Table>
+                    <Table striped>
                       <Table.Head>
                         <Table.HeadCell>callsign</Table.HeadCell>
                         <Table.HeadCell>name</Table.HeadCell>
@@ -1087,7 +886,7 @@ const AdminManager = () => {
                         <Table.HeadCell>joinRequests</Table.HeadCell>
                       </Table.Head>
                       <Table.Body>
-                        {users?.slice(...userInterval)?.map(u => (
+                        {users?.map(u => (
                           <Table.Row key={u._id}>
                             <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                               {u.callsign}
@@ -1132,12 +931,6 @@ const AdminManager = () => {
                         ))}
                       </Table.Body>
                     </Table>
-                    <Pagination
-                      showIcons
-                      currentPage={userPage}
-                      totalPages={userCurPage}
-                      onPageChange={e => setUserPage(e)}
-                    />
                   </div>
                 ) : users === false ? (
                   <Spinner />
@@ -1152,7 +945,7 @@ const AdminManager = () => {
               <Accordion.Content>
                 {posts ? (
                   <div>
-                    <Table>
+                    <Table striped>
                       <Table.Head>
                         <Table.HeadCell>Azioni</Table.HeadCell>
                         <Table.HeadCell>fromUser</Table.HeadCell>

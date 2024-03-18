@@ -13,7 +13,7 @@ import axios from "axios";
 import { Alert, Button, Spinner } from "flowbite-react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MenuContent from "../sideMenu/MenuContent";
-import { FaExclamationTriangle, FaPlus } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 
 const Social = () => {
   const { splashPlayed } = useContext(SplashContext);

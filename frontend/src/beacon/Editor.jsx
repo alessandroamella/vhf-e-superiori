@@ -45,6 +45,7 @@ const BeaconEditor = () => {
 
         setCallsign(beacon.callsign);
 
+        setName(properties.name);
         setFrequency(properties.frequency);
         setQthStr(properties.qthStr);
         setLocator(properties.locator);
@@ -73,7 +74,8 @@ const BeaconEditor = () => {
   // callsign
   const [callsign, setCallsign] = useState("");
 
-  // frequency, qthStr, locator, hamsl, antenna, mode, qtf, power
+  // name, frequency, qthStr, locator, hamsl, antenna, mode, qtf, power
+  const [name, setName] = useState("");
   const [frequency, setFrequency] = useState("");
   const [qthStr, setQthStr] = useState("");
   const [locator, setLocator] = useState("");
@@ -95,6 +97,7 @@ const BeaconEditor = () => {
       setDisabled(true);
       const data = {
         callsign,
+        name,
         frequency,
         qthStr,
         locator,
@@ -104,11 +107,14 @@ const BeaconEditor = () => {
         qtf,
         power
       };
-      let res;
+      // let res;
       if (isEditing) {
-        res = await axios.put(`/api/beacon/${beacon._id}`, data);
+        console.log("data", data);
+        // res =
+        await axios.put(`/api/beacon/${beacon._id}`, data);
       } else {
-        res = await axios.post("/api/beacon", data);
+        // res =
+        await axios.post("/api/beacon", data);
       }
       // navigate(`/beacon/${res.data._id}`);
       // TODO debug
@@ -183,13 +189,28 @@ const BeaconEditor = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4">
                 <div>
                   <div className="mb-2 block">
+                    <Label htmlFor="name" value="Nome" />
+                  </div>
+                  <TextInput
+                    id="name"
+                    type="text"
+                    placeholder="Beacon"
+                    required
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    disabled={disabled}
+                  />
+                </div>
+
+                <div>
+                  <div className="mb-2 block">
                     <Label htmlFor="event-band" value="Frequenza in MHz" />
                   </div>
                   <TextInput
                     id="frequency"
                     type="text"
                     placeholder="144.000"
-                    required={true}
+                    required
                     value={frequency}
                     onChange={e => setFrequency(e.target.value)}
                     disabled={disabled}
@@ -204,7 +225,7 @@ const BeaconEditor = () => {
                     id="qthStr"
                     type="text"
                     placeholder="Roma"
-                    required={true}
+                    required
                     value={qthStr}
                     onChange={e => setQthStr(e.target.value)}
                     disabled={disabled}
@@ -219,7 +240,7 @@ const BeaconEditor = () => {
                     id="locator"
                     type="text"
                     placeholder="JN61"
-                    required={true}
+                    required
                     value={locator}
                     onChange={e => setLocator(e.target.value)}
                     disabled={disabled}
@@ -237,7 +258,7 @@ const BeaconEditor = () => {
                     id="hamsl"
                     type="number"
                     placeholder="100"
-                    required={true}
+                    required
                     value={hamsl}
                     onChange={e => setHamsl(e.target.value)}
                     disabled={disabled}
@@ -252,7 +273,7 @@ const BeaconEditor = () => {
                     id="antenna"
                     type="text"
                     placeholder="Yagi"
-                    required={true}
+                    required
                     value={antenna}
                     onChange={e => setAntenna(e.target.value)}
                     disabled={disabled}
@@ -267,7 +288,7 @@ const BeaconEditor = () => {
                     id="mode"
                     type="text"
                     placeholder="CW"
-                    required={true}
+                    required
                     value={mode}
                     onChange={e => setMode(e.target.value)}
                     disabled={disabled}
@@ -282,7 +303,7 @@ const BeaconEditor = () => {
                     id="qtf"
                     type="text"
                     placeholder="0"
-                    required={true}
+                    required
                     value={qtf}
                     onChange={e => setQtf(e.target.value)}
                     disabled={disabled}
@@ -296,8 +317,8 @@ const BeaconEditor = () => {
                   <TextInput
                     id="power"
                     type="number"
-                    placeholder="10"
-                    required={true}
+                    placeholder="5"
+                    required
                     value={power}
                     onChange={e => setPower(e.target.value)}
                     disabled={disabled}
@@ -305,7 +326,17 @@ const BeaconEditor = () => {
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-center">
+              <div className="mt-6 flex justify-center gap-2 items-center">
+                <Link to="/beacon">
+                  <Button
+                    type="submit"
+                    color="light"
+                    disabled={disabled}
+                    className="w-full"
+                  >
+                    Annulla
+                  </Button>
+                </Link>
                 <div>
                   <Button
                     type="submit"

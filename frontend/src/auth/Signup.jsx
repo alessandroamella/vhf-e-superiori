@@ -415,7 +415,7 @@ const Signup = () => {
                   label="Password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  helperText="Minimo 8 caratteri, almeno un numero, una maiuscola e un carattere speciale"
+                  helperText="Minimo 8 caratteri, almeno un numero e una maiuscola"
                   disabled={disabled}
                   maxLength={100}
                   required
