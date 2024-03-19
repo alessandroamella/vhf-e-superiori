@@ -310,7 +310,9 @@ export class EmailService {
         };
 
         await EmailService.sendMail(message);
-        logger.info("eQSL mail sent to user " + qso.callsign);
+        logger.info(
+            "eQSL mail sent to user " + qso.callsign + " at mail " + toEmail
+        );
         await unlink(filePath);
     }
 }

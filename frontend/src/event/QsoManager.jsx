@@ -41,6 +41,7 @@ import {
   FaCheck,
   FaDatabase,
   FaEnvelope,
+  FaExternalLinkAlt,
   FaForward,
   FaInfoCircle,
   FaPlusCircle,
@@ -48,7 +49,6 @@ import {
   FaUndo
 } from "react-icons/fa";
 import { useCookies } from "react-cookie";
-import ButtonGroup from "flowbite-react/lib/esm/components/Button/ButtonGroup";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { useMap } from "@uidotdev/usehooks";
 
@@ -206,7 +206,7 @@ const QsoManager = () => {
 
   const [callsign, setCallsign] = useState(cookies.callsign || "");
   const [locator, setLocator] = useState(cookies.locator || "");
-  // const [rst, setRst] = useState(cookies.rst || "");
+  const [rst, setRst] = useState(parseInt(cookies.rst) || 59);
   const [frequency, setFrequency] = useState(cookies.frequency || "");
   const [mode, setMode] = useState(cookies.mode || "");
   const [qsoDate, setQsoDate] = useState(
@@ -251,13 +251,13 @@ const QsoManager = () => {
       path: "/qsomanager",
       maxAge: 60 * 60 * 4
     });
-    // setCookie("rst", rst, { path: "/qsomanager", maxAge: 60 * 60 * 4 });
+    setCookie("rst", rst, { path: "/qsomanager", maxAge: 60 * 60 * 4 });
     setCookie("frequency", frequency, {
       path: "/qsomanager",
       maxAge: 60 * 60 * 4
     });
     setCookie("mode", mode, { path: "/qsomanager", maxAge: 60 * 60 * 4 });
-  }, [callsign, frequency, mode, locator, setCookie]);
+  }, [callsign, frequency, mode, locator, setCookie, rst]);
 
   async function createQso(e) {
     e.preventDefault();
@@ -279,8 +279,8 @@ const QsoManager = () => {
         frequency: parseFloat(frequency),
         mode,
         qsoDate: zonedTimeToUtc(new Date(qsoDate), "UTC"),
-        locator
-        // rst: isNaN(parseInt(rst)) ? undefined : parseInt(rst)
+        locator,
+        rst: isNaN(parseInt(rst)) ? 59 : parseInt(rst)
         // emailSent,
         // emailSentDate,
         // notes,
@@ -576,7 +576,7 @@ const QsoManager = () => {
             {adifQsos ? (
               <div className="max-h-[60vh] overflow-y-auto">
                 {/* seleziona - deseleziona tutti */}
-                <ButtonGroup className="mb-4 p-4 pb-2">
+                <Button.Group className="mb-4 p-4 pb-2">
                   <Button
                     color="light"
                     disabled={disabled}
@@ -605,7 +605,7 @@ const QsoManager = () => {
                   >
                     Deseleziona tutti
                   </Button>
-                </ButtonGroup>
+                </Button.Group>
 
                 <Table>
                   <Table.Head>
@@ -649,7 +649,7 @@ const QsoManager = () => {
                         <Table.Cell>{q.frequency} MHz</Table.Cell>
                         <Table.Cell>{q.mode}</Table.Cell>
                         <Table.Cell>{q.locator}</Table.Cell>
-                        {/* <Table.Cell>{q.rst}</Table.Cell> */}
+                        <Table.Cell>{q.rst}</Table.Cell>
                       </Table.Row>
                     ))}
                   </Table.Body>
@@ -692,9 +692,9 @@ const QsoManager = () => {
 
           {hasPermission && (
             <>
-              <Typography variant="h1" className="mb-6 flex items-center">
-                <Badge size="lg" color="info" className="mr-2">
-                  Gestione QSO
+              <Typography variant="h1" className="mb-8 flex items-center gap-2">
+                <Badge size="lg" color="info">
+                  {event?.name || "..."}
                 </Badge>
               </Typography>
 
@@ -708,26 +708,17 @@ const QsoManager = () => {
                   <Spinner />
                 ) : null}
 
-                <div className="my-6">
+                <div className="my-12">
                   <Typography variant="h2" className="mb-2">
-                    QSO registrati{" "}
-                    <span className="font-light">({event?.name || "..."})</span>
+                    QSO registrati
                   </Typography>
                   <div className="mb-6">
-                    {user?.isAdmin && (
-                      <Alert className="mb-4">
-                        Puoi vedere i QSO di tutte le altre stazioni
-                        attivatrici, indicate con{" "}
-                        <FaInfoCircle className="inline" />, in quanto sei un{" "}
-                        <span className="font-bold">amministratore</span>.
-                      </Alert>
-                    )}
                     {Array.isArray(qsos) ? (
                       qsos.length > 0 ? (
                         <div>
                           <div className="flex flex-col md:flex-row gap-2 items-center md:justify-between">
                             {/* seleziona - deseleziona - esporta adif - elimina */}
-                            <ButtonGroup className="mb-2">
+                            <Button.Group className="mb-2">
                               <Button
                                 color="light"
                                 disabled={disabled}
@@ -768,7 +759,7 @@ const QsoManager = () => {
                                   <span>Elimina</span>
                                 )}
                               </Button>
-                            </ButtonGroup>
+                            </Button.Group>
 
                             <div>
                               <h3 className="font-bold">
@@ -794,7 +785,7 @@ const QsoManager = () => {
                             </div>
                           </div>
 
-                          <div className="max-h-screen overflow-y-auto shadow-lg">
+                          <div className="shadow-lg">
                             <Table>
                               <Table.Head>
                                 <Table.HeadCell>
@@ -805,19 +796,23 @@ const QsoManager = () => {
                                 <Table.HeadCell>Frequenza</Table.HeadCell>
                                 <Table.HeadCell>Modo</Table.HeadCell>
                                 <Table.HeadCell>Locatore</Table.HeadCell>
-                                {/* <Table.HeadCell>RST</Table.HeadCell> */}
-                                <Table.HeadCell>Forza invio</Table.HeadCell>
+                                <Table.HeadCell>RST</Table.HeadCell>
+                                <Table.HeadCell>
+                                  <span className="sr-only">Azioni</span>
+                                </Table.HeadCell>
                               </Table.Head>
                               <Table.Body>
                                 {qsos?.map((q, i) => (
                                   <Table.Row
                                     key={q._id}
-                                    className={`transition-colors duration-1000 ${
+                                    className={`transition-colors duration-200 ${
                                       highlighted === q._id
-                                        ? "bg-green-200"
+                                        ? "bg-green-200 hover:bg-green-300"
+                                        : selectedQsos.includes(q._id)
+                                        ? "bg-red-200 hover:bg-red-300"
                                         : i % 2 === 0
-                                        ? "bg-gray-100 dark:bg-gray-800"
-                                        : "bg-gray-200 dark:bg-gray-700"
+                                        ? "hover:bg-gray-200"
+                                        : "bg-gray-100 hover:bg-gray-200"
                                     }`}
                                   >
                                     <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
@@ -862,52 +857,76 @@ const QsoManager = () => {
                                     <Table.Cell>{q.frequency} MHz</Table.Cell>
                                     <Table.Cell>{q.mode}</Table.Cell>
                                     <Table.Cell>{q.locator}</Table.Cell>
-                                    {/* <Table.Cell>{q.rst}</Table.Cell> */}
+                                    <Table.Cell>{q.rst}</Table.Cell>
                                     <Table.Cell>
-                                      <Button
-                                        color={
-                                          eqslSending.get(q._id) === "ok"
-                                            ? "success"
-                                            : q.emailSent
-                                            ? "light"
-                                            : "info"
-                                        }
-                                        disabled={
-                                          eqslSending.get(q._id) === "sending"
-                                        }
-                                        onClick={() => {
-                                          forceSendEqsl(q);
-                                        }}
-                                        className={`transition-all ${
-                                          q.emailSent
-                                            ? i % 2 === 0
-                                              ? "bg-gray-200 border-gray-200 hover:bg-gray-300"
-                                              : "bg-gray-300 border-gray-300 hover:bg-gray-400"
-                                            : ""
-                                        }`}
-                                      >
-                                        <Tooltip
-                                          content={
-                                            eqslSending.get(q._id) === "sending"
-                                              ? "Invio in corso..."
-                                              : eqslSending.get(q._id) === "ok"
-                                              ? "Email inviata con successo!"
-                                              : q.emailSent
-                                              ? "eQSL già inviata! Usa per forzare l'invio"
-                                              : "Usa il pulsante per forzare l'invio"
-                                          }
-                                        >
-                                          {eqslSending.get(q._id) ===
-                                          "sending" ? (
-                                            <Spinner size="sm" />
-                                          ) : eqslSending.get(q._id) ===
-                                            "ok" ? (
-                                            <FaCheck />
-                                          ) : (
-                                            <FaEnvelope />
-                                          )}
-                                        </Tooltip>
-                                      </Button>
+                                      <div className="flex w-full justify-center">
+                                        <div>
+                                          <Button
+                                            color={
+                                              eqslSending.get(q._id) === "ok"
+                                                ? "success"
+                                                : q.emailSent
+                                                ? "light"
+                                                : "info"
+                                            }
+                                            disabled={
+                                              eqslSending.get(q._id) ===
+                                              "sending"
+                                            }
+                                            onClick={() => {
+                                              forceSendEqsl(q);
+                                            }}
+                                            className={`transition-all ${
+                                              q.emailSent
+                                                ? "bg-gray-200 border-gray-200 hover:bg-gray-300"
+                                                : ""
+                                            }`}
+                                            size={q.emailSent ? "sm" : "md"}
+                                          >
+                                            <Tooltip
+                                              className="transition-all"
+                                              content={
+                                                eqslSending.get(q._id) ===
+                                                "sending"
+                                                  ? "Invio in corso..."
+                                                  : eqslSending.get(q._id) ===
+                                                    "ok"
+                                                  ? "Email inviata con successo!"
+                                                  : q.emailSent
+                                                  ? "⚠️ eQSL già inviata, usa per reinviarla"
+                                                  : "Usa il pulsante per forzare l'invio"
+                                              }
+                                            >
+                                              {eqslSending.get(q._id) ===
+                                              "sending" ? (
+                                                <Spinner size="sm" />
+                                              ) : eqslSending.get(q._id) ===
+                                                "ok" ? (
+                                                <FaCheck />
+                                              ) : (
+                                                <FaEnvelope />
+                                              )}
+                                            </Tooltip>
+                                          </Button>
+                                        </div>
+
+                                        {q.emailSent && (
+                                          <Tooltip content="Apri eQSL">
+                                            <Link
+                                              to={`/qso/${q._id}`}
+                                              target="_blank"
+                                            >
+                                              <Button
+                                                color="light"
+                                                className="bg-gray-200 border-gray-200 hover:bg-gray-300"
+                                                size="sm"
+                                              >
+                                                <FaExternalLinkAlt />
+                                              </Button>
+                                            </Link>
+                                          </Tooltip>
+                                        )}
+                                      </div>
                                     </Table.Cell>
                                   </Table.Row>
                                 ))}
@@ -929,7 +948,7 @@ const QsoManager = () => {
                   </div>
 
                   <div className="flex flex-col md:flex-row justify-center md:justify-between gap-4 items-center">
-                    <Typography variant="h2" className="mb-2 flex items-center">
+                    <Typography variant="h2" className="my-2 flex items-center">
                       Crea QSO
                     </Typography>
                   </div>
@@ -1237,7 +1256,7 @@ const QsoManager = () => {
                             ) : (
                               <div className="mt-8 flex flex-col justify-center gap-2 items-center">
                                 <h5 className="font-semibold text-sm uppercase text-gray-600 dark:text-gray-400">
-                                  Anteprima
+                                  Riepilogo
                                 </h5>
                                 <Card className="w-full">
                                   <div className="flex flex-col md:flex-row gap-4 items-start">
@@ -1372,6 +1391,30 @@ const QsoManager = () => {
                                         maxLength={20}
                                         onClick={() => setPage(0)}
                                         value={locator}
+                                      />
+                                    </div>
+                                    <div className="w-full">
+                                      <Label htmlFor="rst" value="RST" />
+                                      <TextInput
+                                        disabled={disabled}
+                                        id="rst"
+                                        label="RST"
+                                        placeholder="59"
+                                        type="text"
+                                        value={rst}
+                                        maxLength={3}
+                                        onChange={e => {
+                                          const val =
+                                            parseInt(
+                                              e.target.value.replace(/\D+/g, "")
+                                            ) || "";
+                                          setRst(val);
+                                          setCookie("frequency", val, {
+                                            path: "/qsomanager",
+                                            maxAge: 60 * 60 * 4
+                                          });
+                                        }}
+                                        required
                                       />
                                     </div>
                                   </div>

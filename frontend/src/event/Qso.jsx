@@ -4,7 +4,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getErrorStr } from "..";
 import Layout from "../Layout";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -70,15 +70,6 @@ const Qso = () => {
     }
     getQso();
   }, [id]);
-
-  const validImgUrl = useMemo(() => {
-    if (!qso) return null;
-
-    // check if imageHref is a valid URL and an image
-    const img = new Image();
-    img.src = qso.imageHref;
-    return img.complete ? qso.imageHref : null;
-  }, [qso]);
 
   const navigate = useNavigate();
 
@@ -155,12 +146,12 @@ const Qso = () => {
                 rows={3}
                 ready={!!qso}
               >
-                {validImgUrl && (
+                {qso?.imageHref && (
                   <>
                     <Zoom>
                       <LazyLoadImage
                         className="w-full h-full object-contain shadow-xl mx-auto"
-                        src={validImgUrl}
+                        src={qso?.imageHref}
                         alt="QSO"
                       />
                     </Zoom>
