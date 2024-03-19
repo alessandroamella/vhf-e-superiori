@@ -89,7 +89,9 @@ router.put(
                 antenna,
                 mode,
                 qtf,
-                power
+                power,
+                lat,
+                lon
             } = req.body;
 
             const beaconProps = new BeaconProperties({
@@ -103,6 +105,8 @@ router.put(
                 mode,
                 qtf,
                 power,
+                lat,
+                lon,
                 editAuthor: user._id,
                 editDate: new Date(),
                 isVerified: user.isAdmin ? user._id : undefined

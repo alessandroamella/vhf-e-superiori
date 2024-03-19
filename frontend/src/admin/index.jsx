@@ -247,39 +247,6 @@ const AdminManager = () => {
     }
   }
 
-  // const [isApproving, setIsApproving] = useState(false);
-
-  // async function setApprovePost(j) {
-  //   if (
-  //     !window.confirm(
-  //       `Vuoi ${j.isApproved ? "DISAPPROVARE" : "APPROVARE"} il post con ID ${
-  //         j._id
-  //       }?`
-  //     )
-  //   ) {
-  //     return;
-  //   }
-
-  //   console.log("approve post", j);
-  //   setIsApproving(true);
-  //   try {
-  //     await axios.post("/api/post/approve/" + j._id);
-  //     console.log("set approved post", j._id);
-  //     const _posts = [...posts];
-  //     const i = _posts.findIndex(_j => _j._id === j._id);
-  //     _posts[i] = { ...j, isApproved: !j.isApproved };
-  //     setPosts(_posts);
-  //   } catch (err) {
-  //     console.log(err?.response?.data || err);
-  //     setAlert({
-  //       color: "failure",
-  //       msg: getErrorStr(err?.response?.data?.err)
-  //     });
-  //   } finally {
-  //     setIsApproving(false);
-  //   }
-  // }
-
   const uploadEventPic = async uploadedPic => {
     const formData = new FormData();
     console.log({ uploadedPic });
@@ -970,7 +937,9 @@ const AdminManager = () => {
                   <div>
                     <Table striped>
                       <Table.Head>
-                        <Table.HeadCell>Azioni</Table.HeadCell>
+                        <Table.HeadCell>
+                          <span className="sr-only">Azioni</span>
+                        </Table.HeadCell>
                         <Table.HeadCell>Autore</Table.HeadCell>
                         <Table.HeadCell>Descrizione</Table.HeadCell>
                         <Table.HeadCell>Foto</Table.HeadCell>
@@ -1000,9 +969,11 @@ const AdminManager = () => {
                             </Table.Cell>
                             <Table.Cell>
                               <Tooltip content={u.description}>
-                                <span className="line-clamp-3">
-                                  {u.description}
-                                </span>
+                                <Link to={"/social/" + u._id}>
+                                  <span className="line-clamp-3">
+                                    {u.description}
+                                  </span>
+                                </Link>
                               </Tooltip>
                             </Table.Cell>
                             <Table.Cell>

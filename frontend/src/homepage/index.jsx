@@ -647,9 +647,7 @@ const Homepage = () => {
                             to={"/qsomanager/" + stationEventToShow._id}
                             className="underline decoration-dotted hover:text-black transition-colors"
                           >
-                            <Button className="text-lg mt-4">
-                              Gestisci QSO
-                            </Button>
+                            <Button className="text-lg mt-4">Invia EQSL</Button>
                           </Link>
                         </Card>
                       </div>

@@ -12,7 +12,9 @@ import {
   Spinner,
   Table,
   TextInput,
-  Tooltip
+  Tooltip,
+  Timeline,
+  Card
 } from "flowbite-react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -34,17 +36,21 @@ import {
   useNavigate,
   useParams
 } from "react-router-dom";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import {
-  FaCircle,
+  FaBackward,
+  FaCheck,
+  FaDatabase,
+  FaEnvelope,
+  FaForward,
   FaInfoCircle,
   FaPlusCircle,
-  FaSync,
+  FaShare,
   FaUndo
 } from "react-icons/fa";
 import { useCookies } from "react-cookie";
 import ButtonGroup from "flowbite-react/lib/esm/components/Button/ButtonGroup";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import { useMap } from "@uidotdev/usehooks";
 
 const QsoManager = () => {
   const { user } = useContext(UserContext);
@@ -62,6 +68,8 @@ const QsoManager = () => {
   const [hasPermission, setHasPermission] = useState(false);
 
   const [highlighted, setHighlighted] = useState(null);
+
+  const eqslSending = useMap();
 
   const isEventStation =
     event &&
@@ -92,10 +100,7 @@ const QsoManager = () => {
         setUsers(null);
       }
     }
-    if (user?.isAdmin && !users)
-      //  && event.joinRequests && !isEventStation) {
-      getUsers();
-    // }
+    if (user?.isAdmin && !users) getUsers();
   }, [event, isEventStation, user, users]);
 
   const [showAddressWarning, setShowAddressWarning] = useState(true);
@@ -201,7 +206,7 @@ const QsoManager = () => {
 
   const [callsign, setCallsign] = useState(cookies.callsign || "");
   const [locator, setLocator] = useState(cookies.locator || "");
-  const [rst, setRst] = useState(cookies.rst || "");
+  // const [rst, setRst] = useState(cookies.rst || "");
   const [frequency, setFrequency] = useState(cookies.frequency || "");
   const [mode, setMode] = useState(cookies.mode || "");
   const [qsoDate, setQsoDate] = useState(
@@ -246,14 +251,13 @@ const QsoManager = () => {
       path: "/qsomanager",
       maxAge: 60 * 60 * 4
     });
-    setCookie("rst", rst, { path: "/qsomanager", maxAge: 60 * 60 * 4 });
+    // setCookie("rst", rst, { path: "/qsomanager", maxAge: 60 * 60 * 4 });
     setCookie("frequency", frequency, {
       path: "/qsomanager",
       maxAge: 60 * 60 * 4
     });
     setCookie("mode", mode, { path: "/qsomanager", maxAge: 60 * 60 * 4 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [callsign, frequency, mode]);
+  }, [callsign, frequency, mode, locator, setCookie]);
 
   async function createQso(e) {
     e.preventDefault();
@@ -275,8 +279,8 @@ const QsoManager = () => {
         frequency: parseFloat(frequency),
         mode,
         qsoDate: zonedTimeToUtc(new Date(qsoDate), "UTC"),
-        locator,
-        rst: isNaN(parseInt(rst)) ? undefined : parseInt(rst)
+        locator
+        // rst: isNaN(parseInt(rst)) ? undefined : parseInt(rst)
         // emailSent,
         // emailSentDate,
         // notes,
@@ -332,6 +336,8 @@ const QsoManager = () => {
   const [hasFile, setHasFile] = useState(false);
 
   const adifInputRef = createRef(null);
+
+  const [page, setPage] = useState(0); // 0 = pre data, 1 = insert qso
 
   function getAdifKey(qso, index) {
     return JSON.stringify({
@@ -494,6 +500,61 @@ const QsoManager = () => {
 
   const navigate = useNavigate();
 
+  async function forceSendEqsl(q) {
+    eqslSending.set(q._id, "sending");
+
+    console.log("forceSendEqsl for qso", q._id, q);
+
+    try {
+      const { data } = await axios.get("/api/eqsl/forcesend/" + q._id);
+      console.log("OK forceSendEqsl for qso", q._id, data);
+      setQsos(
+        qsos.map(qso =>
+          qso._id === q._id
+            ? { ...qso, imageHref: data?.href, emailSent: true }
+            : qso
+        )
+      );
+      setAlert({
+        color: "success",
+        msg: "eQSL inviata con successo"
+      });
+    } catch (err) {
+      console.log(err?.response?.data || err);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+    } finally {
+      eqslSending.set(q._id, "ok");
+
+      setTimeout(() => {
+        eqslSending.delete(q._id);
+      }, 3000);
+    }
+  }
+
+  const [allPredataInserted, setAllPredataInserted] = useState(false);
+
+  useEffect(() => {
+    setAllPredataInserted(frequency && mode && qsoDate && locator);
+    console.log("predata", { frequency, mode, qsoDate, locator });
+  }, [frequency, mode, qsoDate, locator]);
+
+  const [editTime, setEditTime] = useState(false);
+
+  // if not editTime, update qsoDate to current time every second
+  useEffect(() => {
+    if (!editTime) {
+      const interval = setInterval(() => {
+        if (!editTime) {
+          resetDate();
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [editTime]);
+
   return user === null ? (
     navigate({
       pathname: "/login",
@@ -588,7 +649,7 @@ const QsoManager = () => {
                         <Table.Cell>{q.frequency} MHz</Table.Cell>
                         <Table.Cell>{q.mode}</Table.Cell>
                         <Table.Cell>{q.locator}</Table.Cell>
-                        <Table.Cell>{q.rst}</Table.Cell>
+                        {/* <Table.Cell>{q.rst}</Table.Cell> */}
                       </Table.Row>
                     ))}
                   </Table.Body>
@@ -638,42 +699,14 @@ const QsoManager = () => {
               </Typography>
 
               <div className="mb-6">
-                {event ? (
-                  <div>
-                    <h2 className="text-4xl mb-6 flex gap-2 flex-col md:flex-row items-center justify-center">
-                      <span className="font-bold">{event.name}</span>
-                      <FaCircle className="hidden md:block scale-[.25] text-gray-700 dark:text-gray-300 mx-2" />
-                      <span>{user?.callsign}</span>
-                    </h2>
-                    <div className="mt-4 grid grid-cols-1 md:grid-cols-2">
-                      {[
-                        ["logoUrl", "Locandina"],
-                        ["eqslUrl", "Anteprima EQSL"]
-                      ].map(([key, text], i) => (
-                        <div
-                          key={i}
-                          className="flex flex-col gap-2 justify-center items-center"
-                        >
-                          <LazyLoadImage
-                            src={event[key]}
-                            alt={key}
-                            className="w-48 max-w-full max-h-48 object-contain m-auto drop-shadow-lg"
-                          />
-                          <p className="font-bold text-gray-700 dark:text-gray-400">
-                            {text}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : event === null ? (
+                {event === null ? (
                   <p>
                     Errore nel caricamento dell'evento (prova a ricaricare la
                     pagina)
                   </p>
-                ) : (
+                ) : !event ? (
                   <Spinner />
-                )}
+                ) : null}
 
                 <div className="my-6">
                   <Typography variant="h2" className="mb-2">
@@ -692,60 +725,88 @@ const QsoManager = () => {
                     {Array.isArray(qsos) ? (
                       qsos.length > 0 ? (
                         <div>
-                          {/* seleziona - deseleziona - esporta adif - elimina */}
-                          <ButtonGroup className="mb-2">
-                            <Button
-                              color="light"
-                              disabled={disabled}
-                              onClick={() => {
-                                setSelectedQsos(qsos.map(q => q._id));
-                              }}
-                            >
-                              Seleziona tutti
-                            </Button>
-                            <Button
-                              color="light"
-                              disabled={disabled}
-                              onClick={() => {
-                                setSelectedQsos([]);
-                              }}
-                            >
-                              Deseleziona tutti
-                            </Button>
-                            <Button
-                              color="dark"
-                              disabled={disabled || selectedQsos.length === 0}
-                              onClick={exportAdif}
-                            >
-                              {disabled ? (
-                                <Spinner size="sm" />
-                              ) : (
-                                <span>Esporta ADIF</span>
-                              )}
-                            </Button>
-                            <Button
-                              color="failure"
-                              disabled={disabled || selectedQsos.length === 0}
-                              onClick={deleteSelected}
-                            >
-                              {disabled ? (
-                                <Spinner size="sm" />
-                              ) : (
-                                <span>Elimina</span>
-                              )}
-                            </Button>
-                          </ButtonGroup>
+                          <div className="flex flex-col md:flex-row gap-2 items-center md:justify-between">
+                            {/* seleziona - deseleziona - esporta adif - elimina */}
+                            <ButtonGroup className="mb-2">
+                              <Button
+                                color="light"
+                                disabled={disabled}
+                                onClick={() => {
+                                  setSelectedQsos(qsos.map(q => q._id));
+                                }}
+                              >
+                                Seleziona tutti
+                              </Button>
+                              <Button
+                                color="light"
+                                disabled={disabled}
+                                onClick={() => {
+                                  setSelectedQsos([]);
+                                }}
+                              >
+                                Deseleziona tutti
+                              </Button>
+                              <Button
+                                color="dark"
+                                disabled={disabled || selectedQsos.length === 0}
+                                onClick={exportAdif}
+                              >
+                                {disabled ? (
+                                  <Spinner size="sm" />
+                                ) : (
+                                  <span>Esporta ADIF</span>
+                                )}
+                              </Button>
+                              <Button
+                                color="failure"
+                                disabled={disabled || selectedQsos.length === 0}
+                                onClick={deleteSelected}
+                              >
+                                {disabled ? (
+                                  <Spinner size="sm" />
+                                ) : (
+                                  <span>Elimina</span>
+                                )}
+                              </Button>
+                            </ButtonGroup>
+
+                            <div>
+                              <h3 className="font-bold">
+                                Importa QSO da file ADIF
+                              </h3>
+                              <div className="mb-8 flex items-center gap-2">
+                                <FileInput
+                                  disabled={disabled}
+                                  helperText={disabled && <Spinner />}
+                                  accept=".adi"
+                                  className="h-fit"
+                                  onChange={e => importAdif(e.target.files[0])}
+                                  ref={adifInputRef}
+                                />
+                                <Button
+                                  color="dark"
+                                  onClick={resetAdif}
+                                  disabled={disabled || !hasFile}
+                                >
+                                  <FaUndo />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
 
                           <div className="max-h-screen overflow-y-auto shadow-lg">
                             <Table>
                               <Table.Head>
-                                <Table.HeadCell>Azioni</Table.HeadCell>
+                                <Table.HeadCell>
+                                  <span className="sr-only">Azioni</span>
+                                </Table.HeadCell>
                                 <Table.HeadCell>Nominativo</Table.HeadCell>
                                 <Table.HeadCell>Data UTC</Table.HeadCell>
                                 <Table.HeadCell>Frequenza</Table.HeadCell>
                                 <Table.HeadCell>Modo</Table.HeadCell>
                                 <Table.HeadCell>Locatore</Table.HeadCell>
-                                <Table.HeadCell>RST</Table.HeadCell>
+                                {/* <Table.HeadCell>RST</Table.HeadCell> */}
+                                <Table.HeadCell>Forza invio</Table.HeadCell>
                               </Table.Head>
                               <Table.Body>
                                 {qsos?.map((q, i) => (
@@ -775,19 +836,21 @@ const QsoManager = () => {
                                         </Tooltip>
                                       </div>
                                     </Table.Cell>
-                                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex gap-1 items-center">
-                                      {q.callsign}
-                                      {q.fromStation?.callsign &&
-                                        q.fromStation?.callsign !==
-                                          user?.callsign && (
-                                          <Tooltip
-                                            content={`QSO da ${q.fromStation.callsign}`}
-                                          >
-                                            <p className="text-xs font-light text-gray-600">
-                                              <FaInfoCircle />
-                                            </p>
-                                          </Tooltip>
-                                        )}
+                                    <Table.Cell>
+                                      <div className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex gap-1 items-center">
+                                        {q.callsign}
+                                        {q.fromStation?.callsign &&
+                                          q.fromStation?.callsign !==
+                                            user?.callsign && (
+                                            <Tooltip
+                                              content={`QSO da ${q.fromStation.callsign}`}
+                                            >
+                                              <p className="text-xs font-light text-gray-600">
+                                                <FaInfoCircle />
+                                              </p>
+                                            </Tooltip>
+                                          )}
+                                      </div>
                                     </Table.Cell>
                                     <Table.Cell>
                                       {formatInTimeZone(
@@ -799,7 +862,53 @@ const QsoManager = () => {
                                     <Table.Cell>{q.frequency} MHz</Table.Cell>
                                     <Table.Cell>{q.mode}</Table.Cell>
                                     <Table.Cell>{q.locator}</Table.Cell>
-                                    <Table.Cell>{q.rst}</Table.Cell>
+                                    {/* <Table.Cell>{q.rst}</Table.Cell> */}
+                                    <Table.Cell>
+                                      <Button
+                                        color={
+                                          eqslSending.get(q._id) === "ok"
+                                            ? "success"
+                                            : q.emailSent
+                                            ? "light"
+                                            : "info"
+                                        }
+                                        disabled={
+                                          eqslSending.get(q._id) === "sending"
+                                        }
+                                        onClick={() => {
+                                          forceSendEqsl(q);
+                                        }}
+                                        className={`transition-all ${
+                                          q.emailSent
+                                            ? i % 2 === 0
+                                              ? "bg-gray-200 border-gray-200 hover:bg-gray-300"
+                                              : "bg-gray-300 border-gray-300 hover:bg-gray-400"
+                                            : ""
+                                        }`}
+                                      >
+                                        <Tooltip
+                                          content={
+                                            eqslSending.get(q._id) === "sending"
+                                              ? "Invio in corso..."
+                                              : eqslSending.get(q._id) === "ok"
+                                              ? "Email inviata con successo!"
+                                              : q.emailSent
+                                              ? "eQSL già inviata! Usa per forzare l'invio"
+                                              : "Usa il pulsante per forzare l'invio"
+                                          }
+                                        >
+                                          {eqslSending.get(q._id) ===
+                                          "sending" ? (
+                                            <Spinner size="sm" />
+                                          ) : eqslSending.get(q._id) ===
+                                            "ok" ? (
+                                            <FaCheck />
+                                          ) : (
+                                            <FaEnvelope />
+                                          )}
+                                        </Tooltip>
+                                      </Button>
+                                    </Table.Cell>
                                   </Table.Row>
                                 ))}
                               </Table.Body>
@@ -823,27 +932,6 @@ const QsoManager = () => {
                     <Typography variant="h2" className="mb-2 flex items-center">
                       Crea QSO
                     </Typography>
-
-                    <div>
-                      <h3 className="font-bold">Importa QSO da file ADIF</h3>
-                      <div className="mb-8 flex items-center gap-2">
-                        <FileInput
-                          disabled={disabled}
-                          helperText={disabled && <Spinner />}
-                          accept=".adi"
-                          className="h-fit"
-                          onChange={e => importAdif(e.target.files[0])}
-                          ref={adifInputRef}
-                        />
-                        <Button
-                          color="dark"
-                          onClick={resetAdif}
-                          disabled={disabled || !hasFile}
-                        >
-                          <FaUndo />
-                        </Button>
-                      </div>
-                    </div>
                   </div>
                   {user ? (
                     !user.address ? (
@@ -886,227 +974,428 @@ const QsoManager = () => {
                           </Alert>
                         )}
 
-                        <form onSubmit={createQso}>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {!isEventStation && user.isAdmin && users && (
-                              <div>
-                                <Label
-                                  htmlFor="fromStation"
-                                  value="Da stazione attivatrice*"
-                                />
-                                <Dropdown
-                                  label={fromStation.callsign}
-                                  disabled={disabled}
-                                  id="fromStation"
-                                  className="w-full"
-                                  required
-                                  color="light"
-                                >
-                                  {users.map(u => (
-                                    <Dropdown.Item
-                                      key={u._id}
-                                      onClick={() => setFromStation(u)}
-                                    >
-                                      <span
-                                        className={
-                                          u._id === fromStation._id
-                                            ? "font-bold"
-                                            : ""
-                                        }
-                                      >
-                                        {u.callsign}
-                                      </span>
-                                    </Dropdown.Item>
-                                  ))}
-                                </Dropdown>
-                                <p className="flex items-center gap-1">
-                                  <FaInfoCircle />
-                                  Vedi questo in quanto sei un{" "}
-                                  <span className="font-bold">
-                                    amministratore
+                        <div className="w-full flex justify-center">
+                          <Timeline horizontal>
+                            <Timeline.Item>
+                              <Timeline.Point icon={FaDatabase} />
+                              <Timeline.Content>
+                                <Timeline.Title>
+                                  <span
+                                    className={`${
+                                      page === 0 ? "font-bold" : "font-medium"
+                                    } cursor-pointer hover:text-blue-700 transition-colors`}
+                                    onClick={() => setPage(0)}
+                                  >
+                                    Dati preliminari
                                   </span>
-                                </p>
-                              </div>
-                            )}
-
-                            <div>
-                              <Label htmlFor="callsign" value="Nominativo*" />
-                              <TextInput
-                                disabled={disabled}
-                                id="callsign"
-                                label="Nominativo"
-                                minLength={1}
-                                maxLength={10}
-                                ref={callsignRef}
-                                placeholder={user ? user.callsign : "IU4QSG"}
-                                value={callsign}
-                                className="uppercase"
-                                onChange={e => {
-                                  setCallsign(e.target.value);
-                                  setCookie("callsign", e.target.value, {
-                                    path: "/qsomanager",
-                                    maxAge: 60 * 60 * 4
-                                  });
-                                }}
-                                required
-                              />
-                            </div>
-                            <div>
-                              <Label
-                                htmlFor="frequency"
-                                value="Frequenza (in MHz)*"
-                              />
-                              <TextInput
-                                disabled={disabled}
-                                id="frequency"
-                                label="Frequenza"
-                                placeholder="144.205"
-                                type="number"
-                                value={frequency}
-                                onChange={e => {
-                                  setFrequency(e.target.value);
-                                  setCookie("frequency", e.target.value, {
-                                    path: "/qsomanager",
-                                    maxAge: 60 * 60 * 4
-                                  });
-                                }}
-                                required
-                              />
-                            </div>
-                            <div>
-                              <Label
-                                htmlFor="mode"
-                                value="Modo (CW, SSB, FT8, ecc.)*"
-                              />
-                              <TextInput
-                                disabled={disabled}
-                                id="mode"
-                                label="Modo"
-                                minLength={1}
-                                maxLength={10}
-                                placeholder="SSB"
-                                value={mode}
-                                onChange={e => {
-                                  setMode(e.target.value);
-                                  setCookie("mode", e.target.value, {
-                                    path: "/qsomanager",
-                                    maxAge: 60 * 60 * 4
-                                  });
-                                }}
-                                required
-                              />
-                            </div>
-                            <div>
-                              <Label
-                                htmlFor="qsoDate"
-                                value="Data QSO in UTC*"
-                              />
-                              <div className="flex gap-1 justify-center items-start">
-                                <div className="w-full relative">
-                                  <TextInput
-                                    disabled={disabled}
-                                    id="qsoDate"
-                                    label="Data"
-                                    type="datetime-local"
-                                    className="w-full"
-                                    value={qsoDate}
-                                    onChange={e => setQsoDate(e.target.value)}
-                                    required
-                                    helperText={
-                                      <>
-                                        {format(new Date(qsoDate), "HH:mm")} UTC
-                                        {", "}
-                                        {formatInTimeZone(
-                                          zonedTimeToUtc(
-                                            new Date(qsoDate),
-                                            "UTC"
-                                          ),
-                                          "Europe/Rome",
-                                          "HH:mm"
-                                        )}{" "}
-                                        Roma
-                                      </>
+                                </Timeline.Title>
+                                <Timeline.Body>
+                                  Necessari per la creazione del QSO
+                                </Timeline.Body>
+                              </Timeline.Content>
+                            </Timeline.Item>
+                            <Timeline.Item>
+                              <Timeline.Point icon={FaShare} />
+                              <Timeline.Content>
+                                <Timeline.Title>
+                                  <span
+                                    className={`${
+                                      page === 1 ? "font-bold" : "font-medium"
+                                    } ${
+                                      allPredataInserted
+                                        ? "cursor-pointer hover:text-blue-700 transition-colors"
+                                        : "cursor-not-allowed"
+                                    }`}
+                                    onClick={
+                                      allPredataInserted
+                                        ? () => setPage(1)
+                                        : null
                                     }
+                                  >
+                                    Nominativo
+                                  </span>
+                                </Timeline.Title>
+                                <Timeline.Body>Registrazione QSO</Timeline.Body>
+                              </Timeline.Content>
+                            </Timeline.Item>
+                          </Timeline>
+                        </div>
+
+                        <form onSubmit={createQso}>
+                          {page === 0 ? (
+                            <>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {!isEventStation && user.isAdmin && users && (
+                                  <div>
+                                    <Label
+                                      htmlFor="fromStation"
+                                      value="Da stazione attivatrice*"
+                                    />
+                                    <Dropdown
+                                      label={fromStation.callsign}
+                                      disabled={disabled}
+                                      id="fromStation"
+                                      className="w-full"
+                                      required
+                                      color="light"
+                                    >
+                                      {users.map(u => (
+                                        <Dropdown.Item
+                                          key={u._id}
+                                          onClick={() => setFromStation(u)}
+                                        >
+                                          <span
+                                            className={
+                                              u._id === fromStation._id
+                                                ? "font-bold"
+                                                : ""
+                                            }
+                                          >
+                                            {u.callsign}
+                                          </span>
+                                        </Dropdown.Item>
+                                      ))}
+                                    </Dropdown>
+                                    <p className="flex items-center gap-1">
+                                      <FaInfoCircle />
+                                      Vedi questo in quanto sei un{" "}
+                                      <span className="font-bold">
+                                        amministratore
+                                      </span>
+                                    </p>
+                                  </div>
+                                )}
+
+                                <div>
+                                  <Label
+                                    htmlFor="frequency"
+                                    value="Frequenza (in MHz)*"
+                                  />
+                                  <TextInput
+                                    color={frequency ? "success" : "warning"}
+                                    disabled={disabled}
+                                    id="frequency"
+                                    label="Frequenza"
+                                    placeholder="144.205"
+                                    type="number"
+                                    value={frequency}
+                                    onChange={e => {
+                                      setFrequency(e.target.value);
+                                      setCookie("frequency", e.target.value, {
+                                        path: "/qsomanager",
+                                        maxAge: 60 * 60 * 4
+                                      });
+                                    }}
+                                    required
                                   />
                                 </div>
-                                <div className="mt-1">
-                                  <Tooltip content="Imposta all'orario attuale">
-                                    <Button
-                                      color="light"
-                                      // size="sm"
-                                      className="h-max"
-                                      onClick={resetDate}
-                                    >
-                                      <FaSync />
-                                    </Button>
-                                  </Tooltip>
+                                <div>
+                                  <Label
+                                    htmlFor="mode"
+                                    value="Modo (CW, SSB, FT8, ecc.)*"
+                                  />
+                                  <TextInput
+                                    color={mode ? "success" : "warning"}
+                                    disabled={disabled}
+                                    id="mode"
+                                    label="Modo"
+                                    minLength={1}
+                                    maxLength={10}
+                                    placeholder="SSB"
+                                    value={mode}
+                                    onChange={e => {
+                                      setMode(e.target.value);
+                                      setCookie("mode", e.target.value, {
+                                        path: "/qsomanager",
+                                        maxAge: 60 * 60 * 4
+                                      });
+                                    }}
+                                    required
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="locator" value="Locatore" />
+                                  <TextInput
+                                    color={locator ? "success" : "warning"}
+                                    disabled={disabled}
+                                    id="locator"
+                                    label="Locatore"
+                                    minLength={1}
+                                    maxLength={20}
+                                    placeholder="JN54mn"
+                                    value={locator}
+                                    onChange={e => {
+                                      setLocator(e.target.value);
+                                      setCookie("locator", e.target.value, {
+                                        path: "/qsomanager",
+                                        maxAge: 60 * 60 * 4
+                                      });
+                                    }}
+                                  />
                                 </div>
                               </div>
+                            </>
+                          ) : (
+                            <div className="flex flex-col gap-2 items-center">
+                              <div className="flex flex-col md:flex-row gap-2 justify-center items-center md:items-end">
+                                <div className="w-full">
+                                  <Label
+                                    htmlFor="callsign"
+                                    value="Nominativo*"
+                                  />
+                                  <TextInput
+                                    disabled={disabled}
+                                    id="callsign"
+                                    label="Nominativo"
+                                    sizing="xl"
+                                    minLength={1}
+                                    maxLength={10}
+                                    ref={callsignRef}
+                                    placeholder={
+                                      user ? user.callsign : "IU4QSG"
+                                    }
+                                    value={callsign}
+                                    className="uppercase font-semibold text-2xl input-large"
+                                    onChange={e => {
+                                      const val = e.target.value.toUpperCase();
+                                      setCallsign(val);
+                                      setCookie("callsign", val, {
+                                        path: "/qsomanager",
+                                        maxAge: 60 * 60 * 4
+                                      });
+                                    }}
+                                    required
+                                  />
+                                </div>
+
+                                <Button
+                                  type="submit"
+                                  disabled={disabled}
+                                  size="lg"
+                                  color={highlighted ? "success" : "info"}
+                                  className="transition-colors duration-500 min-w-[10rem]"
+                                >
+                                  {disabled ? (
+                                    <Spinner />
+                                  ) : (
+                                    <span className="flex items-center gap-2">
+                                      <FaPlusCircle />
+                                      Salva QSO
+                                    </span>
+                                  )}
+                                </Button>
+                              </div>
+
+                              {/* orario */}
                             </div>
-                            <div>
-                              <Label htmlFor="locator" value="Locatore" />
-                              <TextInput
-                                disabled={disabled}
-                                id="locator"
-                                label="Locatore"
-                                minLength={1}
-                                maxLength={20}
-                                placeholder="JN54mn"
-                                value={locator}
-                                onChange={e => {
-                                  setLocator(e.target.value);
-                                  setCookie("locator", e.target.value, {
-                                    path: "/qsomanager",
-                                    maxAge: 60 * 60 * 4
-                                  });
-                                }}
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="rst" value="RST" />
-                              <TextInput
-                                disabled={disabled}
-                                id="rst"
-                                label="RST"
-                                minLength={1}
-                                maxLength={20}
-                                placeholder="59"
-                                value={rst}
-                                onChange={e => {
-                                  setRst(parseInt(e.target.value) || undefined);
-                                  setCookie("rst", e.target.value, {
-                                    path: "/qsomanager",
-                                    maxAge: 60 * 60 * 4
-                                  });
-                                }}
-                              />
-                            </div>
-                          </div>
+                          )}
                           <div className="mt-4 flex flex-col items-center gap-2">
                             <div className="flex justify-center">
-                              <Button
-                                type="submit"
-                                disabled={disabled}
-                                size="lg"
-                                color={highlighted ? "success" : "info"}
-                                className="transition-colors duration-500"
-                              >
-                                {disabled ? (
-                                  <Spinner />
-                                ) : (
-                                  <span className="flex items-center gap-2">
-                                    <FaPlusCircle />
-                                    Salva QSO
-                                  </span>
-                                )}
-                              </Button>
+                              {page === 0 ? (
+                                <Tooltip
+                                  content={
+                                    allPredataInserted
+                                      ? "Pagina successiva"
+                                      : "Completa tutti i campi per abilitare il pulsante"
+                                  }
+                                >
+                                  <Button
+                                    type="button"
+                                    disabled={disabled || !allPredataInserted}
+                                    onClick={() => setPage(1)}
+                                    size="lg"
+                                    color={
+                                      allPredataInserted ? "success" : "failure"
+                                    }
+                                    className="transition-colors"
+                                  >
+                                    Inserisci nominativo
+                                    <FaForward className="inline ml-2" />
+                                  </Button>
+                                </Tooltip>
+                              ) : (
+                                <Button
+                                  type="button"
+                                  disabled={disabled}
+                                  onClick={() => setPage(0)}
+                                  color="light"
+                                  className="mt-6"
+                                >
+                                  <FaBackward className="inline mr-2" />
+                                  Precedente
+                                </Button>
+                              )}
                             </div>
-                            <Alert color="gray">
-                              <span>
-                                <FaInfoCircle className="inline" /> I campi
-                                contrassegnati con * sono obbligatori
-                              </span>
-                            </Alert>
+
+                            {page === 0 ? (
+                              <Alert color="gray">
+                                <span>
+                                  <FaInfoCircle className="inline" /> I campi
+                                  contrassegnati con * sono obbligatori
+                                </span>
+                              </Alert>
+                            ) : (
+                              <div className="mt-8 flex flex-col justify-center gap-2 items-center">
+                                <h5 className="font-semibold text-sm uppercase text-gray-600 dark:text-gray-400">
+                                  Anteprima
+                                </h5>
+                                <Card className="w-full">
+                                  <div className="flex flex-col md:flex-row gap-4 items-start">
+                                    <div className="w-full">
+                                      <Label
+                                        htmlFor="callsign"
+                                        value="Nominativo"
+                                      />
+                                      <TextInput
+                                        disabled
+                                        id="callsign"
+                                        label="Nominativo"
+                                        minLength={1}
+                                        maxLength={10}
+                                        value={callsign}
+                                        className="font-semibold"
+                                      />
+                                    </div>
+                                    <div className="w-full">
+                                      {editTime ? (
+                                        <>
+                                          <div>
+                                            <Label
+                                              htmlFor="qsoDate"
+                                              value="Data QSO in UTC*"
+                                            />
+                                            <div className="flex gap-1 justify-center items-start">
+                                              <div className="w-full relative">
+                                                <TextInput
+                                                  disabled={disabled}
+                                                  id="qsoDate"
+                                                  label="Data"
+                                                  type="datetime-local"
+                                                  className="w-full"
+                                                  value={qsoDate}
+                                                  onChange={e =>
+                                                    setQsoDate(e.target.value)
+                                                  }
+                                                  required
+                                                  helperText={
+                                                    <>
+                                                      {format(
+                                                        new Date(qsoDate),
+                                                        "HH:mm"
+                                                      )}{" "}
+                                                      UTC
+                                                      {", "}
+                                                      {formatInTimeZone(
+                                                        zonedTimeToUtc(
+                                                          new Date(qsoDate),
+                                                          "UTC"
+                                                        ),
+                                                        "Europe/Rome",
+                                                        "HH:mm"
+                                                      )}{" "}
+                                                      Roma
+                                                    </>
+                                                  }
+                                                />
+                                              </div>
+                                              <div className="mt-1">
+                                                <Tooltip content="Imposta all'orario attuale">
+                                                  <Button
+                                                    color="light"
+                                                    // size="sm"
+                                                    className="h-max"
+                                                    onClick={resetDate}
+                                                  >
+                                                    <FaUndo />
+                                                  </Button>
+                                                </Tooltip>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Label
+                                            htmlFor="time"
+                                            value="Data QSO"
+                                          />
+
+                                          <TextInput
+                                            disabled
+                                            id="time"
+                                            label="Ora"
+                                            value={format(
+                                              new Date(qsoDate),
+                                              "yyyy-MM-dd HH:mm"
+                                            )}
+                                          />
+                                        </>
+                                      )}
+                                    </div>
+                                    <div className="w-full">
+                                      <Label
+                                        htmlFor="frequency"
+                                        value="Frequenza (in MHz)"
+                                      />
+                                      <TextInput
+                                        disabled
+                                        id="frequency"
+                                        label="Frequenza"
+                                        placeholder="144.205"
+                                        type="number"
+                                        onClick={() => setPage(0)}
+                                        value={frequency}
+                                      />
+                                    </div>
+                                    <div className="w-full">
+                                      <Label htmlFor="mode" value="Modo" />
+                                      <TextInput
+                                        disabled
+                                        id="mode"
+                                        label="Modo"
+                                        minLength={1}
+                                        maxLength={10}
+                                        onClick={() => setPage(0)}
+                                        value={mode}
+                                      />
+                                    </div>
+                                    <div className="w-full">
+                                      <Label
+                                        htmlFor="locator"
+                                        value="Locatore"
+                                      />
+                                      <TextInput
+                                        disabled
+                                        id="locator"
+                                        label="Locatore"
+                                        minLength={1}
+                                        maxLength={20}
+                                        onClick={() => setPage(0)}
+                                        value={locator}
+                                      />
+                                    </div>
+                                  </div>
+                                  <div
+                                    className={`w-full flex gap-2 ${
+                                      editTime ? "-mt-4" : ""
+                                    }`}
+                                  >
+                                    <Checkbox
+                                      id="editTime"
+                                      checked={editTime}
+                                      onChange={e =>
+                                        setEditTime(e.target.checked)
+                                      }
+                                      disabled={disabled}
+                                    />
+                                    <Label
+                                      htmlFor="editTime"
+                                      value="Modifica ora"
+                                    />
+                                  </div>
+                                </Card>
+                              </div>
+                            )}
                           </div>
                         </form>
                       </div>

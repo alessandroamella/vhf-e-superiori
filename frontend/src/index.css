@@ -175,4 +175,8 @@ nav ul {
     padding: revert!important;
     list-style: revert!important;
 }
-  
+
+div.input-large div input {
+    padding: 0.5rem!important;
+    background-color: white!important;
+}

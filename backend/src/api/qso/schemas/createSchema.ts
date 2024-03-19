@@ -12,9 +12,9 @@ const createSchema: Schema = {
         trim: { options: [] },
         isLength: { options: { min: 1, max: 10 } },
         toUpperCase: { options: [] },
-        isAlphanumeric: { options: [] },
-        errorMessage:
-            "Callsign must be between 1 and 10 alphanumeric characters"
+        // TODO add prefix and suffix support
+        // isAlphanumeric: { options: [] },
+        errorMessage: "Callsign must be between 1 and 10 characters"
     },
     email: {
         isString: { options: [] },

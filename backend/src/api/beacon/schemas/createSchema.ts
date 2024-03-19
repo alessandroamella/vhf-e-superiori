@@ -56,6 +56,26 @@ const createSchema: Schema = {
         isFloat: { options: [] },
         toFloat: { options: [] },
         errorMessage: "Power must be a number"
+    },
+    name: {
+        isString: { options: [] },
+        trim: { options: [] },
+        optional: true,
+        errorMessage: "Name must be a string"
+    },
+    lat: {
+        isNumeric: { options: [] },
+        isFloat: { options: [] },
+        toFloat: { options: [] },
+        optional: true,
+        errorMessage: "Latitude must be a number"
+    },
+    lon: {
+        isNumeric: { options: [] },
+        isFloat: { options: [] },
+        toFloat: { options: [] },
+        optional: true,
+        errorMessage: "Longitude must be a number"
     }
 };
 export default createSchema;

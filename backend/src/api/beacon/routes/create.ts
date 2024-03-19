@@ -12,7 +12,7 @@ const router = Router();
 
 /**
  * @openapi
- * /api/beacon/{id}:
+ * /api/beacon:
  *  post:
  *    summary: Creates a new beacon
  *    requestBody:
@@ -75,7 +75,9 @@ router.post(
                 antenna,
                 mode,
                 qtf,
-                power
+                power,
+                lat,
+                lon
             } = req.body;
 
             const existing = await Beacon.findOne({ callsign });
@@ -95,6 +97,8 @@ router.post(
                 mode,
                 qtf,
                 power,
+                lat,
+                lon,
                 editAuthor: user._id,
                 editDate: new Date(),
                 isVerified: user.isAdmin ? user._id : undefined

@@ -9,6 +9,7 @@ import moment from "moment";
 import { existsSync } from "fs";
 import { unlink } from "fs/promises";
 import { UserDoc } from "../auth/models";
+import { v4 as uuidv4 } from "uuid";
 
 class EqslPic {
     private href: string | null = null;
@@ -60,7 +61,7 @@ class EqslPic {
         _path: string = path.join(
             envs.BASE_TEMP_DIR,
             envs.QSL_CARD_TMP_FOLDER,
-            `eqsl-${moment().unix()}.png`
+            `eqsl-${moment().unix()}-${uuidv4()}.png`
         )
     ): Promise<string> {
         if (!this.image) {
@@ -207,7 +208,7 @@ class EqslPic {
 
         // save image to file
         const tempDir = path.join(envs.BASE_TEMP_DIR, envs.QSL_CARD_TMP_FOLDER);
-        const fileName = `eqsl-${stationId}-${moment().unix()}-aws.jpg`;
+        const fileName = `eqsl-${stationId}-${moment().unix()}-${uuidv4()}-aws.jpg`;
         const filePath = path.join(tempDir, fileName);
         await this.saveImageToFile(filePath);
 

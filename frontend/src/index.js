@@ -141,7 +141,8 @@ export const errors = {
   POST_IS_PROCESSING: "Il post è in fase di elaborazione",
   BEACON_EXISTS: "Beacon già esistente",
   INVALID_BEACON: "Beacon non valido",
-  BEACON_NOT_FOUND: "Beacon non trovato"
+  BEACON_NOT_FOUND: "Beacon non trovato",
+  NO_EMAIL_FOUND: "Nessuna email trovata"
 };
 
 export function getErrorStr(str) {

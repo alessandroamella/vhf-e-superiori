@@ -1,6 +1,10 @@
-import { modelOptions, prop, Ref } from "@typegoose/typegoose";
-import { UserClass } from "../../auth/models";
+import { DocumentType, modelOptions, prop, Ref } from "@typegoose/typegoose";
+import User, { UserClass } from "../../auth/models";
 import { EventClass } from "../../event/models";
+import sharp from "sharp";
+import EqslPic from "../../eqsl/eqsl";
+import { logger } from "../../../shared";
+import EmailService from "../../../email";
 
 /**
  * @swagger
@@ -68,6 +72,13 @@ import { EventClass } from "../../event/models";
  *            type: string
  *            format: date-time
  *            description: The date of the QSO
+ *          email:
+ *            type: string
+ *            description: The email of the station contacted
+ *          toStation:
+ *            type: string
+ *            format: ObjectId
+ *            description: The user who received the QSO
  *          emailSent:
  *            type: boolean
  *            description: Whether the email with the EQSL has been sent
@@ -107,6 +118,12 @@ export class QsoClass {
     @prop({ required: false })
     public locator?: string;
 
+    @prop({ required: false, ref: () => UserClass })
+    public toStation?: Ref<UserClass>;
+
+    @prop({ required: false })
+    public email?: string;
+
     @prop({ required: false })
     public toStationLat?: number;
 
@@ -139,4 +156,65 @@ export class QsoClass {
 
     @prop({ required: false })
     public notes?: string;
+
+    public async sendEqsl(
+        this: DocumentType<QsoClass>,
+        eventId: string,
+        eqslTemplateImgUrl: string,
+        eqslTemplateImgPath?: string
+    ): Promise<string> {
+        if (!this.email) {
+            throw new Error("No email found in sendEqsl for QSO " + this._id);
+        }
+
+        let eqslBuff: Buffer | null = null;
+
+        const fromStation = await User.findOne({
+            _id: this.fromStation
+        });
+        if (!fromStation) {
+            throw new Error(
+                "No fromStation found in sendEqsl for QSO " + this._id
+            );
+        }
+
+        if (!this.imageHref) {
+            if (!eqslTemplateImgPath) {
+                const eqslPic = new EqslPic(eqslTemplateImgUrl);
+                logger.debug(
+                    "Fetching eQSL template image for event " + eventId
+                );
+                await eqslPic.fetchImage();
+                const tempPath = await eqslPic.saveImageToFile();
+                eqslTemplateImgPath = tempPath;
+            }
+            if (!eqslTemplateImgPath) {
+                throw new Error(
+                    "No image file path found in sendEqsl for event " + eventId
+                );
+            }
+
+            const imgBuf = await sharp(eqslTemplateImgPath).toBuffer();
+            const eqslPic = new EqslPic(imgBuf);
+            logger.debug("Adding QSO info to image buffer for QSO " + this._id);
+            await eqslPic.addQsoInfo(this, fromStation, eqslTemplateImgPath);
+            const href = await eqslPic.uploadImage(fromStation._id.toString());
+            this.imageHref = href;
+            logger.info(`Uploaded eQSL image to ${href} for QSO ${this._id}`);
+            await this.save();
+            eqslBuff = eqslPic.getImage();
+        }
+
+        await EmailService.sendEqslEmail(
+            this,
+            fromStation,
+            this.email,
+            eqslBuff ?? undefined
+        );
+        this.emailSent = true;
+        this.emailSentDate = new Date();
+        await this.save();
+
+        return this.imageHref;
+    }
 }

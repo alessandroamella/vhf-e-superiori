@@ -7,6 +7,9 @@ import { createError, validate } from "../../helpers";
 import EqslPic from "../eqsl";
 import User, { UserDoc } from "../../auth/models";
 import isLoggedIn from "../../middlewares/isLoggedIn";
+import JoinRequest from "../../joinRequest/models";
+import moment from "moment";
+import { isDocument } from "@typegoose/typegoose";
 import { Qso } from "../../qso/models";
 import isAdmin from "../../middlewares/isAdmin";
 
@@ -14,21 +17,21 @@ const router = Router();
 
 /**
  * @openapi
- * /api/eqsl/preview:
+ * /api/eqsl:
  *  post:
- *    summary: (Forcibly) create a new eQSL image, will use boilerplate data on top of href image
+ *    summary: (Forcibly) create a new eQSL image
  *    requestBody:
  *      required: true
  *      content:
  *        application/json:
  *          schema:
  *            type: object
- *            properties:
- *              href:
- *                type: string
- *                format: uri
  *            required:
- *              - href
+ *              - qso
+ *            properties:
+ *              qso:
+ *                type: string
+ *                format: ObjectId
  *    tags:
  *      - eqsl
  *    responses:
@@ -43,7 +46,7 @@ const router = Router();
  *                  type: string
  *                  format: uri
  *      '401':
- *        description: Not an admin
+ *        description: Not authorized to create eQSL
  *        content:
  *          application/json:
  *            schema:
@@ -58,8 +61,8 @@ const router = Router();
 router.post(
     "/",
     isLoggedIn,
-    isAdmin,
-    body("href").isURL(),
+    isAdmin, // TODO refactor
+    body("qso").isMongoId(),
     validate,
     async (req: Request, res: Response) => {
         try {
@@ -74,41 +77,59 @@ router.post(
                 throw new Error("User not found in eqsl create");
             }
 
-            if (!user.city || !user.province) {
-                logger.debug("User has no city or province");
+            const qso = await Qso.findOne({ _id: req.body.qso });
+            if (!qso) {
                 return res
                     .status(BAD_REQUEST)
-                    .json(createError(Errors.INVALID_LOCATION));
+                    .json(createError(Errors.QSO_NOT_FOUND));
             }
 
-            const qso = new Qso({
-                // test data
-                callsign: "IU4QSG",
-                qsoDate: new Date(),
-                frequency: 123.123,
-                emailSent: false,
-                fromStation: user,
-                mode: "SSB",
-                event: "60b3e3e3e4b0e3e3e4b0e3e3", // test data, it doesn't matter
-                fromStationCity: user.city || "Bologna",
-                fromStationProvince: user.province || "BO",
-                fromStationLat: user.lat || 44.4949,
-                fromStationLon: user.lon || 11.3426,
-                imageHref: req.body.href
-            });
-            const eqslPic = new EqslPic(req.body.href);
+            // TODO refactor
+            const joinRequest = await JoinRequest.findOne({
+                fromUser: (req.user as unknown as UserDoc)._id,
+                forEvent: qso.event,
+                isApproved: true
+            }).populate("forEvent");
+            if (!joinRequest) {
+                logger.debug("Join request not found");
+                return res
+                    .status(401)
+                    .json(createError(Errors.NOT_AUTHORIZED_TO_EQSL));
+            }
+            if (!isDocument(joinRequest.forEvent)) {
+                throw new Error("Join request forEvent not populated");
+            }
+
+            if (
+                !user.isAdmin &&
+                moment().subtract(1, "days").isAfter(joinRequest.forEvent.date)
+            ) {
+                logger.debug(
+                    "User is not admin and event is over 1 day in the past"
+                );
+                return res
+                    .status(401)
+                    .json(createError(Errors.NOT_AUTHORIZED_TO_EQSL));
+            }
+
+            if (!joinRequest.forEvent.eqslUrl) {
+                logger.debug("Event has no eQSL URL");
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.NO_IMAGE_TO_EQSL));
+            }
+            const eqslPic = new EqslPic(joinRequest.forEvent.eqslUrl);
 
             await eqslPic.fetchImage();
             await eqslPic.addQsoInfo(qso, user);
             const href = await eqslPic.uploadImage(
                 (req.user as unknown as UserDoc)._id.toString(),
-                false,
                 true
             );
 
             res.status(200).json({ href });
         } catch (err) {
-            logger.error("Error creating eQSL in eQSL preview");
+            logger.error("Error creating eQSL in eQSL create");
             logger.error(err);
             res.status(INTERNAL_SERVER_ERROR).json(
                 createError(Errors.ERROR_CREATING_IMAGE)
