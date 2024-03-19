@@ -97,9 +97,9 @@ class EqslPic {
 
         const text2 = `Data:${moment(qso.qsoDate).format(
             "DD-MM-YYYY"
-        )} ora:${moment(qso.qsoDate).format("HH:mm")} modo:${qso.mode} freq:${
-            qso.frequency
-        }`.toUpperCase();
+        )} ora:${moment(qso.qsoDate).format("HH:mm")}UTC modo:${
+            qso.mode
+        } freq:${qso.frequency}`.toUpperCase();
 
         // offset2 should be height / 2.35
         const { height } = await sharp(filePath).metadata();
