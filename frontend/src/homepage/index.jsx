@@ -15,7 +15,8 @@ import {
   isAfter,
   isBefore,
   addDays,
-  addHours
+  addHours,
+  differenceInSeconds
 } from "date-fns";
 import { it } from "date-fns/locale";
 import {
@@ -164,34 +165,34 @@ const Homepage = () => {
     const _events = [...events].filter(
       e =>
         isAfter(new Date(e.date), addDays(now, -25)) &&
-        isBefore(new Date(e.date), addDays(now, 10))
+        isBefore(new Date(e.date), addDays(now, 25))
     );
     _events.sort(
       (a, b) =>
-        differenceInDays(now, new Date(b.date)) -
-        differenceInDays(now, new Date(a.date))
+        differenceInSeconds(now, new Date(b.date)) -
+        differenceInSeconds(now, new Date(a.date))
     );
-    const e = _events[0];
-    if (!e) return null;
 
-    console.log("event to show", e);
-
-    try {
-      const { data } = await axios.get("/api/joinrequest/event/" + e._id);
-      if (!data?.isApproved) {
-        throw new Error("join request not found or approved");
+    for (const e of _events) {
+      console.log("event to try to show", e);
+      try {
+        const { data } = await axios.get("/api/joinrequest/event/" + e._id);
+        if (!data?.isApproved) {
+          console.log("join request to show not found or not approved", data);
+          continue;
+        }
+        console.log("join request to show found", data);
+        // here means user has join request approved
+        return e;
+      } catch (err) {
+        console.log(
+          "join request error",
+          getErrorStr(err?.response?.data?.err || err?.response?.data || err)
+        );
       }
-      console.log("join request found", data);
-    } catch (err) {
-      console.log(
-        "join request error",
-        getErrorStr(err?.response?.data?.err || err?.response?.data || err)
-      );
-      return null;
     }
 
-    // here means user has join request approved
-    return e;
+    return null;
   }, [events, user]);
 
   const _rankingsEvent = useCallback(async () => {
