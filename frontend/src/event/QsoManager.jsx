@@ -39,7 +39,6 @@ import {
 import {
   FaBackward,
   FaCheck,
-  FaCross,
   FaDatabase,
   FaEnvelope,
   FaExternalLinkAlt,
@@ -47,6 +46,7 @@ import {
   FaInfoCircle,
   FaPlusCircle,
   FaShare,
+  FaTimes,
   FaUndo
 } from "react-icons/fa";
 import { useCookies } from "react-cookie";
@@ -522,13 +522,13 @@ const QsoManager = () => {
         msg: "eQSL inviata con successo"
       });
     } catch (err) {
+      eqslSending.set(q._id, "failed");
       console.log(err?.response?.data || err);
       setAlert({
         color: "failure",
         msg: getErrorStr(err?.response?.data?.err)
       });
     } finally {
-      eqslSending.set(q._id, "failed");
       setTimeout(() => {
         eqslSending.delete(q._id);
       }, 3000);
@@ -912,7 +912,7 @@ const QsoManager = () => {
                                                 <FaCheck />
                                               ) : eqslSending.get(q._id) ===
                                                 "failed" ? (
-                                                <FaCross />
+                                                <FaTimes />
                                               ) : (
                                                 <FaEnvelope />
                                               )}
