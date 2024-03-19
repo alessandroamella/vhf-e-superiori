@@ -1088,7 +1088,7 @@ const QsoManager = () => {
                                 <div>
                                   <Label
                                     htmlFor="frequency"
-                                    value="Frequenza (in MHz)*"
+                                    value="Frequenza (in MHz)"
                                   />
                                   <TextInput
                                     color={frequency ? "success" : "warning"}
@@ -1111,7 +1111,7 @@ const QsoManager = () => {
                                 <div>
                                   <Label
                                     htmlFor="mode"
-                                    value="Modo (CW, SSB, FT8, ecc.)*"
+                                    value="Modo (CW, SSB, FT8, ecc.)"
                                   />
                                   <TextInput
                                     color={mode ? "success" : "warning"}
@@ -1215,7 +1215,7 @@ const QsoManager = () => {
                                   content={
                                     allPredataInserted
                                       ? "Pagina successiva"
-                                      : "Completa tutti i campi per abilitare il pulsante"
+                                      : "Completa tutti i campi per procedere"
                                   }
                                 >
                                   <Button
@@ -1246,14 +1246,7 @@ const QsoManager = () => {
                               )}
                             </div>
 
-                            {page === 0 ? (
-                              <Alert color="gray">
-                                <span>
-                                  <FaInfoCircle className="inline" /> I campi
-                                  contrassegnati con * sono obbligatori
-                                </span>
-                              </Alert>
-                            ) : (
+                            {page === 1 && (
                               <div className="mt-8 flex flex-col justify-center gap-2 items-center">
                                 <h5 className="font-semibold text-sm uppercase text-gray-600 dark:text-gray-400">
                                   Riepilogo
