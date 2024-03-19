@@ -39,6 +39,7 @@ import {
 import {
   FaBackward,
   FaCheck,
+  FaCross,
   FaDatabase,
   FaEnvelope,
   FaExternalLinkAlt,
@@ -515,6 +516,7 @@ const QsoManager = () => {
             : qso
         )
       );
+      eqslSending.set(q._id, "ok");
       setAlert({
         color: "success",
         msg: "eQSL inviata con successo"
@@ -526,8 +528,7 @@ const QsoManager = () => {
         msg: getErrorStr(err?.response?.data?.err)
       });
     } finally {
-      eqslSending.set(q._id, "ok");
-
+      eqslSending.set(q._id, "failed");
       setTimeout(() => {
         eqslSending.delete(q._id);
       }, 3000);
@@ -865,6 +866,9 @@ const QsoManager = () => {
                                             color={
                                               eqslSending.get(q._id) === "ok"
                                                 ? "success"
+                                                : eqslSending.get(q._id) ===
+                                                  "failed"
+                                                ? "failure"
                                                 : q.emailSent
                                                 ? "light"
                                                 : "info"
@@ -892,6 +896,9 @@ const QsoManager = () => {
                                                   : eqslSending.get(q._id) ===
                                                     "ok"
                                                   ? "Email inviata con successo!"
+                                                  : eqslSending.get(q._id) ===
+                                                    "failed"
+                                                  ? "Errore nell'invio, riprova"
                                                   : q.emailSent
                                                   ? "⚠️ eQSL già inviata, usa per reinviarla"
                                                   : "Usa il pulsante per forzare l'invio"
@@ -903,6 +910,9 @@ const QsoManager = () => {
                                               ) : eqslSending.get(q._id) ===
                                                 "ok" ? (
                                                 <FaCheck />
+                                              ) : eqslSending.get(q._id) ===
+                                                "failed" ? (
+                                                <FaCross />
                                               ) : (
                                                 <FaEnvelope />
                                               )}
