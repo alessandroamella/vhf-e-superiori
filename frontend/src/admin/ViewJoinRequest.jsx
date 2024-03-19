@@ -36,10 +36,14 @@ const ViewJoinRequest = ({
     try {
       await axios.post("/api/joinrequest/" + j._id);
       console.log("approved joinRequest", j);
-      setJoinRequests([
+      const _joinRequests = [
         ...joinRequests.filter(_j => _j._id !== j._id),
         { ...j, isApproved: !j.isApproved, updatedAt: new Date() }
-      ]);
+      ];
+      _joinRequests.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setJoinRequests(_joinRequests);
     } catch (err) {
       console.log(err.response.data);
       setAlert({
