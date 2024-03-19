@@ -155,9 +155,9 @@ const ViewJoinRequest = ({
               </Table.Cell>
               <Table.Cell className="dark:text-gray-300">
                 {formatInTimeZone(
-                  new Date(j.updatedAt),
+                  new Date(j.createdAt),
                   "Europe/Rome",
-                  "d MMM HH:mm",
+                  "d MMM yyyy HH:mm",
                   {
                     locale: it
                   }

@@ -53,7 +53,10 @@ router.get(
             const joinRequests = await JoinRequest.find({
                 forEvent: req.params.id
             })
-                .populate({ path: "fromUser", select: "callsign name" })
+                .populate({
+                    path: "fromUser",
+                    select: "callsign name email phoneNumber"
+                })
                 .sort({ createdAt: -1 });
             res.json(joinRequests);
         } catch (err) {

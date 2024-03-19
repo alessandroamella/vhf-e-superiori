@@ -6,6 +6,7 @@ import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
 import User, { UserDoc } from "../models";
 import EmailService from "../../../email";
+import { parsePhoneNumber } from "libphonenumber-js";
 
 passport.use(
     "signup",
@@ -21,9 +22,11 @@ passport.use(
                 const callsign = (req.body.callsign as string)
                     .trim()
                     .toUpperCase();
-                const phoneNumber = (req.body.phoneNumber as string)
-                    .trim()
-                    .toUpperCase();
+                const phoneNumber = parsePhoneNumber(
+                    req.body.phoneNumber as string,
+                    "IT"
+                ).formatInternational();
+
                 logger.info("Signing up " + callsign + " with email " + email);
                 logger.debug(
                     "Checking if callsign " +

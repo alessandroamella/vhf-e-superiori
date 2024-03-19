@@ -58,9 +58,6 @@ import { modelOptions, prop, Severity } from "@typegoose/typegoose";
  *              power:
  *                type: number
  *                description: Power in watts
- *              name:
- *                type: string
- *                description: Name of the beacon (optional)
  *              lat:
  *                type: number
  *                description: Latitude (optional)

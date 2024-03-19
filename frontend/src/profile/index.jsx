@@ -1,6 +1,6 @@
 import Layout from "../Layout";
 import { Typography } from "@material-tailwind/react";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { EventsContext, getErrorStr, UserContext } from "..";
 import {
   Alert,
@@ -10,12 +10,18 @@ import {
   ListGroup,
   Modal,
   Spinner,
-  TextInput
+  TextInput,
+  Tooltip
 } from "flowbite-react";
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
-import { createSearchParams, Link, useNavigate } from "react-router-dom";
+import {
+  createSearchParams,
+  Link,
+  useNavigate,
+  useSearchParams
+} from "react-router-dom";
 import { isAfter } from "date-fns/esm";
 import { it, itCH } from "date-fns/locale";
 import {
@@ -56,6 +62,23 @@ const Profile = () => {
   const [lat, setLat] = useState("");
   const [lon, setLon] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const forceEditCity = searchParams.has("forceEditCity");
+
+  const addressInputRef = useRef(null);
+
+  useEffect(() => {
+    if (!user || !forceEditCity) return;
+    setIsEditing(true);
+    searchParams.delete("forceEditCity");
+    setSearchParams(searchParams);
+
+    // focus on address input
+    setTimeout(() => {
+      addressInputRef.current?.focus();
+    }, 100);
+  }, [user, forceEditCity, searchParams, setSearchParams]);
 
   useEffect(() => {
     if (!user) return;
@@ -429,7 +452,7 @@ const Profile = () => {
                         value={name}
                         onChange={e => setName(e.target.value)}
                         disabled={!user}
-                        autoFocus
+                        autoFocus={!forceEditCity}
                       />
                     ) : (
                       <Typography variant="paragraph" className="ml-2 mb-2">
@@ -537,6 +560,7 @@ const Profile = () => {
                         onBlur={() => setAddressInput(address)}
                         disabled={!user}
                         helperText="Inserisci la tua città di residenza (opzionale)"
+                        ref={addressInputRef}
                       />
                     ) : user?.address ? (
                       <div>
@@ -555,13 +579,15 @@ const Profile = () => {
                   <div className="flex mb-2">
                     {isEditing ? (
                       <>
-                        <Button
-                          color="gray"
-                          type="button"
-                          onClick={() => setIsEditing(false)}
-                        >
-                          Chiudi modifica
-                        </Button>
+                        <Tooltip content="Eventuali modifiche verranno salvate solo dopo aver cliccato su 'Salva dati'">
+                          <Button
+                            color="gray"
+                            type="button"
+                            onClick={() => setIsEditing(false)}
+                          >
+                            Chiudi modifica
+                          </Button>
+                        </Tooltip>
                         <Button
                           type="submit"
                           disabled={!user || changeDataBtnDisabled}

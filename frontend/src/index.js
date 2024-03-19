@@ -72,7 +72,8 @@ export const errors = {
   LOGIN_TOKEN_EXPIRED: "Login scaduto",
   UNKNOWN_ERROR: "Errore sconosciuto",
   MISSING_ENV: "Variabile d'ambiente mancante (server)",
-  ALREADY_REGISTERED: "Utente già registrato (fai il login)",
+  ALREADY_REGISTERED:
+    "Un utente con questo nominativo / email / telefono esiste già, per favore fai il login",
   INVALID_LOCATION: "Posizione non valida",
   QRZ_NO_KEY: "Chiave di QRZ non trovata (server)",
   QRZ_OM_NOT_FOUND: "Utente non trovato su QRZ",

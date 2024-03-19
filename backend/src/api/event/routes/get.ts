@@ -2,10 +2,12 @@ import { Request, Response, Router } from "express";
 import EventModel from "../models";
 import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
-import { INTERNAL_SERVER_ERROR } from "http-status";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { param } from "express-validator";
-import JoinRequest from "../../joinRequest/models";
+import JoinRequest, { JoinRequestClass } from "../../joinRequest/models";
 import { UserDoc } from "../../auth/models";
+import { Errors } from "../../errors";
+import { FilterQuery } from "mongoose";
 
 const router = Router();
 
@@ -39,21 +41,26 @@ router.get(
             const event = await EventModel.findOne({ _id: req.params._id })
                 .sort({ date: 1 })
                 .lean();
-            const joinRequests = await JoinRequest.find(
-                {
-                    forEvent: req.params._id,
-                    isApproved: (req.user as unknown as UserDoc)?.isAdmin
-                        ? undefined
-                        : true
-                },
-                {
-                    fromUser: 1,
-                    isApproved: 1
-                }
-            ).populate({
-                path: "fromUser",
-                select: "callsign"
-            });
+            if (!event) {
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.EVENT_NOT_FOUND));
+            }
+            const q: FilterQuery<JoinRequestClass> = {
+                forEvent: event._id
+            };
+            if (!(req.user as unknown as UserDoc)?.isAdmin) {
+                q.isApproved = true;
+            }
+            const joinRequests = await JoinRequest.find(q, {
+                fromUser: 1,
+                isApproved: 1
+            })
+                .populate({
+                    path: "fromUser",
+                    select: "callsign"
+                })
+                .lean();
             res.json({ ...event, joinRequests });
         } catch (err) {
             logger.error("Error while finding events");

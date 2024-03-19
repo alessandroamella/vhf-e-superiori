@@ -32,7 +32,9 @@ import {
   FaUndo,
   FaExternalLinkAlt,
   FaClipboardCheck,
-  FaClipboard
+  FaClipboard,
+  FaUnlink,
+  FaUserPlus
 } from "react-icons/fa";
 import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import { Navigation, Pagination as SwiperPagination } from "swiper";
@@ -460,6 +462,11 @@ const AdminManager = () => {
 
   const [hidePastEvents, setHidePastEvents] = useState(false);
 
+  useEffect(() => {
+    if (!hidePastEvents) return;
+    setEventPage(1);
+  }, [hidePastEvents]);
+
   const [copiedError, setCopiedError] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -877,13 +884,12 @@ const AdminManager = () => {
                   <div>
                     <Table striped>
                       <Table.Head>
-                        <Table.HeadCell>callsign</Table.HeadCell>
-                        <Table.HeadCell>name</Table.HeadCell>
-                        <Table.HeadCell>email</Table.HeadCell>
-                        <Table.HeadCell>phoneNumber</Table.HeadCell>
-                        <Table.HeadCell>createdAt</Table.HeadCell>
-                        <Table.HeadCell>isAdmin</Table.HeadCell>
-                        <Table.HeadCell>joinRequests</Table.HeadCell>
+                        <Table.HeadCell>Nominativo</Table.HeadCell>
+                        <Table.HeadCell>Nome</Table.HeadCell>
+                        <Table.HeadCell>Email</Table.HeadCell>
+                        <Table.HeadCell>Telefono</Table.HeadCell>
+                        <Table.HeadCell>Creazione</Table.HeadCell>
+                        <Table.HeadCell>Richieste</Table.HeadCell>
                       </Table.Head>
                       <Table.Body>
                         {users?.map(u => (
@@ -891,21 +897,38 @@ const AdminManager = () => {
                             <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                               {u.callsign}
                             </Table.Cell>
-                            <Table.Cell>{u.name}</Table.Cell>
-                            <Table.Cell>{u.email}</Table.Cell>
-                            <Table.Cell>{u.phoneNumber}</Table.Cell>
+                            <Table.Cell
+                              className={`${u.isAdmin ? "font-bold" : ""}`}
+                            >
+                              {u.isAdmin ? (
+                                <Tooltip content="Amministratore">
+                                  {u.name}
+                                </Tooltip>
+                              ) : (
+                                <span>{u.name}</span>
+                              )}
+                            </Table.Cell>
+                            <Table.Cell>
+                              <a
+                                href={"mailto:" + u.email}
+                                className="text-red-500 hover:text-red-600 transition-colors"
+                              >
+                                {u.email}
+                              </a>
+                            </Table.Cell>
+                            <Table.Cell>
+                              <a
+                                href={"tel:" + u.phoneNumber}
+                                className="text-red-500 hover:text-red-600 transition-colors"
+                              >
+                                {u.phoneNumber}
+                              </a>
+                            </Table.Cell>
                             <Table.Cell>
                               {formatInTimeZone(
                                 u.createdAt,
                                 "Europe/Rome",
-                                "yyyy-MM-dd HH:mm:ss"
-                              )}
-                            </Table.Cell>
-                            <Table.Cell>
-                              {u.isAdmin ? (
-                                <FaCheck className="text-green-500" />
-                              ) : (
-                                <FaTimes className="text-red-600" />
+                                "dd/MM/yyyy "
                               )}
                             </Table.Cell>
                             <Table.Cell>
@@ -948,11 +971,11 @@ const AdminManager = () => {
                     <Table striped>
                       <Table.Head>
                         <Table.HeadCell>Azioni</Table.HeadCell>
-                        <Table.HeadCell>fromUser</Table.HeadCell>
-                        <Table.HeadCell>description</Table.HeadCell>
-                        <Table.HeadCell>pictures</Table.HeadCell>
-                        <Table.HeadCell>videos</Table.HeadCell>
-                        <Table.HeadCell>createdAt</Table.HeadCell>
+                        <Table.HeadCell>Autore</Table.HeadCell>
+                        <Table.HeadCell>Descrizione</Table.HeadCell>
+                        <Table.HeadCell>Foto</Table.HeadCell>
+                        <Table.HeadCell>Video</Table.HeadCell>
+                        <Table.HeadCell>Creazione</Table.HeadCell>
                       </Table.Head>
                       <Table.Body>
                         {posts?.slice(...postsInterval)?.map(u => (
@@ -1033,7 +1056,7 @@ const AdminManager = () => {
                               {formatInTimeZone(
                                 u.createdAt,
                                 "Europe/Rome",
-                                "yyyy-MM-dd HH:mm:ss"
+                                "dd/MM/yyyy HH:mm:ss"
                               )}
                             </Table.Cell>
                           </Table.Row>

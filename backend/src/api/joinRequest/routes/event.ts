@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
-import { INTERNAL_SERVER_ERROR, NOT_FOUND } from "http-status";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import JoinRequest from "../models";
 import { UserDoc } from "../../auth/models";
 import { param } from "express-validator";
@@ -31,14 +31,14 @@ const router = Router();
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/JoinRequest'
- *      '401':
- *        description: Not logged in
+ *      '400':
+ *        description: Invalid ObjectId or joinRequest not found
  *        content:
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
- *      '404':
- *        description: Not found
+ *      '401':
+ *        description: Not logged in
  *        content:
  *          application/json:
  *            schema:
@@ -51,8 +51,8 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get(
-    "/:id",
-    param("id").isMongoId(),
+    "/:_id",
+    param("_id").isMongoId(),
     validate,
     async (req: Request, res: Response) => {
         if (!req.user) {
@@ -61,14 +61,14 @@ router.get(
         try {
             const joinRequest = await JoinRequest.findOne(
                 {
-                    forEvent: req.params.id,
+                    forEvent: req.params._id,
                     fromUser: (req.user as unknown as UserDoc)._id
                 },
                 { fromUser: 0 }
             );
             if (!joinRequest) {
                 return res
-                    .status(NOT_FOUND)
+                    .status(BAD_REQUEST)
                     .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
             }
             res.json(joinRequest);

@@ -149,6 +149,21 @@ const QsoManager = () => {
       });
       return;
     } else if (user && event && !isEventStation) {
+      console.log(
+        "not event station",
+        user,
+        event,
+        isEventStation,
+        "f",
+        !!event,
+        !!user,
+        Array.isArray(event.joinRequests) &&
+          event.joinRequests
+            ?.filter(e => e.isApproved)
+            ?.map(e => e.fromUser.callsign)
+            ?.includes(user.callsign),
+        event.joinRequests
+      );
       if (user.isAdmin) {
         setAlert({
           color: "info",
@@ -261,7 +276,7 @@ const QsoManager = () => {
         mode,
         qsoDate: zonedTimeToUtc(new Date(qsoDate), "UTC"),
         locator,
-        rst
+        rst: isNaN(parseInt(rst)) ? undefined : parseInt(rst)
         // emailSent,
         // emailSentDate,
         // notes,
@@ -840,7 +855,7 @@ const QsoManager = () => {
                             clicca qui
                           </Link>{" "}
                           per navigare al tuo profilo, poi clicca su "Modifica
-                          profilo" e completa l'indirizzo
+                          profilo" e completa l'indirizzo.
                         </span>
                       </Alert>
                     ) : (
@@ -853,18 +868,20 @@ const QsoManager = () => {
                           >
                             <span>
                               ⚠️ La tua città è attualmente impostata a{" "}
-                              <span className="font-bold">{user.city}</span> con
-                              codice di provincia{" "}
+                              <span className="font-bold">{user.city}</span> (
                               <span className="font-bold">{user.province}</span>
-                              , assicurati che sia corretta. In caso contrario,{" "}
+                              ), assicurati che sia corretta. In caso contrario,{" "}
                               <Link
-                                to="/profile"
+                                to="/profile?forceEditCity=true"
                                 className="underline font-bold"
                               >
                                 clicca qui
                               </Link>{" "}
-                              per navigare al tuo profilo, poi clicca su
-                              "Modifica profilo" e modifica la città
+                              per navigare al tuo profilo, poi clicca su "
+                              <span className="font-medium">
+                                Modifica profilo
+                              </span>
+                              " e modifica la città.
                             </span>
                           </Alert>
                         )}
@@ -912,6 +929,28 @@ const QsoManager = () => {
                               </div>
                             )}
 
+                            <div>
+                              <Label htmlFor="callsign" value="Nominativo*" />
+                              <TextInput
+                                disabled={disabled}
+                                id="callsign"
+                                label="Nominativo"
+                                minLength={1}
+                                maxLength={10}
+                                ref={callsignRef}
+                                placeholder={user ? user.callsign : "IU4QSG"}
+                                value={callsign}
+                                className="uppercase"
+                                onChange={e => {
+                                  setCallsign(e.target.value);
+                                  setCookie("callsign", e.target.value, {
+                                    path: "/qsomanager",
+                                    maxAge: 60 * 60 * 4
+                                  });
+                                }}
+                                required
+                              />
+                            </div>
                             <div>
                               <Label
                                 htmlFor="frequency"
@@ -962,7 +1001,7 @@ const QsoManager = () => {
                                 htmlFor="qsoDate"
                                 value="Data QSO in UTC*"
                               />
-                              <div className="flex gap-1 justify-center items-center">
+                              <div className="flex gap-1 justify-center items-start">
                                 <div className="w-full relative">
                                   <TextInput
                                     disabled={disabled}
@@ -990,37 +1029,19 @@ const QsoManager = () => {
                                     }
                                   />
                                 </div>
-                                <Button
-                                  color="light"
-                                  // size="sm"
-                                  className="h-max"
-                                  onClick={resetDate}
-                                >
-                                  <FaSync />
-                                </Button>
+                                <div className="mt-1">
+                                  <Tooltip content="Imposta all'orario attuale">
+                                    <Button
+                                      color="light"
+                                      // size="sm"
+                                      className="h-max"
+                                      onClick={resetDate}
+                                    >
+                                      <FaSync />
+                                    </Button>
+                                  </Tooltip>
+                                </div>
                               </div>
-                            </div>
-                            <div>
-                              <Label htmlFor="callsign" value="Nominativo*" />
-                              <TextInput
-                                disabled={disabled}
-                                id="callsign"
-                                label="Nominativo"
-                                minLength={1}
-                                maxLength={10}
-                                ref={callsignRef}
-                                placeholder={user ? user.callsign : "IU4QSG"}
-                                value={callsign}
-                                className="uppercase"
-                                onChange={e => {
-                                  setCallsign(e.target.value);
-                                  setCookie("callsign", e.target.value, {
-                                    path: "/qsomanager",
-                                    maxAge: 60 * 60 * 4
-                                  });
-                                }}
-                                required
-                              />
                             </div>
                             <div>
                               <Label htmlFor="locator" value="Locatore" />

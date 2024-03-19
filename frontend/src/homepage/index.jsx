@@ -15,8 +15,7 @@ import {
   isAfter,
   isBefore,
   addDays,
-  addHours,
-  differenceInSeconds
+  addHours
 } from "date-fns";
 import { it } from "date-fns/locale";
 import {
@@ -167,11 +166,10 @@ const Homepage = () => {
         isAfter(new Date(e.date), addDays(now, -25)) &&
         isBefore(new Date(e.date), addDays(now, 25))
     );
-    _events.sort(
-      (a, b) =>
-        differenceInSeconds(now, new Date(b.date)) -
-        differenceInSeconds(now, new Date(a.date))
-    );
+    // sort from most future to most past
+    _events.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    console.log("events possibly to show", _events);
 
     for (const e of _events) {
       console.log("event to try to show", e);
@@ -627,11 +625,19 @@ const Homepage = () => {
                           </p>
 
                           {stationEventToShow.logoUrl && (
-                            <LazyLoadImage
-                              src={stationEventToShow.logoUrl}
-                              alt={`Stazione attivatrice per ${stationEventToShow.name}`}
-                              className="w-full mx-auto mb-2 object-contain max-h-48"
-                            />
+                            <Link
+                              to={"/qsomanager/" + stationEventToShow._id}
+                              className="underline decoration-dotted hover:text-black transition-colors"
+                            >
+                              <LazyLoadImage
+                                src={
+                                  stationEventToShow.eqslUrl ||
+                                  stationEventToShow.logoUrl
+                                }
+                                alt={`Stazione attivatrice per ${stationEventToShow.name}`}
+                                className={`w-full mx-auto mb-2 object-contain max-h-48 transition-all duration-300 drop-shadow hover:drop-shadow-xl`}
+                              />
+                            </Link>
                           )}
                           <h2 className="text-2xl font-bold">
                             {stationEventToShow.name}
