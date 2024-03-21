@@ -135,7 +135,7 @@ const BeaconHomepage = () => {
                           </Table.Cell>
                           <Table.Cell>{beacon.properties?.name}</Table.Cell>
                           <Table.Cell>
-                            {beacon.properties?.frequency}
+                            {beacon.properties?.frequency} MHz
                           </Table.Cell>
                           <Table.Cell>{beacon.properties?.qthStr}</Table.Cell>
                           <Table.Cell>{beacon.properties?.locator}</Table.Cell>
@@ -143,7 +143,7 @@ const BeaconHomepage = () => {
                           <Table.Cell>{beacon.properties?.antenna}</Table.Cell>
                           <Table.Cell>{beacon.properties?.mode}</Table.Cell>
                           <Table.Cell>{beacon.properties?.qtf}</Table.Cell>
-                          <Table.Cell>{beacon.properties?.power}</Table.Cell>
+                          <Table.Cell>{beacon.properties?.power}W</Table.Cell>
                           <Table.Cell>
                             <div className="flex flex-row gap-1">
                               <Link to={`/beacon/editor?id=${beacon._id}`}>
