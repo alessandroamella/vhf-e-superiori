@@ -11,12 +11,13 @@ import { ParsedAdif } from "../interfaces";
 import { Qso } from "../../qso/models";
 import moment from "moment";
 import Event from "../../event/models";
-import JoinRequest from "../../joinRequest/models";
+import JoinRequest, { JoinRequestClass } from "../../joinRequest/models";
 import User, { UserDoc } from "../../auth/models";
 import { googleMaps } from "../../maps";
 import { readFile, unlink, writeFile } from "fs/promises";
 import path from "path";
 import { envs } from "../../../shared";
+import { FilterQuery } from "mongoose";
 
 const router = Router();
 
@@ -132,10 +133,13 @@ router.post(
                 .json(createError(Errors.EVENT_NOT_FOUND));
         }
 
-        const joinRequest = await JoinRequest.findOne({
-            forEvent: event._id,
-            fromUser: user.isAdmin ? undefined : user._id
-        });
+        const q: FilterQuery<JoinRequestClass> = {
+            forEvent: event._id
+        };
+        if (!user.isAdmin) {
+            q.fromUser = user._id;
+        }
+        const joinRequest = await JoinRequest.findOne(q);
         if (!joinRequest) {
             return res
                 .status(BAD_REQUEST)
@@ -293,10 +297,13 @@ router.get(
                 .json(createError(Errors.EVENT_NOT_FOUND));
         }
 
-        const joinRequest = await JoinRequest.findOne({
-            forEvent: event._id,
-            fromUser: user.isAdmin ? undefined : user._id
-        });
+        const q: FilterQuery<JoinRequestClass> = {
+            forEvent: event._id
+        };
+        if (!user.isAdmin) {
+            q.fromUser = user._id;
+        }
+        const joinRequest = await JoinRequest.findOne(q);
 
         if (!joinRequest) {
             return res
