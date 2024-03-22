@@ -1,15 +1,74 @@
 import axios from "axios";
 import { Alert, Button, Label, TextInput } from "flowbite-react";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
+import "leaflet/dist/leaflet.css";
 import React, { useContext, useEffect, useState } from "react";
+import L from "leaflet";
 import { UserContext, getErrorStr } from "..";
 import Layout from "../Layout";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { FaBackward } from "react-icons/fa";
+import {
+  Link,
+  createSearchParams,
+  useNavigate,
+  useSearchParams
+} from "react-router-dom";
+import { FaBackward, FaMapMarkerAlt } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMapEvents
+} from "react-leaflet";
+import { Helmet } from "react-helmet";
+
+const MyMarker = ({
+  showPos,
+  setShowPos,
+  lat,
+  setLat,
+  lon,
+  setLon,
+  fly,
+  updateFn
+}) => {
+  const icon = L.icon({
+    iconSize: [25, 41],
+    iconAnchor: [10, 41],
+    popupAnchor: [2, -40],
+    iconUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-icon.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-shadow.png"
+  });
+
+  const map = useMapEvents({
+    // on load, locate
+    click(e) {
+      console.log("latlng", e.latlng);
+      const { lat, lng } = e.latlng;
+      setLat(lat);
+      setLon(lng);
+      setShowPos(true);
+
+      updateFn();
+
+      // map.locate({ setView: true });
+      // const { lat, lng } = e.latlng;
+      // L.marker([lat, lng], { icon }).addTo(map);
+    }
+  });
+
+  if (fly) map.flyTo([lat, lon], map.getZoom());
+
+  return (
+    showPos && (
+      <Marker position={[lat, lon]} icon={icon}>
+        <Popup>
+          Posizione del beacon: {lat.toFixed(6)}, {lon.toFixed(6)}
+        </Popup>
+      </Marker>
+    )
+  );
+};
 
 const BeaconEditor = () => {
   const [alert, setAlert] = useState(null);
@@ -34,7 +93,7 @@ const BeaconEditor = () => {
         const { data } = await axios.get(`/api/beacon/${id}`);
 
         const beacon = { ...data };
-        const properties = { ...data.properties }[0];
+        const properties = { ...data.properties }[data.properties.length - 1];
         delete beacon.properties;
 
         console.log("beacon", beacon);
@@ -54,22 +113,44 @@ const BeaconEditor = () => {
         setMode(properties.mode);
         setQtf(properties.qtf);
         setPower(properties.power);
+
+        if (properties.lat && properties.lon) {
+          setLat(parseFloat(properties.lat));
+          setLon(parseFloat(properties.lon));
+          setIsPositionSet(true);
+        }
       } catch (err) {
         console.log("Errore nel caricamento del beacon", err);
-        setAlert({
-          color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
-        });
+        // setAlert({
+        //   color: "failure",
+        //   msg: getErrorStr(err?.response?.data?.err)
+        // });
+        window.alert(
+          "Errore nel caricamento del beacon: " + err?.response?.data?.err
+        );
+        navigate("/beacon");
       } finally {
         setLoading(false);
       }
     }
     getBeacon();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const { user } = useContext(UserContext);
   const isEditing = !!id; // true if id is not null (i.e. we are editing a beacon)
   const canEdit = user?.isAdmin || user?._id === beaconEdit?.editAuthor;
+
+  useEffect(() => {
+    if (user === null)
+      return navigate({
+        pathname: "/login",
+        search: createSearchParams({
+          to: "/beacon/editor" + (id ? `?id=${id}` : "")
+        }).toString()
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   // callsign
   const [callsign, setCallsign] = useState("");
@@ -84,6 +165,11 @@ const BeaconEditor = () => {
   const [mode, setMode] = useState("");
   const [qtf, setQtf] = useState("");
   const [power, setPower] = useState("");
+  const [lat, setLat] = useState(44.646331832036864);
+  const [lon, setLon] = useState(10.925526003071043);
+
+  const [isPositionSet, setIsPositionSet] = useState(false);
+  const [isLocatorFocused, setIsLocatorFocused] = useState(false);
 
   const [disabled, setDisabled] = useState(!canEdit);
 
@@ -91,6 +177,16 @@ const BeaconEditor = () => {
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    if (!lat || !lon || !isPositionSet) {
+      setAlert({
+        color: "failure",
+        msg: "Seleziona la posizione del beacon sulla mappa"
+      });
+      window.scrollTo(0, 0);
+      return;
+    }
+
     setAlert(null);
 
     try {
@@ -105,7 +201,9 @@ const BeaconEditor = () => {
         antenna,
         mode,
         qtf,
-        power
+        power,
+        lat,
+        lon
       };
       // let res;
       if (isEditing) {
@@ -129,8 +227,88 @@ const BeaconEditor = () => {
     }
   }
 
+  const [forceFly, setForceFly] = useState(false);
+
+  useEffect(() => {
+    // || !locator || locator.length !== 6
+    if (isPositionSet || isLocatorFocused) return;
+
+    console.log("fetching lat lon, len is", locator.length);
+
+    async function getLatLon() {
+      setDisabled(true);
+      try {
+        const { data } = await axios.get(`/api/location/latlon/${locator}`);
+        console.log("fetched lat lon", data);
+        setLat(data.lat);
+        setLon(data.lon);
+        setIsPositionSet(true);
+        setForceFly(true);
+        setTimeout(() => setForceFly(false), 1000);
+      } catch (err) {
+        console.log("Errore nel caricamento della posizione", err);
+      } finally {
+        setDisabled(false);
+      }
+    }
+    getLatLon();
+  }, [locator, isPositionSet, isLocatorFocused]);
+
+  useEffect(() => {
+    if (
+      !isPositionSet ||
+      !lat ||
+      !lon ||
+      isLocatorFocused ||
+      locator.length === 6
+    )
+      return;
+
+    console.log("fetching locator, lat lon is ", lat, lon);
+
+    async function getLocator() {
+      setDisabled(true);
+      try {
+        const { data } = await axios.get(`/api/location/locator/${lat}/${lon}`);
+        console.log("fetched locator", data);
+        setLocator(data.locator);
+        setIsPositionSet(true);
+        setForceFly(true);
+        setTimeout(() => setForceFly(false), 1000);
+      } catch (err) {
+        console.log("Errore nel caricamento del locator", err);
+      } finally {
+        setDisabled(false);
+      }
+    }
+    getLocator();
+  }, [lat, lon, isPositionSet, locator, isLocatorFocused]);
+
+  function geolocalize() {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        setLat(position.coords.latitude);
+        setLon(position.coords.longitude);
+        setIsPositionSet(true);
+        setLocator("");
+      },
+      err => {
+        console.log("Errore nella geolocalizzazione", err);
+        setAlert({
+          color: "failure",
+          msg: "Errore nella geolocalizzazione"
+        });
+      }
+    );
+  }
+
   return (
     <Layout>
+      <Helmet>
+        <title>
+          {isEditing ? "Modifica" : "Nuovo"} beacon - VHF e superiori
+        </title>
+      </Helmet>
       <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900 -mt-4">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           <div className="mb-4 md:-ml-4 md:-mt-4">
@@ -234,7 +412,7 @@ const BeaconEditor = () => {
 
                 <div>
                   <div className="mb-2 block">
-                    <Label htmlFor="locator" value="Locator" />
+                    <Label htmlFor="locator" value="Locatore" />
                   </div>
                   <TextInput
                     id="locator"
@@ -244,6 +422,8 @@ const BeaconEditor = () => {
                     value={locator}
                     onChange={e => setLocator(e.target.value)}
                     disabled={disabled}
+                    onFocus={() => setIsLocatorFocused(true)}
+                    onBlur={() => setIsLocatorFocused(false)}
                   />
                 </div>
 
@@ -323,6 +503,46 @@ const BeaconEditor = () => {
                     onChange={e => setPower(e.target.value)}
                     disabled={disabled}
                   />
+                </div>
+              </div>
+
+              <div className="flex flex-col w-full items-center mt-8">
+                <div className="flex flex-col md:flex-row justify-center gap-2 md:gap-8 items-center mb-2">
+                  <div>
+                    <h2 className="text-2xl font-bold">Posizione</h2>
+                    <span className="text-gray-600 ">
+                      Clicca sulla mappa per selezionare la posizione del beacon
+                    </span>
+                  </div>
+                  <Button
+                    color="info"
+                    onClick={geolocalize}
+                    disabled={disabled}
+                  >
+                    <FaMapMarkerAlt className="text-lg" />
+                    Geolocalizza
+                  </Button>
+                </div>
+                <div className="drop-shadow-lg flex justify-center">
+                  <MapContainer center={[lat, lon]} zoom={13}>
+                    <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    />
+                    <MyMarker
+                      lat={lat}
+                      lon={lon}
+                      showPos={isPositionSet}
+                      setShowPos={setIsPositionSet}
+                      setLat={setLat}
+                      setLon={setLon}
+                      fly={forceFly}
+                      updateFn={() => {
+                        console.log("update");
+                        setLocator("");
+                      }}
+                    />
+                  </MapContainer>
                 </div>
               </div>
 

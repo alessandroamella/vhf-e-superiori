@@ -33,6 +33,7 @@ import {
 } from "react-icons/fa";
 import ReactGoogleAutocomplete from "react-google-autocomplete";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import { Helmet } from "react-helmet";
 
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);
@@ -65,6 +66,7 @@ const Profile = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const forceEditCity = searchParams.has("forceEditCity");
+  const backTo = searchParams.get("backTo");
 
   const addressInputRef = useRef(null);
 
@@ -147,6 +149,10 @@ const Profile = () => {
       }
       setUser(data);
       setIsEditing(false);
+
+      if (backTo) {
+        navigate(backTo);
+      }
     } catch (err) {
       setAlert({
         color: "failure",
@@ -258,6 +264,12 @@ const Profile = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>
+          Profilo{user?.callsign ? " di " + user.callsign : ""} - VHF e
+          superiori
+        </title>
+      </Helmet>
       <Modal
         position="center"
         show={showChangePwModal}

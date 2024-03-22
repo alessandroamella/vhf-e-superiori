@@ -52,7 +52,15 @@ router.get("/:id", param("id").isMongoId(), validate, async (req, res) => {
 
         const props = await BeaconProperties.find({
             forBeacon: _beacon._id
-        }).sort({ editDate: -1 });
+        })
+            .populate({
+                path: "editAuthor",
+                select: "callsign"
+            })
+            .populate({
+                path: "verifiedBy",
+                select: "callsign"
+            });
         if (props.length === 0) {
             logger.error(`Beacon ${_beacon._id} has no properties`);
             logger.error(_beacon);

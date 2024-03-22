@@ -109,7 +109,8 @@ router.put(
                 lon,
                 editAuthor: user._id,
                 editDate: new Date(),
-                isVerified: user.isAdmin ? user._id : undefined
+                verifiedBy: user.isAdmin ? user._id : undefined,
+                verifyDate: user.isAdmin ? new Date() : undefined
             });
 
             try {

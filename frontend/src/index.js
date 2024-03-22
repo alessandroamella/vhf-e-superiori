@@ -26,6 +26,7 @@ import MdViewer from "./document/MdViewer";
 import Rankings from "./event/Rankings";
 import BeaconHomepage from "./beacon";
 import BeaconEditor from "./beacon/Editor";
+import ViewBeacon from "./beacon/ViewBeacon";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
@@ -57,7 +58,8 @@ const router = createBrowserRouter([
   { path: "/event/:id", element: <ViewEvent /> },
   { path: "/document/:name", element: <MdViewer /> },
   { path: "/beacon", element: <BeaconHomepage /> },
-  { path: "beacon/editor", element: <BeaconEditor /> }
+  { path: "/beacon/editor", element: <BeaconEditor /> },
+  { path: "/beacon/:id", element: <ViewBeacon /> }
   // {
   //   path: "contacts/:contactId",
   //   element: <Contact />,
@@ -142,7 +144,8 @@ export const errors = {
   BEACON_EXISTS: "Beacon già esistente",
   INVALID_BEACON: "Beacon non valido",
   BEACON_NOT_FOUND: "Beacon non trovato",
-  NO_EMAIL_FOUND: "Nessuna email trovata"
+  NO_EMAIL_FOUND: "Nessuna email trovata",
+  ERROR_QTH_PARSE: "Errore nel parsing del QTH"
 };
 
 export function getErrorStr(str) {

@@ -18,6 +18,7 @@ import axios from "axios";
 import { Alert, Button, Card, Spinner } from "flowbite-react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { FaArrowLeft } from "react-icons/fa";
+import { Helmet } from "react-helmet";
 
 const ViewPublished = () => {
   const { splashPlayed } = useContext(SplashContext);
@@ -75,6 +76,9 @@ const ViewPublished = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>{callsign || "Post"} - VHF e superiori</title>
+      </Helmet>
       {!splashPlayed && <Splash ready={ready} />}
 
       <div className="px-0 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">

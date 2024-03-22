@@ -101,7 +101,8 @@ router.post(
                 lon,
                 editAuthor: user._id,
                 editDate: new Date(),
-                isVerified: user.isAdmin ? user._id : undefined
+                verifiedBy: user.isAdmin ? user._id : undefined,
+                verifyDate: user.isAdmin ? new Date() : undefined
             });
 
             const beacon = new Beacon({

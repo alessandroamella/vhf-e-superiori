@@ -1,10 +1,18 @@
-import { DocumentType, modelOptions, prop, Ref } from "@typegoose/typegoose";
+import {
+    DocumentType,
+    modelOptions,
+    pre,
+    prop,
+    Ref
+} from "@typegoose/typegoose";
 import User, { UserClass } from "../../auth/models";
 import { EventClass } from "../../event/models";
 import sharp from "sharp";
 import EqslPic from "../../eqsl/eqsl";
 import { logger } from "../../../shared";
 import EmailService from "../../../email";
+import { qrz } from "../../qrz";
+import { Qso } from ".";
 
 /**
  * @swagger
@@ -95,6 +103,41 @@ import EmailService from "../../../email";
     schemaOptions: { timestamps: true },
     options: { customName: "Qso" }
 })
+@pre<QsoClass>("save", async function () {
+    if (!this.email) {
+        // find if already in db
+        const user = await User.findOne({
+            callsign: this.callsign
+        });
+        if (user) {
+            this.toStation = user._id;
+            this.email = user.email;
+            return;
+        }
+
+        // find qso with same callsign and event to copy email
+        const qso = await Qso.findOne({
+            callsign: this.callsign,
+            event: this.event,
+            email: { $exists: true }
+        });
+        if (qso) {
+            this.toStation = qso.toStation;
+            this.email = qso.email;
+            return;
+        }
+
+        // last resort: try to scrape email from QRZ
+        const scraped = await qrz.scrapeEmail(this.callsign);
+        if (scraped) {
+            this.email = scraped;
+            return;
+        }
+    }
+    logger.warn(
+        `No email found for QSO ${this._id} with callsign ${this.callsign}`
+    );
+})
 export class QsoClass {
     // fromStation is User ref
     @prop({ required: true, ref: () => UserClass })
@@ -130,8 +173,8 @@ export class QsoClass {
     @prop({ required: false })
     public toStationLon?: number;
 
-    @prop({ required: false })
-    public rst?: number;
+    @prop({ required: true, default: 59 })
+    public rst!: number;
 
     @prop({ required: true, ref: () => EventClass })
     public event!: Ref<EventClass>;

@@ -1,16 +1,13 @@
-import axios from "axios";
-import { Alert, Button, Table, Tooltip } from "flowbite-react";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
 import React, { useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { Alert, Button, Table } from "flowbite-react";
 import { UserContext, getErrorStr } from "..";
 import Layout from "../Layout";
 import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import ReactPlaceholder from "react-placeholder";
 import { Card } from "@material-tailwind/react";
-import { FaPen, FaPlus, FaTrash } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
+import { Helmet } from "react-helmet";
 
 const BeaconHomepage = () => {
   const [alert, setAlert] = useState(null);
@@ -41,29 +38,11 @@ const BeaconHomepage = () => {
 
   const navigate = useNavigate();
 
-  async function deleteBeacon(id) {
-    const confirm = window.confirm(
-      "Sei sicuro di voler eliminare questo beacon?"
-    );
-    if (!confirm) return;
-
-    try {
-      await axios.delete(`/api/beacon/${id}`);
-      setBeacons(beacons.filter(beacon => beacon._id !== id));
-      setAlert({
-        color: "success",
-        msg: "Beacon eliminato con successo"
-      });
-    } catch (err) {
-      setAlert({
-        color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
-      });
-    }
-  }
-
   return (
     <Layout>
+      <Helmet>
+        <title>Beacon - VHF e superiori</title>
+      </Helmet>
       <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900 -mt-4">
         <div className="mx-auto px-4 w-full md:w-11/12 py-12">
           {alert && (
@@ -114,54 +93,69 @@ const BeaconHomepage = () => {
                   <Table striped>
                     <Table.Head>
                       <Table.HeadCell>Nominativo</Table.HeadCell>
-                      <Table.HeadCell>Nome</Table.HeadCell>
+                      <Table.HeadCell className="hidden md:table-cell">
+                        Nome
+                      </Table.HeadCell>
                       <Table.HeadCell>Frequenza</Table.HeadCell>
-                      <Table.HeadCell>QTH</Table.HeadCell>
+                      <Table.HeadCell className="hidden md:table-cell">
+                        QTH
+                      </Table.HeadCell>
                       <Table.HeadCell>Locatore</Table.HeadCell>
-                      <Table.HeadCell>HAMSL</Table.HeadCell>
-                      <Table.HeadCell>Antenna</Table.HeadCell>
-                      <Table.HeadCell>Modo</Table.HeadCell>
-                      <Table.HeadCell>QTF</Table.HeadCell>
-                      <Table.HeadCell>Potenza</Table.HeadCell>
-                      <Table.HeadCell>
-                        <span className="sr-only">Azioni</span>
+                      <Table.HeadCell className="hidden md:table-cell">
+                        HAMSL
+                      </Table.HeadCell>
+                      <Table.HeadCell className="hidden md:table-cell">
+                        Antenna
+                      </Table.HeadCell>
+                      <Table.HeadCell className="hidden md:table-cell">
+                        Modo
+                      </Table.HeadCell>
+                      <Table.HeadCell className="hidden md:table-cell">
+                        QTF
+                      </Table.HeadCell>
+                      <Table.HeadCell className="hidden md:table-cell">
+                        Potenza
                       </Table.HeadCell>
                     </Table.Head>
                     <Table.Body>
                       {beacons?.map(beacon => (
-                        <Table.Row key={beacon.id}>
+                        <Table.Row
+                          className="cursor-pointer transition-all hover:bg-gray-100"
+                          key={beacon._id}
+                          onClick={() => navigate(`/beacon/${beacon._id}`)}
+                        >
                           <Table.Cell>
-                            <strong>{beacon.callsign}</strong>
+                            <Link
+                              className="font-bold"
+                              to={`/beacon/${beacon._id}`}
+                            >
+                              {beacon.callsign}
+                            </Link>
                           </Table.Cell>
-                          <Table.Cell>{beacon.properties?.name}</Table.Cell>
+                          <Table.Cell className="hidden md:table-cell">
+                            {beacon.properties?.name}
+                          </Table.Cell>
                           <Table.Cell>
-                            {beacon.properties?.frequency} MHz
+                            {beacon.properties?.frequency?.toFixed(3)}
                           </Table.Cell>
-                          <Table.Cell>{beacon.properties?.qthStr}</Table.Cell>
+                          <Table.Cell className="hidden md:table-cell">
+                            {beacon.properties?.qthStr}
+                          </Table.Cell>
                           <Table.Cell>{beacon.properties?.locator}</Table.Cell>
-                          <Table.Cell>{beacon.properties?.hamsl}m</Table.Cell>
-                          <Table.Cell>{beacon.properties?.antenna}</Table.Cell>
-                          <Table.Cell>{beacon.properties?.mode}</Table.Cell>
-                          <Table.Cell>{beacon.properties?.qtf}</Table.Cell>
-                          <Table.Cell>{beacon.properties?.power}W</Table.Cell>
-                          <Table.Cell>
-                            <div className="flex flex-row gap-1">
-                              <Link to={`/beacon/editor?id=${beacon._id}`}>
-                                <Button color="light">
-                                  <FaPen />
-                                </Button>
-                              </Link>
-                              {user?.isAdmin && (
-                                <Tooltip content="Vedi questo in quanto amministratore">
-                                  <Button
-                                    color="failure"
-                                    onClick={() => deleteBeacon(beacon._id)}
-                                  >
-                                    <FaTrash />
-                                  </Button>
-                                </Tooltip>
-                              )}
-                            </div>
+                          <Table.Cell className="hidden md:table-cell">
+                            {beacon.properties?.hamsl}m
+                          </Table.Cell>
+                          <Table.Cell className="hidden md:table-cell">
+                            {beacon.properties?.antenna}
+                          </Table.Cell>
+                          <Table.Cell className="hidden md:table-cell">
+                            {beacon.properties?.mode}
+                          </Table.Cell>
+                          <Table.Cell className="hidden md:table-cell">
+                            {beacon.properties?.qtf}
+                          </Table.Cell>
+                          <Table.Cell className="hidden md:table-cell">
+                            {beacon.properties?.power}W
                           </Table.Cell>
                         </Table.Row>
                       ))}

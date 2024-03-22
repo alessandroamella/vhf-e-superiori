@@ -40,9 +40,23 @@ router.get("/", validate, async (req, res) => {
     try {
         const beacons: BeaconDocWithProp[] = await Beacon.find().lean();
         for (const beacon of beacons) {
-            const propsArr = await BeaconProperties.find({
-                forBeacon: beacon._id
-            })
+            const propsArr = await BeaconProperties.find(
+                {
+                    forBeacon: beacon._id
+                },
+                {
+                    lat: 0,
+                    lon: 0,
+                    verifiedBy: 0,
+                    verifyDate: 0,
+                    editAuthor: 0,
+                    editDate: 0
+                }
+            )
+                .populate({
+                    path: "editAuthor",
+                    select: "callsign"
+                })
                 .limit(1)
                 .sort({ editDate: -1 });
             const props = propsArr[0];

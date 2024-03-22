@@ -8,8 +8,8 @@ import { envs } from "../../shared/envs";
 import { logger } from "../../shared/logger";
 import { Errors } from "../errors";
 import moment from "moment";
-import { googleMaps } from "../maps";
-import { QthData } from "../maps/interfaces";
+import { location } from "../location";
+import { QthData } from "../location/interfaces";
 
 interface _RawData {
     call: [string];
@@ -71,6 +71,8 @@ interface CachedData {
     url?: string;
     date: Date;
     email?: string;
+    name?: string;
+    address?: string;
 }
 
 interface CachedDataObj {
@@ -258,7 +260,7 @@ class Qrz {
             return null;
         }
 
-        return await googleMaps.geocode(
+        return await location.geocode(
             `${d.address} ${d.state || ""} ${d.country}`
         );
     }
@@ -306,9 +308,7 @@ class Qrz {
         return dem;
     }
 
-    private async _getDataForCallsign(
-        callsign: string
-    ): Promise<CachedData | null> {
+    public async scrapeAllData(callsign: string): Promise<CachedData | null> {
         if (!this._isLoggedIn()) {
             logger.warn("QRZ not logged in, skipping");
             return null;
@@ -343,6 +343,21 @@ class Qrz {
 
             logger.debug("Scraped QRZ profile pic: " + pic);
 
+            const name =
+                (dom.window.document?.querySelector("p.m0 span") as HTMLElement)
+                    ?.textContent || undefined;
+
+            logger.debug("Scraped QRZ name: " + name);
+
+            const address = (
+                dom.window.document?.querySelector("p.m0") as HTMLElement
+            )?.innerHTML
+                ?.split("<br />")[1]
+                ?.replace(new RegExp("<br/>", "g"), ", ")
+                ?.slice(3, -4);
+
+            logger.debug("Scraped QRZ address: " + address);
+
             // there will be something like
             // var qmail='4a6faaeebd5t7i7.0g3s0q940u6i6@bodrfd0n1a0s3s8e3l0a!02';
             const qmail = (data as string).match(/var qmail='(.*)';/)?.[1];
@@ -352,6 +367,8 @@ class Qrz {
             logger.debug("Decoded QRZ email: " + email);
 
             this.cachedData[callsign] = {
+                name,
+                address,
                 date: new Date(),
                 url: pic,
                 email
@@ -370,12 +387,12 @@ class Qrz {
     }
 
     async scrapeProfilePicture(callsign: string): Promise<string | undefined> {
-        const data = await this._getDataForCallsign(callsign);
+        const data = await this.scrapeAllData(callsign);
         return data?.url;
     }
 
     public async scrapeEmail(callsign: string): Promise<string | undefined> {
-        const data = await this._getDataForCallsign(callsign);
+        const data = await this.scrapeAllData(callsign);
         return data?.email;
     }
 

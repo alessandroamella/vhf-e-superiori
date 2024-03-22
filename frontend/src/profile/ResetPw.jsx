@@ -5,6 +5,7 @@ import { Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import { getErrorStr } from "..";
+import { Helmet } from "react-helmet";
 
 const ResetPw = () => {
   const [pw, setPw] = useState("");
@@ -39,6 +40,9 @@ const ResetPw = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>Reset password - VHF e superiori</title>
+      </Helmet>
       <div className="p-4 h-full flex flex-col justify-center items-center">
         <Typography variant="h1" className="mb-2">
           Reset password

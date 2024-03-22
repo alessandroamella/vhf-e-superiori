@@ -39,6 +39,7 @@ import { adminsList } from "./Info";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import axios from "axios";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import { Helmet } from "react-helmet";
 
 const Homepage = () => {
   const { user } = useContext(UserContext);
@@ -220,6 +221,9 @@ const Homepage = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>VHF e Superiori - Flash Mob Radioamatoriale</title>
+      </Helmet>
       {!splashPlayed && <Splash ready={ready} />}
 
       <JoinRequestModal

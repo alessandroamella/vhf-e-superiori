@@ -21,6 +21,7 @@ import { EventsContext, getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import { Helmet } from "react-helmet";
 
 const EventContainer = ({ event, children }) =>
   event?.logoUrl ? (
@@ -101,6 +102,9 @@ const ViewEvent = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>{event?.name || "Evento"} - VHF e superiori</title>
+      </Helmet>
       <Modal
         position="center"
         show={showJoinModal}

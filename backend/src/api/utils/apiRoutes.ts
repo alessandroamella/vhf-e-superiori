@@ -13,6 +13,8 @@ import eqslRoutes from "../eqsl/routes";
 import documentRoutes from "../document/routes";
 import rankingsRoutes from "../rankings/routes";
 import beaconRoutes from "../beacon/routes";
+import locationRoutes from "../location/routes";
+import autocompleteRoutes from "../autocomplete/routes";
 import notFound from "./notFound";
 
 import errorHandler from "../middlewares/errorHandler";
@@ -102,6 +104,8 @@ router.use("/eqsl", eqslRoutes);
 router.use("/document", documentRoutes);
 router.use("/rankings", rankingsRoutes);
 router.use("/beacon", beaconRoutes);
+router.use("/location", locationRoutes);
+router.use("/autocomplete", autocompleteRoutes);
 
 router.use(errorHandler);
 router.use(notFound);

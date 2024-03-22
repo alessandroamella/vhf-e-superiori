@@ -26,15 +26,12 @@ import { EventsContext, getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
 // import { DefaultEditor } from "react-simple-wysiwyg";
 import {
-  FaCheck,
   FaPlusCircle,
   FaTimes,
   FaUndo,
   FaExternalLinkAlt,
   FaClipboardCheck,
-  FaClipboard,
-  FaUnlink,
-  FaUserPlus
+  FaClipboard
 } from "react-icons/fa";
 import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import { Navigation, Pagination as SwiperPagination } from "swiper";
@@ -46,6 +43,7 @@ import ViewJoinRequest from "./ViewJoinRequest";
 import { isFuture } from "date-fns";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import { Helmet } from "react-helmet";
 
 const AdminManager = () => {
   const { user } = useContext(UserContext);
@@ -467,6 +465,9 @@ const AdminManager = () => {
     })
   ) : (
     <Layout>
+      <Helmet>
+        <title>Admin - VHF e superiori</title>
+      </Helmet>
       <Modal
         position="center"
         size="7xl"

@@ -10,6 +10,7 @@ import { Alert, Button, Spinner } from "flowbite-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ViewPostContent from "./ViewPostContent";
 import { FaBackward, FaTrash } from "react-icons/fa";
+import { Helmet } from "react-helmet";
 
 const ViewPost = () => {
   const { id } = useParams();
@@ -76,6 +77,9 @@ const ViewPost = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>{post?.description || "Post"} - VHF e superiori</title>
+      </Helmet>
       <div className="px-4 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
         <div className="flex justify-between items-center">
           <Link to="/social">

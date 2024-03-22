@@ -22,6 +22,7 @@ import Layout from "../Layout";
 import Markdown from "react-markdown";
 import ReactPlaceholder from "react-placeholder";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import { Helmet } from "react-helmet";
 
 const useFocus = () => {
   const htmlElRef = useRef(null);
@@ -275,6 +276,9 @@ const Signup = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>Registrazione - VHF e superiori</title>
+      </Helmet>
       <div className="w-full h-full dark:bg-gray-900 dark:text-white">
         <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">
           <Typography variant="h1" className="mb-2">

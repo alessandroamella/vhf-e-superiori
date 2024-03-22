@@ -8,6 +8,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getErrorStr, UserContext } from "..";
 import ReCAPTCHA from "react-google-recaptcha";
 import Layout from "../Layout";
+import { Helmet } from "react-helmet";
 
 const Login = () => {
   const [callsign, setCallsign] = useState("");
@@ -112,6 +113,9 @@ const Login = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>Login - VHF e superiori</title>
+      </Helmet>
       {user && navigate(searchParams.get("to") || "/profile")}
       <div className="w-full h-full min-h-[70vh] dark:bg-gray-900 dark:text-white">
         <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">

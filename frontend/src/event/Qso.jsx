@@ -1,9 +1,5 @@
 import axios from "axios";
 import { Alert, Button, Table } from "flowbite-react";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
 import React, { useEffect, useState } from "react";
 import { getErrorStr } from "..";
 import Layout from "../Layout";
@@ -26,6 +22,7 @@ import {
   EmailIcon
 } from "react-share";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import { Helmet } from "react-helmet";
 
 /*
 {
@@ -80,6 +77,9 @@ const Qso = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>{socialTitle || "QSO"} - VHF e superiori</title>
+      </Helmet>
       <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900 -mt-4">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           {alert && (

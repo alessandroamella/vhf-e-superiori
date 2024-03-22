@@ -13,7 +13,7 @@ import moment from "moment";
 import Event from "../../event/models";
 import JoinRequest, { JoinRequestClass } from "../../joinRequest/models";
 import User, { UserDoc } from "../../auth/models";
-import { googleMaps } from "../../maps";
+import { location } from "../../location";
 import { readFile, unlink, writeFile } from "fs/promises";
 import path from "path";
 import { envs } from "../../../shared";
@@ -174,7 +174,7 @@ router.post(
                 let lat, lon;
                 if (q.address && shouldSave) {
                     // don't geocode if not saving
-                    const addr = await googleMaps.geocode(q.address);
+                    const addr = await location.geocode(q.address);
 
                     lat = addr?.geometry.location.lat;
                     lon = addr?.geometry.location.lng;
@@ -202,7 +202,7 @@ router.post(
                     event: event._id,
                     notes: q.comment,
                     locator: q.gridsquare,
-                    rst: parseInt(q.rst_sent) || undefined
+                    rst: parseInt(q.rst_sent) || 59
                 });
                 if (shouldSave) await qso.save();
                 qsos.push(qso);

@@ -14,12 +14,9 @@ import {
   TextInput,
   Tooltip,
   Timeline,
-  Card
+  Card,
+  Avatar
 } from "flowbite-react";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
 import React, {
   createRef,
   useContext,
@@ -52,6 +49,7 @@ import {
 import { useCookies } from "react-cookie";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { useMap } from "@uidotdev/usehooks";
+import { Helmet } from "react-helmet";
 
 const QsoManager = () => {
   const { user } = useContext(UserContext);
@@ -298,10 +296,10 @@ const QsoManager = () => {
       const { data } = await axios.post("/api/qso", obj);
       console.log("QSO", data);
 
-      setAlert({
-        color: "success",
-        msg: "QSO creato con successo"
-      });
+      // setAlert({
+      //   color: "success",
+      //   msg: "QSO creato con successo"
+      // });
 
       setHighlighted(data._id);
       setTimeout(() => setHighlighted(null), 1000);
@@ -330,6 +328,32 @@ const QsoManager = () => {
     setDisabled(false);
   }
 
+  const [autocomplete, setAutocomplete] = useState(null);
+
+  const autocompleteTimeout = useRef(null);
+  useEffect(() => {
+    if (!callsign || !user) return;
+
+    if (autocompleteTimeout.current) {
+      clearTimeout(autocompleteTimeout.current);
+    }
+    autocompleteTimeout.current = setTimeout(async () => {
+      try {
+        const { data } = await axios.get("/api/autocomplete/" + callsign);
+        console.log("autocomplete", data);
+        if (Object.keys(data).length > 1) {
+          console.log("setAutocomplete", data);
+          setAutocomplete(data);
+        } else {
+          console.log("no autocomplete, keys", Object.keys(data).length);
+          setAutocomplete(null);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  }, [callsign, user]);
+
   const [adifFile, setAdifFile] = useState(null);
   const [adifQsos, setAdifQsos] = useState(null);
   const [adifChecked, setAdifChecked] = useState({});
@@ -346,6 +370,20 @@ const QsoManager = () => {
       index
     });
   }
+
+  function hideCityWarning() {
+    setShowAddressWarning(false);
+    setCookie("hideCityWarning", true, {
+      path: "/qsomanager",
+      maxAge: 60 * 60 * 4 // 4 hours
+    });
+  }
+
+  useEffect(() => {
+    if (cookies.hideCityWarning) {
+      setShowAddressWarning(false);
+    }
+  }, [cookies.hideCityWarning]);
 
   async function importAdif(_adifFile) {
     if (!_adifFile) return;
@@ -419,7 +457,7 @@ const QsoManager = () => {
       resetAdif();
       setAlert({
         color: "success",
-        msg: "QSO importati con successo"
+        msg: data.length + " QSO importati con successo"
       });
       setDisabled(false);
       setQsos([...qsos, ...data]);
@@ -476,6 +514,11 @@ const QsoManager = () => {
       console.log("deleted", deleted);
       setQsos(qsos.filter(q => !deleted.includes(q._id)));
       setSelectedQsos([]);
+
+      setAlert({
+        color: "success",
+        msg: `Eliminati ${deleted.length} QSO`
+      });
     } catch (err) {
       console.log(err?.response?.data || err);
       setAlert({
@@ -497,6 +540,11 @@ const QsoManager = () => {
     const url = `/api/adif/export?qsos=${selectedQsos.join(",")}&event=${id}`;
     window.open(url, "_blank");
     setDisabled(false);
+
+    setAlert({
+      color: "success",
+      msg: `Esportati ${selectedQsos.length} QSO`
+    });
   }
 
   const navigate = useNavigate();
@@ -565,6 +613,9 @@ const QsoManager = () => {
     })
   ) : (
     <Layout>
+      <Helmet>
+        <title>QSO Manager - VHF e superiori</title>
+      </Helmet>
       <Modal
         position="center"
         size="7xl"
@@ -693,11 +744,18 @@ const QsoManager = () => {
 
           {hasPermission && (
             <>
-              <Typography variant="h1" className="mb-8 flex items-center gap-2">
-                <Badge size="lg" color="info">
-                  {event?.name || "..."}
-                </Badge>
-              </Typography>
+              <div className="mb-8 flex flex-col md:flex-row md:justify-between gap-4 items-center">
+                <Typography variant="h1" className="flex items-center gap-2">
+                  <Badge size="lg" color="info">
+                    {event?.name || "..."}
+                  </Badge>
+                </Typography>
+                {user?.isAdmin && (
+                  <Link to={`/eventmanager/${id}`}>
+                    <Button>Gestisci evento</Button>
+                  </Link>
+                )}
+              </div>
 
               <div className="mb-6">
                 {event === null ? (
@@ -792,6 +850,9 @@ const QsoManager = () => {
                                 <Table.HeadCell>
                                   <span className="sr-only">Azioni</span>
                                 </Table.HeadCell>
+                                {user?.isAdmin && (
+                                  <Table.HeadCell>Stazione</Table.HeadCell>
+                                )}
                                 <Table.HeadCell>Nominativo</Table.HeadCell>
                                 <Table.HeadCell>Data UTC</Table.HeadCell>
                                 <Table.HeadCell>Frequenza</Table.HeadCell>
@@ -810,7 +871,7 @@ const QsoManager = () => {
                                       highlighted === q._id
                                         ? "bg-green-200 hover:bg-green-300"
                                         : selectedQsos.includes(q._id)
-                                        ? "bg-red-200 hover:bg-red-300"
+                                        ? "bg-yellow-200 hover:bg-yellow-200"
                                         : i % 2 === 0
                                         ? "hover:bg-gray-200"
                                         : "bg-gray-100 hover:bg-gray-200"
@@ -825,27 +886,21 @@ const QsoManager = () => {
                                             checked={selectedQsos.includes(
                                               q._id
                                             )}
-                                            onClick={e =>
+                                            onChange={e =>
                                               selectQso(q, e.target.checked)
                                             }
                                           />
                                         </Tooltip>
                                       </div>
                                     </Table.Cell>
+                                    {user?.isAdmin && (
+                                      <Table.Cell>
+                                        {q.fromStation?.callsign}
+                                      </Table.Cell>
+                                    )}
                                     <Table.Cell>
                                       <div className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex gap-1 items-center">
                                         {q.callsign}
-                                        {q.fromStation?.callsign &&
-                                          q.fromStation?.callsign !==
-                                            user?.callsign && (
-                                            <Tooltip
-                                              content={`QSO da ${q.fromStation.callsign}`}
-                                            >
-                                              <p className="text-xs font-light text-gray-600">
-                                                <FaInfoCircle />
-                                              </p>
-                                            </Tooltip>
-                                          )}
                                       </div>
                                     </Table.Cell>
                                     <Table.Cell>
@@ -900,8 +955,14 @@ const QsoManager = () => {
                                                     "failed"
                                                   ? "Errore nell'invio, riprova"
                                                   : q.emailSent
-                                                  ? "⚠️ eQSL già inviata, usa per reinviarla"
-                                                  : "Usa il pulsante per forzare l'invio"
+                                                  ? "⚠️ eQSL già inviata, usa per reinviarla" +
+                                                    (q.email
+                                                      ? " a " + q.email
+                                                      : "")
+                                                  : "Usa il pulsante per forzare l'invio" +
+                                                    (q.email
+                                                      ? " a " + q.email
+                                                      : "")
                                               }
                                             >
                                               {eqslSending.get(q._id) ===
@@ -964,15 +1025,17 @@ const QsoManager = () => {
                   </div>
                   {user ? (
                     !user.address ? (
-                      <Alert color="failure">
+                      <Alert color="failure" className="text-lg">
                         <span>
                           ⚠️ Devi prima completare il tuo profilo con
                           l'indirizzo:{" "}
-                          <Link to="/profile" className="underline font-bold">
-                            clicca qui
+                          <Link
+                            to={`/profile?forceEditCity=true&backTo=${window.location.pathname}`}
+                            className="underline font-bold"
+                          >
+                            clicca qui per inserirlo
                           </Link>{" "}
-                          per navigare al tuo profilo, poi clicca su "Modifica
-                          profilo" e completa l'indirizzo.
+                          .
                         </span>
                       </Alert>
                     ) : (
@@ -981,7 +1044,7 @@ const QsoManager = () => {
                           <Alert
                             color="info"
                             className="mb-4"
-                            onDismiss={() => setShowAddressWarning(false)}
+                            onDismiss={hideCityWarning}
                           >
                             <span>
                               ⚠️ La tua città è attualmente impostata a{" "}
@@ -989,7 +1052,7 @@ const QsoManager = () => {
                               <span className="font-bold">{user.province}</span>
                               ), assicurati che sia corretta. In caso contrario,{" "}
                               <Link
-                                to="/profile?forceEditCity=true"
+                                to={`/profile?forceEditCity=true&backTo=${window.location.pathname}`}
                                 className="underline font-bold"
                               >
                                 clicca qui
@@ -1167,7 +1230,7 @@ const QsoManager = () => {
                           ) : (
                             <div className="flex flex-col gap-2 items-center">
                               <div className="flex flex-col md:flex-row gap-2 justify-center items-center md:items-end">
-                                <div className="w-full">
+                                <div className="w-full relative">
                                   <Label
                                     htmlFor="callsign"
                                     value="Nominativo*"
@@ -1195,6 +1258,34 @@ const QsoManager = () => {
                                     }}
                                     required
                                   />
+
+                                  {callsign && autocomplete && (
+                                    <div className="absolute top-20 left-0 bg-white min-w-[28rem] dark:bg-gray-800 shadow-lg rounded-lg z-10">
+                                      <Card
+                                        onClick={createQso}
+                                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                      >
+                                        <div className="flex items-center gap-2 justify-between">
+                                          <Avatar
+                                            img={autocomplete.pictureUrl}
+                                          />
+                                          {autocomplete.name && (
+                                            <span className="font-semibold">
+                                              {autocomplete.name}
+                                            </span>
+                                          )}
+                                          {autocomplete.email && (
+                                            <a
+                                              href={`mailto:${autocomplete.email}`}
+                                              className="text-blue-500 dark:text-blue-400 text-sm"
+                                            >
+                                              {autocomplete.email}
+                                            </a>
+                                          )}
+                                        </div>
+                                      </Card>
+                                    </div>
+                                  )}
                                 </div>
 
                                 <Button

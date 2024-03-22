@@ -251,20 +251,13 @@ const MenuContent = ({ isSideBar }) => {
       <SectionHref wip href="#">
         Il mio radio flashmob
       </SectionHref> */}
-      <a
-        href="/listabeacon20230220.pdf"
-        target="_blank"
-        className="flex items-center gap-2"
-      >
-        Beacon
-      </a>
 
       <Button
         className="text-xl mb-4"
         color="purple"
         onClick={() => navigate("/beacon")}
       >
-        Lista beacon
+        Beacon
       </Button>
     </>
   );

@@ -8,10 +8,6 @@ import {
   Table,
   TextInput
 } from "flowbite-react";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
 import React, { useEffect, useMemo, useState } from "react";
 import { getErrorStr } from "..";
 import Layout from "../Layout";
@@ -32,6 +28,7 @@ import {
 } from "react-share";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { FaExclamationTriangle, FaSearch } from "react-icons/fa";
+import { Helmet } from "react-helmet";
 
 const Rankings = () => {
   const { id } = useParams();
@@ -117,6 +114,9 @@ const Rankings = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>{event?.name || "Evento"} - Classifiche - VHF e superiori</title>
+      </Helmet>
       <Modal
         position="center"
         show={!!showRankings}
