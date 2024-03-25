@@ -6,7 +6,7 @@ import { logger } from "../../../shared";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import EmailService from "../../../email";
 import { EventDoc } from "../../event/models";
-import User from "../../auth/models";
+import { User } from "../../auth/models";
 import { Errors } from "../../errors";
 
 const router = Router();

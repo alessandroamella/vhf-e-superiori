@@ -2,7 +2,7 @@ import { Router } from "express";
 import { logger } from "../../../shared/logger";
 import { query } from "express-validator";
 import { createError, validate } from "../../helpers";
-import User from "../models";
+import { User } from "../models";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import JoinRequest from "../../joinRequest/models";
 

@@ -4,7 +4,7 @@ import { logger } from "../../../shared";
 // import jwt from "jsonwebtoken";
 import { envs } from "../../../shared/envs";
 import { Errors } from "../../errors";
-import User from "../models";
+import { User } from "../models";
 import { AuthOptions } from "../shared";
 
 const cookieExtractor: JwtFromRequestFunction = req => {

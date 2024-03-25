@@ -1,6 +1,6 @@
 import { CronJob } from "cron";
 import { envs, logger } from "../../shared";
-import { readdir, stat, unlink } from "fs/promises";
+import { readdir, rm, stat } from "fs/promises";
 import { join } from "path";
 import { cwd } from "process";
 import moment from "moment";
@@ -10,7 +10,8 @@ async function cleanTempDir() {
 
     const tmpPaths = [
         envs.FILE_UPLOAD_TMP_FOLDER,
-        envs.QSL_CARD_TMP_FOLDER
+        envs.QSL_CARD_TMP_FOLDER,
+        envs.MONGODUMP_FOLDER
     ].map(e => join(cwd(), envs.BASE_TEMP_DIR, e));
 
     for (const tmpPath of tmpPaths) {
@@ -29,7 +30,7 @@ async function cleanTempDir() {
             }
 
             logger.info(`Deleting file ${filePath}`);
-            await unlink(filePath);
+            await rm(filePath, { recursive: true });
         }
     }
 

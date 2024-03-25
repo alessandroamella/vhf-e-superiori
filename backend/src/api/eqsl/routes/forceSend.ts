@@ -4,7 +4,7 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
-import User, { UserDoc } from "../../auth/models";
+import { User, UserDoc } from "../../auth/models";
 import isLoggedIn from "../../middlewares/isLoggedIn";
 import JoinRequest from "../../joinRequest/models";
 import { Qso } from "../../qso/models";

@@ -178,7 +178,7 @@ export class S3Client {
         folder,
         bucket
     }: {
-        folder: string;
+        folder?: string;
         bucket?: string;
     }): Promise<AWS.S3.ListObjectsOutput> {
         return new Promise((resolve, reject) => {

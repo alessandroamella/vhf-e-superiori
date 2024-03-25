@@ -12,7 +12,7 @@ import { Qso } from "../../qso/models";
 import moment from "moment";
 import Event from "../../event/models";
 import JoinRequest, { JoinRequestClass } from "../../joinRequest/models";
-import User, { UserDoc } from "../../auth/models";
+import { User, UserDoc } from "../../auth/models";
 import { location } from "../../location";
 import { readFile, unlink, writeFile } from "fs/promises";
 import path from "path";

@@ -5,7 +5,7 @@ import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import EqslPic from "../eqsl";
-import User, { UserDoc } from "../../auth/models";
+import { User, UserDoc } from "../../auth/models";
 import isLoggedIn from "../../middlewares/isLoggedIn";
 import { Qso } from "../../qso/models";
 import isAdmin from "../../middlewares/isAdmin";

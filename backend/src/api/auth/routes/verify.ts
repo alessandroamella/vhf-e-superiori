@@ -4,7 +4,7 @@ import { logger } from "../../../shared";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { param } from "express-validator";
 import bcrypt from "bcrypt";
-import User from "../models";
+import { User } from "../models";
 import { Errors } from "../../errors";
 
 const router = Router();

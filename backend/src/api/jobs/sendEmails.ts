@@ -3,7 +3,7 @@ import { logger } from "../../shared";
 import { Qso } from "../qso/models";
 import { isDocument } from "@typegoose/typegoose";
 import { qrz } from "../qrz";
-import User, { UserDoc } from "../auth/models";
+import { User, UserDoc } from "../auth/models";
 import EqslPic from "../eqsl/eqsl";
 import { EventDoc } from "../event/models";
 import { unlink } from "fs/promises";

@@ -1163,33 +1163,20 @@ const AdminManager = () => {
             </Accordion.Panel>
           </Accordion>
 
-          {/* <form action="#" method="post" onSubmit={login}>
-                    <Input
-                        type="text"
-                        name="callsign"
-                        label="Nominativo"
-                        value={callsign}
-                        onChange={e => setCallsign(e.target.value)}
-                        disabled={disabled}
-                        ref={loginInput}
-                        autoComplete="callsign"
-                        autoFocus
-                    />
-                    <div className="my-4" />
-                    <Input
-                        type="password"
-                        name="password"
-                        label="Password"
-                        autoComplete="current-password"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        disabled={disabled}
-                    />
-                    <div className="my-4" />
-                    <Button type="submit" disabled={disabled}>
-                        AdminManager
-                    </Button>
-                </form> */}
+          <div className="mt-8">
+            <Alert color="failure">
+              <h3 className="font-bold text-2xl">ATTENZIONE</h3>
+              <p>
+                Il backup è un'operazione costosa che richiede un po' di tempo,
+                si consiglia di effettuarlo solo in caso di necessità
+              </p>
+              <a href="/api/backup" target="_blank" rel="noopener noreferrer">
+                <Button color="failure" size="lg" className="mt-2">
+                  Backup dati
+                </Button>
+              </a>
+            </Alert>
+          </div>
         </div>
       </div>
     </Layout>

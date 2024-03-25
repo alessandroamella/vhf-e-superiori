@@ -5,7 +5,7 @@ import { logger } from "../../../shared";
 import { createError, validate } from "../../helpers";
 import { Errors } from "../../errors";
 import createSchema from "../schemas/createSchema";
-import User, { UserDoc } from "../../auth/models";
+import { User, UserDoc } from "../../auth/models";
 import { Beacon, BeaconProperties } from "../models";
 
 const router = Router();

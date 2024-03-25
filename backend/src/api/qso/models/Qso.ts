@@ -5,7 +5,7 @@ import {
     prop,
     Ref
 } from "@typegoose/typegoose";
-import User, { UserClass } from "../../auth/models";
+import { User, UserClass } from "../../auth/models";
 import { EventClass } from "../../event/models";
 import sharp from "sharp";
 import EqslPic from "../../eqsl/eqsl";

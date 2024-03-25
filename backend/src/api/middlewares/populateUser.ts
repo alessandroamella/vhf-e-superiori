@@ -3,7 +3,7 @@ import passport from "passport";
 import { logger } from "../../shared";
 import { AuthOptions } from "../auth/shared";
 import { Errors } from "../errors";
-import User from "../auth/models";
+import { User } from "../auth/models";
 
 async function populateUser(req: Request, res: Response, next: NextFunction) {
     passport.authenticate(

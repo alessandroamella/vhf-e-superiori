@@ -21,6 +21,7 @@ const requiredEnvs = [
     "BASE_TEMP_DIR",
     "FILE_UPLOAD_TMP_FOLDER",
     "QSL_CARD_TMP_FOLDER",
+    "MONGODUMP_FOLDER",
     "GOOGLE_MAPS_API_KEY"
 ] as const;
 export type Env = (typeof requiredEnvs)[number];

@@ -9,7 +9,7 @@ import {
 } from "http-status";
 import { param } from "express-validator";
 import { Errors } from "../../errors";
-import User, { UserDoc } from "../../auth/models";
+import { User, UserDoc } from "../../auth/models";
 import { Qso } from "../models";
 
 const router = Router();

@@ -6,7 +6,7 @@ import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import updateSchema from "../schemas/updateSchema";
-import User, { UserDoc } from "../models";
+import { User, UserDoc } from "../models";
 import { Errors } from "../../errors";
 import EmailService from "../../../email";
 import returnUserWithPosts from "../../middlewares/returnUserWithPosts";

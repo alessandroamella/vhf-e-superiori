@@ -7,7 +7,7 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { param } from "express-validator";
 import updateSchema from "../schemas/updateSchema";
 import { Errors } from "../../errors";
-import User, { UserDoc } from "../../auth/models";
+import { User, UserDoc } from "../../auth/models";
 
 const router = Router();
 

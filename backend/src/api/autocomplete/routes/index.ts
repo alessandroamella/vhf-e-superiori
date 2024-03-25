@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { param } from "express-validator";
 import { createError, validate } from "../../helpers";
-import User from "../../auth/models";
+import { User } from "../../auth/models";
 import { qrz } from "../../qrz";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared";

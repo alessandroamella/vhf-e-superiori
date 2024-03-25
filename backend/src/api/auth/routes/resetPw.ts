@@ -5,7 +5,7 @@ import { Errors } from "../../errors";
 import { logger } from "../../../shared/logger";
 import { body } from "express-validator";
 import { createError, validate } from "../../helpers";
-import User from "../models";
+import { User } from "../models";
 
 const router = Router();
 

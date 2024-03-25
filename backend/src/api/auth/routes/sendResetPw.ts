@@ -5,7 +5,7 @@ import { Errors } from "../../errors";
 import { logger } from "../../../shared/logger";
 import { body } from "express-validator";
 import { createError, validate } from "../../helpers";
-import User from "../models";
+import { User } from "../models";
 import randomstring from "randomstring";
 import EmailService from "../../../email";
 import checkCaptcha from "../../middlewares/checkCaptcha";

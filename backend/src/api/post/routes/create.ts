@@ -7,7 +7,7 @@ import { logger } from "../../../shared";
 import { createError, validate } from "../../helpers";
 import { Errors } from "../../errors";
 import createSchema from "../schemas/createSchema";
-import User, { UserDoc } from "../../auth/models";
+import { User, UserDoc } from "../../auth/models";
 import fileUpload from "express-fileupload";
 import VideoCompressor from "../../compressor";
 import sharp from "sharp";
