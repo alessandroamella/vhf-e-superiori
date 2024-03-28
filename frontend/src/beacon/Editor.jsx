@@ -210,17 +210,16 @@ const BeaconEditor = () => {
         lon
       };
       // let res;
+      let _id;
       if (isEditing) {
         console.log("data", data);
-        // res =
-        await axios.put(`/api/beacon/${beacon._id}`, data);
+        const res = await axios.put(`/api/beacon/${beacon._id}`, data);
+        _id = res.data._id;
       } else {
-        // res =
         await axios.post("/api/beacon", data);
+        _id = id;
       }
-      // navigate(`/beacon/${res.data._id}`);
-      // TODO debug
-      navigate(`/beacon`);
+      navigate("/beacon/" + _id);
     } catch (err) {
       setAlert({
         color: "failure",

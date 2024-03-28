@@ -6,7 +6,13 @@ import L from "leaflet";
 import { UserContext, getErrorStr } from "..";
 import Layout from "../Layout";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { FaBackward, FaInfoCircle, FaPen, FaTrash } from "react-icons/fa";
+import {
+  FaBackward,
+  FaCheckCircle,
+  FaInfoCircle,
+  FaPen,
+  FaTrash
+} from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
@@ -84,12 +90,16 @@ const ViewBeacon = () => {
     }
   }
 
+  const [disabled, setDisabled] = useState(false);
+
   async function deleteEdit(properties) {
     const { _id, editAuthor } = properties;
     const confirm = window.confirm(
       `Sei sicuro di voler eliminare queste modifiche di ${editAuthor?.callsign}? Questa azione è irreversibile. Continuare?`
     );
     if (!confirm) return;
+
+    setDisabled(true);
 
     try {
       await axios.delete(`/api/beacon/property/${_id}`);
@@ -100,6 +110,32 @@ const ViewBeacon = () => {
         color: "failure",
         msg: getErrorStr(err?.response?.data?.err)
       });
+    } finally {
+      setDisabled(false);
+    }
+  }
+
+  async function approveEdit(properties) {
+    const { _id, editAuthor } = properties;
+    const confirm = window.confirm(
+      `Sei sicuro di voler approvare queste modifiche di ${editAuthor?.callsign}? Questa azione è irreversibile. Continuare?`
+    );
+    if (!confirm) return;
+
+    setDisabled(true);
+
+    try {
+      await axios.put("/api/beacon/approve/" + _id);
+      const { data } = await axios.get(`/api/beacon/${id}`);
+      setProperties(data.properties);
+      setPropIndex(data.properties.length - 1);
+    } catch (err) {
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+    } finally {
+      setDisabled(false);
     }
   }
 
@@ -249,7 +285,19 @@ const ViewBeacon = () => {
                       </div>
                     </Alert>
                     {user?.isAdmin && (
-                      <div>
+                      <div className="flex gap-2 items-center">
+                        {!properties.verifiedBy && (
+                          <Tooltip content="Vedi questo in quanto amministratore">
+                            <Button
+                              color="warning"
+                              disabled={disabled}
+                              onClick={() => approveEdit(properties)}
+                            >
+                              <FaCheckCircle className="inline mr-2" />
+                              Approva modifiche
+                            </Button>
+                          </Tooltip>
+                        )}
                         <Tooltip
                           content={`${
                             _properties?.length === 1
@@ -259,7 +307,7 @@ const ViewBeacon = () => {
                         >
                           <Button
                             color="failure"
-                            disabled={_properties?.length === 1}
+                            disabled={_properties?.length === 1 || disabled}
                             onClick={() => deleteEdit(properties)}
                           >
                             <FaTrash className="inline mr-2" />
