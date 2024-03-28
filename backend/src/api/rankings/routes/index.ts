@@ -1,12 +1,15 @@
 import { Router } from "express";
 import { param } from "express-validator";
 import { createError, validate } from "../../helpers";
-import Event from "../../event/models";
+import Event, { EventDoc } from "../../event/models";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { Errors } from "../../errors";
 import { Ranking } from "../../event/interfaces";
 import { logger } from "../../../shared";
 import { Qso, QsoDoc } from "../../qso/models";
+import { isDocument } from "@typegoose/typegoose";
+import JoinRequest from "../../joinRequest/models";
+import { UserDoc } from "../../auth/models";
 
 const router = Router();
 
@@ -57,9 +60,9 @@ router.get(
     async (req, res) => {
         logger.debug("Getting rankings for event: " + req.params._id);
 
-        let event;
+        let event: EventDoc;
         try {
-            event = await Event.findOne(
+            const _event = await Event.findOne(
                 { _id: req.params._id },
                 {
                     name: 1,
@@ -70,42 +73,105 @@ router.get(
                     imageHref: 1
                 }
             );
+            if (!_event) {
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.EVENT_NOT_FOUND));
+            }
+            event = _event;
         } catch (err) {
             logger.error("Error getting event for rankings");
             logger.error(err);
             return res.status(INTERNAL_SERVER_ERROR).json(createError());
         }
 
-        if (!event) {
-            return res
-                .status(BAD_REQUEST)
-                .json(createError(Errors.EVENT_NOT_FOUND));
-        }
-
         // Get rankings
-        const qsos = await Qso.find({ event: event._id }).populate({
+        const qsos = await Qso.find(
+            { event: event._id },
+            {
+                emailSent: 0,
+                event: 0,
+                updatedAt: 0,
+                __v: 0
+            }
+        ).populate({
             path: "fromStation",
             select: "callsign"
         });
 
-        const map = new Map<string, QsoDoc[]>();
+        const stations = await JoinRequest.find({
+            forEvent: event._id,
+            isApproved: true
+        }).populate({
+            path: "fromUser",
+            select: "callsign"
+        });
+        const stationCallsigns = stations
+            .map(e => {
+                if (!isDocument(e.fromUser)) {
+                    logger.error(
+                        `JoinRequest.fromUser ${e.fromUser} is not a document for JoinRequest ${e._id} in event ${event._id}`
+                    );
+                    return null;
+                }
+                return (e.fromUser as unknown as UserDoc).callsign;
+            })
+            .filter(e => e !== null) as string[];
+
+        const map = new Map<string, { qsos: QsoDoc[]; isStation: boolean }>();
         for (const qso of qsos) {
             if (!map.has(qso.callsign)) {
-                map.set(qso.callsign, []);
+                map.set(qso.callsign, {
+                    qsos: [],
+                    isStation: stationCallsigns.includes(qso.callsign)
+                });
             }
-            map.get(qso.callsign)?.push(qso);
+            map.get(qso.callsign)?.qsos.push(qso);
+
+            if (!isDocument(qso.fromStation)) {
+                logger.error(
+                    `QSO.fromStation ${qso.fromStation} is not a document for QSO ${qso._id} in event ${event._id}`
+                );
+                continue;
+            }
+            if (!map.has(qso.fromStation.callsign)) {
+                map.set(qso.fromStation.callsign, {
+                    qsos: [],
+                    isStation: stationCallsigns.includes(
+                        qso.fromStation.callsign
+                    )
+                });
+            }
+            map.get(qso.fromStation.callsign)?.qsos.push(qso);
         }
 
-        const rankings: Ranking[] = [];
-        for (const [callsign, qsos] of map) {
-            rankings.push({ callsign, qsos });
+        const _rankings: (Omit<Ranking, "position"> & {
+            isStation: boolean;
+        })[] = [];
+        for (const [callsign, data] of map) {
+            _rankings.push({
+                callsign,
+                qsos: data.qsos,
+                isStation: data.isStation
+            });
         }
 
-        rankings.sort((a, b) => b.qsos.length - a.qsos.length);
+        _rankings.sort((a, b) => b.qsos.length - a.qsos.length);
 
-        logger.debug(`Event ${event._id} has ${rankings.length} rankings`);
+        logger.debug(`Event ${event._id} has ${_rankings.length} rankings`);
 
-        res.json({ event, rankings });
+        const [stationRankings, userRankings] = [true, false].map(
+            b =>
+                _rankings
+                    .filter(e => e.isStation === b)
+                    .map((ranking, index) => ({
+                        callsign: ranking.callsign,
+                        qsos: ranking.qsos,
+                        position: index + 1
+                    })) as Ranking[]
+        );
+
+        res.json({ event, rankings: { stationRankings, userRankings } });
     }
 );
 

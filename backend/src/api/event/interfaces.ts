@@ -9,6 +9,7 @@ import { QsoDoc } from "../qso/models";
  *        required:
  *          - callsign
  *          - qsos
+ *          - position
  *        properties:
  *          callsign:
  *            type: string
@@ -20,8 +21,12 @@ import { QsoDoc } from "../qso/models";
  *            type: array
  *            items:
  *              $ref: '#/components/schemas/Qso'
+ *          position:
+ *            type: number
+ *            description: The position of the station in the ranking
  */
 export interface Ranking {
     callsign: string;
     qsos: QsoDoc[];
+    position: number;
 }

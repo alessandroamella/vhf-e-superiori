@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Alert, Button, Table } from "flowbite-react";
 import { UserContext, getErrorStr } from "..";
@@ -8,11 +8,42 @@ import ReactPlaceholder from "react-placeholder";
 import { Card } from "@material-tailwind/react";
 import { FaPlus } from "react-icons/fa";
 import { Helmet } from "react-helmet";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import L from "leaflet";
 
 const BeaconHomepage = () => {
   const [alert, setAlert] = useState(null);
   const [beacons, setBeacons] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const meanLatLon = useMemo(() => {
+    if (!Array.isArray(beacons)) return null;
+    // filter beacons with lat and lon
+    const _beacons = beacons.filter(
+      beacon =>
+        typeof beacon.properties.lat === "number" &&
+        typeof beacon.properties.lon === "number"
+    );
+    if (_beacons.length === 0) return null;
+    const meanLat =
+      _beacons.reduce((acc, beacon) => acc + beacon.properties.lat, 0) /
+      _beacons.length;
+    const meanLon =
+      _beacons.reduce((acc, beacon) => acc + beacon.properties.lon, 0) /
+      _beacons.length;
+    return [meanLat, meanLon];
+  }, [beacons]);
+  const icon = useMemo(
+    () =>
+      L.icon({
+        iconSize: [25, 41],
+        iconAnchor: [10, 41],
+        popupAnchor: [2, -40],
+        iconUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-icon.png",
+        shadowUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-shadow.png"
+      }),
+    []
+  );
 
   const { user } = useContext(UserContext);
 
@@ -174,6 +205,32 @@ const BeaconHomepage = () => {
                 )}
               </ReactPlaceholder>
             </div>
+            {meanLatLon && (
+              <div className="flex justify-center w-full">
+                <MapContainer center={meanLatLon} zoom={5}>
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  />
+                  {beacons?.map(beacon => (
+                    <Marker
+                      key={beacon._id}
+                      position={[beacon.properties.lat, beacon.properties.lon]}
+                      icon={icon}
+                    >
+                      <Popup>
+                        <Link
+                          className="text-center"
+                          to={`/beacon/${beacon._id}`}
+                        >
+                          {beacon.callsign}
+                        </Link>
+                      </Popup>
+                    </Marker>
+                  ))}
+                </MapContainer>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -78,7 +78,7 @@ class EqslPic {
     ): Promise<void> {
         if (!this.image) {
             throw new Error("Image not buffered in addQsoInfo");
-        } else if (!fromStation.city || !fromStation.province) {
+        } else if (!qso.fromStationCity || !qso.fromStationProvince) {
             throw new Error(
                 "City or province not set in fromStation in addQsoInfo"
             );
@@ -108,7 +108,7 @@ class EqslPic {
             : 460;
         logger.debug("Offset2: " + offset2);
 
-        const text3 = `Da: ${fromStation.callsign} (${fromStation.city}, ${fromStation.province})`;
+        const text3 = `Da: ${fromStation.callsign} (${qso.fromStationCity}, ${qso.fromStationProvince})`;
 
         // offset3 should be height / 2.1
         const offset3 = height ? Math.round(Math.min(height, 1920) / 2.5) : 500;

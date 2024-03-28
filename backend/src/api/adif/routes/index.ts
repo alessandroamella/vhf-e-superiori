@@ -98,6 +98,10 @@ router.post(
         })
         .withMessage(Errors.INVALID_ADIF_EXCLUDE),
     body("save").optional().isBoolean(),
+    body("fromStationCity").optional().isString(),
+    body("fromStationProvince").optional().isString(),
+    body("fromStationLat").optional().isNumeric(),
+    body("fromStationLon").optional().isNumeric(),
     validate,
     isLoggedIn,
     async (req, res) => {
@@ -184,12 +188,23 @@ router.post(
                     );
                 }
 
-                const qso = new Qso({
+                let locator;
+                try {
+                    locator = location.calculateQth(
+                        parseInt(req.body.fromStationLat),
+                        parseInt(req.body.fromStationLon)
+                    );
+                } catch (err) {
+                    logger.debug("Error while calculating locator");
+                    logger.debug(err);
+                }
+
+                const qso = await new Qso({
                     fromStation: user._id,
-                    fromStationCity: user.city,
-                    fromStationProvince: user.province,
-                    fromStationLat: user.lat,
-                    fromStationLon: user.lon,
+                    fromStationCity: req.body.fromStationCity,
+                    fromStationProvince: req.body.fromStationProvince,
+                    fromStationLat: parseInt(req.body.fromStationLat),
+                    fromStationLon: parseInt(req.body.fromStationLon),
                     callsign: q.call,
                     mode: q.mode,
                     frequency: q.freq,
@@ -201,8 +216,11 @@ router.post(
                     toStationLon: lon,
                     event: event._id,
                     notes: q.comment,
-                    locator: q.gridsquare,
+                    locator: q.gridsquare || locator,
                     rst: parseInt(q.rst_sent) || 59
+                }).populate({
+                    path: "fromStation",
+                    select: "callsign"
                 });
                 if (shouldSave) await qso.save();
                 qsos.push(qso);

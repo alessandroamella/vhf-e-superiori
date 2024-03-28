@@ -25,6 +25,7 @@ import {
 import { isAfter } from "date-fns/esm";
 import { it, itCH } from "date-fns/locale";
 import {
+  FaArrowAltCircleRight,
   FaCheck,
   FaExclamation,
   FaExternalLinkAlt,
@@ -38,6 +39,8 @@ import { Helmet } from "react-helmet";
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);
   const { events } = useContext(EventsContext);
+
+  const [locator, setLocator] = useState(null);
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -94,6 +97,21 @@ const Profile = () => {
       setLon(user.lon);
       setCity(user.city);
       setProvince(user.province);
+    }
+
+    async function fetchLocator() {
+      try {
+        const { data } = await axios.get(
+          `/api/location/locator/${user.lat}/${user.lon}`
+        );
+        console.log("locator", data);
+        setLocator(data.locator);
+      } catch (err) {
+        console.error("error in locator fetch", err);
+      }
+    }
+    if (user.lat && user.lon) {
+      fetchLocator();
     }
   }, [user]);
 
@@ -539,6 +557,9 @@ const Profile = () => {
                     {isEditing ? (
                       <ReactGoogleAutocomplete
                         apiKey="AIzaSyAiPVD_IqTn5kMi2GFXwYQCTYaxznEbCfk"
+                        options={{
+                          types: ["geocode"]
+                        }}
                         onPlaceSelected={place => {
                           console.log("place", place);
                           const addr = place.formatted_address;
@@ -566,7 +587,7 @@ const Profile = () => {
                         language="it"
                         type="text"
                         placeholder="Modena"
-                        autoComplete="address-level2"
+                        autoComplete="address-level4"
                         value={addressInput}
                         onChange={e => setAddressInput(e.target.value)}
                         onBlur={() => setAddressInput(address)}
@@ -587,6 +608,14 @@ const Profile = () => {
                       </Typography>
                     )}
                   </div>
+                  {!isEditing && locator && (
+                    <div className="ml-2 -mt-4 flex items-center gap-2">
+                      <span className="text-gray-500 dark:text-gray-400">
+                        <FaArrowAltCircleRight className="inline mr-1" />
+                        Locatore: {locator}
+                      </span>
+                    </div>
+                  )}
 
                   <div className="flex mb-2">
                     {isEditing ? (

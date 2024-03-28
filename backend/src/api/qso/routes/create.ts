@@ -107,13 +107,6 @@ router.post(
                 }
             }
 
-            if (!_fromStation.city || !_fromStation.province) {
-                logger.debug("User address not found in QSO create");
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.INVALID_LOCATION));
-            }
-
             const {
                 callsign,
                 event,
@@ -122,7 +115,11 @@ router.post(
                 qsoDate,
                 locator,
                 rst,
-                notes
+                notes,
+                fromStationCity,
+                fromStationProvince,
+                fromStationLat,
+                fromStationLon
             } = req.body;
 
             const fromStation = _fromStation._id.toString();
@@ -135,10 +132,10 @@ router.post(
                 frequency,
                 mode,
                 qsoDate,
-                fromStationCity: _fromStation.city,
-                fromStationProvince: _fromStation.province,
-                fromStationLat: _fromStation.lat,
-                fromStationLon: _fromStation.lon,
+                fromStationCity,
+                fromStationProvince,
+                fromStationLat,
+                fromStationLon,
                 locator,
                 rst,
                 notes
@@ -150,10 +147,10 @@ router.post(
                 frequency,
                 mode,
                 qsoDate,
-                fromStationCity: _fromStation.city,
-                fromStationProvince: _fromStation.province,
-                fromStationLat: _fromStation.lat,
-                fromStationLon: _fromStation.lon,
+                fromStationCity,
+                fromStationProvince,
+                fromStationLat,
+                fromStationLon,
                 locator,
                 rst,
                 notes

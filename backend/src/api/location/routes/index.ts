@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { location } from "..";
-import { param } from "express-validator";
+import { param, query } from "express-validator";
 import { createError, validate } from "../../helpers";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { Errors } from "../../errors";
@@ -102,6 +102,12 @@ router.get(
  *          type: string
  *        required: true
  *        description: Ham radio locator
+ *      - in: query
+ *        name: geocode
+ *        schema:
+ *          type: boolean
+ *        required: false
+ *        description: Whether to reverse geocode the lat/lon
  *    tags:
  *      - location
  *    responses:
@@ -112,15 +118,28 @@ router.get(
  *            schema:
  *              type: object
  *              properties:
+ *                locator:
+ *                  type: string
+ *                  description: Ham radio locator
+ *                address:
+ *                  type: string
+ *                  description: Reverse geocoded address
+ *                city:
+ *                  type: string
+ *                  description: Reverse geocoded city
+ *                province:
+ *                  type: string
+ *                  description: Reverse geocoded province
  *                lat:
  *                  type: number
- *                  description: Latitude
+ *                  description: Reverse geocoded latitude
  *                lon:
  *                  type: number
- *                  description: Longitude
+ *                  description: Reverse geocoded longitude
  *              required:
  *                - lat
  *                - lon
+ *                - locator
  *      '400':
  *        description: Invalid QTH
  *        content:
@@ -138,6 +157,7 @@ router.get(
 router.get(
     "/latlon/:qth",
     param("qth").isString(),
+    query("geocode").isBoolean().optional().toBoolean(),
     validate,
     async (req, res) => {
         const qth = req.params.qth as string;
@@ -149,9 +169,72 @@ router.get(
                 throw new EvalError("Invalid QTH");
             }
 
+            const locator = location.calculateQth(latLon[0], latLon[1]);
+
+            if (!locator) {
+                logger.warn(
+                    "Invalid calculated lat/lon while calculating locator"
+                );
+                throw new EvalError("Invalid QTH");
+            }
+
+            const address: {
+                city?: string;
+                province?: string;
+                formatted?: string;
+            } = {};
+            if (req.query.geocode) {
+                const geocoded = await location.reverseGeocode(
+                    latLon[0],
+                    latLon[1]
+                );
+                if (!geocoded) {
+                    logger.warn(
+                        "Error while reverse geocoding lat " +
+                            latLon[0] +
+                            " lon " +
+                            latLon[1]
+                    );
+                    throw new EvalError("Error while reverse geocoding");
+                }
+
+                logger.debug("Reverse geocoded address:");
+                logger.debug(geocoded);
+                address.city =
+                    geocoded.address_components.find(
+                        e =>
+                            e.types.includes("administrative_area_level_3") ||
+                            e.types.includes("locality")
+                    )?.long_name || geocoded.address_components[0]?.long_name;
+                address.province =
+                    geocoded.address_components.find(
+                        e =>
+                            e.types.includes("administrative_area_level_2") ||
+                            e.types.includes("administrative_area_level_1")
+                    )?.long_name ||
+                    geocoded.address_components[1]?.long_name ||
+                    geocoded.address_components[0]?.long_name;
+
+                const country =
+                    geocoded.address_components.find(e =>
+                        e.types.includes("country")
+                    )?.long_name ||
+                    geocoded.address_components[2]?.long_name ||
+                    geocoded.address_components[1]?.long_name;
+
+                address.formatted =
+                    address.city && address.province && country
+                        ? `${address.city}, ${address.province}, ${country}`
+                        : geocoded.formatted_address;
+            }
+
             res.json({
                 lat: latLon[0],
-                lon: latLon[1]
+                lon: latLon[1],
+                locator,
+                address: address.formatted,
+                city: address.city,
+                province: address.province
             });
         } catch (err) {
             if (err instanceof EvalError) {
