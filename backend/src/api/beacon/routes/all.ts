@@ -38,7 +38,9 @@ const router = Router();
  */
 router.get("/", validate, async (req, res) => {
     try {
-        const beacons: BeaconDocWithProp[] = await Beacon.find().lean();
+        const beacons: BeaconDocWithProp[] = await Beacon.find()
+            .sort("callsign")
+            .lean();
         for (const beacon of beacons) {
             const propsArr = await BeaconProperties.find(
                 {
