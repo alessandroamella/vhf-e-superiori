@@ -213,11 +213,11 @@ const BeaconEditor = () => {
       let _id;
       if (isEditing) {
         console.log("data", data);
-        const res = await axios.put(`/api/beacon/${beacon._id}`, data);
-        _id = res.data._id;
-      } else {
-        await axios.post("/api/beacon", data);
+        await axios.put(`/api/beacon/${beacon._id}`, data);
         _id = id;
+      } else {
+        const res = await axios.post("/api/beacon", data);
+        _id = res.data._id;
       }
       navigate("/beacon/" + _id);
     } catch (err) {
