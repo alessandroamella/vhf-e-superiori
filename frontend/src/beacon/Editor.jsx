@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Alert, Button, Label, TextInput } from "flowbite-react";
 import "leaflet/dist/leaflet.css";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import L from "leaflet";
 import { UserContext, getErrorStr } from "..";
 import Layout from "../Layout";
@@ -32,13 +32,17 @@ const MyMarker = ({
   fly,
   updateFn
 }) => {
-  const icon = L.icon({
-    iconSize: [25, 41],
-    iconAnchor: [10, 41],
-    popupAnchor: [2, -40],
-    iconUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-shadow.png"
-  });
+  const icon = useMemo(
+    () =>
+      L.icon({
+        iconSize: [25, 41],
+        iconAnchor: [10, 41],
+        popupAnchor: [2, -40],
+        iconUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-icon.png",
+        shadowUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-shadow.png"
+      }),
+    []
+  );
 
   const map = useMapEvents({
     // on load, locate
@@ -221,6 +225,11 @@ const BeaconEditor = () => {
       setAlert({
         color: "failure",
         msg: getErrorStr(err?.response?.data?.err)
+      });
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
       });
     } finally {
       setDisabled(false);

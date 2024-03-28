@@ -48,7 +48,7 @@ router.get(
         .isString()
         .isLength({ min: 1, max: 10 })
         .trim()
-        .isAlphanumeric()
+        // .isAlphanumeric()
         .toUpperCase(),
     validate,
     async (req, res) => {
@@ -56,6 +56,9 @@ router.get(
             const info = await qrz.getInfo(
                 (req.params as { callsign: string }).callsign
             );
+            if (!info) {
+                throw new Error(Errors.QRZ_OM_NOT_FOUND);
+            }
             logger.debug("QRZ successful");
             logger.debug(info);
             res.json(info);

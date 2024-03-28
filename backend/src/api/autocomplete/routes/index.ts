@@ -64,6 +64,7 @@ interface UserAutocomplete {
     address?: string;
     email?: string;
     pictureUrl?: string;
+    locator?: string;
 }
 
 const cache: { [callsign: string]: UserAutocomplete & { date: Moment } } = {};
@@ -99,23 +100,25 @@ router.get(
                 return res.json(response);
             }
 
-            const scraped = await qrz.scrapeAllData(callsign);
-            if (scraped) {
-                const { name, email, url, address } = scraped;
-                const response: UserAutocomplete = {
-                    callsign,
-                    name,
-                    email,
-                    pictureUrl: url,
-                    address
-                };
-                cache[callsign] = { ...response, date: moment() };
-                return res.json(response);
+            const scraped = await qrz.getInfo(callsign);
+            if (!scraped) {
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.USER_NOT_FOUND));
             }
 
-            return res
-                .status(BAD_REQUEST)
-                .json(createError(Errors.USER_NOT_FOUND));
+            const { name, address, email, locator, pictureUrl, town, country } =
+                scraped;
+            const response: UserAutocomplete = {
+                callsign,
+                name,
+                email,
+                pictureUrl,
+                address: town && country ? `${town}, ${country}` : address,
+                locator
+            };
+            cache[callsign] = { ...response, date: moment() };
+            return res.json(response);
         } catch (err) {
             logger.error("Error in autocomplete");
             logger.error(err);

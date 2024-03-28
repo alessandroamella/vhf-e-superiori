@@ -240,7 +240,7 @@ export class EmailService {
                 '<div style="padding: 1rem; border: 1px solid #ccc; border-radius: 0.5rem; margin-top: 1rem; margin-bottom: 1rem">' +
                 '<div style="display: flex; align-items: center; margin-bottom: 1rem">' +
                 '<img src="' +
-                (await qrz.scrapeProfilePicture(fromUser.callsign)) +
+                (await qrz.getInfo(fromUser.callsign))?.pictureUrl +
                 '" style="width: 3rem; height: 3rem; border-radius: 50%; margin-right: 1rem" />' +
                 '<span style="font-weight: 600">' +
                 fromUser.callsign +

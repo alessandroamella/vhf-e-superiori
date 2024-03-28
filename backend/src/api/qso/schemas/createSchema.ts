@@ -1,4 +1,5 @@
 import { Schema } from "express-validator";
+import { Errors } from "../../errors";
 
 const createSchema: Schema = {
     fromStation: {
@@ -14,26 +15,26 @@ const createSchema: Schema = {
         toUpperCase: { options: [] },
         // TODO add prefix and suffix support
         // isAlphanumeric: { options: [] },
-        errorMessage: "Callsign must be between 1 and 10 characters"
+        errorMessage: Errors.INVALID_CALLSIGN
     },
     email: {
         isString: { options: [] },
         trim: { options: [] },
         isEmail: { options: [] },
         optional: true,
-        errorMessage: "Email must be a valid email address"
+        errorMessage: Errors.INVALID_EMAIL
     },
     event: {
         isString: { options: [] },
         trim: { options: [] },
         isMongoId: { options: [] },
-        errorMessage: "Event must be a valid ObjectId"
+        errorMessage: Errors.INVALID_OBJECT_ID
     },
     frequency: {
         isNumeric: { options: [] },
         toFloat: { options: [] },
         isFloat: { options: [] },
-        errorMessage: "Frequency must be a number"
+        errorMessage: Errors.INVALID_FREQUENCY
     },
     mode: {
         isString: { options: [] },
@@ -41,32 +42,58 @@ const createSchema: Schema = {
         toUpperCase: { options: [] },
         isAlphanumeric: { options: [] },
         isLength: { options: { min: 1, max: 10 } },
-        errorMessage: "Mode must be between 1 and 10 alphanumeric characters"
+        errorMessage: Errors.INVALID_MODE
     },
     qsoDate: {
         isString: { options: [] },
         trim: { options: [] },
         isISO8601: { options: [] },
-        errorMessage: "QSO date must be a valid ISO 8601 date"
+        errorMessage: Errors.INVALID_DATE
     },
     notes: {
         isString: { options: [] },
         trim: { options: [] },
         optional: true,
-        errorMessage: "Notes must be a string"
+        errorMessage: Errors.INVALID_NOTES
     },
     locator: {
         isString: { options: [] },
         trim: { options: [] },
         optional: true,
-        errorMessage: "Locator must be a string"
+        errorMessage: Errors.INVALID_LOCATOR
     },
     rst: {
         isNumeric: { options: [] },
         toInt: { options: [] },
         isInt: { options: [] },
         optional: true,
-        errorMessage: "RST must be a number"
+        errorMessage: Errors.INVALID_RST
+    },
+    fromStationCity: {
+        isString: { options: [] },
+        trim: { options: [] },
+        optional: true,
+        errorMessage: Errors.INVALID_CITY
+    },
+    fromStationProvince: {
+        isString: { options: [] },
+        trim: { options: [] },
+        optional: true,
+        errorMessage: Errors.INVALID_PROVINCE
+    },
+    fromStationLat: {
+        isNumeric: { options: [] },
+        toFloat: { options: [] },
+        isFloat: { options: [] },
+        optional: true,
+        errorMessage: Errors.INVALID_LATITUDE
+    },
+    fromStationLon: {
+        isNumeric: { options: [] },
+        toFloat: { options: [] },
+        isFloat: { options: [] },
+        optional: true,
+        errorMessage: Errors.INVALID_LONGITUDE
     }
 };
 export default createSchema;

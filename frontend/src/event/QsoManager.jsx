@@ -19,6 +19,7 @@ import {
 } from "flowbite-react";
 import React, {
   createRef,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -41,10 +42,12 @@ import {
   FaExternalLinkAlt,
   FaForward,
   FaInfoCircle,
+  FaMapMarkerAlt,
   FaPlusCircle,
   FaShare,
   FaTimes,
-  FaUndo
+  FaUndo,
+  FaUser
 } from "react-icons/fa";
 import { useCookies } from "react-cookie";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
@@ -101,8 +104,6 @@ const QsoManager = () => {
     }
     if (user?.isAdmin && !users) getUsers();
   }, [event, isEventStation, user, users]);
-
-  const [showAddressWarning, setShowAddressWarning] = useState(true);
 
   useEffect(() => {
     async function getEvent() {
@@ -204,7 +205,7 @@ const QsoManager = () => {
   const [cookies, setCookie] = useCookies(["qsoManagerCache"]);
 
   const [callsign, setCallsign] = useState(cookies.callsign || "");
-  const [locator, setLocator] = useState(cookies.locator || "");
+  const [locator, setLocator] = useState(cookies.locator || null);
   const [rst, setRst] = useState(parseInt(cookies.rst) || 59);
   const [frequency, setFrequency] = useState(cookies.frequency || "");
   const [mode, setMode] = useState(cookies.mode || "");
@@ -213,6 +214,79 @@ const QsoManager = () => {
       "T" +
       formatInTimeZone(new Date(), "UTC", "HH:mm")
   );
+
+  const [formattedAddress, setFormattedAddress] = useState(null);
+  const [city, setCity] = useState(null);
+  const [province, setProvince] = useState(null);
+  const [lat, setLat] = useState(null);
+  const [lon, setLon] = useState(null);
+
+  const geolocalize = useCallback(() => {
+    navigator.geolocation.getCurrentPosition(
+      async position => {
+        console.log("Geolocalizzato", position);
+
+        const { data } = await axios.get(
+          `/api/location/locator/${position.coords.latitude}/${position.coords.longitude}`
+        );
+        console.log("fetched locator in geolocalize", data);
+        setLocator(data.locator);
+      },
+      err => {
+        console.log("Errore nella geolocalizzazione", err);
+        setAlert({
+          color: "failure",
+          msg: "Errore nella geolocalizzazione"
+        });
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!user || locator !== null || !user.lat || !user.lon) return;
+
+    async function fetchLocator() {
+      try {
+        const { data } = await axios.get(
+          `/api/location/locator/${user.lat}/${user.lon}`
+        );
+        console.log("fetched locator", data);
+        setLocator(data.locator);
+      } catch (err) {
+        console.error("error in locator fetch", err);
+      }
+    }
+    if (user.lat && user.lon) {
+      fetchLocator();
+    }
+  }, [cookies.locator, locator, user]);
+
+  useEffect(() => {
+    if (!locator || locator.length !== 6) return;
+    console.log("fetching lat lon, len is", locator.length);
+
+    async function getLatLon() {
+      try {
+        setFormattedAddress(false);
+        const { data } = await axios.get(`/api/location/latlon/${locator}`, {
+          params: {
+            geocode: true
+          }
+        });
+        console.log("fetched lat lon", data);
+        setLocator(data.locator);
+        setFormattedAddress(data.address);
+        setCity(data.city);
+        setProvince(data.province);
+        setLat(data.lat);
+        setLon(data.lon);
+      } catch (err) {
+        console.log("error in lat lon fetch", err);
+        setFormattedAddress(null);
+      }
+    }
+    getLatLon();
+  }, [locator]);
 
   function resetDate() {
     setQsoDate(
@@ -279,7 +353,11 @@ const QsoManager = () => {
         mode,
         qsoDate: zonedTimeToUtc(new Date(qsoDate), "UTC"),
         locator,
-        rst: isNaN(parseInt(rst)) ? 59 : parseInt(rst)
+        rst: isNaN(parseInt(rst)) ? 59 : parseInt(rst),
+        fromStationCity: city,
+        fromStationProvince: province,
+        fromStationLat: lat,
+        fromStationLon: lon
         // emailSent,
         // emailSentDate,
         // notes,
@@ -337,11 +415,31 @@ const QsoManager = () => {
     if (autocompleteTimeout.current) {
       clearTimeout(autocompleteTimeout.current);
     }
+    if (callsign.length <= 2) {
+      console.log(
+        "too shirt for autocomplete, callsign length",
+        callsign.length
+      );
+      setAutocomplete(null);
+      return;
+    }
     autocompleteTimeout.current = setTimeout(async () => {
       try {
         const { data } = await axios.get("/api/autocomplete/" + callsign);
         console.log("autocomplete", data);
-        if (Object.keys(data).length > 1) {
+        if (data.callsign !== callsign) {
+          console.log("callsign changed, aborting");
+          return;
+        }
+        if (
+          Object.keys(data).length > 1 &&
+          !(
+            "date" in data &&
+            "callsign" in data &&
+            Object.keys(data).length === 2
+          )
+        ) {
+          // if only keys are date and callsign, it's not a valid autocomplete
           console.log("setAutocomplete", data);
           setAutocomplete(data);
         } else {
@@ -351,7 +449,7 @@ const QsoManager = () => {
       } catch (err) {
         console.log(err);
       }
-    });
+    }, 200);
   }, [callsign, user]);
 
   const [adifFile, setAdifFile] = useState(null);
@@ -370,20 +468,6 @@ const QsoManager = () => {
       index
     });
   }
-
-  function hideCityWarning() {
-    setShowAddressWarning(false);
-    setCookie("hideCityWarning", true, {
-      path: "/qsomanager",
-      maxAge: 60 * 60 * 4 // 4 hours
-    });
-  }
-
-  useEffect(() => {
-    if (cookies.hideCityWarning) {
-      setShowAddressWarning(false);
-    }
-  }, [cookies.hideCityWarning]);
 
   async function importAdif(_adifFile) {
     if (!_adifFile) return;
@@ -437,6 +521,10 @@ const QsoManager = () => {
     const formData = new FormData();
     formData.append("adif", adifFile);
     formData.append("event", id);
+    formData.append("fromStationCity", city);
+    formData.append("fromStationProvince", province);
+    formData.append("fromStationLat", lat);
+    formData.append("fromStationLon", lon);
     formData.append(
       "exclude",
       JSON.stringify(
@@ -586,9 +674,11 @@ const QsoManager = () => {
   const [allPredataInserted, setAllPredataInserted] = useState(false);
 
   useEffect(() => {
-    setAllPredataInserted(frequency && mode && qsoDate && locator);
+    setAllPredataInserted(
+      frequency && mode && qsoDate && locator && formattedAddress
+    );
     console.log("predata", { frequency, mode, qsoDate, locator });
-  }, [frequency, mode, qsoDate, locator]);
+  }, [frequency, mode, qsoDate, locator, formattedAddress]);
 
   const [editTime, setEditTime] = useState(false);
 
@@ -665,7 +755,7 @@ const QsoManager = () => {
                     <Table.HeadCell>Data UTC</Table.HeadCell>
                     <Table.HeadCell>Frequenza</Table.HeadCell>
                     <Table.HeadCell>Modo</Table.HeadCell>
-                    <Table.HeadCell>Locatore</Table.HeadCell>
+                    <Table.HeadCell>Da locatore</Table.HeadCell>
                     <Table.HeadCell>RST</Table.HeadCell>
                   </Table.Head>
                   <Table.Body>
@@ -768,10 +858,32 @@ const QsoManager = () => {
                 ) : null}
 
                 <div className="my-12">
-                  <Typography variant="h2" className="mb-2">
-                    QSO registrati
-                  </Typography>
-                  <div className="mb-6">
+                  <div className="flex flex-col md:flex-row md:justify-between">
+                    <Typography variant="h2" className="mb-2">
+                      QSO registrati
+                    </Typography>
+                    <div>
+                      <h3 className="font-bold">Importa QSO da file ADIF</h3>
+                      <div className="mb-8 flex items-center gap-2">
+                        <FileInput
+                          disabled={disabled}
+                          helperText={disabled && <Spinner />}
+                          accept=".adi"
+                          className="h-fit"
+                          onChange={e => importAdif(e.target.files[0])}
+                          ref={adifInputRef}
+                        />
+                        <Button
+                          color="dark"
+                          onClick={resetAdif}
+                          disabled={disabled || !hasFile}
+                        >
+                          <FaUndo />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mb-6 -mt-6">
                     {Array.isArray(qsos) ? (
                       qsos.length > 0 ? (
                         <div>
@@ -815,33 +927,10 @@ const QsoManager = () => {
                                 {disabled ? (
                                   <Spinner size="sm" />
                                 ) : (
-                                  <span>Elimina</span>
+                                  <span>Elimina selezionati</span>
                                 )}
                               </Button>
                             </Button.Group>
-
-                            <div>
-                              <h3 className="font-bold">
-                                Importa QSO da file ADIF
-                              </h3>
-                              <div className="mb-8 flex items-center gap-2">
-                                <FileInput
-                                  disabled={disabled}
-                                  helperText={disabled && <Spinner />}
-                                  accept=".adi"
-                                  className="h-fit"
-                                  onChange={e => importAdif(e.target.files[0])}
-                                  ref={adifInputRef}
-                                />
-                                <Button
-                                  color="dark"
-                                  onClick={resetAdif}
-                                  disabled={disabled || !hasFile}
-                                >
-                                  <FaUndo />
-                                </Button>
-                              </div>
-                            </div>
                           </div>
 
                           <div className="shadow-lg">
@@ -857,7 +946,7 @@ const QsoManager = () => {
                                 <Table.HeadCell>Data UTC</Table.HeadCell>
                                 <Table.HeadCell>Frequenza</Table.HeadCell>
                                 <Table.HeadCell>Modo</Table.HeadCell>
-                                <Table.HeadCell>Locatore</Table.HeadCell>
+                                <Table.HeadCell>Da locatore</Table.HeadCell>
                                 <Table.HeadCell>RST</Table.HeadCell>
                                 <Table.HeadCell>
                                   <span className="sr-only">Azioni</span>
@@ -1024,196 +1113,173 @@ const QsoManager = () => {
                     </Typography>
                   </div>
                   {user ? (
-                    !user.address ? (
-                      <Alert color="failure" className="text-lg">
-                        <span>
-                          ⚠️ Devi prima completare il tuo profilo con
-                          l'indirizzo:{" "}
-                          <Link
-                            to={`/profile?forceEditCity=true&backTo=${window.location.pathname}`}
-                            className="underline font-bold"
-                          >
-                            clicca qui per inserirlo
-                          </Link>{" "}
-                          .
-                        </span>
-                      </Alert>
-                    ) : (
-                      <div className="mb-6">
-                        {showAddressWarning && (
-                          <Alert
-                            color="info"
-                            className="mb-4"
-                            onDismiss={hideCityWarning}
-                          >
-                            <span>
-                              ⚠️ La tua città è attualmente impostata a{" "}
-                              <span className="font-bold">{user.city}</span> (
-                              <span className="font-bold">{user.province}</span>
-                              ), assicurati che sia corretta. In caso contrario,{" "}
-                              <Link
-                                to={`/profile?forceEditCity=true&backTo=${window.location.pathname}`}
-                                className="underline font-bold"
-                              >
-                                clicca qui
-                              </Link>{" "}
-                              per navigare al tuo profilo, poi clicca su "
-                              <span className="font-medium">
-                                Modifica profilo
-                              </span>
-                              " e modifica la città.
-                            </span>
-                          </Alert>
-                        )}
+                    <div className="mb-6">
+                      <div className="w-full flex justify-center">
+                        <Timeline horizontal>
+                          <Timeline.Item>
+                            <Timeline.Point icon={FaDatabase} />
+                            <Timeline.Content>
+                              <Timeline.Title>
+                                <span
+                                  className={`${
+                                    page === 0 ? "font-bold" : "font-medium"
+                                  } cursor-pointer hover:text-blue-700 transition-colors`}
+                                  onClick={() => setPage(0)}
+                                >
+                                  Dati preliminari
+                                </span>
+                              </Timeline.Title>
+                              <Timeline.Body>
+                                Necessari per la creazione del QSO
+                              </Timeline.Body>
+                            </Timeline.Content>
+                          </Timeline.Item>
+                          <Timeline.Item>
+                            <Timeline.Point icon={FaShare} />
+                            <Timeline.Content>
+                              <Timeline.Title>
+                                <span
+                                  className={`${
+                                    page === 1 ? "font-bold" : "font-medium"
+                                  } ${
+                                    allPredataInserted
+                                      ? "cursor-pointer hover:text-blue-700 transition-colors"
+                                      : "cursor-not-allowed"
+                                  }`}
+                                  onClick={
+                                    allPredataInserted ? () => setPage(1) : null
+                                  }
+                                >
+                                  Nominativo
+                                </span>
+                              </Timeline.Title>
+                              <Timeline.Body>Registrazione QSO</Timeline.Body>
+                            </Timeline.Content>
+                          </Timeline.Item>
+                        </Timeline>
+                      </div>
 
-                        <div className="w-full flex justify-center">
-                          <Timeline horizontal>
-                            <Timeline.Item>
-                              <Timeline.Point icon={FaDatabase} />
-                              <Timeline.Content>
-                                <Timeline.Title>
-                                  <span
-                                    className={`${
-                                      page === 0 ? "font-bold" : "font-medium"
-                                    } cursor-pointer hover:text-blue-700 transition-colors`}
-                                    onClick={() => setPage(0)}
+                      <form onSubmit={createQso}>
+                        {page === 0 ? (
+                          <>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {!isEventStation && user.isAdmin && users && (
+                                <div>
+                                  <Label
+                                    htmlFor="fromStation"
+                                    value="Da stazione attivatrice*"
+                                  />
+                                  <Dropdown
+                                    label={fromStation.callsign}
+                                    disabled={disabled}
+                                    id="fromStation"
+                                    className="w-full"
+                                    required
+                                    color="light"
                                   >
-                                    Dati preliminari
-                                  </span>
-                                </Timeline.Title>
-                                <Timeline.Body>
-                                  Necessari per la creazione del QSO
-                                </Timeline.Body>
-                              </Timeline.Content>
-                            </Timeline.Item>
-                            <Timeline.Item>
-                              <Timeline.Point icon={FaShare} />
-                              <Timeline.Content>
-                                <Timeline.Title>
-                                  <span
-                                    className={`${
-                                      page === 1 ? "font-bold" : "font-medium"
-                                    } ${
-                                      allPredataInserted
-                                        ? "cursor-pointer hover:text-blue-700 transition-colors"
-                                        : "cursor-not-allowed"
-                                    }`}
-                                    onClick={
-                                      allPredataInserted
-                                        ? () => setPage(1)
-                                        : null
-                                    }
-                                  >
-                                    Nominativo
-                                  </span>
-                                </Timeline.Title>
-                                <Timeline.Body>Registrazione QSO</Timeline.Body>
-                              </Timeline.Content>
-                            </Timeline.Item>
-                          </Timeline>
-                        </div>
-
-                        <form onSubmit={createQso}>
-                          {page === 0 ? (
-                            <>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {!isEventStation && user.isAdmin && users && (
-                                  <div>
-                                    <Label
-                                      htmlFor="fromStation"
-                                      value="Da stazione attivatrice*"
-                                    />
-                                    <Dropdown
-                                      label={fromStation.callsign}
-                                      disabled={disabled}
-                                      id="fromStation"
-                                      className="w-full"
-                                      required
-                                      color="light"
-                                    >
-                                      {users.map(u => (
-                                        <Dropdown.Item
-                                          key={u._id}
-                                          onClick={() => setFromStation(u)}
+                                    {users.map(u => (
+                                      <Dropdown.Item
+                                        key={u._id}
+                                        onClick={() => setFromStation(u)}
+                                      >
+                                        <span
+                                          className={
+                                            u._id === fromStation._id
+                                              ? "font-bold"
+                                              : ""
+                                          }
                                         >
-                                          <span
-                                            className={
-                                              u._id === fromStation._id
-                                                ? "font-bold"
-                                                : ""
-                                            }
-                                          >
-                                            {u.callsign}
-                                          </span>
-                                        </Dropdown.Item>
-                                      ))}
-                                    </Dropdown>
-                                    <p className="flex items-center gap-1">
-                                      <FaInfoCircle />
-                                      Vedi questo in quanto sei un{" "}
-                                      <span className="font-bold">
-                                        amministratore
-                                      </span>
-                                    </p>
-                                  </div>
-                                )}
+                                          {u.callsign}
+                                        </span>
+                                      </Dropdown.Item>
+                                    ))}
+                                  </Dropdown>
+                                  <p className="flex items-center gap-1">
+                                    <FaInfoCircle />
+                                    Vedi questo in quanto sei un{" "}
+                                    <span className="font-bold">
+                                      amministratore
+                                    </span>
+                                  </p>
+                                </div>
+                              )}
 
-                                <div>
+                              <div>
+                                <Label
+                                  htmlFor="frequency"
+                                  value="Frequenza (in MHz)"
+                                />
+                                <TextInput
+                                  color={frequency ? "success" : "warning"}
+                                  disabled={disabled}
+                                  id="frequency"
+                                  label="Frequenza"
+                                  placeholder="144.205"
+                                  type="number"
+                                  value={frequency}
+                                  onChange={e => {
+                                    setFrequency(e.target.value);
+                                    setCookie("frequency", e.target.value, {
+                                      path: "/qsomanager",
+                                      maxAge: 60 * 60 * 4
+                                    });
+                                  }}
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <Label
+                                  htmlFor="mode"
+                                  value="Modo (CW, SSB, FT8, ecc.)"
+                                />
+                                <TextInput
+                                  color={mode ? "success" : "warning"}
+                                  disabled={disabled}
+                                  id="mode"
+                                  label="Modo"
+                                  minLength={1}
+                                  maxLength={10}
+                                  placeholder="SSB"
+                                  value={mode}
+                                  onChange={e => {
+                                    setMode(e.target.value);
+                                    setCookie("mode", e.target.value, {
+                                      path: "/qsomanager",
+                                      maxAge: 60 * 60 * 4
+                                    });
+                                  }}
+                                  required
+                                />
+                              </div>
+                              <div
+                                className={`${
+                                  formattedAddress ? "" : "mb-7"
+                                } flex items-center gap-2`}
+                              >
+                                <div className="w-full">
                                   <Label
-                                    htmlFor="frequency"
-                                    value="Frequenza (in MHz)"
+                                    htmlFor="locator"
+                                    value="Tuo locatore"
                                   />
                                   <TextInput
-                                    color={frequency ? "success" : "warning"}
-                                    disabled={disabled}
-                                    id="frequency"
-                                    label="Frequenza"
-                                    placeholder="144.205"
-                                    type="number"
-                                    value={frequency}
-                                    onChange={e => {
-                                      setFrequency(e.target.value);
-                                      setCookie("frequency", e.target.value, {
-                                        path: "/qsomanager",
-                                        maxAge: 60 * 60 * 4
-                                      });
-                                    }}
-                                    required
-                                  />
-                                </div>
-                                <div>
-                                  <Label
-                                    htmlFor="mode"
-                                    value="Modo (CW, SSB, FT8, ecc.)"
-                                  />
-                                  <TextInput
-                                    color={mode ? "success" : "warning"}
-                                    disabled={disabled}
-                                    id="mode"
-                                    label="Modo"
-                                    minLength={1}
-                                    maxLength={10}
-                                    placeholder="SSB"
-                                    value={mode}
-                                    onChange={e => {
-                                      setMode(e.target.value);
-                                      setCookie("mode", e.target.value, {
-                                        path: "/qsomanager",
-                                        maxAge: 60 * 60 * 4
-                                      });
-                                    }}
-                                    required
-                                  />
-                                </div>
-                                <div>
-                                  <Label htmlFor="locator" value="Locatore" />
-                                  <TextInput
-                                    color={locator ? "success" : "warning"}
+                                    color={
+                                      locator?.length === 6 &&
+                                      formattedAddress !== null
+                                        ? "success"
+                                        : formattedAddress === false
+                                        ? "info"
+                                        : "warning"
+                                    }
                                     disabled={disabled}
                                     id="locator"
-                                    label="Locatore"
-                                    minLength={1}
-                                    maxLength={20}
+                                    label="Tuo locatore"
+                                    helperText={
+                                      (formattedAddress !== false &&
+                                        formattedAddress) ||
+                                      "Locatore non valido"
+                                    }
+                                    minLength={6}
+                                    maxLength={6}
                                     placeholder="JN54mn"
                                     value={locator}
                                     onChange={e => {
@@ -1222,321 +1288,345 @@ const QsoManager = () => {
                                         path: "/qsomanager",
                                         maxAge: 60 * 60 * 4
                                       });
+                                      if (e.target.value.length !== 6) {
+                                        setFormattedAddress(null);
+                                      }
                                     }}
                                   />
                                 </div>
-                              </div>
-                            </>
-                          ) : (
-                            <div className="flex flex-col gap-2 items-center">
-                              <div className="flex flex-col md:flex-row gap-2 justify-center items-center md:items-end">
-                                <div className="w-full relative">
-                                  <Label
-                                    htmlFor="callsign"
-                                    value="Nominativo*"
-                                  />
-                                  <TextInput
-                                    disabled={disabled}
-                                    id="callsign"
-                                    label="Nominativo"
-                                    sizing="xl"
-                                    minLength={1}
-                                    maxLength={10}
-                                    ref={callsignRef}
-                                    placeholder={
-                                      user ? user.callsign : "IU4QSG"
-                                    }
-                                    value={callsign}
-                                    className="uppercase font-semibold text-2xl input-large"
-                                    onChange={e => {
-                                      const val = e.target.value.toUpperCase();
-                                      setCallsign(val);
-                                      setCookie("callsign", val, {
-                                        path: "/qsomanager",
-                                        maxAge: 60 * 60 * 4
-                                      });
-                                    }}
-                                    required
-                                  />
 
-                                  {callsign && autocomplete && (
-                                    <div className="absolute top-20 left-0 bg-white min-w-[28rem] dark:bg-gray-800 shadow-lg rounded-lg z-10">
-                                      <Card
-                                        onClick={createQso}
-                                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                                      >
-                                        <div className="flex items-center gap-2 justify-between">
-                                          <Avatar
-                                            img={autocomplete.pictureUrl}
-                                          />
+                                <Button
+                                  color="gray"
+                                  onClick={geolocalize}
+                                  disabled={disabled}
+                                  className="mb-1"
+                                >
+                                  <FaMapMarkerAlt className="text-xl" />
+                                </Button>
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="flex flex-col gap-2 items-center">
+                            <div className="flex flex-col md:flex-row gap-2 justify-center items-center md:items-end">
+                              <div className="w-full relative">
+                                <Label htmlFor="callsign" value="Nominativo*" />
+                                <TextInput
+                                  disabled={disabled}
+                                  id="callsign"
+                                  label="Nominativo"
+                                  sizing="xl"
+                                  minLength={1}
+                                  maxLength={10}
+                                  ref={callsignRef}
+                                  placeholder={user ? user.callsign : "IU4QSG"}
+                                  value={callsign}
+                                  className="uppercase font-semibold text-2xl input-large"
+                                  onChange={e => {
+                                    const val = e.target.value.toUpperCase();
+                                    setCallsign(val);
+                                    setCookie("callsign", val, {
+                                      path: "/qsomanager",
+                                      maxAge: 60 * 60 * 4
+                                    });
+                                  }}
+                                  required
+                                  autocomplete="off"
+                                  autoComplete="off"
+                                />
+
+                                {callsign && autocomplete && (
+                                  <div className="absolute top-20 left-0 bg-white min-w-[28rem] dark:bg-gray-800 shadow-lg rounded-lg z-10">
+                                    <Card
+                                      onClick={createQso}
+                                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    >
+                                      {/* justify-between */}
+                                      <div className="flex items-center gap-4">
+                                        <Avatar
+                                          img={autocomplete.pictureUrl}
+                                          size="lg"
+                                        />
+                                        <div className="flex flex-col items-center min-w-[10rem]">
+                                          <span className="font-semibold text-lg flex items-center gap-1">
+                                            <span className="text-gray-500">
+                                              <FaUser />
+                                            </span>{" "}
+                                            {autocomplete.callsign}
+                                          </span>
                                           {autocomplete.name && (
-                                            <span className="font-semibold">
+                                            <span className="text-center">
                                               {autocomplete.name}
                                             </span>
                                           )}
+                                        </div>
+
+                                        <div className="ml-auto flex flex-col items-center min-w-[10rem]">
                                           {autocomplete.email && (
                                             <a
                                               href={`mailto:${autocomplete.email}`}
-                                              className="text-blue-500 dark:text-blue-400 text-sm"
+                                              className="text-center font-semibold text-blue-500 dark:text-blue-400 text-sm"
                                             >
                                               {autocomplete.email}
                                             </a>
                                           )}
+                                          {autocomplete.address && (
+                                            <span className="text-center text-sm text-gray-500">
+                                              {autocomplete.address}
+                                            </span>
+                                          )}
                                         </div>
-                                      </Card>
-                                    </div>
-                                  )}
-                                </div>
-
-                                <Button
-                                  type="submit"
-                                  disabled={disabled}
-                                  size="lg"
-                                  color={highlighted ? "success" : "info"}
-                                  className="transition-colors duration-500 min-w-[10rem]"
-                                >
-                                  {disabled ? (
-                                    <Spinner />
-                                  ) : (
-                                    <span className="flex items-center gap-2">
-                                      <FaPlusCircle />
-                                      Salva QSO
-                                    </span>
-                                  )}
-                                </Button>
+                                      </div>
+                                    </Card>
+                                  </div>
+                                )}
                               </div>
 
-                              {/* orario */}
+                              <Button
+                                type="submit"
+                                disabled={disabled}
+                                size="lg"
+                                color={highlighted ? "success" : "info"}
+                                className="transition-colors duration-500 min-w-[10rem]"
+                              >
+                                {disabled ? (
+                                  <Spinner />
+                                ) : (
+                                  <span className="flex items-center gap-2">
+                                    <FaPlusCircle />
+                                    Salva QSO
+                                  </span>
+                                )}
+                              </Button>
                             </div>
-                          )}
-                          <div className="mt-4 flex flex-col items-center gap-2">
-                            <div className="flex justify-center">
-                              {page === 0 ? (
-                                <Tooltip
-                                  content={
-                                    allPredataInserted
-                                      ? "Pagina successiva"
-                                      : "Completa tutti i campi per procedere"
-                                  }
-                                >
-                                  <Button
-                                    type="button"
-                                    disabled={disabled || !allPredataInserted}
-                                    onClick={() => setPage(1)}
-                                    size="lg"
-                                    color={
-                                      allPredataInserted ? "success" : "failure"
-                                    }
-                                    className="transition-colors"
-                                  >
-                                    Inserisci nominativo
-                                    <FaForward className="inline ml-2" />
-                                  </Button>
-                                </Tooltip>
-                              ) : (
+
+                            {/* orario */}
+                          </div>
+                        )}
+                        <div className="mt-4 flex flex-col items-center gap-2">
+                          <div className="flex justify-center">
+                            {page === 0 ? (
+                              <Tooltip
+                                content={
+                                  allPredataInserted
+                                    ? "Pagina successiva"
+                                    : "Completa tutti i campi per procedere"
+                                }
+                              >
                                 <Button
                                   type="button"
-                                  disabled={disabled}
-                                  onClick={() => setPage(0)}
-                                  color="light"
-                                  className="mt-6"
+                                  disabled={disabled || !allPredataInserted}
+                                  onClick={() => setPage(1)}
+                                  size="lg"
+                                  color={
+                                    allPredataInserted ? "success" : "failure"
+                                  }
+                                  className="transition-colors"
                                 >
-                                  <FaBackward className="inline mr-2" />
-                                  Precedente
+                                  Inserisci nominativo
+                                  <FaForward className="inline ml-2" />
                                 </Button>
-                              )}
-                            </div>
-
-                            {page === 1 && (
-                              <div className="mt-8 flex flex-col justify-center gap-2 items-center">
-                                <h5 className="font-semibold text-sm uppercase text-gray-600 dark:text-gray-400">
-                                  Riepilogo
-                                </h5>
-                                <Card className="w-full">
-                                  <div className="flex flex-col md:flex-row gap-4 items-start">
-                                    <div className="w-full">
-                                      <Label
-                                        htmlFor="callsign"
-                                        value="Nominativo"
-                                      />
-                                      <TextInput
-                                        disabled
-                                        id="callsign"
-                                        label="Nominativo"
-                                        minLength={1}
-                                        maxLength={10}
-                                        value={callsign}
-                                        className="font-semibold"
-                                      />
-                                    </div>
-                                    <div className="w-full">
-                                      {editTime ? (
-                                        <>
-                                          <div>
-                                            <Label
-                                              htmlFor="qsoDate"
-                                              value="Data QSO in UTC*"
-                                            />
-                                            <div className="flex gap-1 justify-center items-start">
-                                              <div className="w-full relative">
-                                                <TextInput
-                                                  disabled={disabled}
-                                                  id="qsoDate"
-                                                  label="Data"
-                                                  type="datetime-local"
-                                                  className="w-full"
-                                                  value={qsoDate}
-                                                  onChange={e =>
-                                                    setQsoDate(e.target.value)
-                                                  }
-                                                  required
-                                                  helperText={
-                                                    <>
-                                                      {format(
-                                                        new Date(qsoDate),
-                                                        "HH:mm"
-                                                      )}{" "}
-                                                      UTC
-                                                      {", "}
-                                                      {formatInTimeZone(
-                                                        zonedTimeToUtc(
-                                                          new Date(qsoDate),
-                                                          "UTC"
-                                                        ),
-                                                        "Europe/Rome",
-                                                        "HH:mm"
-                                                      )}{" "}
-                                                      Roma
-                                                    </>
-                                                  }
-                                                />
-                                              </div>
-                                              <div className="mt-1">
-                                                <Tooltip content="Imposta all'orario attuale">
-                                                  <Button
-                                                    color="light"
-                                                    // size="sm"
-                                                    className="h-max"
-                                                    onClick={resetDate}
-                                                  >
-                                                    <FaUndo />
-                                                  </Button>
-                                                </Tooltip>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </>
-                                      ) : (
-                                        <>
-                                          <Label
-                                            htmlFor="time"
-                                            value="Data QSO"
-                                          />
-
-                                          <TextInput
-                                            disabled
-                                            id="time"
-                                            label="Ora"
-                                            value={format(
-                                              new Date(qsoDate),
-                                              "yyyy-MM-dd HH:mm"
-                                            )}
-                                          />
-                                        </>
-                                      )}
-                                    </div>
-                                    <div className="w-full">
-                                      <Label
-                                        htmlFor="frequency"
-                                        value="Frequenza (in MHz)"
-                                      />
-                                      <TextInput
-                                        disabled
-                                        id="frequency"
-                                        label="Frequenza"
-                                        placeholder="144.205"
-                                        type="number"
-                                        onClick={() => setPage(0)}
-                                        value={frequency}
-                                      />
-                                    </div>
-                                    <div className="w-full">
-                                      <Label htmlFor="mode" value="Modo" />
-                                      <TextInput
-                                        disabled
-                                        id="mode"
-                                        label="Modo"
-                                        minLength={1}
-                                        maxLength={10}
-                                        onClick={() => setPage(0)}
-                                        value={mode}
-                                      />
-                                    </div>
-                                    <div className="w-full">
-                                      <Label
-                                        htmlFor="locator"
-                                        value="Locatore"
-                                      />
-                                      <TextInput
-                                        disabled
-                                        id="locator"
-                                        label="Locatore"
-                                        minLength={1}
-                                        maxLength={20}
-                                        onClick={() => setPage(0)}
-                                        value={locator}
-                                      />
-                                    </div>
-                                    <div className="w-full">
-                                      <Label htmlFor="rst" value="RST" />
-                                      <TextInput
-                                        disabled={disabled}
-                                        id="rst"
-                                        label="RST"
-                                        placeholder="59"
-                                        type="text"
-                                        value={rst}
-                                        maxLength={3}
-                                        onChange={e => {
-                                          const val =
-                                            parseInt(
-                                              e.target.value.replace(/\D+/g, "")
-                                            ) || "";
-                                          setRst(val);
-                                          setCookie("frequency", val, {
-                                            path: "/qsomanager",
-                                            maxAge: 60 * 60 * 4
-                                          });
-                                        }}
-                                        required
-                                      />
-                                    </div>
-                                  </div>
-                                  <div
-                                    className={`w-full flex gap-2 ${
-                                      editTime ? "-mt-4" : ""
-                                    }`}
-                                  >
-                                    <Checkbox
-                                      id="editTime"
-                                      checked={editTime}
-                                      onChange={e =>
-                                        setEditTime(e.target.checked)
-                                      }
-                                      disabled={disabled}
-                                    />
-                                    <Label
-                                      htmlFor="editTime"
-                                      value="Modifica ora"
-                                    />
-                                  </div>
-                                </Card>
-                              </div>
+                              </Tooltip>
+                            ) : (
+                              <Button
+                                type="button"
+                                disabled={disabled}
+                                onClick={() => setPage(0)}
+                                color="light"
+                                className="mt-6"
+                              >
+                                <FaBackward className="inline mr-2" />
+                                Precedente
+                              </Button>
                             )}
                           </div>
-                        </form>
-                      </div>
-                    )
+
+                          {page === 1 && (
+                            <div className="mt-8 flex flex-col justify-center gap-2 items-center">
+                              <h5 className="font-semibold text-sm uppercase text-gray-600 dark:text-gray-400">
+                                Riepilogo
+                              </h5>
+                              <Card className="w-full">
+                                <div className="flex flex-col md:flex-row gap-4 items-start">
+                                  <div className="w-full">
+                                    <Label
+                                      htmlFor="callsign"
+                                      value="Nominativo"
+                                    />
+                                    <TextInput
+                                      disabled
+                                      id="callsign"
+                                      label="Nominativo"
+                                      minLength={1}
+                                      maxLength={10}
+                                      value={callsign}
+                                      className="font-semibold"
+                                    />
+                                  </div>
+                                  <div className="w-full">
+                                    {editTime ? (
+                                      <>
+                                        <div>
+                                          <Label
+                                            htmlFor="qsoDate"
+                                            value="Data QSO in UTC*"
+                                          />
+                                          <div className="flex gap-1 justify-center items-start">
+                                            <div className="w-full relative">
+                                              <TextInput
+                                                disabled={disabled}
+                                                id="qsoDate"
+                                                label="Data"
+                                                type="datetime-local"
+                                                className="w-full"
+                                                value={qsoDate}
+                                                onChange={e =>
+                                                  setQsoDate(e.target.value)
+                                                }
+                                                required
+                                                helperText={
+                                                  <>
+                                                    {format(
+                                                      new Date(qsoDate),
+                                                      "HH:mm"
+                                                    )}{" "}
+                                                    UTC
+                                                    {", "}
+                                                    {formatInTimeZone(
+                                                      zonedTimeToUtc(
+                                                        new Date(qsoDate),
+                                                        "UTC"
+                                                      ),
+                                                      "Europe/Rome",
+                                                      "HH:mm"
+                                                    )}{" "}
+                                                    Roma
+                                                  </>
+                                                }
+                                              />
+                                            </div>
+                                            <div className="mt-1">
+                                              <Tooltip content="Imposta all'orario attuale">
+                                                <Button
+                                                  color="light"
+                                                  // size="sm"
+                                                  className="h-max"
+                                                  onClick={resetDate}
+                                                >
+                                                  <FaUndo />
+                                                </Button>
+                                              </Tooltip>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Label
+                                          htmlFor="time"
+                                          value="Data QSO"
+                                        />
+
+                                        <TextInput
+                                          disabled
+                                          id="time"
+                                          label="Ora"
+                                          value={format(
+                                            new Date(qsoDate),
+                                            "yyyy-MM-dd HH:mm"
+                                          )}
+                                        />
+                                      </>
+                                    )}
+                                  </div>
+                                  <div className="w-full">
+                                    <Label
+                                      htmlFor="frequency"
+                                      value="Frequenza (in MHz)"
+                                    />
+                                    <TextInput
+                                      disabled
+                                      id="frequency"
+                                      label="Frequenza"
+                                      placeholder="144.205"
+                                      type="number"
+                                      onClick={() => setPage(0)}
+                                      value={frequency}
+                                    />
+                                  </div>
+                                  <div className="w-full">
+                                    <Label htmlFor="mode" value="Modo" />
+                                    <TextInput
+                                      disabled
+                                      id="mode"
+                                      label="Modo"
+                                      minLength={1}
+                                      maxLength={10}
+                                      onClick={() => setPage(0)}
+                                      value={mode}
+                                    />
+                                  </div>
+                                  <div className="w-full">
+                                    <Label htmlFor="locator" value="Locatore" />
+                                    <TextInput
+                                      disabled
+                                      id="locator"
+                                      label="Locatore"
+                                      minLength={1}
+                                      maxLength={20}
+                                      onClick={() => setPage(0)}
+                                      value={locator}
+                                    />
+                                  </div>
+                                  <div className="w-full">
+                                    <Label htmlFor="rst" value="RST" />
+                                    <TextInput
+                                      disabled={disabled}
+                                      id="rst"
+                                      label="RST"
+                                      placeholder="59"
+                                      type="text"
+                                      value={rst}
+                                      maxLength={3}
+                                      onChange={e => {
+                                        const val =
+                                          parseInt(
+                                            e.target.value.replace(/\D+/g, "")
+                                          ) || "";
+                                        setRst(val);
+                                        setCookie("frequency", val, {
+                                          path: "/qsomanager",
+                                          maxAge: 60 * 60 * 4
+                                        });
+                                      }}
+                                      required
+                                    />
+                                  </div>
+                                </div>
+                                <div
+                                  className={`w-full flex gap-2 ${
+                                    editTime ? "-mt-4" : ""
+                                  }`}
+                                >
+                                  <Checkbox
+                                    id="editTime"
+                                    checked={editTime}
+                                    onChange={e =>
+                                      setEditTime(e.target.checked)
+                                    }
+                                    disabled={disabled}
+                                  />
+                                  <Label
+                                    htmlFor="editTime"
+                                    value="Modifica ora"
+                                  />
+                                </div>
+                              </Card>
+                            </div>
+                          )}
+                        </div>
+                      </form>
+                    </div>
                   ) : (
                     <Spinner />
                   )}

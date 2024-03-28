@@ -127,8 +127,9 @@ router.get(
                         .filter(c => c)
                 )
             ];
-            const promiseUrls = callsigns.map(c => qrz.scrapeProfilePicture(c));
-            const urls = await Promise.all(promiseUrls);
+            const promiseUrls = callsigns.map(c => qrz.getInfo(c));
+            const users = await Promise.all(promiseUrls);
+            const urls = users.map(u => u?.pictureUrl);
 
             const pps = callsigns.map((c, i) => ({
                 callsign: c,

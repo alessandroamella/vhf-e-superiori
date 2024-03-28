@@ -13,6 +13,7 @@ import { logger } from "../../../shared";
 import EmailService from "../../../email";
 import { qrz } from "../../qrz";
 import { Qso } from ".";
+import { location } from "../../location";
 
 /**
  * @swagger
@@ -52,7 +53,7 @@ import { Qso } from ".";
  *            description: Province of the station that sent the QSO
  *          locator:
  *            type: string
- *            description: Locator of the station contacted
+ *            description: Locator of the station that sent the QSO
  *          toStationLat:
  *            type: number
  *            description: Latitude of the station contacted
@@ -104,7 +105,18 @@ import { Qso } from ".";
     options: { customName: "Qso" }
 })
 @pre<QsoClass>("save", async function () {
-    if (!this.email) {
+    if ((!this.fromStationLat || !this.fromStationLon) && this.locator) {
+        const latLon = location.calculateLatLon(this.locator);
+        if (latLon) {
+            this.fromStationLat = latLon[0];
+            this.fromStationLon = latLon[1];
+        } else {
+            logger.warn(
+                `No lat/lon found for QSO ${this._id} with locator ${this.locator}`
+            );
+        }
+    }
+    if (!this.email || !this.toStationLat || !this.toStationLon) {
         // find if already in db
         const user = await User.findOne({
             callsign: this.callsign
@@ -112,7 +124,11 @@ import { Qso } from ".";
         if (user) {
             this.toStation = user._id;
             this.email = user.email;
-            return;
+            this.toStationLat = user.lat;
+            this.toStationLon = user.lon;
+            if (!this.toStationLat ? user.lat : true) {
+                return;
+            }
         }
 
         // find qso with same callsign and event to copy email
@@ -124,19 +140,25 @@ import { Qso } from ".";
         if (qso) {
             this.toStation = qso.toStation;
             this.email = qso.email;
-            return;
+            this.toStationLat = qso.toStationLat;
+            this.toStationLon = qso.toStationLon;
+            if (!this.toStationLat ? qso.toStationLat : true) {
+                return;
+            }
         }
 
         // last resort: try to scrape email from QRZ
-        const scraped = await qrz.scrapeEmail(this.callsign);
+        const scraped = await qrz.getInfo(this.callsign);
         if (scraped) {
-            this.email = scraped;
+            this.email = scraped.email;
+            this.toStationLat = scraped.lat;
+            this.toStationLon = scraped.lon;
             return;
         }
+        logger.warn(
+            `No email or coordinates found for QSO ${this._id} with callsign ${this.callsign}`
+        );
     }
-    logger.warn(
-        `No email found for QSO ${this._id} with callsign ${this.callsign}`
-    );
 })
 export class QsoClass {
     // fromStation is User ref

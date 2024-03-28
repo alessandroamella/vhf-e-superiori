@@ -1,15 +1,16 @@
 import { Schema } from "express-validator";
+import { Errors } from "../../errors";
 
 const createSchema: Schema = {
     forPost: {
         trim: { options: [] },
         isMongoId: { options: [] },
-        errorMessage: "Invalid post ID"
+        errorMessage: Errors.INVALID_OBJECT_ID
     },
     content: {
         trim: { options: [] },
         isLength: { options: { min: 1, max: 300 } },
-        errorMessage: "Invalid content"
+        errorMessage: Errors.INVALID_CONTENT
     }
 };
 export default createSchema;

@@ -31,7 +31,8 @@ import {
   FaUndo,
   FaExternalLinkAlt,
   FaClipboardCheck,
-  FaClipboard
+  FaClipboard,
+  FaWrench
 } from "react-icons/fa";
 import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import { Navigation, Pagination as SwiperPagination } from "swiper";
@@ -460,7 +461,7 @@ const AdminManager = () => {
     navigate({
       pathname: "/login",
       search: createSearchParams({
-        to: "/"
+        to: "/eventmanager"
       }).toString()
     })
   ) : (
@@ -861,15 +862,24 @@ const AdminManager = () => {
                       </Table.Head>
                       <Table.Body>
                         {users?.map(u => (
-                          <Table.Row key={u._id}>
-                            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                              {u.callsign}
+                          <Table.Row
+                            key={u._id}
+                            className={`${u.isAdmin ? "font-bold" : ""}`}
+                          >
+                            <Table.Cell className="whitespace-nowrap text-gray-900 dark:text-white">
+                              {u.isAdmin ? (
+                                <span className="bg-yellow-200">
+                                  <FaWrench className="inline mr-1 scale-90" />
+                                  {u.callsign}
+                                </span>
+                              ) : (
+                                <span>{u.callsign}</span>
+                              )}
                             </Table.Cell>
-                            <Table.Cell
-                              className={`${u.isAdmin ? "font-bold" : ""}`}
-                            >
+                            <Table.Cell>
                               {u.isAdmin ? (
                                 <Tooltip content="Amministratore">
+                                  {" "}
                                   {u.name}
                                 </Tooltip>
                               ) : (

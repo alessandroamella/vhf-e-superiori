@@ -44,6 +44,44 @@ class Location {
         }
     }
 
+    public async reverseGeocode(
+        lat: number,
+        lon: number
+    ): Promise<QthData | null> {
+        try {
+            logger.info(`Google Maps lat: ${lat}, lon: ${lon}`);
+            const { data } = await axios.get(
+                "https://maps.googleapis.com/maps/api/geocode/json",
+                {
+                    params: {
+                        key: envs.GOOGLE_MAPS_API_KEY,
+                        latlng: `${lat},${lon}`
+                    }
+                }
+            );
+
+            if (data.error_message) {
+                logger.error(
+                    "Error while fetching info from Google Maps: " +
+                        data.status +
+                        " - " +
+                        data.error_message
+                );
+                return null;
+            }
+
+            return data.results[0];
+        } catch (err) {
+            logger.error("Error while fetching info from Google Maps");
+            if (axios.isAxiosError(err)) {
+                logger.error(err.response?.data || err.response || err);
+            } else {
+                logger.error(err as any);
+            }
+            return null;
+        }
+    }
+
     public calculateQth(lat: number, lon: number): string | null {
         if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
             logger.debug(

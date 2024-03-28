@@ -1,14 +1,6 @@
 import axios from "axios";
-import {
-  Alert,
-  Button,
-  Modal,
-  Pagination,
-  Spinner,
-  Table,
-  TextInput
-} from "flowbite-react";
-import React, { useEffect, useMemo, useState } from "react";
+import { Alert, Button, Modal, Spinner, Table, Tabs } from "flowbite-react";
+import React, { useEffect, useState } from "react";
 import { getErrorStr } from "..";
 import Layout from "../Layout";
 import { useNavigate, useParams } from "react-router-dom";
@@ -27,14 +19,15 @@ import {
   EmailIcon
 } from "react-share";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
-import { FaExclamationTriangle, FaSearch } from "react-icons/fa";
+import { FaExclamationTriangle } from "react-icons/fa";
 import { Helmet } from "react-helmet";
 
 const Rankings = () => {
   const { id } = useParams();
 
   const [event, setEvent] = useState(null);
-  const [rankings, setRankings] = useState(null);
+  const [stationRankings, setStationRankings] = useState(null);
+  const [userRankings, setUserRankings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState(null);
 
@@ -45,7 +38,8 @@ const Rankings = () => {
         console.log("event and rankings:", data);
         const { event, rankings } = data;
         setEvent(event);
-        setRankings(rankings);
+        setStationRankings(rankings.stationRankings);
+        setUserRankings(rankings.userRankings);
       } catch (err) {
         setAlert({
           color: "failure",
@@ -70,46 +64,6 @@ const Rankings = () => {
       { locale: it }
     )} - VHF e superiori`;
 
-  const [rankingsPage, setRankingsPage] = useState(1);
-  const rankingsPerPage = 50;
-  const [search, setSearch] = useState("");
-  const [filteredRankings, setFilteredRankings] = useState(null);
-  const [filteredTotPages, setFilteredTotPages] = useState(0);
-  const [filteredInterval, setFilteredInterval] = useState([
-    0,
-    rankingsPerPage
-  ]);
-
-  useEffect(() => {
-    if (rankings) {
-      const filtered = rankings.filter(r =>
-        r.callsign.toLowerCase().includes(search.trim().toLowerCase())
-      );
-      setFilteredRankings(filtered);
-      setFilteredTotPages(Math.ceil(filtered.length / rankingsPerPage));
-
-      setRankingsPage(1);
-    }
-  }, [rankings, search]);
-
-  useEffect(() => {
-    setFilteredInterval([
-      (rankingsPage - 1) * rankingsPerPage,
-      rankingsPage * rankingsPerPage
-    ]);
-  }, [rankingsPage, filteredRankings]);
-
-  const rankingsToShow = useMemo(() => {
-    if (filteredRankings) {
-      return filteredRankings.slice(...filteredInterval);
-    }
-    return [];
-  }, [filteredRankings, filteredInterval]);
-
-  // useEffect(() => {
-  //   console.log({rankingsPage, filteredTotPages})
-  // }, [rankingsPage, filteredTotPages])
-
   const [showRankings, setShowRankings] = useState(null);
 
   return (
@@ -128,13 +82,19 @@ const Rankings = () => {
         </Modal.Header>
         <Modal.Body>
           <div className="w-full flex flex-col gap-4 max-h-[60vh]">
-            {rankings &&
-              rankings
-                .filter(r => r.callsign === showRankings)
+            {stationRankings &&
+              userRankings &&
+              [...stationRankings, ...userRankings]
+                .filter(
+                  r =>
+                    r.callsign === showRankings ||
+                    r.fromStation?.callsign === showRankings
+                )
                 .map(r => (
                   <Table striped>
                     <Table.Head>
                       <Table.HeadCell>Stazione attivatrice</Table.HeadCell>
+                      <Table.HeadCell>Nominativo</Table.HeadCell>
                       <Table.HeadCell>Data</Table.HeadCell>
                       <Table.HeadCell>Frequenza</Table.HeadCell>
                       <Table.HeadCell>Modo</Table.HeadCell>
@@ -148,8 +108,11 @@ const Rankings = () => {
                           onClick={() => navigate(`/qso/${qso._id}`)}
                           className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >
-                          <Table.Cell className="font-semibold">
+                          <Table.Cell>
                             {qso.fromStation?.callsign || "-- errore --"}
+                          </Table.Cell>
+                          <Table.Cell className="font-semibold">
+                            {qso.callsign}
                           </Table.Cell>
                           <Table.Cell>
                             {formatInTimeZone(
@@ -201,7 +164,7 @@ const Rankings = () => {
               showLoadingAnimation
               type="text"
               rows={3}
-              ready={!!event}
+              ready={!!event && !!stationRankings && !!userRankings}
             >
               <Spinner />
             </ReactPlaceholder>
@@ -220,14 +183,7 @@ const Rankings = () => {
                 )}
               </h1>
 
-              <div className="flex flex-col justify-center md:flex-row md:justify-between gap-4">
-                <Pagination
-                  className="pagination-ref"
-                  showIcons
-                  currentPage={rankingsPage}
-                  totalPages={filteredTotPages}
-                  onPageChange={e => setRankingsPage(e)}
-                />
+              {/* <div className="flex flex-col justify-center md:flex-row md:justify-between gap-4">
                 <div>
                   <TextInput
                     type="text"
@@ -237,61 +193,47 @@ const Rankings = () => {
                     onChange={e => setSearch(e.target.value)}
                   />
                 </div>
-              </div>
+              </div> */}
 
-              {rankingsToShow.length > 0 ? (
-                <Table striped>
-                  <Table.Head>
-                    <Table.HeadCell>Posizione</Table.HeadCell>
-                    <Table.HeadCell>Nominativo</Table.HeadCell>
-                    <Table.HeadCell>Punti</Table.HeadCell>
-                  </Table.Head>
-                  <Table.Body>
-                    {rankingsToShow.map((r, i) => (
-                      <Table.Row
-                        key={r.callsign}
-                        onClick={() => setShowRankings(r.callsign)}
-                        className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                      >
-                        <Table.Cell>
-                          {/* show 🥇, 🥈 or 🥉 if r.callsign === rankings[0,1,2].callsign, else i + 1 */}
-                          {["🥇", "🥈", "🥉"][
-                            rankings.findIndex(
-                              (ranking, index) =>
-                                ranking.callsign === r.callsign && index < 3
-                            )
-                          ] ||
-                            rankings.findIndex(
-                              ranking => ranking.callsign === r.callsign
-                            )}
-                        </Table.Cell>
-                        <Table.Cell className="font-semibold">
-                          {r.callsign}
-                        </Table.Cell>
-                        <Table.Cell>{r.qsos.length}</Table.Cell>
-                      </Table.Row>
-                    ))}
-                  </Table.Body>
-                </Table>
-              ) : (
-                <Alert color="gray" className="text-center">
-                  <FaExclamationTriangle className="inline-block mr-1 mb-1" />
-                  Nessun collegamento{" "}
-                  {search && (
-                    <span>
-                      di <strong>{search.toUpperCase()}</strong>
-                    </span>
-                  )}{" "}
-                  trovato
-                </Alert>
-              )}
-
-              <Pagination
-                showIcons
-                currentPage={rankingsPage}
-                totalPages={filteredTotPages}
-                onPageChange={e => setRankingsPage(e)}
-              />
+              <Tabs.Group>
+                {["Stazioni", "Cacciatori"].map((tab, i) => (
+                  <Tabs.Item title={tab} key={i}>
+                    {(i === 0 ? stationRankings : userRankings).length > 0 ? (
+                      <Table striped>
+                        <Table.Head>
+                          <Table.HeadCell>Posizione</Table.HeadCell>
+                          <Table.HeadCell>Nominativo</Table.HeadCell>
+                          <Table.HeadCell>Punti</Table.HeadCell>
+                        </Table.Head>
+                        <Table.Body>
+                          {(i === 0 ? stationRankings : userRankings).map(r => (
+                            <Table.Row
+                              key={r.callsign}
+                              onClick={() => setShowRankings(r.callsign)}
+                              className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                            >
+                              <Table.Cell>
+                                {/* show 🥇, 🥈 or 🥉 if r.callsign === rankings[0,1,2].callsign, else i + 1 */}
+                                {["🥇", "🥈", "🥉"][r.position - 1] ||
+                                  r.position}
+                              </Table.Cell>
+                              <Table.Cell className="font-semibold">
+                                {r.callsign}
+                              </Table.Cell>
+                              <Table.Cell>{r.qsos.length}</Table.Cell>
+                            </Table.Row>
+                          ))}
+                        </Table.Body>
+                      </Table>
+                    ) : (
+                      <Alert color="gray" className="text-center">
+                        <FaExclamationTriangle className="inline-block mr-1 mb-1" />
+                        Nessun collegamento trovato
+                      </Alert>
+                    )}
+                  </Tabs.Item>
+                ))}
+              </Tabs.Group>
             </div>
           )}
 

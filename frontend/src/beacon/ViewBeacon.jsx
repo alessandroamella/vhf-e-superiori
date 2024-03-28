@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Alert, Button, Card, Pagination, Tooltip } from "flowbite-react";
 import "leaflet/dist/leaflet.css";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import L from "leaflet";
 import { UserContext, getErrorStr } from "..";
 import Layout from "../Layout";
@@ -24,13 +24,17 @@ const ViewBeacon = () => {
 
   const { id } = useParams();
 
-  const icon = L.icon({
-    iconSize: [25, 41],
-    iconAnchor: [10, 41],
-    popupAnchor: [2, -40],
-    iconUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-shadow.png"
-  });
+  const icon = useMemo(
+    () =>
+      L.icon({
+        iconSize: [25, 41],
+        iconAnchor: [10, 41],
+        popupAnchor: [2, -40],
+        iconUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-icon.png",
+        shadowUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-shadow.png"
+      }),
+    []
+  );
 
   useEffect(() => {
     if (beacon) return;
@@ -61,13 +65,36 @@ const ViewBeacon = () => {
 
   async function deleteBeacon(id) {
     const confirm = window.confirm(
-      "Sei sicuro di voler eliminare questo beacon?"
+      `Sei sicuro di voler eliminare questo beacon assieme a tutte le sue ${
+        _properties.length || "-"
+      } modific${
+        _properties.length === 1 ? "a" : "he"
+      }? Questa azione è irreversibile. Continuare?`
     );
     if (!confirm) return;
 
     try {
       await axios.delete(`/api/beacon/${id}`);
       navigate("/beacon");
+    } catch (err) {
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+    }
+  }
+
+  async function deleteEdit(properties) {
+    const { _id, editAuthor } = properties;
+    const confirm = window.confirm(
+      `Sei sicuro di voler eliminare queste modifiche di ${editAuthor?.callsign}? Questa azione è irreversibile. Continuare?`
+    );
+    if (!confirm) return;
+
+    try {
+      await axios.delete(`/api/beacon/property/${_id}`);
+      setProperties(_properties.filter(p => p._id !== _id));
+      setPropIndex(0);
     } catch (err) {
       setAlert({
         color: "failure",
@@ -128,7 +155,7 @@ const ViewBeacon = () => {
                           onClick={() => deleteBeacon(beacon._id)}
                         >
                           <FaTrash className="inline mr-2" />
-                          Elimina
+                          Elimina beacon
                         </Button>
                       </Tooltip>
                     )}
@@ -187,39 +214,61 @@ const ViewBeacon = () => {
                     </div>
                   </div>
 
-                  <Alert
-                    className="w-fit"
-                    color={properties.verifiedBy ? "success" : "warning"}
-                  >
-                    <div className="flex flex-col md:flex-row md:justify-around">
-                      <Tooltip
-                        content={
-                          properties.verifiedBy
-                            ? `Modifiche verificate da ${
-                                properties.verifiedBy.callsign
-                              } il ${formatInTimeZone(
-                                new Date(properties.verifyDate),
-                                "Europe/Rome",
-                                "dd/MM/yyyy 'alle' HH:mm"
-                              )}`
-                            : "Queste modifiche non sono ancora state verificate"
-                        }
-                      >
-                        {properties.verifiedBy ? (
-                          <span>✅ </span>
-                        ) : (
-                          <FaInfoCircle className="inline mr-2 mb-[2px]" />
-                        )}
-                        Modifiche da{" "}
-                        <strong>{properties.editAuthor.callsign}</strong> il{" "}
-                        {formatInTimeZone(
-                          new Date(properties.editDate),
-                          "Europe/Rome",
-                          "dd/MM/yyyy 'alle' HH:mm"
-                        )}
-                      </Tooltip>
-                    </div>
-                  </Alert>
+                  <div className="flex flex-col md:flex-row gap-2 md:justify-between">
+                    <Alert
+                      className="w-fit"
+                      color={properties.verifiedBy ? "success" : "warning"}
+                    >
+                      <div className="flex flex-col md:flex-row md:justify-around">
+                        <Tooltip
+                          content={
+                            properties.verifiedBy
+                              ? `Modifiche verificate da ${
+                                  properties.verifiedBy.callsign
+                                } il ${formatInTimeZone(
+                                  new Date(properties.verifyDate),
+                                  "Europe/Rome",
+                                  "dd/MM/yyyy 'alle' HH:mm"
+                                )}`
+                              : "Queste modifiche non sono ancora state verificate"
+                          }
+                        >
+                          {properties.verifiedBy ? (
+                            <span>✅ </span>
+                          ) : (
+                            <FaInfoCircle className="inline mr-2 mb-[2px]" />
+                          )}
+                          Modifiche da{" "}
+                          <strong>{properties.editAuthor.callsign}</strong> il{" "}
+                          {formatInTimeZone(
+                            new Date(properties.editDate),
+                            "Europe/Rome",
+                            "dd/MM/yyyy 'alle' HH:mm"
+                          )}
+                        </Tooltip>
+                      </div>
+                    </Alert>
+                    {user?.isAdmin && (
+                      <div>
+                        <Tooltip
+                          content={`${
+                            _properties?.length === 1
+                              ? "Non puoi cancellare queste modifiche in quanto sono le uniche finora fatte del beacon. Creane delle nuove e poi cancella queste, oppure cancella l'intero beacon con il tasto sopra."
+                              : "Vedi questo in quanto amministratore"
+                          }`}
+                        >
+                          <Button
+                            color="failure"
+                            disabled={_properties?.length === 1}
+                            onClick={() => deleteEdit(properties)}
+                          >
+                            <FaTrash className="inline mr-2" />
+                            Elimina modifiche
+                          </Button>
+                        </Tooltip>
+                      </div>
+                    )}
+                  </div>
                 </Card>
 
                 {properties.lat && properties.lon && (

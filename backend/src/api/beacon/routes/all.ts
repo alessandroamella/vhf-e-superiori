@@ -45,8 +45,6 @@ router.get("/", validate, async (req, res) => {
                     forBeacon: beacon._id
                 },
                 {
-                    lat: 0,
-                    lon: 0,
                     verifiedBy: 0,
                     verifyDate: 0,
                     editAuthor: 0,

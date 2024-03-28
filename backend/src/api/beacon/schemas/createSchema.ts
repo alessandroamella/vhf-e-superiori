@@ -1,4 +1,5 @@
 import { Schema } from "express-validator";
+import { Errors } from "../../errors";
 
 const createSchema: Schema = {
     callsign: {
@@ -6,76 +7,81 @@ const createSchema: Schema = {
         trim: { options: [] },
         isLength: { options: { min: 1, max: 10 } },
         toUpperCase: { options: [] },
-        isAlphanumeric: { options: [] },
-        errorMessage:
-            "Callsign must be between 1 and 10 alphanumeric characters"
+        errorMessage: Errors.INVALID_CALLSIGN,
+        custom: {
+            // alphanumeric and slash
+            options: (value: string) => {
+                return /^[A-Z0-9/]*$/.test(value);
+            },
+            errorMessage: Errors.INVALID_CALLSIGN
+        }
     },
     frequency: {
         isNumeric: { options: [] },
         isFloat: { options: [] },
         toFloat: { options: [] },
-        errorMessage: "Frequency must be a number"
+        errorMessage: Errors.INVALID_FREQUENCY
     },
     qthStr: {
         isString: { options: [] },
         trim: { options: [] },
         isLength: { options: { min: 1, max: 100 } },
-        errorMessage: "QTH must be between 1 and 100 characters"
+        errorMessage: Errors.ERROR_QTH_PARSE
     },
     locator: {
         isString: { options: [] },
         trim: { options: [] },
-        errorMessage: "Locator must be a string"
+        errorMessage: Errors.INVALID_LOCATOR
     },
     hamsl: {
         isNumeric: { options: [] },
         isInt: { options: [] },
         toInt: { options: [] },
-        errorMessage: "Height above mean sea level must be a number"
+        errorMessage: Errors.INVALID_HAMSL
     },
     antenna: {
         isString: { options: [] },
         trim: { options: [] },
         isLength: { options: { min: 1, max: 100 } },
-        errorMessage: "Antenna must be between 1 and 100 characters"
+        errorMessage: Errors.INVALID_ANTENNA
     },
     mode: {
         isString: { options: [] },
         trim: { options: [] },
         isLength: { options: { min: 1, max: 100 } },
-        errorMessage: "Mode must be between 1 and 100 characters"
+        errorMessage: Errors.INVALID_MODE
     },
     qtf: {
         isString: { options: [] },
         trim: { options: [] },
         isLength: { options: { min: 1, max: 100 } },
-        errorMessage: "QTF must be between 1 and 100 characters"
+        errorMessage: Errors.INVALID_QTF
     },
     power: {
         isNumeric: { options: [] },
         isFloat: { options: [] },
         toFloat: { options: [] },
-        errorMessage: "Power must be a number"
+        errorMessage: Errors.INVALID_POWER
     },
     name: {
         isString: { options: [] },
         trim: { options: [] },
         optional: true,
-        errorMessage: "Name must be a string"
+        errorMessage: Errors.INVALID_NAME
     },
     lat: {
         isNumeric: { options: [] },
         isFloat: { options: [] },
         toFloat: { options: [] },
         optional: true,
-        errorMessage: "Latitude must be a number"
+        errorMessage: Errors.INVALID_LATITUDE
     },
     lon: {
         isNumeric: { options: [] },
         isFloat: { options: [] },
         toFloat: { options: [] },
         optional: true,
-        errorMessage: "Longitude must be a number"
+        errorMessage: Errors.INVALID_LONGITUDE
     }
 };
 export default createSchema;

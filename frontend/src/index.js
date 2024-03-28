@@ -145,16 +145,44 @@ export const errors = {
   INVALID_BEACON: "Beacon non valido",
   BEACON_NOT_FOUND: "Beacon non trovato",
   NO_EMAIL_FOUND: "Nessuna email trovata",
-  ERROR_QTH_PARSE: "Errore nel parsing del QTH"
+  ERROR_QTH_PARSE: "Errore nel parsing del QTH",
+  INVALID_MODE: "Modo non valido",
+  INVALID_DATE: "Data non valida",
+  INVALID_NOTES: "Note non valide",
+  INVALID_LOCATOR: "Locator non valido",
+  INVALID_FREQUENCY: "Frequenza non valida",
+  INVALID_RST: "RST non valido",
+  INVALID_CITY: "Città non valida",
+  INVALID_PROVINCE: "Provincia non valida",
+  INVALID_LATITUDE: "Latitudine non valida",
+  INVALID_LONGITUDE: "Longitudine non valida",
+  INVALID_HAMSL: "Altezza non valida",
+  INVALID_ANTENNA: "Antenna non valida",
+  INVALID_QTF: "QTF non valido",
+  INVALID_POWER: "Potenza non valida",
+  INVALID_CONTENT: "Contenuto non valido"
 };
+
+function lowercaseFirstLetter(string) {
+  return string.charAt(0).toLowerCase() + string.slice(1);
+}
 
 export function getErrorStr(str) {
   console.log("Stringa errore:", str);
-  return str && str in errors
-    ? errors[str]
-    : typeof str === "string"
-    ? "Dati mancanti o incorretti: " + str
-    : errors.UNKNOWN_ERROR;
+  const arr = str.split(",").map(s => s.trim());
+  return [
+    ...new Set(
+      arr.map(str =>
+        str && str in errors
+          ? errors[str]
+          : typeof str === "string"
+          ? "Dati mancanti o incorretti: " + str
+          : errors.UNKNOWN_ERROR
+      )
+    )
+  ]
+    .map((e, i) => (i === 0 ? e : lowercaseFirstLetter(e)))
+    .join(", ");
 }
 
 const App = () => {

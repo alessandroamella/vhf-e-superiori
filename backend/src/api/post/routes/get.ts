@@ -85,9 +85,9 @@ router.get("/:_id", param("_id").isMongoId(), validate, async (req, res) => {
             forPost: post._id
         }).populate({ path: "fromUser", select: "callsign name" });
 
-        const pp = await qrz.scrapeProfilePicture(
-            (post.fromUser as unknown as UserDoc).callsign
-        );
+        const pp = (
+            await qrz.getInfo((post.fromUser as unknown as UserDoc).callsign)
+        )?.pictureUrl;
 
         res.json({
             post: { ...post.toJSON(), comments },

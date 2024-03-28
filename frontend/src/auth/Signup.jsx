@@ -1,6 +1,6 @@
 import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
-import { Alert, Card, Label, TextInput, Tooltip } from "flowbite-react";
+import { Alert, Avatar, Card, Label, TextInput, Tooltip } from "flowbite-react";
 import React, {
   createRef,
   useEffect,
@@ -50,6 +50,8 @@ const OpenExternally = ({ doc }) => {
 const Signup = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["signupcache"]);
 
+  const [avatar, setAvatar] = useState(null);
+
   const [callsign, setCallsign] = useState(cookies.callsign || "");
   const [name, setName] = useState(cookies.name || "");
   const [password, setPassword] = useState("");
@@ -62,6 +64,13 @@ const Signup = () => {
   const [lon, setLon] = useState("");
   const [phoneNumber, setPhoneNumber] = useState(cookies.phoneNumber || "+39");
   const [email, setEmail] = useState(cookies.email || "");
+
+  useEffect(() => {
+    if (cookies.callsign) {
+      fetchQrz(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     window.addEventListener("beforeunload", event => {
@@ -97,9 +106,6 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
-  // qrz lookup
-  const [qrzLookups, setQrzLookups] = useState([]);
-
   const [inputRef, setInputFocus] = useFocus();
 
   const [searchParams] = useSearchParams();
@@ -128,25 +134,25 @@ const Signup = () => {
   });
   const mapsRef = placesWidget.ref;
 
-  async function fetchQrz() {
-    if (
-      name ||
-      qrzLookups.includes(callsign.trim().toUpperCase()) ||
-      callsign.length < 1 ||
-      callsign.length > 10
-    )
-      return;
+  async function fetchQrz(force = false) {
+    if (callsign.length < 1 || callsign.length > 10) return;
 
     setDisabled(true);
-    setQrzLookups(arr => [...arr, callsign.trim().toUpperCase()]);
 
     try {
       const { data } = await axios.get("/api/qrz/" + callsign);
       console.log("QRZ data", data);
-      if (!name) {
-        setName(
-          toTitleCase((data?.firstName || "") + " " + (data?.lastName || ""))
-        );
+      if (!name || force) {
+        setName(data.name);
+      }
+      if (!email || force) {
+        setEmail(data.email);
+      }
+
+      if (data.pictureUrl) {
+        setAvatar(data.pictureUrl);
+      } else {
+        setAvatar(null);
       }
     } catch (err) {
       console.log(
@@ -235,12 +241,6 @@ const Signup = () => {
     }
   }
 
-  function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function (txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
-  }
-
   const [tos, setTos] = useState(null);
   const [privacyPolicy, setPrivacyPolicy] = useState(null);
   const [tosPrivacyShown, setTosPrivacyShown] = useState(false);
@@ -308,32 +308,37 @@ const Signup = () => {
           )}
 
           <form action="#" method="post" onSubmit={signup}>
-            <div className="mb-2 block">
-              <Label
-                htmlFor="callsign"
-                value="Nominativo (senza prefissi o suffissi)"
-              />
+            <div className="flex items-end gap-2">
+              {avatar && <Avatar img={avatar} size="lg" />}
+              <div className="w-full">
+                <div className="mb-2 block">
+                  <Label
+                    htmlFor="callsign"
+                    value="Nominativo (senza prefissi o suffissi)"
+                  />
+                </div>
+                <TextInput
+                  type="text"
+                  name="callsign"
+                  id="callsign"
+                  label="Nominativo"
+                  autoComplete="callsign"
+                  minLength={1}
+                  maxLength={10}
+                  onBlur={fetchQrz}
+                  value={callsign}
+                  // replace non alphanumeric characters with empty string
+                  onChange={e =>
+                    setCallsign(
+                      e.target.value.toUpperCase().replace(/[^a-zA-Z0-9]/g, "")
+                    )
+                  }
+                  disabled={disabled}
+                  autoFocus
+                  required
+                />
+              </div>
             </div>
-            <TextInput
-              type="text"
-              name="callsign"
-              id="callsign"
-              label="Nominativo"
-              autoComplete="callsign"
-              minLength={1}
-              maxLength={10}
-              onBlur={fetchQrz}
-              value={callsign}
-              // replace non alphanumeric characters with empty string
-              onChange={e =>
-                setCallsign(
-                  e.target.value.toUpperCase().replace(/[^a-zA-Z0-9]/g, "")
-                )
-              }
-              disabled={disabled}
-              autoFocus
-              required
-            />
             <div className="my-4" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>

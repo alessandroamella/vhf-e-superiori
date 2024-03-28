@@ -118,7 +118,7 @@ router.get(
             const email =
                 qso.email ||
                 toUser?.email ||
-                (await qrz.scrapeEmail(callsignClean));
+                (await qrz.getInfo(callsignClean))?.email;
 
             if (!email) {
                 logger.warn(
