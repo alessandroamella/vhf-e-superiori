@@ -31,6 +31,10 @@ const BeaconHomepage = () => {
     const meanLon =
       _beacons.reduce((acc, beacon) => acc + beacon.properties.lon, 0) /
       _beacons.length;
+    if (isNaN(meanLat) || isNaN(meanLon)) {
+      console.error("meanLat or meanLon is NaN", meanLat, meanLon);
+      return null;
+    }
     return [meanLat, meanLon];
   }, [beacons]);
   const icon = useMemo(
@@ -212,22 +216,31 @@ const BeaconHomepage = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   />
-                  {beacons?.map(beacon => (
-                    <Marker
-                      key={beacon._id}
-                      position={[beacon.properties.lat, beacon.properties.lon]}
-                      icon={icon}
-                    >
-                      <Popup>
-                        <Link
-                          className="text-center"
-                          to={`/beacon/${beacon._id}`}
-                        >
-                          {beacon.callsign}
-                        </Link>
-                      </Popup>
-                    </Marker>
-                  ))}
+                  {beacons
+                    ?.filter(
+                      beacon =>
+                        typeof beacon.properties.lat === "number" &&
+                        typeof beacon.properties.lon === "number"
+                    )
+                    .map(beacon => (
+                      <Marker
+                        key={beacon._id}
+                        position={[
+                          beacon.properties.lat,
+                          beacon.properties.lon
+                        ]}
+                        icon={icon}
+                      >
+                        <Popup>
+                          <Link
+                            className="text-center"
+                            to={`/beacon/${beacon._id}`}
+                          >
+                            {beacon.callsign}
+                          </Link>
+                        </Popup>
+                      </Marker>
+                    ))}
                 </MapContainer>
               </div>
             )}
