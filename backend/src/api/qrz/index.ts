@@ -32,9 +32,9 @@ class Qrz {
 
         this.key = this._loginQrzXML();
 
-        // setup cron job to refresh login every 10 minutes
+        // setup cron job to refresh login every 30 minutes
         new CronJob(
-            "0 */10 * * * *",
+            "0 */30 * * * *",
             () => {
                 logger.info("Refreshing QRZ login");
                 this._refreshLogin();
