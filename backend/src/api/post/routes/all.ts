@@ -79,6 +79,7 @@ router.get(
     query("limit").isInt({ gt: 0, max: 100 }).optional(),
     query("offset").isInt({ min: 0 }).optional(),
     query("fromUser").isMongoId().optional(),
+    query("orderBy").isObject().optional(),
     validate,
     async (req, res) => {
         try {
@@ -92,6 +93,7 @@ router.get(
             ) {
                 query.fromUser = req.query.fromUser;
             }
+
             const postsQuery = BasePost.find(query).populate({
                 path: "fromUser",
                 select: "callsign name"
@@ -109,8 +111,12 @@ router.get(
             )
                 postsQuery.skip(parseInt(req.query.offset));
 
+            logger.debug("Order by query:");
+            logger.debug(req.query.orderBy);
+
             const posts = await postsQuery
-                .sort({ createdAt: -1 })
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .sort((req.query.orderBy as any) || { createdAt: -1 })
                 .sort({ "comments.createdAt": -1 })
                 .exec();
 

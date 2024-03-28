@@ -10,7 +10,14 @@ import FeedCard from "./FeedCard";
 
 import "react-placeholder/lib/reactPlaceholder.css";
 import axios from "axios";
-import { Alert, Button, Spinner } from "flowbite-react";
+import {
+  Alert,
+  Button,
+  Dropdown,
+  Label,
+  Spinner,
+  TextInput
+} from "flowbite-react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MenuContent from "../sideMenu/MenuContent";
 import { FaPlus } from "react-icons/fa";
@@ -29,9 +36,12 @@ const Social = () => {
 
   const [cursor, setCursor] = useState(0);
 
+  const [orderBy, setOrderBy] = useState({ createdAt: -1 });
+  const [filterCallsign, setFilterCallsign] = useState(null);
+
   const navigate = useNavigate();
 
-  const cursorLimit = 10;
+  const cursorLimit = 100;
 
   useEffect(() => {
     // DEBUG
@@ -47,7 +57,8 @@ const Social = () => {
       const { data } = await axios.get("/api/post", {
         params: {
           limit: cursorLimit,
-          offset: cursor
+          offset: cursor,
+          orderBy
         }
       });
       console.log("new posts", data, "\nall posts", [...posts, ...data.posts]);
@@ -62,13 +73,22 @@ const Social = () => {
     }
     fetchPosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cursor]);
+  }, [cursor, orderBy]);
 
   function fetchMorePosts() {
     setCursor(cursor + cursorLimit);
   }
 
   const [hasMore, setHasMore] = useState(true);
+
+  const scrollTo = searchParams.get("scrollTo");
+  useEffect(() => {
+    if (!posts || !scrollTo) return;
+
+    document.getElementById("post-" + scrollTo)?.scrollIntoView();
+    searchParams.delete("scrollTo");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scrollTo, posts]);
 
   return (
     <Layout>
@@ -106,23 +126,40 @@ const Social = () => {
           </Alert>
         )}
 
+        <div className="flex justify-center gap-4">
+          <TextInput
+            value={filterCallsign}
+            onChange={e => setFilterCallsign(e.target.value || null)}
+            placeholder="Filtra nominativo..."
+            iconLeft={<FaPlus />}
+          />
+          <Dropdown
+            label={orderBy.createdAt === -1 ? "Più recenti" : "Più vecchi"}
+            id="postsOrderBy"
+            className="w-full"
+            required
+            color="light"
+          >
+            <Dropdown.Item onClick={() => setOrderBy({ createdAt: -1 })}>
+              Più recenti
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setOrderBy({ createdAt: 1 })}>
+              Più vecchi
+            </Dropdown.Item>
+          </Dropdown>
+        </div>
+
         <Button
-          // DEBUG
-          // disabled
           className="flex rounded-full uppercase items-center fixed bottom-8 right-8 z-40"
           onClick={() => navigate("new")}
-          // className="flex rounded-full w-16 h-16 aspect-square items-center fixed bottom-8 right-8 z-40"
         >
           <Link
             to="new"
             className="text-xl text-white font-bold flex items-center gap-2"
           >
-            {/* <span className="text-xl text-white font-bold flex items-center gap-2"> */}
             <FaPlus />
             Inserisci foto / video
           </Link>
-          {/* </span> */}
-          {/* <span className="ml-1">Nuovo post</span>*/}
         </Button>
 
         <div className="grid md:gap-8 grid-cols-1 md:grid-cols-3">
@@ -165,16 +202,25 @@ const Social = () => {
                   }
                 >
                   <div className="p-0 md:p-5">
-                    {posts.map(p => (
-                      <FeedCard
-                        setAlert={setAlert}
-                        key={p._id}
-                        post={p}
-                        pp={profilePictures}
-                        posts={posts}
-                        setPosts={setPosts}
-                      />
-                    ))}
+                    {posts
+                      .filter(
+                        p =>
+                          !filterCallsign ||
+                          p.fromUser.callsign.includes(
+                            filterCallsign?.trim().toUpperCase()
+                          )
+                      )
+                      .map(p => (
+                        <FeedCard
+                          id={"post-" + p._id}
+                          setAlert={setAlert}
+                          key={p._id}
+                          post={p}
+                          pp={profilePictures}
+                          posts={posts}
+                          setPosts={setPosts}
+                        />
+                      ))}
                   </div>
                 </InfiniteScroll>
               ) : (

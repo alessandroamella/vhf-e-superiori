@@ -196,10 +196,13 @@ const Rankings = () => {
               </div> */}
 
               <Tabs.Group>
-                {["Stazioni", "Cacciatori"].map((tab, i) => (
+                {["Attivatori", "Cacciatori"].map((tab, i) => (
                   <Tabs.Item title={tab} key={i}>
+                    <h1 className="text-4xl md:text-5xl uppercase text-red-500 font-bold text-center mt-4 mb-8 animate-pulse">
+                      Classifica {tab}
+                    </h1>
                     {(i === 0 ? stationRankings : userRankings).length > 0 ? (
-                      <Table striped>
+                      <Table striped className="text-2xl">
                         <Table.Head>
                           <Table.HeadCell>Posizione</Table.HeadCell>
                           <Table.HeadCell>Nominativo</Table.HeadCell>

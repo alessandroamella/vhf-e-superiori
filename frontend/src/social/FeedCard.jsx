@@ -30,7 +30,7 @@ import { adminNames, ownerNames } from "../homepage/Info";
  *
  * @param {Props} props
  */
-const FeedCard = ({ posts, setPosts, post, pp, setAlert }) => {
+const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
   const { user, setUser } = useContext(UserContext);
 
   const navigate = useNavigate();
@@ -81,6 +81,7 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert }) => {
 
   return (
     <div
+      id={id}
       onClick={() => post && navigate(`/social/${post?._id}`)}
       className="w-full transition-transform hover:scale-105 cursor-pointer relative max-w-md mx-auto bg-white dark:bg-gray-800 md:rounded-xl shadow-md overflow-hidden mb-8"
     >

@@ -125,7 +125,7 @@ const BeaconHomepage = () => {
                 ready={!loading}
               >
                 {Array.isArray(beacons) && beacons.length !== 0 ? (
-                  <Table striped>
+                  <Table striped className="text-lg font-semibold">
                     <Table.Head>
                       <Table.HeadCell>Nominativo</Table.HeadCell>
                       <Table.HeadCell className="hidden md:table-cell">

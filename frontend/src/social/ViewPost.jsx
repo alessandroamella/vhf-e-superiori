@@ -82,7 +82,7 @@ const ViewPost = () => {
       </Helmet>
       <div className="px-4 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
         <div className="flex justify-between items-center">
-          <Link to="/social">
+          <Link to={post?._id ? "/social?scrollTo=" + post._id : "/social"}>
             <Button color="light">
               <FaBackward />
             </Button>
