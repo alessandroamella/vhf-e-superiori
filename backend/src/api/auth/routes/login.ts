@@ -106,22 +106,9 @@ router.post(
 
                         req.user = user;
 
-                        return next();
+                        logger.debug("Logged in callsign " + user.callsign);
 
-                        // return res.json(
-                        //     (
-                        //         await User.findOne(
-                        //             { _id: user._id },
-                        //             {
-                        //                 password: 0,
-                        //                 joinRequests: 0,
-                        //                 verificationCode: 0,
-                        //                 passwordResetCode: 0,
-                        //                 __v: 0
-                        //             }
-                        //         )
-                        //     )?.toObject()
-                        // );
+                        return next();
                     });
                 } catch (err) {
                     logger.error("Error catch in login");
@@ -133,7 +120,7 @@ router.post(
             }
         )(req, res, next);
     },
-    returnUserWithPosts
+    (req, res, next) => returnUserWithPosts(req, res, next)
 );
 
 export default router;

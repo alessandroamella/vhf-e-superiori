@@ -34,7 +34,11 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
   const { user, setUser } = useContext(UserContext);
 
   const navigate = useNavigate();
-  const pic = pp && pp.find(p => p.callsign === post?.fromUser?.callsign)?.url;
+  const pic =
+    pp &&
+    (typeof pp === "string"
+      ? pp
+      : pp.find(p => p.callsign === post?.fromUser?.callsign)?.url);
 
   const [deleteDisabled, setDeleteDisabled] = useState(false);
 

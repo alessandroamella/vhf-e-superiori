@@ -67,9 +67,13 @@ import { location } from "../../location";
  *            type: string
  *            description: The event the QSO is related to
  *          frequency:
- *            type: number
+ *            type: string
  *            description: The frequency of the QSO in MHz
  *            example: 14.074
+ *          band:
+ *            type: string
+ *            description: The band of the QSO
+ *            example: 23cm
  *          mode:
  *            type: string
  *            description: The mode of the QSO
@@ -201,8 +205,11 @@ export class QsoClass {
     @prop({ required: true, ref: () => EventClass })
     public event!: Ref<EventClass>;
 
+    @prop({ required: false })
+    public frequency?: number; // in MHz
+
     @prop({ required: true })
-    public frequency!: number; // in MHz
+    public band!: string;
 
     @prop({ required: true })
     public mode!: string; // SSB, CW, FT8, etc

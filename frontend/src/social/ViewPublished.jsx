@@ -1,6 +1,6 @@
 import Layout from "../Layout";
-import { useEffect, useState } from "react";
-import { ReadyContext, SplashContext } from "..";
+import { useEffect, useMemo, useState } from "react";
+import { ReadyContext, SplashContext, getErrorStr } from "..";
 import { useContext } from "react";
 import {
   Link,
@@ -15,10 +15,13 @@ import FeedCard from "./FeedCard";
 
 import "react-placeholder/lib/reactPlaceholder.css";
 import axios from "axios";
-import { Alert, Button, Card, Spinner } from "flowbite-react";
-import InfiniteScroll from "react-infinite-scroll-component";
+import { Alert, Avatar, Button, Card } from "flowbite-react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Helmet } from "react-helmet";
+import { MapContainer, Polyline, TileLayer } from "react-leaflet";
+import StationMapMarker from "../shared/StationMapMarker";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
+import { getDate } from "date-fns";
 
 const ViewPublished = () => {
   const { splashPlayed } = useContext(SplashContext);
@@ -27,57 +30,87 @@ const ViewPublished = () => {
   const [searchParams] = useSearchParams();
 
   const [alert, setAlert] = useState(null);
-
-  const [posts, setPosts] = useState([]);
-  const [profilePictures, setProfilePictures] = useState([]);
-  const [postsLoaded, setPostsLoaded] = useState(false);
-
-  const [cursor, setCursor] = useState(0);
+  const [loaded, setLoaded] = useState(null);
+  const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
 
-  const cursorLimit = 10;
-
-  const { id } = useParams();
-  const callsign = searchParams.get("callsign");
-  const name = searchParams.get("name");
+  const { callsign } = useParams();
 
   useEffect(() => {
     async function fetchPosts() {
-      console.log(
-        "fetching posts from " + cursor + " to " + (cursor + cursorLimit)
-      );
-      const { data } = await axios.get("/api/post", {
-        params: {
-          limit: cursorLimit,
-          offset: cursor,
-          fromUser: id
-        }
-      });
-      console.log("new posts", data, "\nall posts", [...posts, ...data.posts]);
-      setPosts([...posts, ...data.posts]);
-      setProfilePictures([...profilePictures, ...data.pp]);
-      console.log("new pps", profilePictures, "\nall pps", [
-        ...profilePictures,
-        ...data.pp
-      ]);
-      setHasMore(data.posts.length > 0);
-      setPostsLoaded(true);
+      try {
+        const { data } = await axios.get("/api/auth/" + callsign);
+        console.log("user", data);
+        setUser(data);
+      } catch (err) {
+        console.error(err);
+        setAlert({
+          color: "failure",
+          msg: getErrorStr(err?.response?.data?.err)
+        });
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+      } finally {
+        setLoaded(true);
+      }
     }
     fetchPosts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cursor]);
+  }, [callsign]);
 
-  function fetchMorePosts() {
-    setCursor(cursor + cursorLimit);
-  }
+  const [userLatLon, setUserLatLon] = useState(null);
+  const qsosToShow = useMemo(() => {
+    if (!user) return;
+    const pushedQsos = [];
+    let _userLatLon;
+    user.qsos.forEach(qso => {
+      if (!qso?.fromStation?.callsign) {
+        console.log("No qso.fromStation.callsign in qso", qso);
+        return;
+      }
+      const isFromUser = qso.fromStation.callsign === user.callsign;
 
-  const [hasMore, setHasMore] = useState(true);
+      const lats = [qso.fromStationLat, qso.toStationLat];
+      const lons = [qso.fromStationLon, qso.toStationLon];
+      const locators = [qso.fromLocator, qso.toLocator];
+
+      if (!isFromUser) {
+        lats.reverse();
+        lons.reverse();
+        locators.reverse();
+      }
+
+      if (lats[0] && lons[0] && !_userLatLon) {
+        _userLatLon = [lats[0], lons[0], locators[0]];
+      }
+
+      if (!lats[1] || !lons[1]) return;
+
+      pushedQsos.push({
+        ...qso,
+        fromStationLat: lats[0],
+        fromStationLon: lons[0],
+        fromLocator: locators[0],
+        toStationLat: lats[1],
+        toStationLon: lons[1],
+        toLocator: locators[1]
+      });
+    });
+    console.log("qsos to show:", pushedQsos);
+
+    if (!userLatLon && _userLatLon) {
+      setUserLatLon(_userLatLon);
+    }
+
+    return pushedQsos;
+  }, [user, userLatLon]);
 
   return (
     <Layout>
       <Helmet>
-        <title>{callsign || "Post"} - VHF e superiori</title>
+        <title>{user?.callsign || callsign} - VHF e superiori</title>
       </Helmet>
       {!splashPlayed && <Splash ready={ready} />}
 
@@ -125,75 +158,99 @@ const ViewPublished = () => {
         </Button>
 
         <div className="col-span-2">
-          {callsign && (
+          {user?.callsign && (
             // card of user
             <div className="flex w-full justify-center">
               <Card className="bg-gray-50 dark:bg-gray-600 md:px-12">
                 <div className="flex gap-4 items-center flex-row justify-center w-full">
-                  {profilePictures.length > 0 && (
-                    <img
-                      className="h-12 w-12 rounded-full"
-                      src={profilePictures[0].url}
-                      alt="Profile"
-                    />
-                  )}
+                  <Avatar size="lg" img={user?.pp} alt="Profile" />
                   <div className="flex flex-col gap-0">
-                    {callsign && (
-                      <h2 className="font-bold text-xl">{callsign}</h2>
+                    <h2 className="font-bold text-xl">{user.callsign}</h2>
+                    <p>{user?.name}</p>
+                    {user?.createdAt && (
+                      <p className="text-gray-500 text-sm">
+                        Membro dal
+                        {[1, 8].includes(getDate(new Date(user.createdAt)))
+                          ? "l'"
+                          : " "}
+                        {formatInTimeZone(
+                          user.createdAt,
+                          "Europe/Rome",
+                          "d MMMM yyyy"
+                        )}
+                      </p>
                     )}
-                    {name && <p>{name}</p>}
-                    {/* if callsign, add qrz link */}
-                    {callsign && (
-                      <a
-                        href={`https://www.qrz.com/db/${callsign}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        qrz.com/{callsign}
-                      </a>
-                    )}
+                    <a
+                      href={`https://www.qrz.com/db/${user.callsign}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      qrz.com/{user.callsign}
+                    </a>
                   </div>
                 </div>
               </Card>
             </div>
           )}
-          {postsLoaded ? (
-            posts.length > 0 ? (
-              <InfiniteScroll
-                dataLength={posts.length}
-                next={fetchMorePosts}
-                hasMore={hasMore}
-                className="overflow-hidden"
-                loader={
-                  <h4 className="w-full text-center">
-                    <Spinner />
-                  </h4>
-                }
-                endMessage={
-                  <p style={{ textAlign: "center", display: "none" }}>
-                    <b>Per ora è tutto!</b>
-                  </p>
-                }
-              >
+          {loaded ? (
+            <div>
+              {user?.posts ? (
                 <div className="p-0 md:p-5 grid grid-cols-1 md:grid-cols-2">
-                  {posts.map(p => (
+                  {user.posts.map(p => (
                     <FeedCard
                       setAlert={setAlert}
                       key={p._id}
                       post={p}
-                      pp={profilePictures}
-                      posts={posts}
-                      setPosts={setPosts}
+                      pp={user.pp}
+                      posts={user.posts}
+                      setPosts={user.setPosts}
                     />
                   ))}
                 </div>
-              </InfiniteScroll>
-            ) : (
-              <div className="p-5">
-                <p>Ancora nessun post</p>
-                <p className="text-gray-500 italic">Tutto tace...</p>
-              </div>
-            )
+              ) : (
+                <></>
+              )}
+              {qsosToShow && userLatLon ? (
+                <div className="drop-shadow-lg flex justify-center">
+                  <MapContainer center={[41.895643, 12.4831082]} zoom={5}>
+                    <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    />
+
+                    <StationMapMarker
+                      callsign={user.callsign}
+                      lat={userLatLon[0]}
+                      lon={userLatLon[1]}
+                      locator={userLatLon[2]}
+                    />
+                    {qsosToShow.map(qso => (
+                      <>
+                        <Polyline
+                          positions={[
+                            [userLatLon[0], userLatLon[1]],
+                            [qso.toStationLat, qso.toStationLon]
+                          ]}
+                          color="blue"
+                        />
+                        <StationMapMarker
+                          key={qso._id}
+                          callsign={qso.callsign}
+                          lat={qso.toStationLat}
+                          lon={qso.toStationLon}
+                          locator={qso.toLocator}
+                          createUrl={
+                            qso.isRegistered && qso.callsign !== user.callsign
+                          }
+                        />
+                      </>
+                    ))}
+                  </MapContainer>
+                </div>
+              ) : (
+                <></>
+              )}
+            </div>
           ) : (
             <div className="p-5">
               {[...Array(10).keys()].map(e => (

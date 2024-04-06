@@ -55,7 +55,8 @@ class Qrz {
                     username: envs.QRZ_USERNAME,
                     password: envs.QRZ_PASSWORD
                     // agent: "xcheck"
-                }
+                },
+                timeout: 10000 // 10 seconds
             });
             const json = await parseStringPromise(data);
             logger.debug("QRZ XML login response:");
@@ -118,7 +119,8 @@ class Qrz {
                     s: await this.key,
                     callsign: callsign,
                     t: d
-                }
+                },
+                timeout: 10000 // 10 seconds
             });
             logger.debug("QRZ raw data:");
             logger.debug(data);

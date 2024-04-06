@@ -123,7 +123,8 @@ router.post(
             }
         )(req, res, next);
     },
-    returnUserWithPosts
+    (req: Request, res: Response, next: NextFunction) =>
+        returnUserWithPosts(req, res, next)
 );
 
 export default router;

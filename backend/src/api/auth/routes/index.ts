@@ -3,6 +3,7 @@ import loginRoute from "./login";
 import signupRoute from "./signup";
 import logoutRoute from "./logout";
 import viewRoute from "./view";
+import getRoute from "./get";
 import verifyRoute from "./verify";
 import updateRoute from "./update";
 import changePwRoute from "./changePw";
@@ -34,6 +35,7 @@ router.use("/resetpw", resetPwRoute);
 router.use("/changepw", isLoggedIn, changePwRoute);
 router.use("/all", isLoggedIn, isAdmin, allRoute);
 router.use("/", isLoggedIn, viewRoute);
+router.use("/", isLoggedIn, getRoute);
 router.use("/", isLoggedIn, updateRoute);
 
 export default router;

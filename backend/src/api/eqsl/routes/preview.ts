@@ -94,7 +94,8 @@ router.post(
                 fromStationProvince: user.province || "BO",
                 fromStationLat: user.lat || 44.4949,
                 fromStationLon: user.lon || 11.3426,
-                imageHref: req.body.href
+                imageHref: req.body.href,
+                band: "23cm"
             });
             const eqslPic = new EqslPic(req.body.href);
 

@@ -5,6 +5,7 @@ import { createError, validate } from "../../helpers";
 import { Qso } from "../models";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { Errors } from "../../errors";
+import { location } from "../../location";
 
 const router = Router();
 
@@ -60,7 +61,21 @@ router.get(
                 .populate({ path: "fromStation", select: "callsign" })
                 .populate({ path: "event", select: "name date" })
                 .lean();
-            res.json(qso);
+
+            let fromLocator, toLocator;
+            if (qso?.fromStationLat && qso?.fromStationLon) {
+                fromLocator = location.calculateQth(
+                    qso?.fromStationLat,
+                    qso?.fromStationLon
+                );
+            }
+            if (qso?.toStationLat && qso?.toStationLon) {
+                toLocator = location.calculateQth(
+                    qso?.toStationLat,
+                    qso?.toStationLon
+                );
+            }
+            res.json({ ...qso, fromLocator, toLocator });
         } catch (err) {
             logger.error("Error in QSO get");
             logger.error(err);

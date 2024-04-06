@@ -176,7 +176,8 @@ router.put(
             return res.status(INTERNAL_SERVER_ERROR).json(createError());
         }
     },
-    returnUserWithPosts
+    (req: Request, res: Response, next: NextFunction) =>
+        returnUserWithPosts(req, res, next)
 );
 
 export default router;

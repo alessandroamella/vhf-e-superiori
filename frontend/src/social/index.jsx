@@ -10,14 +10,7 @@ import FeedCard from "./FeedCard";
 
 import "react-placeholder/lib/reactPlaceholder.css";
 import axios from "axios";
-import {
-  Alert,
-  Button,
-  Dropdown,
-  Label,
-  Spinner,
-  TextInput
-} from "flowbite-react";
+import { Alert, Button, Dropdown, Spinner, TextInput } from "flowbite-react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MenuContent from "../sideMenu/MenuContent";
 import { FaPlus } from "react-icons/fa";

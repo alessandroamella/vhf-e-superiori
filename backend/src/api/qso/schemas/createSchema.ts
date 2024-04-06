@@ -34,13 +34,17 @@ const createSchema: Schema = {
         isNumeric: { options: [] },
         toFloat: { options: [] },
         isFloat: { options: [] },
-        errorMessage: Errors.INVALID_FREQUENCY
+        errorMessage: Errors.INVALID_FREQUENCY,
+        optional: true
+    },
+    band: {
+        isString: { options: [] },
+        trim: { options: [] }
     },
     mode: {
         isString: { options: [] },
         trim: { options: [] },
         toUpperCase: { options: [] },
-        isAlphanumeric: { options: [] },
         isLength: { options: { min: 1, max: 10 } },
         errorMessage: Errors.INVALID_MODE
     },

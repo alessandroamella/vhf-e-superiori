@@ -208,6 +208,7 @@ router.post(
                     callsign: q.call,
                     mode: q.mode,
                     frequency: q.freq,
+                    band: q.band,
                     qsoDate: moment(
                         q.qso_date + "-" + q.time_on,
                         "YYYYMMDD-HHmmss" // date is YYYYMMDD, time is HHMMSS
@@ -349,7 +350,7 @@ router.get(
                 return {
                     call: q.callsign,
                     mode: q.mode,
-                    freq: q.frequency.toString(),
+                    band: q.band,
                     qso_date: moment(q.qsoDate).format("YYYYMMDD"),
                     time_on: moment(q.qsoDate).format("HHmmss")
                 };

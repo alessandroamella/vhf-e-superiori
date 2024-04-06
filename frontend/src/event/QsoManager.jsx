@@ -25,7 +25,7 @@ import React, {
   useRef,
   useState
 } from "react";
-import { format, zonedTimeToUtc } from "date-fns-tz";
+import { zonedTimeToUtc } from "date-fns-tz";
 import { getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
 import {
@@ -35,7 +35,6 @@ import {
   useParams
 } from "react-router-dom";
 import {
-  FaBackward,
   FaCheck,
   FaDatabase,
   FaEnvelope,
@@ -205,15 +204,8 @@ const QsoManager = () => {
   const [cookies, setCookie] = useCookies(["qsoManagerCache"]);
 
   const [callsign, setCallsign] = useState(cookies.callsign || "");
+  const [locatorLoading, setLocatorLoading] = useState(true);
   const [locator, setLocator] = useState(cookies.locator || null);
-  const [rst, setRst] = useState(parseInt(cookies.rst) || 59);
-  const [frequency, setFrequency] = useState(cookies.frequency || "");
-  const [mode, setMode] = useState(cookies.mode || "");
-  const [qsoDate, setQsoDate] = useState(
-    new Date().toISOString().slice(0, -14) +
-      "T" +
-      formatInTimeZone(new Date(), "UTC", "HH:mm")
-  );
 
   const [formattedAddress, setFormattedAddress] = useState(null);
   const [city, setCity] = useState(null);
@@ -243,29 +235,9 @@ const QsoManager = () => {
   }, []);
 
   useEffect(() => {
-    if (!user || locator !== null || !user.lat || !user.lon) return;
+    if (!user) return;
 
-    async function fetchLocator() {
-      try {
-        const { data } = await axios.get(
-          `/api/location/locator/${user.lat}/${user.lon}`
-        );
-        console.log("fetched locator", data);
-        setLocator(data.locator);
-      } catch (err) {
-        console.error("error in locator fetch", err);
-      }
-    }
-    if (user.lat && user.lon) {
-      fetchLocator();
-    }
-  }, [cookies.locator, locator, user]);
-
-  useEffect(() => {
-    if (!locator || locator.length !== 6) return;
-    console.log("fetching lat lon, len is", locator.length);
-
-    async function getLatLon() {
+    async function getLatLon(locator) {
       try {
         setFormattedAddress(false);
         const { data } = await axios.get(`/api/location/latlon/${locator}`, {
@@ -285,16 +257,48 @@ const QsoManager = () => {
         setFormattedAddress(null);
       }
     }
-    getLatLon();
-  }, [locator]);
 
-  function resetDate() {
-    setQsoDate(
-      new Date().toISOString().slice(0, -14) +
-        "T" +
-        formatInTimeZone(new Date(), "UTC", "HH:mm")
-    );
-  }
+    async function fetchLocator() {
+      setLocatorLoading(true);
+      let locator;
+
+      if (user.lat && user.lon) {
+        try {
+          const { data } = await axios.get(
+            `/api/location/locator/${user.lat}/${user.lon}`
+          );
+          console.log("fetched locator from user lat lon", data);
+          locator = data.locator;
+        } catch (err) {
+          console.error("error in locator fetch", err?.response?.data || err);
+        }
+      }
+
+      if (!locator) {
+        try {
+          const { data } = await axios.get(
+            "/api/autocomplete/" + user.callsign
+          );
+          console.log("fetched locator from user callsign", data);
+          locator = data.locator;
+        } catch (err) {
+          console.error(
+            "error in USER locator fetch",
+            err?.response?.data || err
+          );
+        }
+      }
+
+      if (locator) {
+        setLocator(locator);
+        setPage(1);
+
+        await getLatLon(locator);
+      }
+      setLocatorLoading(false);
+    }
+    fetchLocator();
+  }, [locator, user]);
 
   const callsignRef = useRef(null);
 
@@ -310,11 +314,6 @@ const QsoManager = () => {
   }, []);
 
   useEffect(() => {
-    console.log("set cookie", {
-      callsign,
-      frequency,
-      mode
-    });
     // durata di 4 ore
     setCookie("callsign", callsign, {
       path: "/qsomanager",
@@ -324,36 +323,25 @@ const QsoManager = () => {
       path: "/qsomanager",
       maxAge: 60 * 60 * 4
     });
-    setCookie("rst", rst, { path: "/qsomanager", maxAge: 60 * 60 * 4 });
-    setCookie("frequency", frequency, {
-      path: "/qsomanager",
-      maxAge: 60 * 60 * 4
-    });
-    setCookie("mode", mode, { path: "/qsomanager", maxAge: 60 * 60 * 4 });
-  }, [callsign, frequency, mode, locator, setCookie, rst]);
+  }, [callsign, locator, setCookie]);
 
   async function createQso(e) {
     e.preventDefault();
 
     setDisabled(true);
 
-    console.log("create qso", {
-      callsign,
-      frequency,
-      mode,
-      qsoDate: new Date(qsoDate)
-    });
+    console.log("create qso for callsign", callsign);
 
     try {
       const obj = {
         // fromStation,
         callsign,
         event: id,
-        frequency: parseFloat(frequency),
-        mode,
-        qsoDate: zonedTimeToUtc(new Date(qsoDate), "UTC"),
+        band: event.band,
+        mode: "SSB/CW",
+        qsoDate: zonedTimeToUtc(new Date(), "UTC"),
         locator,
-        rst: isNaN(parseInt(rst)) ? 59 : parseInt(rst),
+        rst: 59,
         fromStationCity: city,
         fromStationProvince: province,
         fromStationLat: lat,
@@ -674,25 +662,9 @@ const QsoManager = () => {
   const [allPredataInserted, setAllPredataInserted] = useState(false);
 
   useEffect(() => {
-    setAllPredataInserted(
-      frequency && mode && qsoDate && locator && formattedAddress
-    );
-    console.log("predata", { frequency, mode, qsoDate, locator });
-  }, [frequency, mode, qsoDate, locator, formattedAddress]);
-
-  const [editTime, setEditTime] = useState(false);
-
-  // if not editTime, update qsoDate to current time every second
-  useEffect(() => {
-    if (!editTime) {
-      const interval = setInterval(() => {
-        if (!editTime) {
-          resetDate();
-        }
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [editTime]);
+    setAllPredataInserted(locator && formattedAddress);
+    console.log("predata", { locator });
+  }, [locator, formattedAddress]);
 
   return user === null ? (
     navigate({
@@ -753,7 +725,7 @@ const QsoManager = () => {
                   <Table.Head>
                     <Table.HeadCell>Nominativo</Table.HeadCell>
                     <Table.HeadCell>Data UTC</Table.HeadCell>
-                    <Table.HeadCell>Frequenza</Table.HeadCell>
+                    <Table.HeadCell>Banda</Table.HeadCell>
                     <Table.HeadCell>Modo</Table.HeadCell>
                     <Table.HeadCell>Da locatore</Table.HeadCell>
                     <Table.HeadCell>RST</Table.HeadCell>
@@ -788,7 +760,7 @@ const QsoManager = () => {
                             "yyyy-MM-dd HH:mm"
                           )}
                         </Table.Cell>
-                        <Table.Cell>{q.frequency} MHz</Table.Cell>
+                        <Table.Cell>{q.band || q.frequency}</Table.Cell>
                         <Table.Cell>{q.mode}</Table.Cell>
                         <Table.Cell>{q.locator}</Table.Cell>
                         <Table.Cell>{q.rst}</Table.Cell>
@@ -821,7 +793,7 @@ const QsoManager = () => {
       </Modal>
 
       <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900">
-        <div className="mx-auto px-4 w-full md:w-5/6 py-12">
+        <div className="mx-auto px-4 w-full md:w-5/6 pt-12">
           {alert && (
             <Alert
               className="mb-6"
@@ -840,11 +812,6 @@ const QsoManager = () => {
                     {event?.name || "..."}
                   </Badge>
                 </Typography>
-                {user?.isAdmin && (
-                  <Link to={`/eventmanager/${id}`}>
-                    <Button>Gestisci evento</Button>
-                  </Link>
-                )}
               </div>
 
               <div className="mb-6">
@@ -944,7 +911,7 @@ const QsoManager = () => {
                                 )}
                                 <Table.HeadCell>Nominativo</Table.HeadCell>
                                 <Table.HeadCell>Data UTC</Table.HeadCell>
-                                <Table.HeadCell>Frequenza</Table.HeadCell>
+                                <Table.HeadCell>Banda</Table.HeadCell>
                                 <Table.HeadCell>Modo</Table.HeadCell>
                                 <Table.HeadCell>Da locatore</Table.HeadCell>
                                 <Table.HeadCell>RST</Table.HeadCell>
@@ -999,7 +966,9 @@ const QsoManager = () => {
                                         "yyyy-MM-dd HH:mm"
                                       )}
                                     </Table.Cell>
-                                    <Table.Cell>{q.frequency} MHz</Table.Cell>
+                                    <Table.Cell>
+                                      {q.band || q.frequency}
+                                    </Table.Cell>
                                     <Table.Cell>{q.mode}</Table.Cell>
                                     <Table.Cell>{q.locator}</Table.Cell>
                                     <Table.Cell>{q.rst}</Table.Cell>
@@ -1113,199 +1082,160 @@ const QsoManager = () => {
                     </Typography>
                   </div>
                   {user ? (
-                    <div className="mb-6">
-                      <div className="w-full flex justify-center">
-                        <Timeline horizontal>
-                          <Timeline.Item>
-                            <Timeline.Point icon={FaDatabase} />
-                            <Timeline.Content>
-                              <Timeline.Title>
-                                <span
-                                  className={`${
-                                    page === 0 ? "font-bold" : "font-medium"
-                                  } cursor-pointer hover:text-blue-700 transition-colors`}
-                                  onClick={() => setPage(0)}
-                                >
-                                  Dati preliminari
-                                </span>
-                              </Timeline.Title>
-                              <Timeline.Body>
+                    <div>
+                      {page === 0 && (
+                        <div className="w-full flex justify-center">
+                          <Timeline horizontal>
+                            <Timeline.Item>
+                              <Timeline.Point icon={FaDatabase} />
+                              <Timeline.Content>
+                                <Timeline.Title>
+                                  <span
+                                    className={`${
+                                      page === 0 ? "font-bold" : "font-medium"
+                                    } cursor-pointer hover:text-blue-700 transition-colors`}
+                                    onClick={() => setPage(0)}
+                                  >
+                                    Dati preliminari
+                                  </span>
+                                </Timeline.Title>
+                                {/* <Timeline.Body>
                                 Necessari per la creazione del QSO
-                              </Timeline.Body>
-                            </Timeline.Content>
-                          </Timeline.Item>
-                          <Timeline.Item>
-                            <Timeline.Point icon={FaShare} />
-                            <Timeline.Content>
-                              <Timeline.Title>
-                                <span
-                                  className={`${
-                                    page === 1 ? "font-bold" : "font-medium"
-                                  } ${
-                                    allPredataInserted
-                                      ? "cursor-pointer hover:text-blue-700 transition-colors"
-                                      : "cursor-not-allowed"
-                                  }`}
-                                  onClick={
-                                    allPredataInserted ? () => setPage(1) : null
-                                  }
-                                >
-                                  Nominativo
-                                </span>
-                              </Timeline.Title>
-                              <Timeline.Body>Registrazione QSO</Timeline.Body>
-                            </Timeline.Content>
-                          </Timeline.Item>
-                        </Timeline>
-                      </div>
+                              </Timeline.Body> */}
+                              </Timeline.Content>
+                            </Timeline.Item>
+                            <Timeline.Item>
+                              <Timeline.Point icon={FaShare} />
+                              <Timeline.Content>
+                                <Timeline.Title>
+                                  <span
+                                    className={`${
+                                      page === 1 ? "font-bold" : "font-medium"
+                                    } ${
+                                      allPredataInserted
+                                        ? "cursor-pointer hover:text-blue-700 transition-colors"
+                                        : "cursor-not-allowed"
+                                    }`}
+                                    onClick={
+                                      allPredataInserted
+                                        ? () => setPage(1)
+                                        : null
+                                    }
+                                  >
+                                    Nominativo
+                                  </span>
+                                </Timeline.Title>
+                                {/* <Timeline.Body>Registrazione QSO</Timeline.Body> */}
+                              </Timeline.Content>
+                            </Timeline.Item>
+                          </Timeline>
+                        </div>
+                      )}
 
                       <form onSubmit={createQso}>
                         {page === 0 ? (
-                          <>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {!isEventStation && user.isAdmin && users && (
-                                <div>
-                                  <Label
-                                    htmlFor="fromStation"
-                                    value="Da stazione attivatrice*"
-                                  />
-                                  <Dropdown
-                                    label={fromStation.callsign}
-                                    disabled={disabled}
-                                    id="fromStation"
-                                    className="w-full"
-                                    required
-                                    color="light"
-                                  >
-                                    {users.map(u => (
-                                      <Dropdown.Item
-                                        key={u._id}
-                                        onClick={() => setFromStation(u)}
-                                      >
-                                        <span
-                                          className={
-                                            u._id === fromStation._id
-                                              ? "font-bold"
-                                              : ""
-                                          }
+                          locatorLoading ? (
+                            <Spinner />
+                          ) : (
+                            <>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {!isEventStation && user.isAdmin && users && (
+                                  <div>
+                                    <Label
+                                      htmlFor="fromStation"
+                                      value="Da stazione attivatrice*"
+                                    />
+                                    <Dropdown
+                                      label={fromStation.callsign}
+                                      disabled={disabled}
+                                      id="fromStation"
+                                      className="w-full"
+                                      required
+                                      color="light"
+                                    >
+                                      {users.map(u => (
+                                        <Dropdown.Item
+                                          key={u._id}
+                                          onClick={() => setFromStation(u)}
                                         >
-                                          {u.callsign}
-                                        </span>
-                                      </Dropdown.Item>
-                                    ))}
-                                  </Dropdown>
-                                  <p className="flex items-center gap-1">
-                                    <FaInfoCircle />
-                                    Vedi questo in quanto sei un{" "}
-                                    <span className="font-bold">
-                                      amministratore
-                                    </span>
-                                  </p>
-                                </div>
-                              )}
+                                          <span
+                                            className={
+                                              u._id === fromStation._id
+                                                ? "font-bold"
+                                                : ""
+                                            }
+                                          >
+                                            {u.callsign}
+                                          </span>
+                                        </Dropdown.Item>
+                                      ))}
+                                    </Dropdown>
+                                    <p className="flex items-center gap-1">
+                                      <FaInfoCircle />
+                                      Vedi questo in quanto sei un{" "}
+                                      <span className="font-bold">
+                                        amministratore
+                                      </span>
+                                    </p>
+                                  </div>
+                                )}
 
-                              <div>
-                                <Label
-                                  htmlFor="frequency"
-                                  value="Frequenza (in MHz)"
-                                />
-                                <TextInput
-                                  color={frequency ? "success" : "warning"}
-                                  disabled={disabled}
-                                  id="frequency"
-                                  label="Frequenza"
-                                  placeholder="144.205"
-                                  type="number"
-                                  value={frequency}
-                                  onChange={e => {
-                                    setFrequency(e.target.value);
-                                    setCookie("frequency", e.target.value, {
-                                      path: "/qsomanager",
-                                      maxAge: 60 * 60 * 4
-                                    });
-                                  }}
-                                  required
-                                />
-                              </div>
-                              <div>
-                                <Label
-                                  htmlFor="mode"
-                                  value="Modo (CW, SSB, FT8, ecc.)"
-                                />
-                                <TextInput
-                                  color={mode ? "success" : "warning"}
-                                  disabled={disabled}
-                                  id="mode"
-                                  label="Modo"
-                                  minLength={1}
-                                  maxLength={10}
-                                  placeholder="SSB"
-                                  value={mode}
-                                  onChange={e => {
-                                    setMode(e.target.value);
-                                    setCookie("mode", e.target.value, {
-                                      path: "/qsomanager",
-                                      maxAge: 60 * 60 * 4
-                                    });
-                                  }}
-                                  required
-                                />
-                              </div>
-                              <div
-                                className={`${
-                                  formattedAddress ? "" : "mb-7"
-                                } flex items-center gap-2`}
-                              >
-                                <div className="w-full">
-                                  <Label
-                                    htmlFor="locator"
-                                    value="Tuo locatore"
-                                  />
-                                  <TextInput
-                                    color={
-                                      locator?.length === 6 &&
-                                      formattedAddress !== null
-                                        ? "success"
-                                        : formattedAddress === false
-                                        ? "info"
-                                        : "warning"
-                                    }
-                                    disabled={disabled}
-                                    id="locator"
-                                    label="Tuo locatore"
-                                    helperText={
-                                      (formattedAddress !== false &&
-                                        formattedAddress) ||
-                                      "Locatore non valido"
-                                    }
-                                    minLength={6}
-                                    maxLength={6}
-                                    placeholder="JN54mn"
-                                    value={locator}
-                                    onChange={e => {
-                                      setLocator(e.target.value);
-                                      setCookie("locator", e.target.value, {
-                                        path: "/qsomanager",
-                                        maxAge: 60 * 60 * 4
-                                      });
-                                      if (e.target.value.length !== 6) {
-                                        setFormattedAddress(null);
-                                      }
-                                    }}
-                                  />
-                                </div>
-
-                                <Button
-                                  color="gray"
-                                  onClick={geolocalize}
-                                  disabled={disabled}
-                                  className="mb-1"
+                                <div
+                                  className={`${
+                                    formattedAddress ? "" : "mb-7"
+                                  } flex items-center gap-2`}
                                 >
-                                  <FaMapMarkerAlt className="text-xl" />
-                                </Button>
+                                  <div className="w-full">
+                                    <Label
+                                      htmlFor="locator"
+                                      value="Tuo locatore"
+                                    />
+                                    <TextInput
+                                      color={
+                                        locator?.length === 6 &&
+                                        formattedAddress !== null
+                                          ? "success"
+                                          : formattedAddress === false
+                                          ? "info"
+                                          : "warning"
+                                      }
+                                      disabled={disabled}
+                                      id="locator"
+                                      label="Tuo locatore"
+                                      helperText={
+                                        (formattedAddress !== false &&
+                                          formattedAddress) ||
+                                        "Locatore non valido"
+                                      }
+                                      minLength={6}
+                                      maxLength={6}
+                                      placeholder="JN54mn"
+                                      value={locator}
+                                      onChange={e => {
+                                        setLocator(e.target.value);
+                                        setCookie("locator", e.target.value, {
+                                          path: "/qsomanager",
+                                          maxAge: 60 * 60 * 4
+                                        });
+                                        if (e.target.value.length !== 6) {
+                                          setFormattedAddress(null);
+                                        }
+                                      }}
+                                    />
+                                  </div>
+
+                                  <Button
+                                    color="gray"
+                                    onClick={geolocalize}
+                                    disabled={disabled}
+                                    className="mb-1"
+                                  >
+                                    <FaMapMarkerAlt className="text-xl" />
+                                  </Button>
+                                </div>
                               </div>
-                            </div>
-                          </>
+                            </>
+                          )
                         ) : (
                           <div className="flex flex-col gap-2 items-center">
                             <div className="flex flex-col md:flex-row gap-2 justify-center items-center md:items-end">
@@ -1405,7 +1335,7 @@ const QsoManager = () => {
                         )}
                         <div className="mt-4 flex flex-col items-center gap-2">
                           <div className="flex justify-center">
-                            {page === 0 ? (
+                            {page === 0 && (
                               <Tooltip
                                 content={
                                   allPredataInserted
@@ -1427,205 +1357,18 @@ const QsoManager = () => {
                                   <FaForward className="inline ml-2" />
                                 </Button>
                               </Tooltip>
-                            ) : (
-                              <Button
-                                type="button"
-                                disabled={disabled}
-                                onClick={() => setPage(0)}
-                                color="light"
-                                className="mt-6"
-                              >
-                                <FaBackward className="inline mr-2" />
-                                Precedente
-                              </Button>
                             )}
                           </div>
-
-                          {page === 1 && (
-                            <div className="mt-8 flex flex-col justify-center gap-2 items-center">
-                              <h5 className="font-semibold text-sm uppercase text-gray-600 dark:text-gray-400">
-                                Riepilogo
-                              </h5>
-                              <Card className="w-full">
-                                <div className="flex flex-col md:flex-row gap-4 items-start">
-                                  <div className="w-full">
-                                    <Label
-                                      htmlFor="callsign"
-                                      value="Nominativo"
-                                    />
-                                    <TextInput
-                                      disabled
-                                      id="callsign"
-                                      label="Nominativo"
-                                      minLength={1}
-                                      maxLength={10}
-                                      value={callsign}
-                                      className="font-semibold"
-                                    />
-                                  </div>
-                                  <div className="w-full">
-                                    {editTime ? (
-                                      <>
-                                        <div>
-                                          <Label
-                                            htmlFor="qsoDate"
-                                            value="Data QSO in UTC*"
-                                          />
-                                          <div className="flex gap-1 justify-center items-start">
-                                            <div className="w-full relative">
-                                              <TextInput
-                                                disabled={disabled}
-                                                id="qsoDate"
-                                                label="Data"
-                                                type="datetime-local"
-                                                className="w-full"
-                                                value={qsoDate}
-                                                onChange={e =>
-                                                  setQsoDate(e.target.value)
-                                                }
-                                                required
-                                                helperText={
-                                                  <>
-                                                    {format(
-                                                      new Date(qsoDate),
-                                                      "HH:mm"
-                                                    )}{" "}
-                                                    UTC
-                                                    {", "}
-                                                    {formatInTimeZone(
-                                                      zonedTimeToUtc(
-                                                        new Date(qsoDate),
-                                                        "UTC"
-                                                      ),
-                                                      "Europe/Rome",
-                                                      "HH:mm"
-                                                    )}{" "}
-                                                    Roma
-                                                  </>
-                                                }
-                                              />
-                                            </div>
-                                            <div className="mt-1">
-                                              <Tooltip content="Imposta all'orario attuale">
-                                                <Button
-                                                  color="light"
-                                                  // size="sm"
-                                                  className="h-max"
-                                                  onClick={resetDate}
-                                                >
-                                                  <FaUndo />
-                                                </Button>
-                                              </Tooltip>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Label
-                                          htmlFor="time"
-                                          value="Data QSO"
-                                        />
-
-                                        <TextInput
-                                          disabled
-                                          id="time"
-                                          label="Ora"
-                                          value={format(
-                                            new Date(qsoDate),
-                                            "yyyy-MM-dd HH:mm"
-                                          )}
-                                        />
-                                      </>
-                                    )}
-                                  </div>
-                                  <div className="w-full">
-                                    <Label
-                                      htmlFor="frequency"
-                                      value="Frequenza (in MHz)"
-                                    />
-                                    <TextInput
-                                      disabled
-                                      id="frequency"
-                                      label="Frequenza"
-                                      placeholder="144.205"
-                                      type="number"
-                                      onClick={() => setPage(0)}
-                                      value={frequency}
-                                    />
-                                  </div>
-                                  <div className="w-full">
-                                    <Label htmlFor="mode" value="Modo" />
-                                    <TextInput
-                                      disabled
-                                      id="mode"
-                                      label="Modo"
-                                      minLength={1}
-                                      maxLength={10}
-                                      onClick={() => setPage(0)}
-                                      value={mode}
-                                    />
-                                  </div>
-                                  <div className="w-full">
-                                    <Label htmlFor="locator" value="Locatore" />
-                                    <TextInput
-                                      disabled
-                                      id="locator"
-                                      label="Locatore"
-                                      minLength={1}
-                                      maxLength={20}
-                                      onClick={() => setPage(0)}
-                                      value={locator}
-                                    />
-                                  </div>
-                                  <div className="w-full">
-                                    <Label htmlFor="rst" value="RST" />
-                                    <TextInput
-                                      disabled={disabled}
-                                      id="rst"
-                                      label="RST"
-                                      placeholder="59"
-                                      type="text"
-                                      value={rst}
-                                      maxLength={3}
-                                      onChange={e => {
-                                        const val =
-                                          parseInt(
-                                            e.target.value.replace(/\D+/g, "")
-                                          ) || "";
-                                        setRst(val);
-                                        setCookie("frequency", val, {
-                                          path: "/qsomanager",
-                                          maxAge: 60 * 60 * 4
-                                        });
-                                      }}
-                                      required
-                                    />
-                                  </div>
-                                </div>
-                                <div
-                                  className={`w-full flex gap-2 ${
-                                    editTime ? "-mt-4" : ""
-                                  }`}
-                                >
-                                  <Checkbox
-                                    id="editTime"
-                                    checked={editTime}
-                                    onChange={e =>
-                                      setEditTime(e.target.checked)
-                                    }
-                                    disabled={disabled}
-                                  />
-                                  <Label
-                                    htmlFor="editTime"
-                                    value="Modifica ora"
-                                  />
-                                </div>
-                              </Card>
-                            </div>
-                          )}
                         </div>
                       </form>
+
+                      {page === 1 && (
+                        <div className="mt-8 flex justify-end">
+                          <Button onClick={() => setPage(0)}>
+                            Modifica locatore per portatili /P
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <Spinner />

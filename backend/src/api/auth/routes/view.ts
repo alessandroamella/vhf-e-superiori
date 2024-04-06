@@ -31,6 +31,6 @@ const router = Router();
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  */
-router.get("/", returnUserWithPosts);
+router.get("/", (req, res, next) => returnUserWithPosts(req, res, next));
 
 export default router;

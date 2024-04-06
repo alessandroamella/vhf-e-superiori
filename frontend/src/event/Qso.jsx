@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Alert, Button, Table } from "flowbite-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getErrorStr } from "..";
 import Layout from "../Layout";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -23,35 +23,9 @@ import {
 } from "react-share";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { Helmet } from "react-helmet";
-import {
-  MapContainer,
-  Marker,
-  Polyline,
-  Popup,
-  TileLayer,
-  useMap
-} from "react-leaflet";
-import L, { latLngBounds } from "leaflet";
-
-/*
-{
-_id: "65b5a20e7c0494ddfae021ec",
-fromStation: {
-_id: "6411a662b9a8fb81079d54b8",
-callsign: "IU4QSG"
-},
-callsign: "IU4LAU",
-event: {
-_id: "645903e1b898537ef29664e7",
-name: "Radio flash mob 22",
-date: "2024-02-21T09:00:00.000Z"
-},
-frequency: 123.123,
-mode: "SSB",
-qsoDate: "2024-01-28T00:38:00.000Z",
-imageHref: "https://vhfesuperiori.s3.eu-central-1.amazonaws.com/eqsl/6411a662b9a8fb81079d54b8-1706967067926-4d043e5087ab2b21.jpeg"
-}
-*/
+import { MapContainer, Polyline, TileLayer, useMap } from "react-leaflet";
+import { latLngBounds } from "leaflet";
+import StationMapMarker from "../shared/StationMapMarker";
 
 function ChangeView({ center, markers }) {
   const map = useMap();
@@ -97,18 +71,6 @@ const Qso = () => {
   const socialBody =
     qso &&
     `QSO ${qso?.callsign} - ${qso?.fromStation?.callsign} - ${qso?.event?.name} - ${qso?.qsoDate} UTC - ${qso?.frequency} MHz - ${qso?.mode} - VHF e superiori`;
-
-  const icon = useMemo(
-    () =>
-      L.icon({
-        iconSize: [25, 41],
-        iconAnchor: [10, 41],
-        popupAnchor: [2, -40],
-        iconUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-icon.png",
-        shadowUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-shadow.png"
-      }),
-    []
-  );
 
   return (
     <Layout>
@@ -235,6 +197,7 @@ const Qso = () => {
               </ReactPlaceholder>
 
               {qso &&
+              qso.fromStation &&
               qso.fromStationLat &&
               qso.fromStationLon &&
               qso.toStationLat &&
@@ -266,32 +229,18 @@ const Qso = () => {
                       color="blue"
                     />
 
-                    <Marker
-                      position={[qso.fromStationLat, qso.fromStationLon]}
-                      icon={icon}
-                    >
-                      <Popup>
-                        <div className="text-center">
-                          <h3>{qso.fromStation?.callsign}</h3>
-                          <p>
-                            {qso.fromStationLat}, {qso.fromStationLon}
-                          </p>
-                        </div>
-                      </Popup>
-                    </Marker>
-                    <Marker
-                      position={[qso.toStationLat, qso.toStationLon]}
-                      icon={icon}
-                    >
-                      <Popup>
-                        <div>
-                          <h3>{qso.callsign}</h3>
-                          <p>
-                            {qso.toStationLat}, {qso.toStationLon}
-                          </p>
-                        </div>
-                      </Popup>
-                    </Marker>
+                    <StationMapMarker
+                      callsign={qso.fromStation.callsign}
+                      lat={qso.fromStationLat}
+                      lon={qso.fromStationLon}
+                      locator={qso.fromLocator}
+                    />
+                    <StationMapMarker
+                      callsign={qso.callsign}
+                      lat={qso.toStationLat}
+                      lon={qso.toStationLon}
+                      locator={qso.toLocator}
+                    />
                   </MapContainer>
                 </div>
               ) : (
