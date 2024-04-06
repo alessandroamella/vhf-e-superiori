@@ -74,7 +74,7 @@ router.get(
     param("callsign").isString().trim().toUpperCase(),
     validate,
     async (req, res) => {
-        const { callsign } = req.params;
+        let { callsign } = req.params;
 
         if (cache[callsign]) {
             if (moment().diff(cache[callsign].date, "days") < 1) {
@@ -82,6 +82,12 @@ router.get(
             } else {
                 delete cache[callsign];
             }
+        }
+
+        if (callsign.includes("/")) {
+            // callsign might contain prefix or suffix or both: split string and get longest part
+            const parts = callsign.split("/");
+            callsign = parts.reduce((a, b) => (a.length > b.length ? a : b));
         }
 
         try {
