@@ -40,6 +40,7 @@ import {
   FaInfoCircle,
   FaMapMarkerAlt,
   FaPlusCircle,
+  FaSave,
   FaTimes,
   FaUndo,
   FaUser
@@ -256,6 +257,10 @@ const QsoManager = () => {
       setPage(0);
     } else {
       setPage(1);
+
+      setTimeout(() => {
+        document.getElementById("create-qso-container")?.scrollIntoView();
+      }, 500);
     }
   }, [formattedAddress, isManuallySettingLocator]);
 
@@ -291,6 +296,26 @@ const QsoManager = () => {
     if (!user || formattedAddress) return;
 
     async function getLatLon(locator) {
+      if (
+        user &&
+        locator === user.locator &&
+        user.lat &&
+        user.lon &&
+        user.locator &&
+        user.city &&
+        user.province
+      ) {
+        setLocator(user.locator);
+        setFormattedAddress(`${user.city} (${user.province})`);
+        setCity(user.city);
+        setProvince(user.province);
+        setLat(user.lat);
+        setLon(user.lon);
+
+        console.log("locator same as user:", locator, user);
+
+        return;
+      }
       try {
         setFormattedAddress(false);
         const { data } = await axios.get(`/api/location/latlon/${locator}`, {
@@ -1192,7 +1217,10 @@ const QsoManager = () => {
                     )}
                   </div>
 
-                  <div className="flex flex-col md:flex-row justify-center md:justify-between gap-4 items-center">
+                  <div
+                    id="create-qso-container"
+                    className="flex flex-col md:flex-row justify-center md:justify-between gap-4 items-center"
+                  >
                     <Typography variant="h2" className="my-2 flex items-center">
                       Crea QSO
                     </Typography>
@@ -1307,7 +1335,7 @@ const QsoManager = () => {
                           <div className="flex flex-col gap-2 items-center">
                             <div className="flex flex-col md:flex-row gap-2 justify-center items-center md:items-end">
                               <div className="w-full relative">
-                                <Label htmlFor="callsign" value="Nominativo*" />
+                                <Label htmlFor="callsign" value="Nominativo" />
                                 <TextInput
                                   disabled={disabled}
                                   id="callsign"
@@ -1316,7 +1344,7 @@ const QsoManager = () => {
                                   minLength={1}
                                   maxLength={10}
                                   ref={callsignRef}
-                                  placeholder={user ? user.callsign : "IU4QSG"}
+                                  placeholder="Inserisci nominativo"
                                   value={callsign}
                                   className="uppercase font-semibold text-2xl input-large text-black"
                                   onChange={e => {
@@ -1381,17 +1409,17 @@ const QsoManager = () => {
 
                               <Button
                                 type="submit"
-                                disabled={disabled}
+                                disabled={disabled || callsign.length === 0}
                                 size="lg"
                                 color={highlighted ? "success" : "info"}
-                                className="transition-colors duration-500 min-w-[10rem]"
+                                className="transition-colors duration-500 min-w-[11rem]"
                               >
                                 {disabled ? (
                                   <Spinner className="dark:text-white dark:fill-white" />
                                 ) : (
                                   <span className="flex items-center gap-2">
-                                    <FaPlusCircle />
-                                    Salva QSO
+                                    <FaSave />
+                                    Inserisci QSO
                                   </span>
                                 )}
                               </Button>

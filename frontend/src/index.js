@@ -250,6 +250,7 @@ const App = () => {
 
   useEffect(() => {
     // count view
+    let fetchWithoutPost = false;
     async function countView() {
       try {
         const { data } = await axios.post("/api/counter", {
@@ -259,6 +260,18 @@ const App = () => {
         setViews(data.views);
       } catch (err) {
         console.log("error while conting view");
+        if (!isAxiosError(err)) return console.error(err);
+        setViews(null);
+        fetchWithoutPost = true;
+      }
+
+      if (!fetchWithoutPost) return;
+      try {
+        const { data } = await axios.get("/api/counter");
+        console.log("views NO POST counted, total:", data);
+        setViews(data.views);
+      } catch (err) {
+        console.log("error while conting NO POST view");
         if (!isAxiosError(err)) return console.error(err);
         setViews(null);
       }

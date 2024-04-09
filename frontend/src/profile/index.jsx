@@ -670,8 +670,8 @@ const Profile = () => {
                   <div className="flex justify-center my-8 md:my-16">
                     <Link to={`/u/${user.callsign}`}>
                       <Button color="dark">
-                        <FaExternalLinkAlt className="inline mb-1 mr-2" />{" "}
-                        Visualizza collegamenti
+                        <FaExternalLinkAlt className="inline mb-1 mr-2" /> Mappa
+                        collegamenti
                       </Button>
                     </Link>
                   </div>

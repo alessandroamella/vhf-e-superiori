@@ -18,8 +18,7 @@ import {
   TileLayer,
   Marker,
   Popup,
-  useMapEvents,
-  Pane
+  useMapEvents
 } from "react-leaflet";
 import { Helmet } from "react-helmet";
 import MapWatermark from "../shared/MapWatermark";

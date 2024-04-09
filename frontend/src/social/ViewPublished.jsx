@@ -1,5 +1,5 @@
 import Layout from "../Layout";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ReadyContext, SplashContext, getErrorStr } from "..";
 import { useContext } from "react";
 import {
@@ -15,7 +15,16 @@ import FeedCard from "./FeedCard";
 
 import "react-placeholder/lib/reactPlaceholder.css";
 import axios from "axios";
-import { Alert, Avatar, Button, Card, Spinner, Tooltip } from "flowbite-react";
+import {
+  Alert,
+  Avatar,
+  Button,
+  Card,
+  Dropdown,
+  Label,
+  Spinner,
+  Tooltip
+} from "flowbite-react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Helmet } from "react-helmet";
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
@@ -29,7 +38,7 @@ const ViewPublished = () => {
   const { splashPlayed } = useContext(SplashContext);
   const { ready } = useContext(ReadyContext);
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [alert, setAlert] = useState(null);
   const [loaded, setLoaded] = useState(null);
@@ -47,7 +56,10 @@ const ViewPublished = () => {
       setTimeout(() => {
         setShowMap(true);
         setIsFakeLoading(false);
-      }, 1000 + Math.floor(Math.random() * 1000));
+        setTimeout(() => {
+          document.getElementById("user-map-container")?.scrollIntoView();
+        }, 200);
+      }, 100 + Math.floor(Math.random() * 900));
     }
   }, [isFakeLoading]);
 
@@ -120,6 +132,54 @@ const ViewPublished = () => {
 
     return pushedQsos;
   }, [user, userLatLon]);
+
+  const [mappedEvents, setMappedEvents] = useState(null);
+
+  useEffect(() => {
+    if (!qsosToShow) return;
+    const events = [...new Set(qsosToShow.map(e => e.event._id))].map(
+      e => qsosToShow.find(q => q.event._id === e).event
+    );
+    setMappedEvents(events);
+  }, [qsosToShow]);
+
+  const _eventToFilter = searchParams.get("event");
+
+  const setEventToFilter = _id => {
+    if (_id === null) {
+      searchParams.delete("event");
+    } else {
+      searchParams.set("event", _id);
+    }
+    setSearchParams(searchParams);
+    setShowMap(false);
+    setIsFakeLoading(true);
+  };
+
+  // on start
+  useEffect(() => {
+    if (searchParams.get("event")) {
+      setIsFakeLoading(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  console.log(
+    "_eventToFilter",
+    _eventToFilter,
+    "qsostoshow",
+    qsosToShow?.filter(e =>
+      !_eventToFilter ? true : e.event._id === _eventToFilter
+    ).length
+  );
+
+  const mappedQsosToShow = useMemo(
+    () =>
+      qsosToShow?.filter(e =>
+        !_eventToFilter ? true : e.event._id === _eventToFilter
+      ),
+    [_eventToFilter, qsosToShow]
+  );
 
   return (
     <Layout>
@@ -209,7 +269,7 @@ const ViewPublished = () => {
           {loaded ? (
             <div>
               {user?.posts ? (
-                <div className="p-0 md:p-5 grid grid-cols-1 md:grid-cols-2">
+                <div className="p-0 md:p-5 gap-2 grid grid-cols-1 md:grid-cols-2">
                   {user.posts.map(p => (
                     <FeedCard
                       setAlert={setAlert}
@@ -254,43 +314,86 @@ const ViewPublished = () => {
                 ready={!isFakeLoading}
               />
               {qsosToShow && userLatLon && showMap ? (
-                <div className="drop-shadow-lg flex justify-center relative">
-                  <MapContainer center={[41.895643, 12.4831082]} zoom={5}>
-                    <TileLayer
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    />
+                <div
+                  id="user-map-container"
+                  className="drop-shadow-lg flex flex-col items-center gap-2 relative"
+                >
+                  <div className="border-y w-full flex flex-col md:flex-row justify-center items-center gap-2 py-2">
+                    <div>
+                      <Label
+                        htmlFor="filterByEvent"
+                        value="Filtra per evento"
+                      />
+                      <Dropdown
+                        label={
+                          (
+                            _eventToFilter &&
+                            qsosToShow.find(e => e.event._id === _eventToFilter)
+                          )?.event?.name || "Tutti i miei QSO"
+                        }
+                        id="filterByEvent"
+                        className="w-full z-50"
+                        required
+                        color="light"
+                      >
+                        <Dropdown.Item onClick={() => setEventToFilter(null)}>
+                          Tutti
+                        </Dropdown.Item>
+                        {mappedEvents?.map(e => (
+                          <Dropdown.Item
+                            key={e._id}
+                            onClick={() => setEventToFilter(e._id)}
+                          >
+                            {e.name}
+                          </Dropdown.Item>
+                        ))}
+                      </Dropdown>
+                    </div>
+                  </div>
+                  {mappedQsosToShow && mappedQsosToShow.length > 0 ? (
+                    <MapContainer center={[41.895643, 12.4831082]} zoom={5}>
+                      <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      />
 
-                    <StationMapMarker
-                      callsign={user.callsign}
-                      lat={userLatLon[0]}
-                      lon={userLatLon[1]}
-                      locator={userLatLon[2]}
-                    />
-                    {qsosToShow.map(qso => (
-                      <>
-                        <Polyline
-                          positions={[
-                            [userLatLon[0], userLatLon[1]],
-                            [qso.toStationLat, qso.toStationLon]
-                          ]}
-                          color="blue"
-                        />
-                        <StationMapMarker
-                          key={qso._id}
-                          callsign={qso.callsign}
-                          lat={qso.toStationLat}
-                          lon={qso.toStationLon}
-                          locator={qso.toLocator}
-                          createUrl={
-                            qso.isRegistered && qso.callsign !== user.callsign
-                          }
-                        />
-                      </>
-                    ))}
+                      <StationMapMarker
+                        callsign={user.callsign}
+                        lat={userLatLon[0]}
+                        lon={userLatLon[1]}
+                        locator={userLatLon[2]}
+                      />
+                      {mappedQsosToShow?.map(qso => (
+                        <React.Fragment key={qso._id}>
+                          <Polyline
+                            positions={[
+                              [userLatLon[0], userLatLon[1]],
+                              [qso.toStationLat, qso.toStationLon]
+                            ]}
+                            color="blue"
+                          />
+                          <StationMapMarker
+                            key={qso._id}
+                            callsign={qso.callsign}
+                            lat={qso.toStationLat}
+                            lon={qso.toStationLon}
+                            locator={qso.toLocator}
+                            createUrl={
+                              qso.isRegistered && qso.callsign !== user.callsign
+                            }
+                          />
+                        </React.Fragment>
+                      ))}
 
-                    <MapWatermark />
-                  </MapContainer>
+                      <MapWatermark />
+                    </MapContainer>
+                  ) : (
+                    <Card>
+                      <p>
+                        Nessun QSO registato con nominativo {user?.callsign}
+                      </p>
+                    </Card>
+                  )}
                 </div>
               ) : (
                 <></>

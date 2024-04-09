@@ -8,7 +8,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlaceholder from "react-placeholder";
 import Zoom from "react-medium-image-zoom";
 import { Card } from "@material-tailwind/react";
-import { FaHome, FaInfoCircle } from "react-icons/fa";
+import { FaBackward, FaHome, FaInfoCircle } from "react-icons/fa";
 import {
   FacebookShareButton,
   TelegramShareButton,
@@ -81,6 +81,13 @@ const Qso = () => {
       </Helmet>
       <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900 -mt-4">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
+          <div className="mb-4 md:-ml-4 md:-mt-4">
+            <Link to={-1}>
+              <Button color="info">
+                <FaBackward />
+              </Button>
+            </Link>
+          </div>
           {alert && (
             <Alert
               className="mb-6"
