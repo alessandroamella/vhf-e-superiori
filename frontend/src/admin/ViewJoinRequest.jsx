@@ -113,7 +113,7 @@ const ViewJoinRequest = ({
             <Table.Row key={j._id}>
               <Table.Cell className="whitespace-nowrap font-medium">
                 <Link
-                  to={`/u/${j.fromUser._id}`}
+                  to={`/u/${j.fromUser.callsign}`}
                   className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
                 >
                   {j.fromUser.callsign}

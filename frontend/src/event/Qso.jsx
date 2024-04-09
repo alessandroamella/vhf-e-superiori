@@ -26,6 +26,7 @@ import { Helmet } from "react-helmet";
 import { MapContainer, Polyline, TileLayer, useMap } from "react-leaflet";
 import { latLngBounds } from "leaflet";
 import StationMapMarker from "../shared/StationMapMarker";
+import MapWatermark from "../shared/MapWatermark";
 
 function ChangeView({ center, markers }) {
   const map = useMap();
@@ -38,6 +39,7 @@ function ChangeView({ center, markers }) {
     });
     map.fitBounds(markerBounds);
   }
+
   return null;
 }
 
@@ -202,7 +204,7 @@ const Qso = () => {
               qso.fromStationLon &&
               qso.toStationLat &&
               qso.toStationLon ? (
-                <div className="drop-shadow-lg flex justify-center">
+                <div className="drop-shadow-lg flex justify-center relative">
                   <MapContainer
                     center={[qso.fromStationLat, qso.fromStationLon]}
                     zoom={5}
@@ -241,7 +243,11 @@ const Qso = () => {
                       lon={qso.toStationLon}
                       locator={qso.toLocator}
                     />
+
+                    <MapWatermark />
                   </MapContainer>
+
+                  <MapWatermark />
                 </div>
               ) : (
                 <Alert color="warning">

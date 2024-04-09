@@ -15,13 +15,15 @@ import FeedCard from "./FeedCard";
 
 import "react-placeholder/lib/reactPlaceholder.css";
 import axios from "axios";
-import { Alert, Avatar, Button, Card } from "flowbite-react";
+import { Alert, Avatar, Button, Card, Spinner, Tooltip } from "flowbite-react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Helmet } from "react-helmet";
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
 import StationMapMarker from "../shared/StationMapMarker";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { getDate } from "date-fns";
+import MapWatermark from "../shared/MapWatermark";
+import ReactPlaceholder from "react-placeholder";
 
 const ViewPublished = () => {
   const { splashPlayed } = useContext(SplashContext);
@@ -36,6 +38,18 @@ const ViewPublished = () => {
   const navigate = useNavigate();
 
   const { callsign } = useParams();
+
+  const [showMap, setShowMap] = useState(false);
+  const [isFakeLoading, setIsFakeLoading] = useState(false);
+
+  useEffect(() => {
+    if (isFakeLoading) {
+      setTimeout(() => {
+        setShowMap(true);
+        setIsFakeLoading(false);
+      }, 1000 + Math.floor(Math.random() * 1000));
+    }
+  }, [isFakeLoading]);
 
   useEffect(() => {
     async function fetchPosts() {
@@ -161,7 +175,7 @@ const ViewPublished = () => {
           {user?.callsign && (
             // card of user
             <div className="flex w-full justify-center">
-              <Card className="bg-gray-50 dark:bg-gray-600 md:px-12">
+              <Card className="bg-gray-50 dark:bg-gray-600 md:px-12 mb-8 md:mb-0">
                 <div className="flex gap-4 items-center flex-row justify-center w-full">
                   <Avatar size="lg" img={user?.pp} alt="Profile" />
                   <div className="flex flex-col gap-0">
@@ -210,8 +224,37 @@ const ViewPublished = () => {
               ) : (
                 <></>
               )}
-              {qsosToShow && userLatLon ? (
-                <div className="drop-shadow-lg flex justify-center">
+              {!showMap && (
+                <div className="my-2 flex justify-center">
+                  {qsosToShow && userLatLon ? (
+                    <Button
+                      onClick={() => setIsFakeLoading(true)}
+                      size="lg"
+                      disabled={isFakeLoading}
+                    >
+                      Crea mappa
+                      {isFakeLoading && (
+                        <Spinner className="ml-1 dark:text-white dark:fill-white" />
+                      )}
+                    </Button>
+                  ) : (
+                    <Tooltip content="Non ci sono QSO registrati col tuo nominativo">
+                      <Button size="lg" disabled>
+                        Crea mappa
+                      </Button>
+                    </Tooltip>
+                  )}
+                </div>
+              )}
+              <ReactPlaceholder
+                showLoadingAnimation
+                type="rect"
+                className="w-full h-96"
+                rows={10}
+                ready={!isFakeLoading}
+              />
+              {qsosToShow && userLatLon && showMap ? (
+                <div className="drop-shadow-lg flex justify-center relative">
                   <MapContainer center={[41.895643, 12.4831082]} zoom={5}>
                     <TileLayer
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -245,6 +288,8 @@ const ViewPublished = () => {
                         />
                       </>
                     ))}
+
+                    <MapWatermark />
                   </MapContainer>
                 </div>
               ) : (

@@ -122,8 +122,15 @@ import { location } from "../../location";
     }
     if (!this.email || !this.toStationLat || !this.toStationLon) {
         // find if already in db
+
+        const _callsigns = this.callsign.split("/");
+        _callsigns.sort((a, b) => b.length - a.length);
+        const callsignClean = _callsigns[0];
+
+        logger.debug(`Callsign ${this.callsign} cleaned ${callsignClean}`);
+
         const user = await User.findOne({
-            callsign: this.callsign
+            callsign: callsignClean
         });
         if (user) {
             this.toStation = user._id;
@@ -137,7 +144,7 @@ import { location } from "../../location";
 
         // find qso with same callsign and event to copy email
         const qso = await Qso.findOne({
-            callsign: this.callsign,
+            callsign: callsignClean,
             event: this.event,
             email: { $exists: true }
         });
@@ -152,7 +159,7 @@ import { location } from "../../location";
         }
 
         // last resort: try to scrape email from QRZ
-        const scraped = await qrz.getInfo(this.callsign);
+        const scraped = await qrz.getInfo(callsignClean);
         if (scraped) {
             this.email = scraped.email;
             this.toStationLat = scraped.lat;
@@ -160,7 +167,7 @@ import { location } from "../../location";
             return;
         }
         logger.warn(
-            `No email or coordinates found for QSO ${this._id} with callsign ${this.callsign}`
+            `No email or coordinates found for QSO ${this._id} with callsign ${this.callsign} cleaned ${callsignClean}`
         );
     }
 })

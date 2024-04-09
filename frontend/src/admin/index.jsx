@@ -457,13 +457,15 @@ const AdminManager = () => {
 
   const [joinRequestsModal, setJoinRequestsModal] = useState(null);
 
-  return user === null || (user && !user.isAdmin) ? (
+  return user === null ? (
     navigate({
       pathname: "/login",
       search: createSearchParams({
         to: "/eventmanager"
       }).toString()
     })
+  ) : user && !user.isAdmin ? (
+    navigate(-1)
   ) : (
     <Layout>
       <Helmet>
@@ -484,7 +486,7 @@ const AdminManager = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 md:gap-2">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   <div className="flex flex-col items-center">
-                    <p className="mb-2 block">Locandina</p>
+                    <p className="mb-2 block dark:text-gray-100">Locandina</p>
                     <LazyLoadImage
                       src={logoUrl}
                       alt="Logo URL"
@@ -492,7 +494,7 @@ const AdminManager = () => {
                     />
                   </div>
                   <div className="flex flex-col items-center">
-                    <p className="mb-2 block">EQSL</p>
+                    <p className="mb-2 block dark:text-gray-100">EQSL</p>
                     <LazyLoadImage
                       src={eqslUrl}
                       alt="EQSL URL"
@@ -620,7 +622,9 @@ const AdminManager = () => {
               {eventEditing ? (
                 <div className="flex flex-col">
                   <hr className="mb-2" />
-                  <p>URL da condividere con stazioni attivatrici:</p>
+                  <p className="dark:text-gray-200">
+                    URL da condividere con stazioni attivatrici:
+                  </p>
 
                   <div className="flex items-center gap-2">
                     <TextInput
@@ -868,7 +872,7 @@ const AdminManager = () => {
                           >
                             <Table.Cell className="whitespace-nowrap text-gray-900 dark:text-white">
                               {u.isAdmin ? (
-                                <span className="bg-yellow-200">
+                                <span className="bg-yellow-200 dark:bg-yellow-500 rounded p-[2px]">
                                   <FaWrench className="inline mr-1 scale-90" />
                                   {u.callsign}
                                 </span>
@@ -876,7 +880,7 @@ const AdminManager = () => {
                                 <span>{u.callsign}</span>
                               )}
                             </Table.Cell>
-                            <Table.Cell>
+                            <Table.Cell className="dark:text-gray-300">
                               {u.isAdmin ? (
                                 <Tooltip content="Amministratore">
                                   {" "}

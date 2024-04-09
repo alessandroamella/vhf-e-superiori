@@ -76,6 +76,10 @@ router.get(
     async (req, res) => {
         let { callsign } = req.params;
 
+        const _callsigns = callsign.split("/");
+        _callsigns.sort((a, b) => b.length - a.length);
+        callsign = _callsigns[0];
+
         if (cache[callsign]) {
             if (moment().diff(cache[callsign].date, "days") < 1) {
                 return res.json(cache[callsign]);

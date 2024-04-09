@@ -211,9 +211,9 @@ router.get(
                         e =>
                             e.types.includes("administrative_area_level_2") ||
                             e.types.includes("administrative_area_level_1")
-                    )?.long_name ||
-                    geocoded.address_components[1]?.long_name ||
-                    geocoded.address_components[0]?.long_name;
+                    )?.short_name ||
+                    geocoded.address_components[1]?.short_name ||
+                    geocoded.address_components[0]?.short_name;
 
                 const country =
                     geocoded.address_components.find(e =>

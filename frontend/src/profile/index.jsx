@@ -1,20 +1,20 @@
 import Layout from "../Layout";
 import { Typography } from "@material-tailwind/react";
-import { useContext, useRef } from "react";
+import { useContext, useRef, useState, useEffect } from "react";
 import { EventsContext, getErrorStr, UserContext } from "..";
 import {
   Alert,
+  Avatar,
   Button,
   Card,
   Label,
   ListGroup,
   Modal,
   Spinner,
+  Table,
   TextInput,
   Tooltip
 } from "flowbite-react";
-import { useState } from "react";
-import { useEffect } from "react";
 import axios from "axios";
 import {
   createSearchParams,
@@ -35,6 +35,13 @@ import {
 import ReactGoogleAutocomplete from "react-google-autocomplete";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { Helmet } from "react-helmet";
+import ReactPlaceholder from "react-placeholder";
+import {
+  Accordion,
+  AccordionHeader,
+  AccordionBody
+} from "@material-tailwind/react";
+import { getDate } from "date-fns";
 
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);
@@ -280,6 +287,8 @@ const Profile = () => {
     useState(true);
   const [joinRequestDeleteError, setJoinRequestDeleteError] = useState("");
 
+  const [qsoOpen, setQsoOpen] = useState(false);
+
   return (
     <Layout>
       <Helmet>
@@ -430,7 +439,6 @@ const Profile = () => {
         <Typography variant="h3" className="my-4">
           Profilo
         </Typography>
-
         {alert && (
           <Alert
             className="mb-4"
@@ -444,22 +452,26 @@ const Profile = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 h-full">
           <div>
             {user ? (
-              <div className="flex items-center flex-col md:flex-row md:items-center mb-8">
-                <Typography variant="h1" className="ml-4 flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    className="scale-150"
-                  >
-                    <path
-                      className="dark:fill-white"
-                      d="M22 8h-20c-1.104 0-2 .896-2 2v12c0 1.104.896 2 2 2h20c1.104 0 2-.896 2-2v-12c0-1.104-.896-2-2-2zm-19 3h11v2h-11v-2zm14 5v1h-10v-1h10zm0 5h-10v-1h10v1zm2-2h-14v-1h14v1zm2-6h-6v-2h6v2zm-14-6h-4v-1h4v1zm4.421-4.448l-2.18-1.567c-.244-.178-.297-.519-.12-.762.178-.243.518-.296.761-.119l2.186 1.569-.647.879zm8.246 4.448h-2.442l-5.099-3.677.891-1.219 6.65 4.896z"
-                    />
-                  </svg>
-                  <span className="ml-4">{user.callsign}</span>
-                </Typography>
+              <div className="flex flex-col mb-8">
+                <Link to={`/u/` + user?.callsign} className="mb-2">
+                  <Typography variant="h1" className="flex items-center">
+                    <Avatar size={user?.pp ? "lg" : "md"} img={user?.pp} />
+                    <span className="ml-2">{user.callsign}</span>
+                  </Typography>
+                </Link>
+                {user?.createdAt && (
+                  <p className="text-gray-500 text-sm">
+                    Membro dal
+                    {[1, 8].includes(getDate(new Date(user.createdAt)))
+                      ? "l'"
+                      : " "}
+                    {formatInTimeZone(
+                      user.createdAt,
+                      "Europe/Rome",
+                      "d MMMM yyyy"
+                    )}
+                  </p>
+                )}
               </div>
             ) : (
               <Spinner />
@@ -654,6 +666,17 @@ const Profile = () => {
                   </div>
                 </form>
 
+                {user && (
+                  <div className="flex justify-center my-8 md:my-16">
+                    <Link to={`/u/${user.callsign}`}>
+                      <Button color="dark">
+                        <FaExternalLinkAlt className="inline mb-1 mr-2" />{" "}
+                        Visualizza collegamenti
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+
                 {isEditing && (
                   <>
                     <div className="my-4 flex items-center gap-4">
@@ -692,7 +715,7 @@ const Profile = () => {
               </Typography>
 
               {joinRequests && events ? (
-                joinRequests.length > 0 ? (
+                joinRequests?.length > 0 ? (
                   joinRequests.map(j => (
                     <Card key={j._id} className="mb-2">
                       <h6 className="text-xl font-bold tracking-tight text-gray-900 hover:underline">
@@ -759,14 +782,14 @@ const Profile = () => {
               )}
             </div>
 
-            <div>
+            <div className="mt-10">
               <Typography variant="h3" className="my-4">
                 Post
               </Typography>
               {user?.posts ? (
-                user.posts.length > 0 ? (
+                user?.posts?.length > 0 ? (
                   <ListGroup className="p-0">
-                    {user.posts.map(p => (
+                    {user?.posts?.map(p => (
                       <ListGroup.Item key={p._id}>
                         <div className="flex items-center gap-1 w-full">
                           <Link
@@ -803,6 +826,63 @@ const Profile = () => {
               ) : (
                 <Spinner />
               )}
+            </div>
+
+            <div className="mt-10">
+              <Typography variant="h3" className="my-4">
+                QSO
+              </Typography>
+
+              <ReactPlaceholder
+                showLoadingAnimation
+                type="text"
+                rows={50}
+                ready={!!user?.qsos}
+              >
+                {user?.qsos?.length === 0 ? (
+                  <p>Ancora nessun QSO registrato</p>
+                ) : (
+                  <Accordion open={qsoOpen}>
+                    <AccordionHeader onClick={() => setQsoOpen(!qsoOpen)}>
+                      Visualizza QSO
+                    </AccordionHeader>
+                    <AccordionBody>
+                      <Table striped>
+                        <Table.Head>
+                          <Table.HeadCell>Attivatore</Table.HeadCell>
+                          <Table.HeadCell>Nominativo</Table.HeadCell>
+                          <Table.HeadCell>Data</Table.HeadCell>
+                          <Table.HeadCell>Locatore</Table.HeadCell>
+                        </Table.Head>
+                        <Table.Body>
+                          {user?.qsos?.map(qso => (
+                            <Table.Row
+                              key={qso._id}
+                              onClick={() => navigate(`/qso/${qso._id}`)}
+                              className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                            >
+                              <Table.Cell>
+                                {qso.fromStation?.callsign}
+                              </Table.Cell>
+                              <Table.Cell className="font-semibold">
+                                {qso.callsign}
+                              </Table.Cell>
+                              <Table.Cell>
+                                {formatInTimeZone(
+                                  new Date(qso.qsoDate),
+                                  "Europe/Rome",
+                                  "dd/MM/yyyy HH:mm"
+                                )}
+                              </Table.Cell>
+                              <Table.Cell>{qso.locator}</Table.Cell>
+                            </Table.Row>
+                          ))}
+                        </Table.Body>
+                      </Table>
+                    </AccordionBody>
+                  </Accordion>
+                )}
+              </ReactPlaceholder>
             </div>
           </div>
         </div>

@@ -99,7 +99,7 @@ class EqslPic {
             "DD-MM-YYYY"
         )} ora:${moment(qso.qsoDate).format("HH:mm")}UTC modo:${
             qso.mode
-        } freq:${qso.frequency}`.toUpperCase();
+        } banda:${qso.band}`.toUpperCase();
 
         // offset2 should be height / 2.35
         const { height } = await sharp(filePath).metadata();

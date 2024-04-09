@@ -17,6 +17,7 @@ import ReactPlaceholder from "react-placeholder";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { Helmet } from "react-helmet";
+import MapWatermark from "../shared/MapWatermark";
 
 const ViewBeacon = () => {
   const [alert, setAlert] = useState(null);
@@ -36,8 +37,8 @@ const ViewBeacon = () => {
         iconSize: [25, 41],
         iconAnchor: [10, 41],
         popupAnchor: [2, -40],
-        iconUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-icon.png",
-        shadowUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-shadow.png"
+        iconUrl: "/mapicon/marker-icon.png",
+        shadowUrl: "/mapicon/marker-shadow.png"
       }),
     []
   );
@@ -320,7 +321,7 @@ const ViewBeacon = () => {
                 </Card>
 
                 {properties.lat && properties.lon && (
-                  <div className="drop-shadow-lg flex justify-center">
+                  <div className="drop-shadow-lg flex justify-center relative">
                     <MapContainer
                       center={[properties.lat, properties.lon]}
                       zoom={13}
@@ -339,6 +340,8 @@ const ViewBeacon = () => {
                           {properties.lon.toFixed(6)}
                         </Popup>
                       </Marker>
+
+                      <MapWatermark />
                     </MapContainer>
                   </div>
                 )}

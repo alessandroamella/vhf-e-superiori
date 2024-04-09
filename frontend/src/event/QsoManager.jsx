@@ -13,7 +13,6 @@ import {
   Table,
   TextInput,
   Tooltip,
-  Timeline,
   Card,
   Avatar
 } from "flowbite-react";
@@ -25,7 +24,6 @@ import React, {
   useRef,
   useState
 } from "react";
-import { zonedTimeToUtc } from "date-fns-tz";
 import { getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
 import {
@@ -36,14 +34,12 @@ import {
 } from "react-router-dom";
 import {
   FaCheck,
-  FaDatabase,
   FaEnvelope,
   FaExternalLinkAlt,
   FaForward,
   FaInfoCircle,
   FaMapMarkerAlt,
   FaPlusCircle,
-  FaShare,
   FaTimes,
   FaUndo,
   FaUser
@@ -98,6 +94,12 @@ const QsoManager = () => {
           color: "failure",
           msg: getErrorStr(err?.response?.data?.err)
         });
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+
         setUsers(null);
       }
     }
@@ -116,6 +118,12 @@ const QsoManager = () => {
           color: "failure",
           msg: getErrorStr(err?.response?.data?.err)
         });
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+
         setEvent(null);
       }
     }
@@ -136,6 +144,12 @@ const QsoManager = () => {
           color: "failure",
           msg: getErrorStr(err?.response?.data?.err)
         });
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+
         setQsos(null);
       }
     }
@@ -151,6 +165,12 @@ const QsoManager = () => {
         color: "failure",
         msg: "Devi prima effettuare il login"
       });
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
       return;
     } else if (user && event && !isEventStation) {
       console.log(
@@ -178,6 +198,12 @@ const QsoManager = () => {
           color: "failure",
           msg: "Non sei una stazione attivatrice per questo evento"
         });
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+
         setHasPermission(false);
         return;
       }
@@ -186,11 +212,21 @@ const QsoManager = () => {
         color: "failure",
         msg: "Evento non trovato"
       });
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
       return;
     } else if (qsos === null) {
       setAlert({
         color: "failure",
         msg: "Errore nel caricamento dei QSO"
+      });
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
       });
       return;
     }
@@ -206,6 +242,8 @@ const QsoManager = () => {
   const [callsign, setCallsign] = useState(cookies.callsign || "");
   const [locatorLoading, setLocatorLoading] = useState(true);
   const [locator, setLocator] = useState(cookies.locator || null);
+  const [isManuallySettingLocator, setIsManuallySettingLocator] =
+    useState(false);
 
   const [formattedAddress, setFormattedAddress] = useState(null);
   const [city, setCity] = useState(null);
@@ -213,10 +251,20 @@ const QsoManager = () => {
   const [lat, setLat] = useState(null);
   const [lon, setLon] = useState(null);
 
+  useEffect(() => {
+    if (isManuallySettingLocator || !formattedAddress) {
+      setPage(0);
+    } else {
+      setPage(1);
+    }
+  }, [formattedAddress, isManuallySettingLocator]);
+
   const geolocalize = useCallback(() => {
     navigator.geolocation.getCurrentPosition(
       async position => {
         console.log("Geolocalizzato", position);
+
+        setFormattedAddress(null);
 
         const { data } = await axios.get(
           `/api/location/locator/${position.coords.latitude}/${position.coords.longitude}`
@@ -230,12 +278,17 @@ const QsoManager = () => {
           color: "failure",
           msg: "Errore nella geolocalizzazione"
         });
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
       }
     );
   }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || formattedAddress) return;
 
     async function getLatLon(locator) {
       try {
@@ -252,6 +305,8 @@ const QsoManager = () => {
         setProvince(data.province);
         setLat(data.lat);
         setLon(data.lon);
+
+        console.log("from locator", locator, "set geocoded", data);
       } catch (err) {
         console.log("error in lat lon fetch", err);
         setFormattedAddress(null);
@@ -259,28 +314,33 @@ const QsoManager = () => {
     }
 
     async function fetchLocator() {
-      setLocatorLoading(true);
-      let locator;
+      setLocatorLoading(!isManuallySettingLocator);
+      let _locator;
 
-      if (user.lat && user.lon) {
+      if (
+        user.lat &&
+        user.lon &&
+        !isManuallySettingLocator &&
+        !formattedAddress
+      ) {
         try {
           const { data } = await axios.get(
             `/api/location/locator/${user.lat}/${user.lon}`
           );
           console.log("fetched locator from user lat lon", data);
-          locator = data.locator;
+          _locator = data.locator;
         } catch (err) {
           console.error("error in locator fetch", err?.response?.data || err);
         }
       }
 
-      if (!locator) {
+      if (!_locator && !isManuallySettingLocator && !formattedAddress) {
         try {
           const { data } = await axios.get(
-            "/api/autocomplete/" + user.callsign
+            "/api/autocomplete/" + user.callsign.replaceAll("/", "%2F")
           );
           console.log("fetched locator from user callsign", data);
-          locator = data.locator;
+          _locator = data.locator;
         } catch (err) {
           console.error(
             "error in USER locator fetch",
@@ -289,16 +349,21 @@ const QsoManager = () => {
         }
       }
 
-      if (locator) {
-        setLocator(locator);
-        setPage(1);
+      if (_locator || (isManuallySettingLocator && locator.length === 6)) {
+        if (!isManuallySettingLocator) {
+          setLocator(_locator);
 
-        await getLatLon(locator);
+          await getLatLon(_locator);
+        } else {
+          await getLatLon(locator);
+        }
       }
       setLocatorLoading(false);
     }
+
     fetchLocator();
-  }, [locator, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isManuallySettingLocator, locator, user]);
 
   const callsignRef = useRef(null);
 
@@ -339,7 +404,7 @@ const QsoManager = () => {
         event: id,
         band: event.band,
         mode: "SSB/CW",
-        qsoDate: zonedTimeToUtc(new Date(), "UTC"),
+        qsoDate: new Date().toISOString(),
         locator,
         rst: 59,
         fromStationCity: city,
@@ -413,7 +478,9 @@ const QsoManager = () => {
     }
     autocompleteTimeout.current = setTimeout(async () => {
       try {
-        const { data } = await axios.get("/api/autocomplete/" + callsign);
+        const { data } = await axios.get(
+          "/api/autocomplete/" + callsign.replaceAll("/", "%2F")
+        );
         console.log("autocomplete", data);
         if (data.callsign !== callsign) {
           console.log("callsign changed, aborting");
@@ -490,13 +557,13 @@ const QsoManager = () => {
         color: "failure",
         msg: getErrorStr(err?.response?.data?.err)
       });
+    } finally {
+      setDisabled(false);
 
       window.scrollTo({
         top: 0,
         behavior: "smooth"
       });
-    } finally {
-      setDisabled(false);
     }
   }
 
@@ -543,14 +610,14 @@ const QsoManager = () => {
         color: "failure",
         msg: getErrorStr(err?.response?.data?.err)
       });
+      setDisabled(false);
+    } finally {
+      setShowModal(false);
 
       window.scrollTo({
         top: 0,
         behavior: "smooth"
       });
-      setDisabled(false);
-    } finally {
-      setShowModal(false);
     }
   }
 
@@ -593,7 +660,7 @@ const QsoManager = () => {
 
       setAlert({
         color: "success",
-        msg: `Eliminati ${deleted.length} QSO`
+        msg: `Eliminat${deleted.length === 1 ? "o" : "i"} ${deleted.length} QSO`
       });
     } catch (err) {
       console.log(err?.response?.data || err);
@@ -603,6 +670,11 @@ const QsoManager = () => {
       });
     } finally {
       setDisabled(false);
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     }
   }
 
@@ -641,16 +713,21 @@ const QsoManager = () => {
         )
       );
       eqslSending.set(q._id, "ok");
-      setAlert({
-        color: "success",
-        msg: "eQSL inviata con successo"
-      });
+      // setAlert({
+      //   color: "success",
+      //   msg: "eQSL inviata con successo"
+      // });
     } catch (err) {
       eqslSending.set(q._id, "failed");
       console.log(err?.response?.data || err);
       setAlert({
         color: "failure",
         msg: getErrorStr(err?.response?.data?.err)
+      });
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
       });
     } finally {
       setTimeout(() => {
@@ -770,7 +847,7 @@ const QsoManager = () => {
                 </Table>
               </div>
             ) : (
-              <Spinner />
+              <Spinner className="dark:text-white dark:fill-white" />
             )}
           </Modal.Body>
           <Modal.Footer>
@@ -821,7 +898,7 @@ const QsoManager = () => {
                     pagina)
                   </p>
                 ) : !event ? (
-                  <Spinner />
+                  <Spinner className="dark:text-white dark:fill-white" />
                 ) : null}
 
                 <div className="my-12">
@@ -834,7 +911,11 @@ const QsoManager = () => {
                       <div className="mb-8 flex items-center gap-2">
                         <FileInput
                           disabled={disabled}
-                          helperText={disabled && <Spinner />}
+                          helperText={
+                            disabled && (
+                              <Spinner className="dark:text-white dark:fill-white" />
+                            )
+                          }
                           accept=".adi"
                           className="h-fit"
                           onChange={e => importAdif(e.target.files[0])}
@@ -850,7 +931,7 @@ const QsoManager = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="mb-6 -mt-6">
+                  <div className="mb-16 -mt-6">
                     {Array.isArray(qsos) ? (
                       qsos.length > 0 ? (
                         <div>
@@ -881,18 +962,50 @@ const QsoManager = () => {
                                 onClick={exportAdif}
                               >
                                 {disabled ? (
-                                  <Spinner size="sm" />
+                                  <Spinner
+                                    className="dark:text-white dark:fill-white"
+                                    size="sm"
+                                  />
                                 ) : (
                                   <span>Esporta ADIF</span>
                                 )}
                               </Button>
                               <Button
                                 color="failure"
-                                disabled={disabled || selectedQsos.length === 0}
+                                disabled={
+                                  disabled ||
+                                  selectedQsos.length === 0 ||
+                                  selectedQsos.some(
+                                    e => eqslSending.get(e) === "sending"
+                                  )
+                                }
                                 onClick={deleteSelected}
                               >
                                 {disabled ? (
-                                  <Spinner size="sm" />
+                                  <Spinner
+                                    className="dark:text-white dark:fill-white"
+                                    size="sm"
+                                  />
+                                ) : selectedQsos.some(
+                                    e => eqslSending.get(e) === "sending"
+                                  ) ? (
+                                  <Tooltip
+                                    content={`Attendi che la eQSL per ${
+                                      qsos.find(
+                                        q =>
+                                          q._id ===
+                                          selectedQsos.find(
+                                            e =>
+                                              eqslSending.get(e) === "sending"
+                                          )
+                                      )?.callsign
+                                    } si invii...`}
+                                  >
+                                    <Spinner
+                                      className="dark:text-white dark:fill-white"
+                                      size="sm"
+                                    />
+                                  </Tooltip>
                                 ) : (
                                   <span>Elimina selezionati</span>
                                 )}
@@ -929,8 +1042,8 @@ const QsoManager = () => {
                                         : selectedQsos.includes(q._id)
                                         ? "bg-yellow-200 hover:bg-yellow-200"
                                         : i % 2 === 0
-                                        ? "hover:bg-gray-200"
-                                        : "bg-gray-100 hover:bg-gray-200"
+                                        ? "hover:bg-gray-200 dark:hover:bg-gray-600"
+                                        : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
                                     }`}
                                   >
                                     <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
@@ -1025,7 +1138,10 @@ const QsoManager = () => {
                                             >
                                               {eqslSending.get(q._id) ===
                                               "sending" ? (
-                                                <Spinner size="sm" />
+                                                <Spinner
+                                                  className="dark:text-white dark:fill-white"
+                                                  size="sm"
+                                                />
                                               ) : eqslSending.get(q._id) ===
                                                 "ok" ? (
                                                 <FaCheck />
@@ -1067,7 +1183,7 @@ const QsoManager = () => {
                         <p>Nessun QSO registrato</p>
                       )
                     ) : qsos === false ? (
-                      <Spinner />
+                      <Spinner className="dark:text-white dark:fill-white" />
                     ) : (
                       <p>
                         Errore nel caricamento dei QSO (prova a ricaricare la
@@ -1083,62 +1199,13 @@ const QsoManager = () => {
                   </div>
                   {user ? (
                     <div>
-                      {page === 0 && (
-                        <div className="w-full flex justify-center">
-                          <Timeline horizontal>
-                            <Timeline.Item>
-                              <Timeline.Point icon={FaDatabase} />
-                              <Timeline.Content>
-                                <Timeline.Title>
-                                  <span
-                                    className={`${
-                                      page === 0 ? "font-bold" : "font-medium"
-                                    } cursor-pointer hover:text-blue-700 transition-colors`}
-                                    onClick={() => setPage(0)}
-                                  >
-                                    Dati preliminari
-                                  </span>
-                                </Timeline.Title>
-                                {/* <Timeline.Body>
-                                Necessari per la creazione del QSO
-                              </Timeline.Body> */}
-                              </Timeline.Content>
-                            </Timeline.Item>
-                            <Timeline.Item>
-                              <Timeline.Point icon={FaShare} />
-                              <Timeline.Content>
-                                <Timeline.Title>
-                                  <span
-                                    className={`${
-                                      page === 1 ? "font-bold" : "font-medium"
-                                    } ${
-                                      allPredataInserted
-                                        ? "cursor-pointer hover:text-blue-700 transition-colors"
-                                        : "cursor-not-allowed"
-                                    }`}
-                                    onClick={
-                                      allPredataInserted
-                                        ? () => setPage(1)
-                                        : null
-                                    }
-                                  >
-                                    Nominativo
-                                  </span>
-                                </Timeline.Title>
-                                {/* <Timeline.Body>Registrazione QSO</Timeline.Body> */}
-                              </Timeline.Content>
-                            </Timeline.Item>
-                          </Timeline>
-                        </div>
-                      )}
-
                       <form onSubmit={createQso}>
                         {page === 0 ? (
                           locatorLoading ? (
-                            <Spinner />
+                            <Spinner className="dark:text-white dark:fill-white" />
                           ) : (
                             <>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="flex flex-col md:flex-row justify-center items-center gap-4">
                                 {!isEventStation && user.isAdmin && users && (
                                   <div>
                                     <Label
@@ -1193,7 +1260,7 @@ const QsoManager = () => {
                                     <TextInput
                                       color={
                                         locator?.length === 6 &&
-                                        formattedAddress !== null
+                                        formattedAddress
                                           ? "success"
                                           : formattedAddress === false
                                           ? "info"
@@ -1251,7 +1318,7 @@ const QsoManager = () => {
                                   ref={callsignRef}
                                   placeholder={user ? user.callsign : "IU4QSG"}
                                   value={callsign}
-                                  className="uppercase font-semibold text-2xl input-large"
+                                  className="uppercase font-semibold text-2xl input-large text-black"
                                   onChange={e => {
                                     const val = e.target.value.toUpperCase();
                                     setCallsign(val);
@@ -1301,7 +1368,7 @@ const QsoManager = () => {
                                             </a>
                                           )}
                                           {autocomplete.address && (
-                                            <span className="text-center text-sm text-gray-500">
+                                            <span className="text-center text-sm text-gray-500 dark:text-gray-400">
                                               {autocomplete.address}
                                             </span>
                                           )}
@@ -1320,7 +1387,7 @@ const QsoManager = () => {
                                 className="transition-colors duration-500 min-w-[10rem]"
                               >
                                 {disabled ? (
-                                  <Spinner />
+                                  <Spinner className="dark:text-white dark:fill-white" />
                                 ) : (
                                   <span className="flex items-center gap-2">
                                     <FaPlusCircle />
@@ -1346,7 +1413,9 @@ const QsoManager = () => {
                                 <Button
                                   type="button"
                                   disabled={disabled || !allPredataInserted}
-                                  onClick={() => setPage(1)}
+                                  onClick={() =>
+                                    setIsManuallySettingLocator(false)
+                                  }
                                   size="lg"
                                   color={
                                     allPredataInserted ? "success" : "failure"
@@ -1364,14 +1433,16 @@ const QsoManager = () => {
 
                       {page === 1 && (
                         <div className="mt-8 flex justify-end">
-                          <Button onClick={() => setPage(0)}>
+                          <Button
+                            onClick={() => setIsManuallySettingLocator(true)}
+                          >
                             Modifica locatore per portatili /P
                           </Button>
                         </div>
                       )}
                     </div>
                   ) : (
-                    <Spinner />
+                    <Spinner className="dark:text-white dark:fill-white" />
                   )}
                 </div>
               </div>
