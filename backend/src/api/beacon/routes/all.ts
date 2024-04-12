@@ -67,11 +67,15 @@ router.get("/", validate, async (req, res) => {
             }
             beacon.properties = props;
         }
+        // sort beacons by prop frequency, in ascending order
         beacons.sort((a, b) => {
-            return moment(b.properties.editDate).diff(
-                moment(a.properties.editDate)
-            );
+            if (!a.properties || !b.properties) {
+                logger.warn(`Beacon ${a._id} or ${b._id} has no properties`);
+                return 0;
+            }
+            return a.properties.frequency - b.properties.frequency;
         });
+
         res.json(beacons);
     } catch (err) {
         logger.error("Error in Beacons all");
