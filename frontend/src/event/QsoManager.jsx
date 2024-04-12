@@ -778,7 +778,7 @@ const QsoManager = () => {
     <Layout>
       <Helmet>
         <title>
-          Gestione QSO -{event && ` ${event.name} -`} VHF e superiori
+          Gestione QSO -{event ? ` ${event.name} -` : ""} VHF e superiori
         </title>
       </Helmet>
       <Modal
@@ -830,7 +830,7 @@ const QsoManager = () => {
                     <Table.HeadCell>Data UTC</Table.HeadCell>
                     <Table.HeadCell>Banda</Table.HeadCell>
                     <Table.HeadCell>Modo</Table.HeadCell>
-                    <Table.HeadCell>Da locatore</Table.HeadCell>
+                    <Table.HeadCell>Locatore</Table.HeadCell>
                     <Table.HeadCell>RST</Table.HeadCell>
                   </Table.Head>
                   <Table.Body>
@@ -1052,7 +1052,7 @@ const QsoManager = () => {
                                 <Table.HeadCell>Data UTC</Table.HeadCell>
                                 <Table.HeadCell>Banda</Table.HeadCell>
                                 <Table.HeadCell>Modo</Table.HeadCell>
-                                <Table.HeadCell>Da locatore</Table.HeadCell>
+                                <Table.HeadCell>A locatore</Table.HeadCell>
                                 <Table.HeadCell>RST</Table.HeadCell>
                                 <Table.HeadCell>
                                   <span className="sr-only">Azioni</span>
@@ -1109,7 +1109,7 @@ const QsoManager = () => {
                                       {q.band || q.frequency}
                                     </Table.Cell>
                                     <Table.Cell>{q.mode}</Table.Cell>
-                                    <Table.Cell>{q.locator}</Table.Cell>
+                                    <Table.Cell>{q.toLocator}</Table.Cell>
                                     <Table.Cell>{q.rst}</Table.Cell>
                                     <Table.Cell>
                                       <div className="flex w-full justify-center">

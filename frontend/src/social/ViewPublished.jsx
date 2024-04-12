@@ -119,16 +119,18 @@ const ViewPublished = () => {
         console.log("No qso.fromStation.callsign in qso", qso);
         return;
       }
-      const isFromUser = qso.fromStation.callsign === user.callsign;
+      const isFromUser = qso.fromStation.callsign.includes(user.callsign);
 
       const lats = [qso.fromStationLat, qso.toStationLat];
       const lons = [qso.fromStationLon, qso.toStationLon];
       const locators = [qso.fromLocator, qso.toLocator];
+      const callsigns = [qso.fromStation?.callsign, qso.callsign];
 
       if (!isFromUser) {
         lats.reverse();
         lons.reverse();
         locators.reverse();
+        callsigns.reverse();
       }
 
       if (lats[0] && lons[0] && !_userLatLon) {
@@ -144,7 +146,9 @@ const ViewPublished = () => {
         fromLocator: locators[0],
         toStationLat: lats[1],
         toStationLon: lons[1],
-        toLocator: locators[1]
+        toLocator: locators[1],
+
+        callsign: callsigns[1]
       });
     });
     console.log("qsos to show:", pushedQsos);

@@ -6,6 +6,7 @@ import { Qso } from "../models";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { FilterQuery } from "mongoose";
 import { QsoClass } from "../models/Qso";
+import { location } from "../../location";
 
 const router = Router();
 
@@ -98,7 +99,18 @@ router.get(
                 .sort({ qsoDate: -1 })
                 .populate({ path: "fromStation", select: "callsign" })
                 .lean();
-            res.json(qsos);
+            res.json(
+                qsos.map(e => ({
+                    ...e,
+                    toLocator:
+                        e.toStationLat && e.toStationLon
+                            ? location.calculateQth(
+                                  e.toStationLat,
+                                  e.toStationLon
+                              )
+                            : undefined
+                }))
+            );
         } catch (err) {
             logger.error("Error in QSOs all");
             logger.error(err);

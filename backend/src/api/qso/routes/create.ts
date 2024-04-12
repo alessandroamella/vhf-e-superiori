@@ -8,6 +8,7 @@ import createSchema from "../schemas/createSchema";
 import { User, UserDoc } from "../../auth/models";
 import { Qso } from "../models";
 import JoinRequest from "../../joinRequest/models";
+import { location } from "../../location";
 
 const router = Router();
 
@@ -175,7 +176,16 @@ router.post(
                 select: "callsign"
             });
 
-            res.json(populated.toObject());
+            res.json({
+                ...populated.toObject(),
+                toLocator:
+                    populated.toStationLat && populated.toStationLon
+                        ? location.calculateQth(
+                              populated.toStationLat,
+                              populated.toStationLon
+                          )
+                        : undefined
+            });
         } catch (err) {
             logger.error("Error while creating QSO");
             logger.error(err);
