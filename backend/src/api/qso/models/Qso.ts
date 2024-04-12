@@ -6,7 +6,7 @@ import {
     Ref
 } from "@typegoose/typegoose";
 import { User, UserClass } from "../../auth/models";
-import { EventClass } from "../../event/models";
+import { EventClass, EventDoc } from "../../event/models";
 import sharp from "sharp";
 import EqslPic from "../../eqsl/eqsl";
 import { logger } from "../../../shared";
@@ -238,7 +238,7 @@ export class QsoClass {
 
     public async sendEqsl(
         this: DocumentType<QsoClass>,
-        eventId: string,
+        event: EventDoc,
         eqslTemplateImgUrl: string,
         eqslTemplateImgPath?: string
     ): Promise<string> {
@@ -261,7 +261,7 @@ export class QsoClass {
             if (!eqslTemplateImgPath) {
                 const eqslPic = new EqslPic(eqslTemplateImgUrl);
                 logger.debug(
-                    "Fetching eQSL template image for event " + eventId
+                    "Fetching eQSL template image for event " + event._id
                 );
                 await eqslPic.fetchImage();
                 const tempPath = await eqslPic.saveImageToFile();
@@ -269,14 +269,20 @@ export class QsoClass {
             }
             if (!eqslTemplateImgPath) {
                 throw new Error(
-                    "No image file path found in sendEqsl for event " + eventId
+                    "No image file path found in sendEqsl for event " +
+                        event._id
                 );
             }
 
             const imgBuf = await sharp(eqslTemplateImgPath).toBuffer();
             const eqslPic = new EqslPic(imgBuf);
             logger.debug("Adding QSO info to image buffer for QSO " + this._id);
-            await eqslPic.addQsoInfo(this, fromStation, eqslTemplateImgPath);
+            await eqslPic.addQsoInfo(
+                this,
+                fromStation,
+                eqslTemplateImgPath,
+                event
+            );
             const href = await eqslPic.uploadImage(fromStation._id.toString());
             this.imageHref = href;
             logger.info(`Uploaded eQSL image to ${href} for QSO ${this._id}`);

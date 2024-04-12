@@ -120,7 +120,7 @@ const Qso = () => {
                         <Table.HeadCell>Nominativo</Table.HeadCell>
                         <Table.HeadCell>Stazione</Table.HeadCell>
                         <Table.HeadCell>Data</Table.HeadCell>
-                        <Table.HeadCell>Frequenza</Table.HeadCell>
+                        <Table.HeadCell>Banda</Table.HeadCell>
                         <Table.HeadCell>Modo</Table.HeadCell>
                       </Table.Head>
                       <Table.Body>
@@ -137,7 +137,7 @@ const Qso = () => {
                               )}{" "}
                             UTC
                           </Table.Cell>
-                          <Table.Cell>{qso?.frequency} MHz</Table.Cell>
+                          <Table.Cell>{qso?.band || qso?.frequency}</Table.Cell>
                           <Table.Cell>{qso?.mode}</Table.Cell>
                         </Table.Row>
                       </Table.Body>
@@ -260,7 +260,10 @@ const Qso = () => {
                 <Alert color="warning">
                   <div className="flex items-center gap-2">
                     <FaInfoCircle />
-                    <span>Coordinate non disponibili</span>
+                    <span>
+                      Purtroppo non è possibile creare la mappa in quanto non
+                      sono disponibili le coordinate del QSO
+                    </span>
                   </div>
                 </Alert>
               )}

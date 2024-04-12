@@ -9,6 +9,7 @@ import { User, UserDoc } from "../../auth/models";
 import isLoggedIn from "../../middlewares/isLoggedIn";
 import { Qso } from "../../qso/models";
 import isAdmin from "../../middlewares/isAdmin";
+import Event from "../../event/models";
 
 const router = Router();
 
@@ -27,6 +28,12 @@ const router = Router();
  *              href:
  *                type: string
  *                format: uri
+ *              offsetCallsign:
+ *                type: number
+ *              offsetData:
+ *                type: number
+ *              offsetFrom:
+ *                type: number
  *            required:
  *              - href
  *    tags:
@@ -60,6 +67,9 @@ router.post(
     isLoggedIn,
     isAdmin,
     body("href").isURL(),
+    body("offsetCallsign").isInt().optional(),
+    body("offsetData").isInt().optional(),
+    body("offsetFrom").isInt().optional(),
     validate,
     async (req: Request, res: Response) => {
         try {
@@ -99,8 +109,14 @@ router.post(
             });
             const eqslPic = new EqslPic(req.body.href);
 
+            const testEvent = new Event({
+                offsetCallsign: req.body.offsetCallsign,
+                offsetData: req.body.offsetData,
+                offsetFrom: req.body.offsetFrom
+            });
+
             await eqslPic.fetchImage();
-            await eqslPic.addQsoInfo(qso, user);
+            await eqslPic.addQsoInfo(qso, user, null, testEvent);
             const href = await eqslPic.uploadImage(
                 (req.user as unknown as UserDoc)._id.toString(),
                 false,

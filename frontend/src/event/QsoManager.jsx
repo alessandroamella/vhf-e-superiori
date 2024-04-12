@@ -39,7 +39,6 @@ import {
   FaForward,
   FaInfoCircle,
   FaMapMarkerAlt,
-  FaPlusCircle,
   FaSave,
   FaTimes,
   FaUndo,
@@ -778,7 +777,9 @@ const QsoManager = () => {
   ) : (
     <Layout>
       <Helmet>
-        <title>QSO Manager - VHF e superiori</title>
+        <title>
+          Gestione QSO -{event && ` ${event.name} -`} VHF e superiori
+        </title>
       </Helmet>
       <Modal
         position="center"

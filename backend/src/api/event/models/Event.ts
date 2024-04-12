@@ -1,4 +1,4 @@
-import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
+import { modelOptions, prop, Severity } from "@typegoose/typegoose";
 /**
  * @swagger
  *  components:
@@ -72,4 +72,13 @@ export class EventClass {
 
     @prop({ required: false })
     public eqslUrl?: string;
+
+    @prop({ required: false })
+    public offsetCallsign?: number;
+
+    @prop({ required: false })
+    public offsetData?: number;
+
+    @prop({ required: false })
+    public offsetFrom?: number;
 }

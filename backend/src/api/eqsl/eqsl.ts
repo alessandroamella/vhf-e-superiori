@@ -10,6 +10,7 @@ import { existsSync } from "fs";
 import { unlink } from "fs/promises";
 import { UserDoc } from "../auth/models";
 import { v4 as uuidv4 } from "uuid";
+import { EventDoc } from "../event/models";
 
 class EqslPic {
     private href: string | null = null;
@@ -74,7 +75,8 @@ class EqslPic {
     public async addQsoInfo(
         qso: QsoDoc,
         fromStation: UserDoc,
-        templatePath: string | null = null
+        templatePath: string | null = null,
+        event?: EventDoc
     ): Promise<void> {
         if (!this.image) {
             throw new Error("Image not buffered in addQsoInfo");
@@ -117,7 +119,7 @@ class EqslPic {
             tempPath, // temp image with text
             outPath, // output image
             path.join(process.cwd(), "fonts/coors.ttf"), // font path
-            "69", // +y offset from center
+            event?.offsetCallsign?.toString() || "69", // +y offset from center
             qso.callsign.toLowerCase(), // TODO not lowercase if other font
             filePath, // input image (eQSL card template)
             "350", // font size
@@ -125,14 +127,14 @@ class EqslPic {
             "black", // text stroke color
             text2, // text 2
             path.join(process.cwd(), "fonts/Roboto-Black.ttf"), // font path 2
-            offset2.toString(), // +y offset from center 2
+            event?.offsetData?.toString() || offset2.toString(), // +y offset from center 2
             "55", // font size 2
             // "#ada41d", // text color 2
             "#dbaf5e", // text color 2
             "#332d23", // text stroke color 2
             text3, // text 3
             path.join(process.cwd(), "fonts/Roboto-Black.ttf"), // font path 3
-            offset3.toString(), // +y offset from center 3
+            event?.offsetFrom?.toString() || offset3.toString(), // +y offset from center 3
             "69", // font size 3
             "#f2db2c", // text color 3
             "#423b0c" // text stroke color 3

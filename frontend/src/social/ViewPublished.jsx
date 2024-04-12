@@ -4,6 +4,7 @@ import { ReadyContext, SplashContext, getErrorStr } from "..";
 import { useContext } from "react";
 import {
   Link,
+  useLocation,
   useNavigate,
   useParams,
   useSearchParams
@@ -22,10 +23,24 @@ import {
   Card,
   Dropdown,
   Label,
+  Modal,
   Spinner,
+  Table,
   Tooltip
 } from "flowbite-react";
-import { FaArrowLeft } from "react-icons/fa";
+import {
+  FacebookShareButton,
+  TelegramShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+  EmailShareButton,
+  FacebookIcon,
+  TelegramIcon,
+  TwitterIcon,
+  WhatsappIcon,
+  EmailIcon
+} from "react-share";
+import { FaArrowLeft, FaExternalLinkAlt } from "react-icons/fa";
 import { Helmet } from "react-helmet";
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
 import StationMapMarker from "../shared/StationMapMarker";
@@ -33,6 +48,14 @@ import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { getDate } from "date-fns";
 import MapWatermark from "../shared/MapWatermark";
 import ReactPlaceholder from "react-placeholder";
+
+const CallsignLoading = ({ user }) => {
+  return (
+    <ReactPlaceholder showLoadingAnimation type="text" ready={!!user?.callsign}>
+      {user?.callsign}
+    </ReactPlaceholder>
+  );
+};
 
 const ViewPublished = () => {
   const { splashPlayed } = useContext(SplashContext);
@@ -181,12 +204,120 @@ const ViewPublished = () => {
     [_eventToFilter, qsosToShow]
   );
 
+  const [showQsosModal, setShowQsosModal] = useState(false);
+
+  const socialTitle = user ? `QSO di ${user?.callsign}` : "Visualizza QSO";
+  const socialBody =
+    socialTitle +
+    " " +
+    (user?.qsos?.length
+      ? `Visualizza i ${user?.qsos?.length} QSO di ${user?.callsign}`
+      : "Visualizza tutti i QSO");
+
+  const location = useLocation();
+  const curUrl = "https://" + window.location.hostname + location.pathname;
+
   return (
     <Layout>
       <Helmet>
         <title>{user?.callsign || callsign} - VHF e superiori</title>
       </Helmet>
       {!splashPlayed && <Splash ready={ready} />}
+
+      <Modal
+        position="center"
+        size="7xl"
+        show={showQsosModal}
+        onClose={() => setShowQsosModal(false)}
+      >
+        <Modal.Header>
+          QSO di <CallsignLoading user={user} />
+          {user?.qsos && (
+            <span>
+              {" "}
+              (<strong>{user.qsos.length}</strong> registrati)
+            </span>
+          )}
+        </Modal.Header>
+        <Modal.Body>
+          <div className="max-h-[69vh] -m-6 overflow-y-auto">
+            <Table striped>
+              <Table.Head>
+                <Table.HeadCell className="hidden md:block">
+                  Numero
+                </Table.HeadCell>
+                <Table.HeadCell>Attivatore</Table.HeadCell>
+                <Table.HeadCell>Nominativo</Table.HeadCell>
+                <Table.HeadCell>Data</Table.HeadCell>
+                <Table.HeadCell>Banda</Table.HeadCell>
+                <Table.HeadCell>Modo</Table.HeadCell>
+                <Table.HeadCell>Locatore</Table.HeadCell>
+                <Table.HeadCell>RST</Table.HeadCell>
+              </Table.Head>
+              <Table.Body>
+                {user?.qsos.map((qso, i) => (
+                  <Table.Row
+                    key={qso._id}
+                    onClick={() => navigate(`/qso/${qso._id}`)}
+                    className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <Table.Cell className="font-light hidden md:block">
+                      {i + 1}
+                    </Table.Cell>
+                    <Table.Cell
+                      className={
+                        qso.fromStation?.callsign &&
+                        user?.callsign &&
+                        qso.fromStation?.callsign.includes(user?.callsign)
+                          ? "font-bold"
+                          : ""
+                      }
+                    >
+                      {qso.fromStation?.callsign || (
+                        <span className="text-red-500">--</span>
+                      )}
+                    </Table.Cell>
+                    <Table.Cell
+                      className={
+                        qso.callsign &&
+                        user?.callsign &&
+                        qso.callsign.includes(user?.callsign)
+                          ? "font-bold"
+                          : ""
+                      }
+                    >
+                      {qso.callsign}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {formatInTimeZone(
+                        new Date(qso.qsoDate),
+                        "Europe/Rome",
+                        "dd/MM/yyyy HH:mm"
+                      )}
+                    </Table.Cell>
+                    <Table.Cell>{qso.band || qso.frequency}</Table.Cell>
+                    <Table.Cell>{qso.mode}</Table.Cell>
+                    <Table.Cell>{qso.locator}</Table.Cell>
+                    <Table.Cell>{qso.rst}</Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table>
+          </div>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <div className="w-full flex justify-center gap-2">
+            <Button
+              color="gray"
+              type="button"
+              onClick={() => setShowQsosModal(false)}
+            >
+              Chiudi
+            </Button>
+          </div>
+        </Modal.Footer>
+      </Modal>
 
       <div className="px-0 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
         {alert && (
@@ -318,7 +449,7 @@ const ViewPublished = () => {
                   id="user-map-container"
                   className="drop-shadow-lg flex flex-col items-center gap-2 relative"
                 >
-                  <div className="border-y w-full flex flex-col md:flex-row justify-center items-center gap-2 py-2">
+                  <div className="border-y w-full flex flex-col md:flex-row justify-center items-end gap-6 py-2">
                     <div>
                       <Label
                         htmlFor="filterByEvent"
@@ -349,44 +480,80 @@ const ViewPublished = () => {
                         ))}
                       </Dropdown>
                     </div>
+                    <Button onClick={() => setShowQsosModal(true)}>
+                      <FaExternalLinkAlt className="inline mr-1" />
+                      Visualizza QSO di <CallsignLoading user={user} />
+                    </Button>
                   </div>
                   {mappedQsosToShow && mappedQsosToShow.length > 0 ? (
-                    <MapContainer center={[41.895643, 12.4831082]} zoom={5}>
-                      <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                      />
+                    <>
+                      <MapContainer center={[41.895643, 12.4831082]} zoom={5}>
+                        <TileLayer
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        />
 
-                      <StationMapMarker
-                        callsign={user.callsign}
-                        lat={userLatLon[0]}
-                        lon={userLatLon[1]}
-                        locator={userLatLon[2]}
-                      />
-                      {mappedQsosToShow?.map(qso => (
-                        <React.Fragment key={qso._id}>
-                          <Polyline
-                            positions={[
-                              [userLatLon[0], userLatLon[1]],
-                              [qso.toStationLat, qso.toStationLon]
-                            ]}
-                            color="blue"
-                          />
-                          <StationMapMarker
-                            key={qso._id}
-                            callsign={qso.callsign}
-                            lat={qso.toStationLat}
-                            lon={qso.toStationLon}
-                            locator={qso.toLocator}
-                            createUrl={
-                              qso.isRegistered && qso.callsign !== user.callsign
-                            }
-                          />
-                        </React.Fragment>
-                      ))}
+                        <StationMapMarker
+                          callsign={user.callsign}
+                          lat={userLatLon[0]}
+                          lon={userLatLon[1]}
+                          locator={userLatLon[2]}
+                        />
+                        {mappedQsosToShow?.map(qso => (
+                          <React.Fragment key={qso._id}>
+                            <Polyline
+                              positions={[
+                                [userLatLon[0], userLatLon[1]],
+                                [qso.toStationLat, qso.toStationLon]
+                              ]}
+                              color="blue"
+                            />
+                            <StationMapMarker
+                              key={qso._id}
+                              callsign={qso.callsign}
+                              lat={qso.toStationLat}
+                              lon={qso.toStationLon}
+                              locator={qso.toLocator}
+                              createUrl={
+                                qso.isRegistered &&
+                                qso.callsign !== user.callsign
+                              }
+                            />
+                          </React.Fragment>
+                        ))}
 
-                      <MapWatermark />
-                    </MapContainer>
+                        <MapWatermark />
+                      </MapContainer>
+                      <div className="flex items-center gap-1 w-full mt-2 justify-center md:justify-end">
+                        <FacebookShareButton
+                          url={curUrl}
+                          quote={socialTitle}
+                          hashtag="#vhfesuperiori"
+                        >
+                          <FacebookIcon size={32} round />
+                        </FacebookShareButton>
+                        <TwitterShareButton
+                          url={curUrl}
+                          title={socialTitle}
+                          hashtags={["vhfesuperiori"]}
+                        >
+                          <TwitterIcon size={32} round />
+                        </TwitterShareButton>
+                        <WhatsappShareButton url={curUrl} title={socialTitle}>
+                          <WhatsappIcon size={32} round />
+                        </WhatsappShareButton>
+                        <TelegramShareButton url={curUrl} title={socialTitle}>
+                          <TelegramIcon size={32} round />
+                        </TelegramShareButton>
+                        <EmailShareButton
+                          url={curUrl}
+                          subject={socialTitle}
+                          body={socialBody}
+                        >
+                          <EmailIcon size={32} round />
+                        </EmailShareButton>
+                      </div>
+                    </>
                   ) : (
                     <Card>
                       <p>

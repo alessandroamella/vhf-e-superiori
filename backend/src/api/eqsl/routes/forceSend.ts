@@ -142,10 +142,7 @@ router.get(
                 await qso.save();
             }
 
-            const href = await qso.sendEqsl(
-                event._id.toString(),
-                event.eqslUrl
-            );
+            const href = await qso.sendEqsl(event, event.eqslUrl);
             res.status(200).json({ href });
         } catch (err) {
             logger.error("Error creating eQSL in eQSL force send");

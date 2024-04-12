@@ -20,7 +20,13 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import React, { createRef, useContext, useEffect, useState } from "react";
+import React, {
+  createRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useState
+} from "react";
 import { it } from "date-fns/locale";
 import { EventsContext, getErrorStr, UserContext } from "..";
 import Layout from "../Layout";
@@ -34,7 +40,12 @@ import {
   FaClipboard,
   FaWrench
 } from "react-icons/fa";
-import { Link, createSearchParams, useNavigate } from "react-router-dom";
+import {
+  Link,
+  createSearchParams,
+  useNavigate,
+  useSearchParams
+} from "react-router-dom";
 import { Navigation, Pagination as SwiperPagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Zoom from "react-medium-image-zoom";
@@ -51,7 +62,6 @@ const AdminManager = () => {
   const { events, setEvents } = useContext(EventsContext);
 
   const [showModal, setShowModal] = useState(false);
-  const [eventEditing, setEventEditing] = useState(null);
   const [disabled, setDisabled] = useState(false);
   const [alert, setAlert] = useState(null);
 
@@ -70,6 +80,10 @@ const AdminManager = () => {
   const [logoUrl, setLogoUrl] = useState("/logo-min.png");
   const [eqslUrl, setEqslUrl] = useState("/logo-min.png");
   const [eqslExample, setEqslExample] = useState(null);
+
+  const [offsetCallsign, setOffsetCallsign] = useState(null);
+  const [offsetData, setOffsetData] = useState(null);
+  const [offsetFrom, setOffsetFrom] = useState(null);
 
   const [joinRequests, setJoinRequests] = useState(null);
 
@@ -152,7 +166,10 @@ const AdminManager = () => {
         joinStart,
         joinDeadline,
         logoUrl,
-        eqslUrl
+        eqslUrl,
+        offsetCallsign,
+        offsetData,
+        offsetFrom
       };
 
       const { data } = !eventEditing
@@ -160,6 +177,8 @@ const AdminManager = () => {
         : await axios.put(`/api/event/${eventEditing}`, obj);
       console.log("event", data);
       setShowModal(false);
+
+      setEventEditing(null);
 
       setAlert({
         color: "success",
@@ -208,26 +227,7 @@ const AdminManager = () => {
     setShowModal(true);
   }
 
-  function editEventModal(e) {
-    console.log("edit event:", e);
-    if (eventEditing?._id !== e._id) fetchJoinRequests(e._id);
-    setEventEditing(e._id);
-    setName(e.name);
-    setBand(e.band);
-    // setDescription(e.description);
-    setDate(formatInTimeZone(e.date, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"));
-    setJoinStart(
-      formatInTimeZone(e.joinStart, "Europe/Rome", "yyyy-MM-dd'T'HH:mm")
-    );
-    setJoinDeadline(
-      formatInTimeZone(e.joinDeadline, "Europe/Rome", "yyyy-MM-dd'T'HH:mm")
-    );
-    setLogoUrl(e.logoUrl);
-    setEqslUrl(e.eqslUrl);
-    setShowModal(true);
-  }
-
-  async function fetchJoinRequests(eventId) {
+  const fetchJoinRequests = useCallback(async eventId => {
     setJoinRequests(null);
     try {
       const { data } = await axios.get(
@@ -244,7 +244,52 @@ const AdminManager = () => {
       });
       setJoinRequests(false);
     }
-  }
+  }, []);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const eventEditing = searchParams.get("event");
+  const setEventEditing = _id => {
+    if (!_id) searchParams.delete("event");
+    else searchParams.set("event", _id);
+    setSearchParams(searchParams);
+  };
+
+  const editEventModal = useCallback(
+    e => {
+      console.log("edit event:", e);
+      if (eventEditing?._id !== e._id) fetchJoinRequests(e._id);
+      setEventEditing(e._id);
+      setName(e.name);
+      setBand(e.band);
+      // setDescription(e.description);
+      setDate(formatInTimeZone(e.date, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"));
+      setJoinStart(
+        formatInTimeZone(e.joinStart, "Europe/Rome", "yyyy-MM-dd'T'HH:mm")
+      );
+      setJoinDeadline(
+        formatInTimeZone(e.joinDeadline, "Europe/Rome", "yyyy-MM-dd'T'HH:mm")
+      );
+      setLogoUrl(e.logoUrl);
+      setEqslUrl(e.eqslUrl);
+
+      setOffsetCallsign(e.offsetCallsign);
+      setOffsetData(e.offsetData);
+      setOffsetFrom(e.offsetFrom);
+
+      setShowModal(true);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [eventEditing, fetchJoinRequests]
+  );
+
+  useEffect(() => {
+    if (!eventEditing) {
+      setShowModal(false);
+      return;
+    }
+    const e = events && events?.find(e => e._id === eventEditing);
+    if (e) editEventModal(e);
+  }, [editEventModal, eventEditing, events]);
 
   const uploadEventPic = async uploadedPic => {
     const formData = new FormData();
@@ -415,9 +460,7 @@ const AdminManager = () => {
           "Ricordati di aggiornare la tua città e provincia per poter visualizzare l'anteprima dell'EQSL"
         );
       } else {
-        const res2 = await axios.post("/api/eqsl/preview", { href: data.path });
-        console.log("eqsl preview", res2.data);
-        setEqslExample(res2.data.href);
+        await renderEqslExample(data.path);
       }
     } catch (err) {
       window.alert("ERRORE upload immagine (outer): " + getErrorStr(err));
@@ -425,6 +468,38 @@ const AdminManager = () => {
       setDisabled(false);
     }
   };
+
+  async function renderEqslExample(
+    _eqslPic,
+    _offsetCallsign,
+    _offsetData,
+    _offsetFrom
+  ) {
+    _eqslPic = _eqslPic || eqslPic || eqslUrl;
+    _offsetCallsign = _offsetCallsign || offsetCallsign;
+    _offsetData = _offsetData || offsetData;
+    _offsetFrom = _offsetFrom || offsetFrom;
+
+    if (!_eqslPic) {
+      window.alert("Carica prima un'immagine EQSL");
+      return;
+    }
+    try {
+      setDisabled(true);
+      const res2 = await axios.post("/api/eqsl/preview", {
+        href: _eqslPic,
+        offsetCallsign: _offsetCallsign,
+        offsetData: _offsetData,
+        offsetFrom: _offsetFrom
+      });
+      console.log("eqsl preview", res2.data);
+      setEqslExample(res2.data.href);
+    } catch (err) {
+      window.alert("ERRORE render EQSL: " + getErrorStr(err));
+    } finally {
+      setDisabled(false);
+    }
+  }
 
   const [hidePastEvents, setHidePastEvents] = useState(false);
 
@@ -457,11 +532,38 @@ const AdminManager = () => {
 
   const [joinRequestsModal, setJoinRequestsModal] = useState(null);
 
+  const editOffset = () => {
+    const offsetCallsign = window.prompt("Inserisci offset NOMINATIVO");
+    const offsetData = window.prompt("Inserisci offset DATI");
+    const offsetFrom = window.prompt("Inserisci offset DA CHI");
+
+    if (
+      [offsetCallsign, offsetData, offsetFrom].some(e => isNaN(parseInt(e)))
+    ) {
+      window.alert(
+        "Non hai inserito tutti i campi, l'offset non è stato modificato"
+      );
+      return;
+    }
+
+    setOffsetCallsign(offsetCallsign);
+    setOffsetData(offsetData);
+    setOffsetFrom(offsetFrom);
+
+    renderEqslExample(null, offsetCallsign, offsetData, offsetFrom);
+
+    window.alert(
+      `Offset impostato a:\nNominativo: ${offsetCallsign}\nDati: ${offsetData}\nDa: ${offsetFrom}`
+    );
+  };
+
   return user === null ? (
     navigate({
       pathname: "/login",
       search: createSearchParams({
-        to: "/eventmanager"
+        to:
+          "/eventmanager" +
+          (eventEditing ? createSearchParams({ event: eventEditing }) : "")
       }).toString()
     })
   ) : user && !user.isAdmin ? (
@@ -475,7 +577,7 @@ const AdminManager = () => {
         position="center"
         size="7xl"
         show={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={() => setEventEditing(null)}
       >
         <form onSubmit={createEvent}>
           <Modal.Header>
@@ -503,7 +605,9 @@ const AdminManager = () => {
 
                     {eqslExample && (
                       <div className="flex flex-col items-center">
-                        <p className="mb-2 block">Esempio EQSL</p>
+                        <p className="mb-2 mt-4 md:mt-0 font-semibold tracking-tight block dark:text-white">
+                          Esempio EQSL
+                        </p>
                         <LazyLoadImage
                           src={eqslExample}
                           alt="EQSL example"
@@ -613,6 +717,27 @@ const AdminManager = () => {
                         disabled={disabled || !eqslPic}
                       >
                         <FaUndo />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="mt-2 flex justify-center items-center gap-2">
+                      <Button
+                        disabled={disabled}
+                        onClick={editOffset}
+                        color="light"
+                        size="sm"
+                      >
+                        Modifica offset ({offsetCallsign || "x"},{" "}
+                        {offsetData || "x"}, {offsetFrom || "x"})
+                      </Button>
+                      <Button
+                        onClick={() => renderEqslExample()}
+                        color="dark"
+                        size="sm"
+                        disabled={!eqslUrl || disabled}
+                      >
+                        Ricomputa esempio eQSL
                       </Button>
                     </div>
                   </div>
@@ -796,7 +921,10 @@ const AdminManager = () => {
                 type="button"
                 // disabled={!user || changePwBtnDisabled}
                 disabled={disabled}
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setEventEditing(null);
+                  setShowModal(false);
+                }}
               >
                 Chiudi
               </Button>
