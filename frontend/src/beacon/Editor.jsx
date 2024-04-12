@@ -239,10 +239,14 @@ const BeaconEditor = () => {
   const [forceFly, setForceFly] = useState(false);
 
   useEffect(() => {
-    // || !locator || locator.length !== 6
-    if (isPositionSet || isLocatorFocused) return;
+    if (isPositionSet || isLocatorFocused || locator?.length !== 6) return;
 
-    console.log("fetching lat lon, len is", locator.length);
+    console.log(
+      "fetching lat lon for locator",
+      locator,
+      "len is",
+      locator.length
+    );
 
     async function getLatLon() {
       setDisabled(true);
@@ -532,7 +536,7 @@ const BeaconEditor = () => {
                     Geolocalizza
                   </Button>
                 </div>
-                <div className="drop-shadow-lg flex justify-center relative">
+                <div className="drop-shadow-lg flex justify-center relative w-full">
                   <MapContainer center={[lat, lon]} zoom={13}>
                     <TileLayer
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
