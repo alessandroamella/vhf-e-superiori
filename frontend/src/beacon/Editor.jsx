@@ -239,7 +239,7 @@ const BeaconEditor = () => {
   const [forceFly, setForceFly] = useState(false);
 
   useEffect(() => {
-    if (isPositionSet || isLocatorFocused || locator?.length !== 6) return;
+    if (isPositionSet || isLocatorFocused) return;
 
     console.log(
       "fetching lat lon for locator",
