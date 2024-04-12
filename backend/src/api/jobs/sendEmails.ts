@@ -96,7 +96,7 @@ async function sendEqslEmail() {
 
             try {
                 await qso.sendEqsl(
-                    event._id.toString(),
+                    event,
                     event.eqslUrl,
                     eqslTemplateImgs.get(event._id.toString())
                 );

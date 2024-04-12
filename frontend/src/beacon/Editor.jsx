@@ -21,6 +21,7 @@ import {
   useMapEvents
 } from "react-leaflet";
 import { Helmet } from "react-helmet";
+import MapWatermark from "../shared/MapWatermark";
 
 const MyMarker = ({
   showPos,
@@ -38,8 +39,8 @@ const MyMarker = ({
         iconSize: [25, 41],
         iconAnchor: [10, 41],
         popupAnchor: [2, -40],
-        iconUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-icon.png",
-        shadowUrl: "https://unpkg.com/leaflet@1.7/dist/images/marker-shadow.png"
+        iconUrl: "/mapicon/marker-icon.png",
+        shadowUrl: "/mapicon/marker-shadow.png"
       }),
     []
   );
@@ -531,7 +532,7 @@ const BeaconEditor = () => {
                     Geolocalizza
                   </Button>
                 </div>
-                <div className="drop-shadow-lg flex justify-center">
+                <div className="drop-shadow-lg flex justify-center relative">
                   <MapContainer center={[lat, lon]} zoom={13}>
                     <TileLayer
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -550,6 +551,8 @@ const BeaconEditor = () => {
                         setLocator("");
                       }}
                     />
+
+                    <MapWatermark />
                   </MapContainer>
                 </div>
               </div>

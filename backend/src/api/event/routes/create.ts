@@ -61,7 +61,10 @@ router.post(
                 logoUrl,
                 eqslUrl,
                 joinStart,
-                joinDeadline
+                joinDeadline,
+                offsetCallsign,
+                offsetData,
+                offsetFrom
             } = req.body;
             logger.debug("Creating event with following params");
             logger.debug({
@@ -72,7 +75,10 @@ router.post(
                 logoUrl,
                 eqslUrl,
                 joinStart,
-                joinDeadline
+                joinDeadline,
+                offsetCallsign,
+                offsetData,
+                offsetFrom
             });
             const event = await EventModel.create({
                 name,
@@ -82,7 +88,10 @@ router.post(
                 logoUrl,
                 eqslUrl,
                 joinStart,
-                joinDeadline
+                joinDeadline,
+                offsetCallsign,
+                offsetData,
+                offsetFrom
             });
             res.json(event.toObject());
         } catch (err) {

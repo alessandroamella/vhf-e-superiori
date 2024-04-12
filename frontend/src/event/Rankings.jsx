@@ -93,7 +93,7 @@ const Rankings = () => {
                 .map(r => (
                   <Table striped>
                     <Table.Head>
-                      <Table.HeadCell>Stazione attivatrice</Table.HeadCell>
+                      <Table.HeadCell>Attivatore</Table.HeadCell>
                       <Table.HeadCell>Nominativo</Table.HeadCell>
                       <Table.HeadCell>Data</Table.HeadCell>
                       <Table.HeadCell>Frequenza</Table.HeadCell>
@@ -196,12 +196,12 @@ const Rankings = () => {
               </div> */}
 
               <Tabs.Group>
-                {["Attivatori", "Cacciatori"].map((tab, i) => (
+                {["Cacciatori", "Attivatori"].map((tab, i) => (
                   <Tabs.Item title={tab} key={i}>
                     <h1 className="text-4xl md:text-5xl uppercase text-red-500 font-bold text-center mt-4 mb-8 animate-pulse">
                       Classifica {tab}
                     </h1>
-                    {(i === 0 ? stationRankings : userRankings).length > 0 ? (
+                    {(i === 1 ? stationRankings : userRankings).length > 0 ? (
                       <Table striped className="text-2xl">
                         <Table.Head>
                           <Table.HeadCell>Posizione</Table.HeadCell>
@@ -209,7 +209,7 @@ const Rankings = () => {
                           <Table.HeadCell>Punti</Table.HeadCell>
                         </Table.Head>
                         <Table.Body>
-                          {(i === 0 ? stationRankings : userRankings).map(r => (
+                          {(i === 1 ? stationRankings : userRankings).map(r => (
                             <Table.Row
                               key={r.callsign}
                               onClick={() => setShowRankings(r.callsign)}

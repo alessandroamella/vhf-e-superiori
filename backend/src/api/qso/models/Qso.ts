@@ -6,7 +6,7 @@ import {
     Ref
 } from "@typegoose/typegoose";
 import { User, UserClass } from "../../auth/models";
-import { EventClass } from "../../event/models";
+import { EventClass, EventDoc } from "../../event/models";
 import sharp from "sharp";
 import EqslPic from "../../eqsl/eqsl";
 import { logger } from "../../../shared";
@@ -122,8 +122,15 @@ import { location } from "../../location";
     }
     if (!this.email || !this.toStationLat || !this.toStationLon) {
         // find if already in db
+
+        const _callsigns = this.callsign.split("/");
+        _callsigns.sort((a, b) => b.length - a.length);
+        const callsignClean = _callsigns[0];
+
+        logger.debug(`Callsign ${this.callsign} cleaned ${callsignClean}`);
+
         const user = await User.findOne({
-            callsign: this.callsign
+            callsign: callsignClean
         });
         if (user) {
             this.toStation = user._id;
@@ -137,7 +144,7 @@ import { location } from "../../location";
 
         // find qso with same callsign and event to copy email
         const qso = await Qso.findOne({
-            callsign: this.callsign,
+            callsign: callsignClean,
             event: this.event,
             email: { $exists: true }
         });
@@ -152,7 +159,7 @@ import { location } from "../../location";
         }
 
         // last resort: try to scrape email from QRZ
-        const scraped = await qrz.getInfo(this.callsign);
+        const scraped = await qrz.getInfo(callsignClean);
         if (scraped) {
             this.email = scraped.email;
             this.toStationLat = scraped.lat;
@@ -160,7 +167,7 @@ import { location } from "../../location";
             return;
         }
         logger.warn(
-            `No email or coordinates found for QSO ${this._id} with callsign ${this.callsign}`
+            `No email or coordinates found for QSO ${this._id} with callsign ${this.callsign} cleaned ${callsignClean}`
         );
     }
 })
@@ -231,7 +238,7 @@ export class QsoClass {
 
     public async sendEqsl(
         this: DocumentType<QsoClass>,
-        eventId: string,
+        event: EventDoc,
         eqslTemplateImgUrl: string,
         eqslTemplateImgPath?: string
     ): Promise<string> {
@@ -254,7 +261,7 @@ export class QsoClass {
             if (!eqslTemplateImgPath) {
                 const eqslPic = new EqslPic(eqslTemplateImgUrl);
                 logger.debug(
-                    "Fetching eQSL template image for event " + eventId
+                    "Fetching eQSL template image for event " + event._id
                 );
                 await eqslPic.fetchImage();
                 const tempPath = await eqslPic.saveImageToFile();
@@ -262,14 +269,20 @@ export class QsoClass {
             }
             if (!eqslTemplateImgPath) {
                 throw new Error(
-                    "No image file path found in sendEqsl for event " + eventId
+                    "No image file path found in sendEqsl for event " +
+                        event._id
                 );
             }
 
             const imgBuf = await sharp(eqslTemplateImgPath).toBuffer();
             const eqslPic = new EqslPic(imgBuf);
             logger.debug("Adding QSO info to image buffer for QSO " + this._id);
-            await eqslPic.addQsoInfo(this, fromStation, eqslTemplateImgPath);
+            await eqslPic.addQsoInfo(
+                this,
+                fromStation,
+                eqslTemplateImgPath,
+                event
+            );
             const href = await eqslPic.uploadImage(fromStation._id.toString());
             this.imageHref = href;
             logger.info(`Uploaded eQSL image to ${href} for QSO ${this._id}`);

@@ -121,7 +121,7 @@ router.post(
             const eqslPic = new EqslPic(joinRequest.forEvent.eqslUrl);
 
             await eqslPic.fetchImage();
-            await eqslPic.addQsoInfo(qso, user);
+            await eqslPic.addQsoInfo(qso, user, null, joinRequest.forEvent);
             const href = await eqslPic.uploadImage(
                 (req.user as unknown as UserDoc)._id.toString(),
                 true

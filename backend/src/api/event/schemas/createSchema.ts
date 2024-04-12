@@ -47,6 +47,18 @@ const createSchema: Schema = {
     joinDeadline: {
         isISO8601: { options: [] },
         trim: { options: [] }
+    },
+    offsetCallsign: {
+        isInt: true,
+        optional: true
+    },
+    offsetData: {
+        isInt: true,
+        optional: true
+    },
+    offsetFrom: {
+        isInt: true,
+        optional: true
     }
 };
 export default createSchema;

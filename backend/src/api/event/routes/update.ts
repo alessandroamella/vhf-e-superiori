@@ -71,7 +71,10 @@ router.put(
                 logoUrl,
                 eqslUrl,
                 joinStart,
-                joinDeadline
+                joinDeadline,
+                offsetCallsign,
+                offsetData,
+                offsetFrom
             } = req.body;
             const event = await EventModel.findOneAndUpdate(
                 { _id: req.params._id },
@@ -83,7 +86,10 @@ router.put(
                     logoUrl,
                     eqslUrl,
                     joinStart,
-                    joinDeadline
+                    joinDeadline,
+                    offsetCallsign,
+                    offsetData,
+                    offsetFrom
                 },
                 { new: true }
             );

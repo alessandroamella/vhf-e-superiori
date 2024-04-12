@@ -113,11 +113,17 @@ async function returnUserWithPosts(
             posts: BasePostClass[];
             pp?: string;
             qsos: QsoClass[];
+            locator?: string;
         } = {
             ...user,
             pp: qrzData?.pictureUrl,
             posts,
-            qsos
+            qsos,
+            locator:
+                (user.lat &&
+                    user.lon &&
+                    location.calculateQth(user.lat, user.lon)) ||
+                undefined
         };
 
         // timestamps are present

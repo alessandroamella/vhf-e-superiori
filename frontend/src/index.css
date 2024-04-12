@@ -177,12 +177,9 @@ nav ul {
 }
 
 div.input-large div input {
-    padding: 0.5rem!important;
-    background-color: white!important;
+    @apply text-black dark:text-white dark:bg-gray-700 p-2;
 }
 
-
 .leaflet-container {
-    width: 80vw;
-    height: 60vh;
+    @apply w-[80vw] md:w-full h-[60vh] md:h-[80vh] mx-auto z-10;
 }

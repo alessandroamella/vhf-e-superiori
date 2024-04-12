@@ -120,7 +120,7 @@ class Qrz {
                     callsign: callsign,
                     t: d
                 },
-                timeout: 10000 // 10 seconds
+                timeout: 2000 // 10 seconds
             });
             logger.debug("QRZ raw data:");
             logger.debug(data);

@@ -8,7 +8,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlaceholder from "react-placeholder";
 import Zoom from "react-medium-image-zoom";
 import { Card } from "@material-tailwind/react";
-import { FaHome, FaInfoCircle } from "react-icons/fa";
+import { FaBackward, FaHome, FaInfoCircle } from "react-icons/fa";
 import {
   FacebookShareButton,
   TelegramShareButton,
@@ -26,6 +26,7 @@ import { Helmet } from "react-helmet";
 import { MapContainer, Polyline, TileLayer, useMap } from "react-leaflet";
 import { latLngBounds } from "leaflet";
 import StationMapMarker from "../shared/StationMapMarker";
+import MapWatermark from "../shared/MapWatermark";
 
 function ChangeView({ center, markers }) {
   const map = useMap();
@@ -38,6 +39,7 @@ function ChangeView({ center, markers }) {
     });
     map.fitBounds(markerBounds);
   }
+
   return null;
 }
 
@@ -79,6 +81,13 @@ const Qso = () => {
       </Helmet>
       <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900 -mt-4">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
+          <div className="mb-4 md:-ml-4 md:-mt-4">
+            <Link to={-1}>
+              <Button color="info">
+                <FaBackward />
+              </Button>
+            </Link>
+          </div>
           {alert && (
             <Alert
               className="mb-6"
@@ -111,7 +120,7 @@ const Qso = () => {
                         <Table.HeadCell>Nominativo</Table.HeadCell>
                         <Table.HeadCell>Stazione</Table.HeadCell>
                         <Table.HeadCell>Data</Table.HeadCell>
-                        <Table.HeadCell>Frequenza</Table.HeadCell>
+                        <Table.HeadCell>Banda</Table.HeadCell>
                         <Table.HeadCell>Modo</Table.HeadCell>
                       </Table.Head>
                       <Table.Body>
@@ -128,7 +137,7 @@ const Qso = () => {
                               )}{" "}
                             UTC
                           </Table.Cell>
-                          <Table.Cell>{qso?.frequency} MHz</Table.Cell>
+                          <Table.Cell>{qso?.band || qso?.frequency}</Table.Cell>
                           <Table.Cell>{qso?.mode}</Table.Cell>
                         </Table.Row>
                       </Table.Body>
@@ -202,7 +211,7 @@ const Qso = () => {
               qso.fromStationLon &&
               qso.toStationLat &&
               qso.toStationLon ? (
-                <div className="drop-shadow-lg flex justify-center">
+                <div className="drop-shadow-lg flex justify-center relative">
                   <MapContainer
                     center={[qso.fromStationLat, qso.fromStationLon]}
                     zoom={5}
@@ -241,13 +250,20 @@ const Qso = () => {
                       lon={qso.toStationLon}
                       locator={qso.toLocator}
                     />
+
+                    <MapWatermark />
                   </MapContainer>
+
+                  <MapWatermark />
                 </div>
               ) : (
                 <Alert color="warning">
                   <div className="flex items-center gap-2">
                     <FaInfoCircle />
-                    <span>Coordinate non disponibili</span>
+                    <span>
+                      Purtroppo non è possibile creare la mappa in quanto non
+                      sono disponibili le coordinate del QSO
+                    </span>
                   </div>
                 </Alert>
               )}
