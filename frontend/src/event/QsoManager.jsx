@@ -1514,6 +1514,7 @@ const QsoManager = () => {
                                 [q.toStationLat, q.toStationLon]
                               ]}
                               color="blue"
+                              weight={2} // make a bit thinner
                             />
 
                             <StationMapMarker
