@@ -9,6 +9,7 @@ import { Navigation, Pagination } from "swiper";
 import Zoom from "react-medium-image-zoom";
 import ReactPlayer from "react-player";
 import React from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const MediaSwiper = React.memo(({ postPictures, postVideos }) => (
   <Swiper
@@ -23,8 +24,7 @@ const MediaSwiper = React.memo(({ postPictures, postVideos }) => (
     {postPictures?.map(p => (
       <SwiperSlide className="my-auto" key={p}>
         <Zoom>
-          <img
-            loading="lazy"
+          <LazyLoadImage
             className="select-none w-full max-h-[30rem] object-contain"
             src={p}
             alt="Post pic"

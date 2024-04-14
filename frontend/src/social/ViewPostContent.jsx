@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 
-import "react-placeholder/lib/reactPlaceholder.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";

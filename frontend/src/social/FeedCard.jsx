@@ -8,7 +8,7 @@ import "swiper/css/pagination";
 // import "swiper/css/navigation";
 // import "swiper/css/scrollbar";
 import TimeAgo from "./TimeAgo";
-import { Badge, Button, Spinner } from "flowbite-react";
+import { Avatar, Badge, Button, Spinner } from "flowbite-react";
 import { UserContext, getErrorStr } from "..";
 import axios from "axios";
 import { FaTrash } from "react-icons/fa";
@@ -92,7 +92,7 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
       <div className="flex items-center p-4">
         {/* Avatar */}
         {pic ? (
-          <img className="h-10 w-10 rounded-full" src={pic} alt="Profile" />
+          <Avatar rounded img={pic} />
         ) : (
           <div className="h-10 w-10 bg-gray-300 dark:bg-gray-600 rounded-full" />
         )}

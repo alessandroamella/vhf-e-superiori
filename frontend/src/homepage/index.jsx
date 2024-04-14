@@ -224,6 +224,7 @@ const Homepage = () => {
     async function fetchAdmins() {
       try {
         const { data } = await axios.get("/api/auth/admins");
+        console.log("admins fetched", data);
         setAdmins(data);
       } catch (err) {
         console.error(

@@ -14,11 +14,11 @@ import Splash from "../Splash";
 import "react-medium-image-zoom/dist/styles.css";
 import FeedCard from "./FeedCard";
 
-import "react-placeholder/lib/reactPlaceholder.css";
 import axios from "axios";
 import {
   Alert,
   Avatar,
+  Badge,
   Button,
   Card,
   Dropdown,
@@ -374,7 +374,11 @@ const ViewPublished = () => {
                 <div className="flex gap-4 items-center flex-row justify-center w-full">
                   <Avatar size="lg" img={user?.pp} alt="Profile" />
                   <div className="flex flex-col gap-0">
-                    <h2 className="font-bold text-xl">{user.callsign}</h2>
+                    <h2 className="font-bold text-xl flex items-center gap-2">
+                      {user.callsign}
+                      {user?.isDev && <Badge color="purple">Dev 👨‍💻</Badge>}
+                      {user?.isAdmin && <Badge color="pink">Admin 🛡️</Badge>}
+                    </h2>
                     <p>{user?.name}</p>
                     {user?.createdAt && (
                       <p className="text-gray-500 text-sm">

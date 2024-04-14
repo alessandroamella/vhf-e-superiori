@@ -1,5 +1,5 @@
 import Layout from "../Layout";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ReadyContext, SplashContext } from "..";
 import { useContext } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -8,12 +8,11 @@ import Splash from "../Splash";
 import "react-medium-image-zoom/dist/styles.css";
 import FeedCard from "./FeedCard";
 
-import "react-placeholder/lib/reactPlaceholder.css";
 import axios from "axios";
-import { Alert, Button, Dropdown, Spinner, TextInput } from "flowbite-react";
+import { Alert, Button, Spinner, TextInput } from "flowbite-react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MenuContent from "../sideMenu/MenuContent";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaUserTag } from "react-icons/fa";
 
 const Social = () => {
   const { splashPlayed } = useContext(SplashContext);
@@ -29,7 +28,6 @@ const Social = () => {
 
   const [cursor, setCursor] = useState(0);
 
-  const [orderBy, setOrderBy] = useState({ createdAt: -1 });
   const [filterCallsign, setFilterCallsign] = useState(null);
 
   const navigate = useNavigate();
@@ -50,8 +48,7 @@ const Social = () => {
       const { data } = await axios.get("/api/post", {
         params: {
           limit: cursorLimit,
-          offset: cursor,
-          orderBy
+          offset: cursor
         }
       });
       console.log("new posts", data, "\nall posts", [...posts, ...data.posts]);
@@ -65,8 +62,9 @@ const Social = () => {
       setPostsLoaded(true);
     }
     fetchPosts();
+    // don't listen for orderBy: there will be a useEffect to reset cursor
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cursor, orderBy]);
+  }, [cursor]);
 
   function fetchMorePosts() {
     setCursor(cursor + cursorLimit);
@@ -82,6 +80,20 @@ const Social = () => {
     searchParams.delete("scrollTo");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollTo, posts]);
+
+  const filteredPosts = useMemo(() => {
+    if (!posts) return [];
+    return posts.filter(
+      p =>
+        !filterCallsign ||
+        p.fromUser.callsign.includes(
+          filterCallsign
+            ?.replace(/[^a-zA-Z0-9/]/g, "")
+            ?.trim()
+            .toUpperCase()
+        )
+    );
+  }, [filterCallsign, posts]);
 
   return (
     <Layout>
@@ -123,23 +135,9 @@ const Social = () => {
           <TextInput
             value={filterCallsign}
             onChange={e => setFilterCallsign(e.target.value || null)}
-            placeholder="Filtra nominativo..."
-            iconLeft={<FaPlus />}
+            placeholder="Cerca per nominativo..."
+            icon={FaUserTag}
           />
-          <Dropdown
-            label={orderBy.createdAt === -1 ? "Più recenti" : "Più vecchi"}
-            id="postsOrderBy"
-            className="w-full"
-            required
-            color="light"
-          >
-            <Dropdown.Item onClick={() => setOrderBy({ createdAt: -1 })}>
-              Più recenti
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setOrderBy({ createdAt: 1 })}>
-              Più vecchi
-            </Dropdown.Item>
-          </Dropdown>
         </div>
 
         <Button
@@ -177,9 +175,9 @@ const Social = () => {
               </p>
             </Alert> */}
             {postsLoaded ? (
-              posts.length > 0 ? (
+              filteredPosts.length > 0 ? (
                 <InfiniteScroll
-                  dataLength={posts.length}
+                  dataLength={filteredPosts.length}
                   next={fetchMorePosts}
                   hasMore={hasMore}
                   className="overflow-hidden"
@@ -195,31 +193,29 @@ const Social = () => {
                   }
                 >
                   <div className="p-0 md:p-5">
-                    {posts
-                      .filter(
-                        p =>
-                          !filterCallsign ||
-                          p.fromUser.callsign.includes(
-                            filterCallsign?.trim().toUpperCase()
-                          )
-                      )
-                      .map(p => (
-                        <FeedCard
-                          id={"post-" + p._id}
-                          setAlert={setAlert}
-                          key={p._id}
-                          post={p}
-                          pp={profilePictures}
-                          posts={posts}
-                          setPosts={setPosts}
-                        />
-                      ))}
+                    {filteredPosts.map(p => (
+                      <FeedCard
+                        id={"post-" + p._id}
+                        setAlert={setAlert}
+                        key={p._id}
+                        post={p}
+                        pp={profilePictures}
+                        posts={posts}
+                        setPosts={setPosts}
+                      />
+                    ))}
                   </div>
                 </InfiniteScroll>
               ) : (
                 <div className="p-5">
-                  <p>Ancora nessun post</p>
-                  <p className="text-gray-500 italic">Tutto tace...</p>
+                  {filteredPosts?.length === posts?.length ? (
+                    <p>Ancora nessun post</p>
+                  ) : (
+                    <p>
+                      Nessun post trovato con nominativo "
+                      <strong>{filterCallsign}</strong>"
+                    </p>
+                  )}
                 </div>
               )
             ) : (

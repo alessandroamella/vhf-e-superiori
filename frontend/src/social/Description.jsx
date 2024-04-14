@@ -1,6 +1,5 @@
 import React from "react";
 import ReactPlaceholder from "react-placeholder";
-import "react-placeholder/lib/reactPlaceholder.css";
 
 const Description = React.memo(({ description }) => (
   <h5 className="text-2xl font-bold tracking-tight break-normal text-ellipsis overflow-hidden w-full">

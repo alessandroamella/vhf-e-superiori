@@ -28,6 +28,8 @@ import BeaconHomepage from "./beacon";
 import BeaconEditor from "./beacon/Editor";
 import ViewBeacon from "./beacon/ViewBeacon";
 
+import "react-placeholder/lib/reactPlaceholder.css";
+
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
 export const SplashContext = createContext(false);
