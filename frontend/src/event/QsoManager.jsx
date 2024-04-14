@@ -1522,14 +1522,14 @@ const QsoManager = () => {
                               lat={q.fromStationLat}
                               lon={q.fromStationLon}
                               locator={q.fromLocator}
-                              iconRescaleFactor={0.7}
+                              iconRescaleFactor={0.5}
                             />
                             <StationMapMarker
                               callsign={q.callsign}
                               lat={q.toStationLat}
                               lon={q.toStationLon}
                               locator={q.toLocator}
-                              iconRescaleFactor={0.6}
+                              iconRescaleFactor={0.5}
                             />
                           </>
                         ))}
