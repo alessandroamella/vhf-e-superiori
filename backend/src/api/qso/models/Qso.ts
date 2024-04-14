@@ -120,6 +120,43 @@ import { location } from "../../location";
             );
         }
     }
+    if (!this.fromStationCity || !this.fromStationProvince) {
+        if (!this.fromStationLat || !this.fromStationLon) {
+            logger.error("Can't reverse geocode QSO in pre hook for QSO:");
+            logger.error(this);
+            return;
+        }
+        const geocoded = await location.reverseGeocode(
+            this.fromStationLat,
+            this.fromStationLon
+        );
+        if (!geocoded) {
+            logger.error(
+                `No reverse geocoding found for QSO ${this._id} with lat ${this.fromStationLat} and lon ${this.fromStationLon}`
+            );
+            return;
+        }
+        const city =
+            geocoded.address_components.find(
+                e =>
+                    e.types.includes("administrative_area_level_3") ||
+                    e.types.includes("locality")
+            )?.long_name || geocoded.address_components[0]?.long_name;
+        const province =
+            geocoded.address_components.find(
+                e =>
+                    e.types.includes("administrative_area_level_2") ||
+                    e.types.includes("administrative_area_level_1")
+            )?.short_name ||
+            geocoded.address_components[1]?.short_name ||
+            geocoded.address_components[0]?.short_name;
+        this.fromStationCity = city;
+        this.fromStationProvince = province;
+
+        logger.info(
+            `Reverse geocoded QSO ${this._id} with lat ${this.fromStationLat} and lon ${this.fromStationLon} to city ${city} and province ${province}`
+        );
+    }
     if (!this.email || !this.toStationLat || !this.toStationLon) {
         // find if already in db
 
