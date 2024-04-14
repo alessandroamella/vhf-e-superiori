@@ -12,7 +12,6 @@ import { Badge, Button, Spinner } from "flowbite-react";
 import { UserContext, getErrorStr } from "..";
 import axios from "axios";
 import { FaTrash } from "react-icons/fa";
-import { adminNames, ownerNames } from "../homepage/Info";
 
 /**
  * @typedef {object} BasePost
@@ -110,14 +109,8 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
               {post?.fromUser?.callsign}
             </p>
           </ReactPlaceholder>
-          {post?.fromUser?.callsign &&
-            Object.keys(ownerNames).includes(post.fromUser.callsign) && (
-              <Badge color="purple">Dev 👨‍💻</Badge>
-            )}
-          {post?.fromUser?.callsign &&
-            Object.keys(adminNames).includes(post.fromUser.callsign) && (
-              <Badge color="pink">Admin 🛡️</Badge>
-            )}
+          {post?.fromUser?.isDev && <Badge color="purple">Dev 👨‍💻</Badge>}
+          {post?.fromUser?.isAdmin && <Badge color="pink">Admin 🛡️</Badge>}
         </div>
 
         {/* Time Ago */}

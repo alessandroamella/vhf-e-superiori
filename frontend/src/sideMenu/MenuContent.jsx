@@ -154,7 +154,7 @@ const MenuContent = ({ isSideBar }) => {
       {user === null ? (
         <>
           <SectionLink to="/login" redirectBack>
-            <FaSignInAlt /> <span>Login</span>
+            <FaSignInAlt /> <span>Entra col nominativo</span>
           </SectionLink>
           <SectionLink to="/signup" redirectBack>
             <FaUserPlus /> <span>Registrati</span>
@@ -169,7 +169,7 @@ const MenuContent = ({ isSideBar }) => {
             </span>
           </SectionLink>
           <SectionLink onClick={logout}>
-            <FaSignOutAlt /> <span>Logout</span>
+            <FaSignOutAlt /> <span>Esci</span>
           </SectionLink>
         </>
       ) : (
@@ -212,7 +212,15 @@ const MenuContent = ({ isSideBar }) => {
         <FaWhatsapp /> Gruppo WhatsApp
       </a>
       {user ? (
-        <Button className="text-lg mb-4" onClick={() => setJoinOpen(true)}>
+        <Button
+          className="text-lg mb-4"
+          onClick={() => {
+            if (location.pathname !== "/") {
+              navigate("/");
+            }
+            setJoinOpen(true);
+          }}
+        >
           Partecipa
         </Button>
       ) : (
@@ -242,15 +250,6 @@ const MenuContent = ({ isSideBar }) => {
       <SectionLink to="/social" className="text-xl font-semibold">
         Foto / video
       </SectionLink>
-      {/* <SectionHref wip href="#">
-        I miei amplificatori lineari e preamplificatori
-      </SectionHref>
-      <SectionHref wip href="#">
-        Le mie realizzazioni
-      </SectionHref>
-      <SectionHref wip href="#">
-        Il mio radio flashmob
-      </SectionHref> */}
 
       <Button
         className="text-xl mb-4"

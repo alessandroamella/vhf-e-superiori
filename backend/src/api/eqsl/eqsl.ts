@@ -122,7 +122,7 @@ class EqslPic {
             event?.offsetCallsign?.toString() || "69", // +y offset from center
             qso.callsign.toLowerCase(), // TODO not lowercase if other font
             filePath, // input image (eQSL card template)
-            "350", // font size
+            "320", // font size
             "#f05252", // text color
             "black", // text stroke color
             text2, // text 2

@@ -219,12 +219,17 @@ const Signup = () => {
         password
       });
       setUser(data);
-      navigate({
-        pathname: searchParams.get("to") || "/",
-        search: createSearchParams({
-          toconfirm: true
-        }).toString()
-      });
+      navigate(
+        {
+          pathname: searchParams.get("to") || "/",
+          search: createSearchParams({
+            toconfirm: true
+          }).toString()
+        },
+        {
+          replace: true
+        }
+      );
     } catch (err) {
       console.log("signup error", err);
       window.scrollTo({

@@ -455,7 +455,11 @@ const Profile = () => {
               <div className="flex flex-col mb-8">
                 <Link to={`/u/` + user?.callsign} className="mb-2">
                   <Typography variant="h1" className="flex items-center">
-                    <Avatar size={user?.pp ? "lg" : "md"} img={user?.pp} />
+                    <Avatar
+                      rounded
+                      size={user?.pp ? "lg" : "md"}
+                      img={user?.pp}
+                    />
                     <span className="ml-2">{user.callsign}</span>
                   </Typography>
                 </Link>
@@ -861,10 +865,24 @@ const Profile = () => {
                               onClick={() => navigate(`/qso/${qso._id}`)}
                               className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                             >
-                              <Table.Cell>
+                              <Table.Cell
+                                className={
+                                  qso.fromStation?.callsign.includes(
+                                    user?.callsign
+                                  )
+                                    ? "font-bold"
+                                    : ""
+                                }
+                              >
                                 {qso.fromStation?.callsign}
                               </Table.Cell>
-                              <Table.Cell className="font-semibold">
+                              <Table.Cell
+                                className={
+                                  qso.callsign.includes(user?.callsign)
+                                    ? "font-bold"
+                                    : ""
+                                }
+                              >
                                 {qso.callsign}
                               </Table.Cell>
                               <Table.Cell>

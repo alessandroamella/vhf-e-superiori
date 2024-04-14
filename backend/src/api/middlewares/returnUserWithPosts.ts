@@ -23,8 +23,10 @@ async function returnUserWithPosts(
     // const callsign = undefined;
     // const _id = undefined;
     logger.debug("returnUserWithPosts middleware");
-    if (!req.user) {
-        throw new Error("No req.user in returnUserWithPosts middleware");
+    if (!req.user && !_id && !callsign) {
+        throw new Error(
+            "No req.user in returnUserWithPosts middleware and no _id or callsign provided"
+        );
     }
     try {
         const user = await User.findOne(

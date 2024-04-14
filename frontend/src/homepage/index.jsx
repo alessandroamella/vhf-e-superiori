@@ -35,11 +35,11 @@ import { Button } from "@material-tailwind/react";
 import "react-medium-image-zoom/dist/styles.css";
 import "react-round-carousel/src/index.css";
 import Flags from "../Flags";
-import { adminsList } from "./Info";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import axios from "axios";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { Helmet } from "react-helmet";
+import ReactPlaceholder from "react-placeholder";
 
 const Homepage = () => {
   const { user } = useContext(UserContext);
@@ -218,6 +218,22 @@ const Homepage = () => {
     _stationEvent().then(setStationEventToShow);
     _rankingsEvent().then(setRankingsEventToShow);
   }, [_stationEvent, _rankingsEvent]);
+
+  const [admins, setAdmins] = useState(null);
+  useEffect(() => {
+    async function fetchAdmins() {
+      try {
+        const { data } = await axios.get("/api/auth/admins");
+        setAdmins(data);
+      } catch (err) {
+        console.error(
+          "error while fetching admins",
+          err?.response?.data || err
+        );
+      }
+    }
+    fetchAdmins();
+  }, []);
 
   return (
     <Layout>
@@ -668,20 +684,23 @@ const Homepage = () => {
                       </h2>
 
                       <div className="mx-auto dark:pb-2 dark:px-4">
-                        {adminsList.map(e => (
-                          <a
-                            href={"https://www.qrz.com/db/" + e.split(" ")[0]}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            key={e}
-                            className="flex font-bold text-lg items-center underline decoration-dotted text-gray-900 dark:text-gray-200"
-                          >
-                            {/* <span className="text-gray-500 font-bold text-3xl">
-                              <FaAngleDoubleRight />
-                            </span> */}
-                            <span /* className="ml-1" */>{e}</span>
-                          </a>
-                        ))}
+                        {admins ? (
+                          admins.map(e => (
+                            <Link
+                              to={"/u/" + e.callsign}
+                              key={e}
+                              className="font-bold text-lg text-gray-700 hover:text-black dark:text-gray-200 dark:hover:text-white transition-colors"
+                            >
+                              {e.callsign} - {e.name}
+                            </Link>
+                          ))
+                        ) : (
+                          <ReactPlaceholder
+                            showLoadingAnimation
+                            type="text"
+                            rows={8}
+                          />
+                        )}
                       </div>
                     </div>
 

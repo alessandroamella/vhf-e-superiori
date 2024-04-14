@@ -106,6 +106,9 @@ export class UserClass {
     @prop({ required: true, default: false })
     public isAdmin!: boolean;
 
+    @prop({ required: false, default: false })
+    public isDev?: boolean;
+
     @prop({ required: true, default: false })
     public isVerified!: boolean;
 

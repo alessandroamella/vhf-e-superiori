@@ -433,7 +433,9 @@ const ViewPublished = () => {
                       )}
                     </Button>
                   ) : (
-                    <Tooltip content="Non ci sono QSO registrati col tuo nominativo">
+                    <Tooltip
+                      content={`Non ci sono QSO registrati con nominativo ${callsign}`}
+                    >
                       <Button size="lg" disabled>
                         Crea mappa
                       </Button>

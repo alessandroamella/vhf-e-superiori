@@ -96,7 +96,7 @@ const Login = () => {
       });
       console.log(data);
       setUser(data);
-      navigate(searchParams.get("to") || "/");
+      navigate(searchParams.get("to") || "/", { replace: true });
     } catch (err) {
       console.log(err.response.data);
       setAlert({
@@ -116,7 +116,8 @@ const Login = () => {
       <Helmet>
         <title>Login - VHF e superiori</title>
       </Helmet>
-      {user && navigate(searchParams.get("to") || "/profile")}
+      {user &&
+        navigate(searchParams.get("to") || "/profile", { replace: true })}
       <div className="w-full h-full min-h-[70vh] dark:bg-gray-900 dark:text-white">
         <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">
           <Typography variant="h1" className="mb-2">

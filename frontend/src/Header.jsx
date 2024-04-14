@@ -1,31 +1,52 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Flags from "./Flags";
-import { Button } from "flowbite-react";
+import { Button, Spinner } from "flowbite-react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useContext } from "react";
+import { UserContext } from ".";
 
-const Header = () => {
-  const navigate = useNavigate();
+const LinkButton = ({ to, children }) => {
+  const location = useLocation();
+  const isActive = location.pathname === to;
 
   return (
-    <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-2 md:px-8 flex flex-col lg:flex-row md:items-center gap-4">
-      <Link
-        to="/"
-        className="flex gap-2 items-center hover:scale-105 transition-transform w-fit"
-      >
-        <LazyLoadImage
-          className="w-20 md:w-36"
-          src="/logo-min.png"
-          alt="Logo"
-        />
-        <h1 className="font-bold text-xl md:text-3xl block text-red-500 dark:text-white">
-          www.vhfesuperiori.eu
-        </h1>
-      </Link>
-      <div className="hidden md:block">
-        <Flags />
-      </div>
-      <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 md:justify-center md:w-full">
-        <div className="mt-2 scale-110">
+    <Link to={to} className="w-full">
+      <Button color={isActive ? "purple" : "info"} className="uppercase w-full">
+        {children}
+      </Button>
+    </Link>
+  );
+};
+
+const Header = () => {
+  const { user } = useContext(UserContext);
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+
+  return (
+    <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-2 md:px-8">
+      <div className="flex flex-col lg:flex-row md:items-center gap-4">
+        <Link
+          to="/"
+          className="flex gap-2 items-center hover:scale-105 transition-transform w-fit"
+        >
+          <LazyLoadImage
+            className="w-20 md:w-36"
+            src="/logo-min.png"
+            alt="Logo"
+          />
+          <h1
+            className={`font-bold text-xl md:text-3xl block text-red-500 ${
+              isHome ? "underline" : ""
+            } dark:text-white`}
+          >
+            www.vhfesuperiori.eu
+          </h1>
+        </Link>
+        <div className="hidden md:block">
+          <Flags />
+        </div>
+        <div className="mx-auto md:ml-auto md:mr-16 lg:mr-20 scale-125">
           <form
             action="https://www.paypal.com/donate"
             method="post"
@@ -56,20 +77,27 @@ const Header = () => {
             />
           </form>
         </div>
-        <div>
-          <Button className="uppercase" onClick={() => navigate("/social")}>
-            Foto / video
-          </Button>
-        </div>
-        <div>
-          <Button
-            color="purple"
-            className="uppercase"
-            onClick={() => navigate("/beacon")}
-          >
-            Beacon
-          </Button>
-        </div>
+      </div>
+      <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 justify-items-center">
+        <LinkButton to="/social">Foto / video</LinkButton>
+        <LinkButton to="/beacon">Beacon</LinkButton>
+        {user === false ? (
+          <Spinner />
+        ) : user ? (
+          <LinkButton to="/profile">
+            Profilo di{" "}
+            <span className="font-semibold ml-1">{user.callsign}</span>
+          </LinkButton>
+        ) : (
+          <LinkButton to="/login">Entra con il tuo nominativo</LinkButton>
+        )}
+        {user === false ? (
+          <Spinner />
+        ) : user ? (
+          <LinkButton to={`/u/${user.callsign}`}>Le mie mappe</LinkButton>
+        ) : (
+          <LinkButton to="/signup">Registrati</LinkButton>
+        )}
       </div>
     </header>
   );
