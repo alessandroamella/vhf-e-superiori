@@ -118,7 +118,7 @@ class EqslPic {
         const args: string[] = [
             tempPath, // temp image with text
             outPath, // output image
-            path.join(process.cwd(), "fonts/coors.ttf"), // font path
+            path.join(process.cwd(), "fonts/CourierPrime-BoldItalic.ttf"), // font path
             event?.offsetCallsign?.toString() || "69", // +y offset from center
             qso.callsign.toLowerCase(), // TODO not lowercase if other font
             filePath, // input image (eQSL card template)
