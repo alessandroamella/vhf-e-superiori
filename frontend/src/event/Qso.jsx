@@ -253,8 +253,6 @@ const Qso = () => {
 
                     <MapWatermark />
                   </MapContainer>
-
-                  <MapWatermark />
                 </div>
               ) : (
                 <Alert color="warning">

@@ -48,6 +48,9 @@ import { useCookies } from "react-cookie";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { useMap } from "@uidotdev/usehooks";
 import { Helmet } from "react-helmet";
+import { MapContainer, Polyline, TileLayer } from "react-leaflet";
+import StationMapMarker from "../shared/StationMapMarker";
+import MapWatermark from "../shared/MapWatermark";
 
 const QsoManager = () => {
   const { user } = useContext(UserContext);
@@ -1474,6 +1477,66 @@ const QsoManager = () => {
                     <Spinner className="dark:text-white dark:fill-white" />
                   )}
                 </div>
+
+                {user?.isAdmin && qsos && (
+                  <div>
+                    <Alert color="failure">
+                      <FaInfoCircle className="inline mr-1" />
+                      Vedi questo in quanto sei un{" "}
+                      <span className="font-bold">amministratore</span>
+                    </Alert>
+                    <Typography variant="h2" className="my-2 flex items-center">
+                      Mappa QSO
+                    </Typography>
+
+                    <MapContainer
+                      center={[44.646331832036864, 10.925526003071043]}
+                      zoom={5}
+                    >
+                      <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      />
+
+                      {qsos
+                        .filter(
+                          q =>
+                            q.fromStationLat &&
+                            q.fromStationLon &&
+                            q.toStationLat &&
+                            q.toStationLon
+                        )
+                        .map(q => (
+                          <>
+                            <Polyline
+                              positions={[
+                                [q.fromStationLat, q.fromStationLon],
+                                [q.toStationLat, q.toStationLon]
+                              ]}
+                              color="blue"
+                            />
+
+                            <StationMapMarker
+                              callsign={q.fromStation.callsign}
+                              lat={q.fromStationLat}
+                              lon={q.fromStationLon}
+                              locator={q.fromLocator}
+                              iconRescaleFactor={0.7}
+                            />
+                            <StationMapMarker
+                              callsign={q.callsign}
+                              lat={q.toStationLat}
+                              lon={q.toStationLon}
+                              locator={q.toLocator}
+                              iconRescaleFactor={0.6}
+                            />
+                          </>
+                        ))}
+
+                      <MapWatermark />
+                    </MapContainer>
+                  </div>
+                )}
               </div>
             </>
           )}
