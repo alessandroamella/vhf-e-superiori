@@ -1366,10 +1366,7 @@ const QsoManager = () => {
 
                                 {callsign && autocomplete && (
                                   <div className="absolute top-20 left-0 bg-white min-w-[28rem] dark:bg-gray-800 shadow-lg rounded-lg z-10">
-                                    <Card
-                                      onClick={createQso}
-                                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                                    >
+                                    <Card>
                                       {/* justify-between */}
                                       <div className="flex items-center gap-4">
                                         <Avatar

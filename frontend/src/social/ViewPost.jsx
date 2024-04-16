@@ -2,8 +2,6 @@ import Layout from "../Layout";
 import { useContext, useEffect, useState } from "react";
 import { getErrorStr, UserContext } from "..";
 
-import "react-medium-image-zoom/dist/styles.css";
-
 import axios from "axios";
 import { Alert, Button, Spinner } from "flowbite-react";
 import { Link, useNavigate, useParams } from "react-router-dom";

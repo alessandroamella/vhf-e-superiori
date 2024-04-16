@@ -4,7 +4,7 @@ import sharp from "sharp";
 import { logger } from "../../../shared";
 import fileUpload from "express-fileupload";
 import { Errors } from "../../errors";
-import { createError } from "../../helpers";
+import { createError, validate } from "../../helpers";
 import { UserDoc } from "../../auth/models";
 import { s3Client } from "../../aws";
 import { unlink } from "fs/promises";
@@ -84,7 +84,7 @@ router.post(
     "/",
     query("quality").isInt({ min: 1, max: 100 }).optional(),
     // body("pictures").isArray(),
-    // validate,
+    validate,
     async (req: Request, res: Response) => {
         if (!req.user) {
             throw new Error("No req.user in post file upload");

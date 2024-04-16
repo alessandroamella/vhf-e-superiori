@@ -174,6 +174,19 @@ nav ul {
     margin: revert!important;
     padding: revert!important;
     list-style: revert!important;
+
+    @apply dark:text-gray-300;
+}
+
+.markdown h1, .markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6 {
+    @apply dark:text-white;
+}
+
+.markdown-2 * {
+    font-size: revert!important;
+    list-style: revert!important;
+
+    @apply dark:text-gray-200;
 }
 
 div.input-large div input {

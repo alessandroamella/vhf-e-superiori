@@ -32,7 +32,6 @@ import Zoom, { Controlled as ControlledZoom } from "react-medium-image-zoom";
 import JoinRequestModal from "./JoinRequestModal";
 import { Button } from "@material-tailwind/react";
 
-import "react-medium-image-zoom/dist/styles.css";
 import "react-round-carousel/src/index.css";
 import Flags from "../Flags";
 import { LazyLoadImage } from "react-lazy-load-image-component";

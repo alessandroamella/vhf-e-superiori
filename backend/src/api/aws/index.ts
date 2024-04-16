@@ -52,7 +52,6 @@ export class S3Client {
         bucket
     }: Omit<S3FileUpload, "fileContent"> & {
         filePath: string;
-        deleteAfter?: boolean;
     }): Promise<string> {
         const fileContent = await readFile(filePath);
         return new Promise((resolve, reject) => {

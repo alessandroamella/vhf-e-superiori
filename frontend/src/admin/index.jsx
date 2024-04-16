@@ -557,6 +557,25 @@ const AdminManager = () => {
     );
   };
 
+  const [blogPosts, setBlogPosts] = useState([]);
+
+  useEffect(() => {
+    async function fetchBlogPosts() {
+      try {
+        const { data } = await axios.get("/api/blog");
+        setBlogPosts(data);
+      } catch (err) {
+        console.log("Errore nel caricamento dei post", err);
+        setAlert({
+          color: "failure",
+          msg: getErrorStr(err?.response?.data?.err)
+        });
+      }
+    }
+
+    fetchBlogPosts();
+  }, []);
+
   return user === null ? (
     navigate({
       pathname: "/login",
@@ -1297,6 +1316,54 @@ const AdminManager = () => {
                       totalPages={eventsCurPage}
                       onPageChange={setEventPage}
                     />
+                  </div>
+                ) : (
+                  <Spinner />
+                )}
+              </Accordion.Content>
+            </Accordion.Panel>
+
+            <Accordion.Panel>
+              <Accordion.Title>Blog</Accordion.Title>
+
+              <Accordion.Content>
+                {blogPosts ? (
+                  <div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 md:gap-4">
+                      {blogPosts.map(e => (
+                        <Card
+                          className="cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-700 hover:scale-105 transition-all"
+                          key={e._id}
+                          onClick={() => navigate("/blog/edit/" + e._id)}
+                        >
+                          <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                            {e.title}
+                          </h5>
+                          <p className="font-normal text-gray-700 dark:text-gray-400">
+                            {formatInTimeZone(
+                              new Date(e.createdAt),
+                              "Europe/Rome",
+                              "eee d MMMM Y",
+                              {
+                                locale: it
+                              }
+                            )}
+                          </p>
+                        </Card>
+                      ))}
+                      {blogPosts?.length === 0 && <p>Nessun post salvato</p>}
+                    </div>
+                    <div className="w-full flex justify-center my-3 py-1 border-y border-gray-200">
+                      <Button
+                        className="flex h-full my-auto text-md flex-col justify-center items-center"
+                        onClick={() => navigate("/blog/editor")}
+                      >
+                        <span className="text-5xl mb-1 mr-2">
+                          <FaPlusCircle />
+                        </span>{" "}
+                        Nuovo post
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <Spinner />

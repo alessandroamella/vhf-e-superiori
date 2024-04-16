@@ -3,7 +3,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { getErrorStr, UserContext } from "..";
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
-import "react-medium-image-zoom/dist/styles.css";
 
 import axios from "axios";
 import {

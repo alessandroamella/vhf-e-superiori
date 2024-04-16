@@ -11,7 +11,6 @@ import {
 } from "react-router-dom";
 import Splash from "../Splash";
 
-import "react-medium-image-zoom/dist/styles.css";
 import FeedCard from "./FeedCard";
 
 import axios from "axios";

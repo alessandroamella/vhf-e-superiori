@@ -220,7 +220,7 @@ const BeaconEditor = () => {
         const res = await axios.post("/api/beacon", data);
         _id = res.data._id;
       }
-      navigate("/beacon/" + _id);
+      navigate("/beacon/" + _id, { replace: true });
     } catch (err) {
       setAlert({
         color: "failure",

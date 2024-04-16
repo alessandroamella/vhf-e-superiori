@@ -1,4 +1,3 @@
-import "react-medium-image-zoom/dist/styles.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";

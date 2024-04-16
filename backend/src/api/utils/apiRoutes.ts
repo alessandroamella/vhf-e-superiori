@@ -16,6 +16,7 @@ import beaconRoutes from "../beacon/routes";
 import locationRoutes from "../location/routes";
 import autocompleteRoutes from "../autocomplete/routes";
 import backupRoutes from "../backup/routes";
+import blogRoutes from "../blog/routes";
 import notFound from "./notFound";
 
 import errorHandler from "../middlewares/errorHandler";
@@ -107,6 +108,7 @@ router.use("/rankings", rankingsRoutes);
 router.use("/beacon", beaconRoutes);
 router.use("/location", locationRoutes);
 router.use("/autocomplete", autocompleteRoutes);
+router.use("/blog", blogRoutes);
 router.use("/backup", backupRoutes);
 
 router.use(errorHandler);

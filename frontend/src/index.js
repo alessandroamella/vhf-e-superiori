@@ -27,8 +27,12 @@ import Rankings from "./event/Rankings";
 import BeaconHomepage from "./beacon";
 import BeaconEditor from "./beacon/Editor";
 import ViewBeacon from "./beacon/ViewBeacon";
+import Blog from "./blog";
 
 import "react-placeholder/lib/reactPlaceholder.css";
+import "react-medium-image-zoom/dist/styles.css";
+import BlogPostEditor from "./blog/Editor";
+import BlogPostViewer from "./blog/View";
 
 export const UserContext = createContext(null);
 export const EventsContext = createContext(null);
@@ -61,7 +65,10 @@ const router = createBrowserRouter([
   { path: "/document/:name", element: <MdViewer /> },
   { path: "/beacon", element: <BeaconHomepage /> },
   { path: "/beacon/editor", element: <BeaconEditor /> },
-  { path: "/beacon/:id", element: <ViewBeacon /> }
+  { path: "/beacon/:id", element: <ViewBeacon /> },
+  { path: "/blog", element: <Blog /> },
+  { path: "/blog/editor", element: <BlogPostEditor /> },
+  { path: "/blog/:id", element: <BlogPostViewer /> }
   // {
   //   path: "contacts/:contactId",
   //   element: <Contact />,
@@ -162,7 +169,10 @@ export const errors = {
   INVALID_ANTENNA: "Antenna non valida",
   INVALID_QTF: "QTF non valido",
   INVALID_POWER: "Potenza non valida",
-  INVALID_CONTENT: "Contenuto non valido"
+  INVALID_CONTENT: "Contenuto non valido",
+  INVALID_TITLE: "Titolo non valido",
+  INVALID_TAGS: "Tag non validi",
+  INVALID_IMAGE: "Immagine non valida"
 };
 
 function lowercaseFirstLetter(string) {

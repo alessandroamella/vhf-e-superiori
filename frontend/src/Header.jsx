@@ -5,12 +5,21 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useContext } from "react";
 import { UserContext } from ".";
 
-const LinkButton = ({ to, children }) => {
+const LinkButton = ({ to, children, keepCurrent }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
+  // if keepCurrent is true, add to search params "to=${current location}"
+  const searchParams = new URLSearchParams(location.search);
+  if (keepCurrent) {
+    searchParams.set("to", location.pathname);
+  }
+
   return (
-    <Link to={to} className="w-full">
+    <Link
+      to={{ pathname: to, search: searchParams.toString() }}
+      className="w-full"
+    >
       <Button color={isActive ? "purple" : "info"} className="uppercase w-full">
         {children}
       </Button>
@@ -89,14 +98,18 @@ const Header = () => {
             <span className="font-semibold ml-1">{user.callsign}</span>
           </LinkButton>
         ) : (
-          <LinkButton to="/login">Entra con il tuo nominativo</LinkButton>
+          <LinkButton to="/login" keepCurrent>
+            Entra con il tuo nominativo
+          </LinkButton>
         )}
         {user === false ? (
           <Spinner />
         ) : user ? (
           <LinkButton to={`/u/${user.callsign}`}>Le mie mappe</LinkButton>
         ) : (
-          <LinkButton to="/signup">Registrati</LinkButton>
+          <LinkButton to="/signup" keepCurrent>
+            Registrati
+          </LinkButton>
         )}
       </div>
     </header>
