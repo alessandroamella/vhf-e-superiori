@@ -28,6 +28,11 @@ async function returnUserWithPosts(
             "No req.user in returnUserWithPosts middleware and no _id or callsign provided"
         );
     }
+    logger.debug(
+        `Finding user by callsign: ${callsign} or req.user._id: ${
+            (req.user as unknown as UserDoc)._id
+        } or _id: ${_id}`
+    );
     try {
         const user = await User.findOne(
             callsign
@@ -134,8 +139,8 @@ async function returnUserWithPosts(
             return moment(b.createdAt).diff(moment(a.createdAt));
         });
 
-        logger.debug("User view");
-        logger.debug(JSON.stringify(_user));
+        // logger.debug("User view");
+        // logger.debug(JSON.stringify(_user));
         res.json(_user);
     } catch (err) {
         logger.error("Error in user view");

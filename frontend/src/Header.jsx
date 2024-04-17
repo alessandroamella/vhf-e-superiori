@@ -10,7 +10,7 @@ const LinkButton = ({ to, children, keepCurrent }) => {
   const isActive = location.pathname === to;
 
   // if keepCurrent is true, add to search params "to=${current location}"
-  const searchParams = new URLSearchParams(location.search);
+  const searchParams = new URLSearchParams(); // don't use current search params
   if (keepCurrent) {
     searchParams.set("to", location.pathname);
   }

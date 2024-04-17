@@ -90,7 +90,7 @@ export const errors = {
   QRZ_OM_NOT_FOUND: "Utente non trovato su QRZ",
   QTH_NOT_FOUND: "QTH non trovato",
   INVALID_OBJECT_ID:
-    "ObjectId non valido. Il documento potrebbe non esistere o essere stato cancellato",
+    "ObjectId non valido. Il documento potrebbe non esistere o essere stato cancellato.",
   INVALID_LOGIN: "Login non valido",
   NOT_LOGGED_IN: "Devi fare il login per procedere",
   MALFORMED_REQUEST_BODY: "Corpo della richiesta malformato",
@@ -181,14 +181,22 @@ function lowercaseFirstLetter(string) {
 
 export function getErrorStr(str) {
   console.log("Stringa errore:", str);
-  const arr = str.split(",").map(s => s.trim());
+  const arr = (
+    str instanceof Error
+      ? str.message
+      : typeof str === "string"
+      ? str
+      : str?.toString() || errors.UNKNOWN_ERROR
+  )
+    .split(",")
+    .map(s => s.trim());
   return [
     ...new Set(
       arr.map(str =>
         str && str in errors
           ? errors[str]
           : typeof str === "string"
-          ? "Dati mancanti o incorretti: " + str
+          ? "Errore: " + str
           : errors.UNKNOWN_ERROR
       )
     )

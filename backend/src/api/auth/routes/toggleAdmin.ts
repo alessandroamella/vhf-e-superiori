@@ -5,6 +5,7 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { User } from "../models";
 import { Errors } from "../../errors";
 import { logger } from "../../../shared";
+import EmailService from "../../../email";
 
 const router = Router();
 
@@ -80,6 +81,14 @@ router.put(
                     .status(BAD_REQUEST)
                     .json(createError(Errors.USER_NOT_FOUND));
             }
+
+            if (isAdmin) {
+                logger.info(`User ${user.callsign} is now an admin`);
+                await EmailService.sendNewAdminMail(user);
+            } else {
+                logger.info(`User ${user.callsign} is no longer an admin`);
+            }
+
             return res.json(user);
         } catch (err) {
             logger.error("Error in user update");

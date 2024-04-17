@@ -62,6 +62,7 @@
         "express-validator": "^7.0.1",
         "flatted": "^3.3.1",
         "fluent-ffmpeg": "^2.1.2",
+        "geolib": "^3.3.4",
         "http-status": "^1.6.2",
         "isemail": "^3.2.0",
         "jsdom": "^22.1.0",

@@ -1465,7 +1465,7 @@ const QsoManager = () => {
                           <Button
                             onClick={() => setIsManuallySettingLocator(true)}
                           >
-                            Modifica locatore per portatili /P
+                            Modifica locatore anche per portatili /P
                           </Button>
                         </div>
                       )}

@@ -12,6 +12,7 @@ import EqslPic from "../api/eqsl/eqsl";
 import { readFile, unlink } from "fs/promises";
 import path from "path";
 import moment from "moment-timezone";
+import { getDistance } from "geolib";
 
 moment.locale("it");
 
@@ -22,7 +23,10 @@ export class EmailService {
         Array(parseInt(envs.TOT_ADMIN_EMAILS)).keys()
     ).map(i => process.env[`ADMIN_EMAIL_${i}`] as string);
 
-    private static async loadMailFromFile(name: string, ...params: string[]) {
+    /**
+     * OLD METHOD TO BE DEPRECATED, use `loadMailFromFile` instead
+     */
+    private static async _loadMailFromFile(name: string, ...params: string[]) {
         const text = await readFile(path.join(process.cwd(), "emails", name), {
             encoding: "utf-8"
         });
@@ -30,6 +34,20 @@ export class EmailService {
         return params.reduce(
             (acc, param, i) =>
                 acc.replace(new RegExp(`\\{${i}\\}`, "g"), param),
+            text
+        );
+    }
+
+    private static async loadMailFromFile(
+        name: string,
+        params: { [name: string]: string }
+    ) {
+        const text = await readFile(path.join(process.cwd(), "emails", name), {
+            encoding: "utf-8"
+        });
+        // replace params with their values
+        return Object.entries(params).reduce(
+            (acc, [key, value]) => acc.replace(new RegExp(key, "g"), value),
             text
         );
     }
@@ -79,7 +97,7 @@ export class EmailService {
     }
 
     public static async sendResetPwMail(user: UserDoc, code: string) {
-        const html = await EmailService.loadMailFromFile(
+        const html = await EmailService._loadMailFromFile(
             "changePw.html",
             user.callsign,
             user._id.toString(),
@@ -96,6 +114,21 @@ export class EmailService {
         logger.info("Verify user mail sent to user " + user.callsign);
     }
 
+    public static async sendNewAdminMail(newAdmin: UserDoc) {
+        const html = await EmailService.loadMailFromFile("admin.html", {
+            "{NOMINATIVO}": newAdmin.callsign
+        });
+        const message: Mail.Options = {
+            from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
+            to: newAdmin.email,
+            subject: "Nuovo amministratore",
+            html
+        };
+
+        await EmailService.sendMail(message);
+        logger.info("New admin mail sent to user " + newAdmin.callsign);
+    }
+
     public static async sendVerifyMail(
         user: UserDoc,
         code: string,
@@ -104,7 +137,7 @@ export class EmailService {
         logger.debug(
             "Sending verify mail to " + user.email + " with code: " + code
         );
-        const html = await EmailService.loadMailFromFile(
+        const html = await EmailService._loadMailFromFile(
             "verifyEmail.html",
             user.callsign,
             isNewUser ? "registrazione" : "cambio email",
@@ -127,7 +160,7 @@ export class EmailService {
         event: EventDoc,
         user: UserDoc
     ) {
-        const html = await EmailService.loadMailFromFile(
+        const html = await EmailService._loadMailFromFile(
             "requestStation.html",
             user.callsign,
             event.name,
@@ -152,7 +185,7 @@ export class EmailService {
         event: EventDoc,
         user: UserDoc
     ) {
-        const html = await EmailService.loadMailFromFile(
+        const html = await EmailService._loadMailFromFile(
             "acceptedStation.html",
             user.callsign,
             event.name,
@@ -268,6 +301,7 @@ export class EmailService {
         qso: QsoDoc,
         fromStation: UserDoc,
         toEmail: string,
+        event: EventDoc,
         eqslBuffer?: Buffer
     ) {
         if (!qso.imageHref) {
@@ -285,26 +319,50 @@ export class EmailService {
         const callsignAlphanum = qso.callsign
             .replace(/[^a-zA-Z0-9]/g, "")
             .toLowerCase();
+
+        const distance =
+            qso.fromStationLat &&
+            qso.fromStationLon &&
+            qso.toStationLat &&
+            qso.toStationLon
+                ? getDistance(
+                      {
+                          latitude: qso.fromStationLat,
+                          longitude: qso.fromStationLon
+                      },
+                      {
+                          latitude: qso.toStationLat,
+                          longitude: qso.toStationLon
+                      }
+                  )
+                : null;
+
+        logger.debug(
+            `Distance between (${qso.fromStationLat}, ${qso.fromStationLon}) and (${qso.toStationLat}, ${qso.toStationLon}) is ${distance} meters`
+        );
+
+        const html = await EmailService.loadMailFromFile("eqsl.html", {
+            "{NOMINATIVO}": qso.callsign,
+            "{STAZIONE}": fromStation.callsign,
+            "{QSOID}": qso._id.toString(),
+            "{EVENTO}": event.name,
+            "{EVENTID}": event._id.toString(),
+            "{DATA}": moment(qso.qsoDate)
+                .tz("Europe/Rome")
+                .format("DD/MM/YYYY"),
+            "{ORA}": moment(qso.qsoDate).format("HH:mm"), // in UTC, not timezone
+            "{BANDA}": qso.band,
+            "{LOCATORE}": qso.locator || "N/D",
+            "{DISTANZA}": distance
+                ? Math.round(distance / 1000).toString()
+                : "N/D"
+        });
+
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
             to: toEmail,
             subject: "eQSL per il QSO con " + fromStation.callsign,
-            html:
-                '<p>Ciao <span style="font-weight: 600">' +
-                qso.callsign +
-                '</span>, ecco la tua eQSL per il QSO con <span style="font-weight: 600">' +
-                fromStation.callsign +
-                "</span>!<br />" +
-                'Puoi vedere il tuo QSO <a href="https://www.vhfesuperiori.eu/eqsl/' +
-                qso._id +
-                '">qui</a>, la <a href="https://www.vhfesuperiori.eu/rankings/' +
-                (qso.event._id || qso.event) +
-                '">classifica</a> e la <a href="https://www.vhfesuperiori.eu/u/' +
-                qso.callsign +
-                "?event=" +
-                (qso.event._id || qso.event) +
-                '">mappa dei tuoi QSO</a> <br />' +
-                'Grazie per aver partecipato all\'evento e buona giornata da <a href="https://www.vhfesuperiori.eu">vhfesuperiori.eu</a>!</p>',
+            html,
             attachments: [
                 {
                     filename: `eqsl_${callsignAlphanum}.png`,

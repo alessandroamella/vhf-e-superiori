@@ -119,6 +119,10 @@ import { location } from "../../location";
                 `No lat/lon found for QSO ${this._id} with locator ${this.locator}`
             );
         }
+    } else if (!this.locator && this.fromStationLat && this.fromStationLon) {
+        this.locator =
+            location.calculateQth(this.fromStationLat, this.fromStationLon) ||
+            undefined;
     }
     if (!this.fromStationCity || !this.fromStationProvince) {
         if (!this.fromStationLat || !this.fromStationLon) {
@@ -331,6 +335,7 @@ export class QsoClass {
             this,
             fromStation,
             this.email,
+            event,
             eqslBuff ?? undefined
         );
         this.emailSent = true;

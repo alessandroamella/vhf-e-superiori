@@ -122,8 +122,8 @@ class Qrz {
                 },
                 timeout: 2000 // 10 seconds
             });
-            logger.debug("QRZ raw data:");
-            logger.debug(data);
+            // logger.debug("QRZ raw data:");
+            // logger.debug(data);
             const parsed: QrzReturnData = await parseStringPromise(data);
             json = parsed;
 

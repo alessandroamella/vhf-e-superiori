@@ -54,12 +54,18 @@ const Qso = () => {
       try {
         const { data } = await axios.get("/api/qso/" + id);
         console.log("qso", data);
+        if (!data || !data?.callsign) {
+          throw new Error("QSO non trovato");
+        }
         setQso(data);
       } catch (err) {
-        console.log("Errore nel caricamento dell'evento", err);
+        console.log(
+          "Errore nel caricamento dell'evento",
+          err?.response?.data || err
+        );
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err || err)
         });
         setQso(null);
       }

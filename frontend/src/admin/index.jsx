@@ -578,16 +578,23 @@ const AdminManager = () => {
   }, []);
 
   async function makeAdmin(user, isAdmin) {
-    if (!window.confirm("Vuoi rendere ADMIN l'utente " + user.callsign + "?")) {
+    if (
+      !window.confirm(
+        `Vuoi ${isAdmin ? "rendere" : "RIMUOVERE come"} ADMIN l'utente ${
+          user.callsign
+        }?`
+      )
+    ) {
       return;
     }
+    setDisabled(true);
     try {
       await axios.put("/api/auth/admin/" + user._id, {
         isAdmin
       });
       const _users = [...users];
       const i = _users.findIndex(u => u._id === user._id);
-      _users[i].isAdmin = true;
+      _users[i].isAdmin = isAdmin;
       setUsers(_users);
     } catch (err) {
       console.log(err);
@@ -595,6 +602,8 @@ const AdminManager = () => {
         color: "failure",
         msg: getErrorStr(err?.response?.data?.err)
       });
+    } finally {
+      setDisabled(false);
     }
   }
 
@@ -1051,6 +1060,7 @@ const AdminManager = () => {
                                   size="sm"
                                   color={u.isAdmin ? "warning" : "failure"}
                                   onClick={() => makeAdmin(u, !u.isAdmin)}
+                                  disabled={disabled}
                                 >
                                   {u.isAdmin ? (
                                     <FaUserSlash />
