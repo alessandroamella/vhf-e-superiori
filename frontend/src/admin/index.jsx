@@ -38,7 +38,8 @@ import {
   FaExternalLinkAlt,
   FaClipboardCheck,
   FaClipboard,
-  FaWrench
+  FaUserShield,
+  FaUserSlash
 } from "react-icons/fa";
 import {
   Link,
@@ -576,6 +577,27 @@ const AdminManager = () => {
     fetchBlogPosts();
   }, []);
 
+  async function makeAdmin(user, isAdmin) {
+    if (!window.confirm("Vuoi rendere ADMIN l'utente " + user.callsign + "?")) {
+      return;
+    }
+    try {
+      await axios.put("/api/auth/admin/" + user._id, {
+        isAdmin
+      });
+      const _users = [...users];
+      const i = _users.findIndex(u => u._id === user._id);
+      _users[i].isAdmin = true;
+      setUsers(_users);
+    } catch (err) {
+      console.log(err);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+    }
+  }
+
   return user === null ? (
     navigate({
       pathname: "/login",
@@ -1017,10 +1039,29 @@ const AdminManager = () => {
                             key={u._id}
                             className={`${u.isAdmin ? "font-bold" : ""}`}
                           >
-                            <Table.Cell className="whitespace-nowrap text-gray-900 dark:text-white">
+                            <Table.Cell className="flex gap-2 items-center whitespace-nowrap text-gray-900 dark:text-white">
+                              <Tooltip
+                                content={
+                                  u.isAdmin
+                                    ? "Rimuovi permessi di amministratore"
+                                    : "Rendi amministratore"
+                                }
+                              >
+                                <Button
+                                  size="sm"
+                                  color={u.isAdmin ? "warning" : "failure"}
+                                  onClick={() => makeAdmin(u, !u.isAdmin)}
+                                >
+                                  {u.isAdmin ? (
+                                    <FaUserSlash />
+                                  ) : (
+                                    <FaUserShield />
+                                  )}
+                                </Button>
+                              </Tooltip>
                               {u.isAdmin ? (
-                                <span className="bg-yellow-200 dark:bg-yellow-500 rounded p-[2px]">
-                                  <FaWrench className="inline mr-1 scale-90" />
+                                <span className="bg-red-200 dark:bg-red-500 rounded p-[2px]">
+                                  <FaUserShield className="inline mr-1 scale-90" />
                                   {u.callsign}
                                 </span>
                               ) : (

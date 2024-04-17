@@ -689,7 +689,7 @@ const Homepage = () => {
                             <Link
                               to={"/u/" + e.callsign}
                               key={e}
-                              className="font-bold text-lg text-gray-700 hover:text-black dark:text-gray-200 dark:hover:text-white transition-colors"
+                              className="block font-bold text-lg text-gray-700 hover:text-black dark:text-gray-200 dark:hover:text-white transition-colors"
                             >
                               {e.callsign} - {e.name}
                             </Link>

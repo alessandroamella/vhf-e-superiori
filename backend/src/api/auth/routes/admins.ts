@@ -41,7 +41,7 @@ router.get("/", validate, async (req, res) => {
 
         return res.json(users);
     } catch (err) {
-        logger.error("Error in users all");
+        logger.error("Error in admins all");
         logger.error(err);
         return res.status(INTERNAL_SERVER_ERROR).json(createError());
     }

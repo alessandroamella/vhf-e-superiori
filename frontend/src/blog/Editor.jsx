@@ -251,7 +251,7 @@ const BlogPostEditor = ({ blogPost }) => {
                   </Badge>
                 ))}
                 {tags.length === 0 && (
-                  <p className="font-semibold flex items-center gap-2">
+                  <p className="font-semibold dark:text-gray-200 flex items-center gap-2">
                     <FaExclamationTriangle /> Aggiungi dei tag al post
                   </p>
                 )}
@@ -309,7 +309,7 @@ const BlogPostEditor = ({ blogPost }) => {
               />
             </div>
 
-            <div className="mb-8 bg-white drop-shadow-lg markdown-2">
+            <div className="mb-8 bg-white dark:bg-gray-600 dark:text-white drop-shadow-lg markdown-2">
               <MDXEditor
                 onChange={setContentMd}
                 markdown={contentMd}
