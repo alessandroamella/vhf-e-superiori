@@ -775,8 +775,6 @@ const QsoManager = () => {
     )
       return;
 
-    window.alert("locator " + locator + " sas " + lastUpdatedLocator.current);
-
     async function updateLocator() {
       try {
         await axios.put(`/api/qso/changelocator/${event._id}`, {
