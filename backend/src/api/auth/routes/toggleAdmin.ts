@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { body, param } from "express-validator";
 import { createError, validate } from "../../helpers";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
-import { User } from "../models";
+import { User, UserDoc } from "../models";
 import { Errors } from "../../errors";
 import { logger } from "../../../shared";
 import EmailService from "../../../email";
@@ -62,25 +62,30 @@ router.put(
         if (!req.user) {
             throw new Error("No req.user in user update");
         }
+        const reqUser = await User.findOne({
+            _id: (req.user as unknown as UserDoc)._id
+        });
+        if (!reqUser) {
+            throw new Error("req.user not found in toggleAdmin");
+        }
         const { isAdmin } = req.body;
 
         try {
-            const user = await User.findOneAndUpdate(
-                {
-                    _id: req.params._id
-                },
-                {
-                    isAdmin
-                },
-                {
-                    new: true
-                }
-            );
+            const user = await User.findOne({
+                _id: req.params._id
+            });
             if (!user) {
                 return res
-                    .status(BAD_REQUEST)
+                    .sendStatus(BAD_REQUEST)
                     .json(createError(Errors.USER_NOT_FOUND));
+            } else if (user.isAdmin && !isAdmin && !reqUser.isDev) {
+                return res
+                    .sendStatus(BAD_REQUEST)
+                    .json(createError(Errors.MUST_BE_DEV));
             }
+
+            user.isAdmin = isAdmin;
+            await user.save();
 
             if (isAdmin) {
                 logger.info(`User ${user.callsign} is now an admin`);

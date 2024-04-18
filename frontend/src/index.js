@@ -172,7 +172,9 @@ export const errors = {
   INVALID_CONTENT: "Contenuto non valido",
   INVALID_TITLE: "Titolo non valido",
   INVALID_TAGS: "Tag non validi",
-  INVALID_IMAGE: "Immagine non valida"
+  INVALID_IMAGE: "Immagine non valida",
+  MUST_BE_DEV:
+    "Devi essere uno sviluppatore del sito per completare questa azione"
 };
 
 function lowercaseFirstLetter(string) {
