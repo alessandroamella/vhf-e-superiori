@@ -765,6 +765,38 @@ const QsoManager = () => {
 
   const [allPredataInserted, setAllPredataInserted] = useState(false);
 
+  const lastUpdatedLocator = useRef(locator);
+  useEffect(() => {
+    if (
+      isManuallySettingLocator ||
+      !locator ||
+      !event ||
+      locator === lastUpdatedLocator.current
+    )
+      return;
+
+    window.alert("locator " + locator + " sas " + lastUpdatedLocator.current);
+
+    async function updateLocator() {
+      try {
+        await axios.put(`/api/qso/changelocator/${event._id}`, {
+          locator
+        });
+        lastUpdatedLocator.current = locator;
+      } catch (err) {
+        console.log("Error while updating locator", err);
+        setAlert({
+          color: "failure",
+          msg:
+            "Errore nell'aggiornamento del locatore. " +
+            getErrorStr(err?.response?.data?.err)
+        });
+      }
+    }
+
+    updateLocator();
+  }, [locator, isManuallySettingLocator, event]);
+
   useEffect(() => {
     setAllPredataInserted(locator && formattedAddress);
     console.log("predata", { locator });

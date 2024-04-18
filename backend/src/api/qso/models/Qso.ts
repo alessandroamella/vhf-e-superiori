@@ -140,20 +140,9 @@ import { location } from "../../location";
             );
             return;
         }
-        const city =
-            geocoded.address_components.find(
-                e =>
-                    e.types.includes("administrative_area_level_3") ||
-                    e.types.includes("locality")
-            )?.long_name || geocoded.address_components[0]?.long_name;
-        const province =
-            geocoded.address_components.find(
-                e =>
-                    e.types.includes("administrative_area_level_2") ||
-                    e.types.includes("administrative_area_level_1")
-            )?.short_name ||
-            geocoded.address_components[1]?.short_name ||
-            geocoded.address_components[0]?.short_name;
+
+        const { city, province } = location.parseData(geocoded);
+
         this.fromStationCity = city;
         this.fromStationProvince = province;
 

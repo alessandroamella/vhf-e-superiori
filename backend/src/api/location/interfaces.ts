@@ -109,3 +109,10 @@ export interface PlusCode {
     compound_code: string;
     global_code: string;
 }
+
+export interface ParsedData {
+    city: string;
+    province: string;
+    country: string;
+    formatted: string;
+}

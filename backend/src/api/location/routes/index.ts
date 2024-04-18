@@ -200,32 +200,12 @@ router.get(
 
                 logger.debug("Reverse geocoded address:");
                 logger.debug(geocoded);
-                address.city =
-                    geocoded.address_components.find(
-                        e =>
-                            e.types.includes("administrative_area_level_3") ||
-                            e.types.includes("locality")
-                    )?.long_name || geocoded.address_components[0]?.long_name;
-                address.province =
-                    geocoded.address_components.find(
-                        e =>
-                            e.types.includes("administrative_area_level_2") ||
-                            e.types.includes("administrative_area_level_1")
-                    )?.short_name ||
-                    geocoded.address_components[1]?.short_name ||
-                    geocoded.address_components[0]?.short_name;
 
-                const country =
-                    geocoded.address_components.find(e =>
-                        e.types.includes("country")
-                    )?.long_name ||
-                    geocoded.address_components[2]?.long_name ||
-                    geocoded.address_components[1]?.long_name;
-
-                address.formatted =
-                    address.city && address.province && country
-                        ? `${address.city}, ${address.province}, ${country}`
-                        : geocoded.formatted_address;
+                const { city, province, formatted } =
+                    location.parseData(geocoded);
+                address.city = city;
+                address.province = province;
+                address.formatted = formatted;
             }
 
             res.json({

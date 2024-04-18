@@ -2,7 +2,7 @@
 import axios from "axios";
 import { logger } from "../../shared/logger";
 import { envs } from "../../shared/envs";
-import { QthData } from "./interfaces";
+import { ParsedData, QthData } from "./interfaces";
 
 class Location {
     private static str_chr_up = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // Constants.
@@ -161,6 +161,41 @@ class Location {
         lon -= 180;
 
         return [lat, lon];
+    }
+
+    public parseData(geocoded: QthData): ParsedData {
+        const city =
+            geocoded.address_components.find(
+                e =>
+                    e.types.includes("administrative_area_level_3") ||
+                    e.types.includes("locality")
+            )?.long_name || geocoded.address_components[0]?.long_name;
+        const province =
+            geocoded.address_components.find(
+                e =>
+                    e.types.includes("administrative_area_level_2") ||
+                    e.types.includes("administrative_area_level_1")
+            )?.short_name ||
+            geocoded.address_components[1]?.short_name ||
+            geocoded.address_components[0]?.short_name;
+
+        const country =
+            geocoded.address_components.find(e => e.types.includes("country"))
+                ?.long_name ||
+            geocoded.address_components[2]?.long_name ||
+            geocoded.address_components[1]?.long_name;
+
+        const formatted =
+            city && province && country
+                ? `${city}, ${province}, ${country}`
+                : geocoded.formatted_address;
+
+        return {
+            city,
+            province,
+            country,
+            formatted
+        };
     }
 }
 
