@@ -413,7 +413,7 @@ const QsoManager = () => {
     });
     setCookie("locator", locator, {
       path: "/qsomanager",
-      maxAge: 60 * 60 * 4
+      maxAge: 60 * 60 * 36 // 36 ore
     });
   }, [callsign, locator, setCookie]);
 
@@ -781,6 +781,10 @@ const QsoManager = () => {
           locator
         });
         lastUpdatedLocator.current = locator;
+        setCookie("locator", locator, {
+          path: "/qsomanager",
+          maxAge: 60 * 60 * 36 // 36 ore
+        });
       } catch (err) {
         console.log("Error while updating locator", err);
         setAlert({
@@ -793,6 +797,7 @@ const QsoManager = () => {
     }
 
     updateLocator();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locator, isManuallySettingLocator, event]);
 
   useEffect(() => {
@@ -1338,7 +1343,7 @@ const QsoManager = () => {
                                       }
                                       minLength={6}
                                       maxLength={6}
-                                      placeholder="JN54mn"
+                                      placeholder="Locatore..."
                                       value={locator}
                                       onChange={e => {
                                         setLocator(e.target.value);
