@@ -673,7 +673,9 @@ const Profile = () => {
                       <span className="text-gray-500 dark:text-gray-400">
                         <FaArrowAltCircleRight className="inline mr-1" />
                         Locatore:{" "}
-                        <span className="dark:text-gray-300">{locator}</span>
+                        <span className="dark:text-gray-300 font-bold">
+                          {locator}
+                        </span>
                       </span>
                     </div>
                   )}

@@ -1215,7 +1215,7 @@ const AdminManager = () => {
                     onChange={e =>
                       setUserEditing({
                         ...userEditing,
-                        callsign: e.target.value
+                        callsign: e.target.value.toUpperCase()
                       })
                     }
                     disabled={disabled}
@@ -1306,9 +1306,7 @@ const AdminManager = () => {
           <Accordion>
             <Accordion.Panel>
               <Accordion.Title>
-                {/* <Typography variant="h2" className="mb-4 flex items-center"> */}
-                Utenti
-                {/* </Typography> */}
+                Utenti ({users ? users.length : <Spinner />})
               </Accordion.Title>
               <Accordion.Content>
                 {users ? (

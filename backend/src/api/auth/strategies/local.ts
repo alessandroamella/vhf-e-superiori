@@ -19,6 +19,8 @@ passport.use(
         },
         async (req, email, password, done) => {
             try {
+                logger.debug("Signing up user");
+
                 const callsign = (req.body.callsign as string)
                     .trim()
                     .toUpperCase();
@@ -96,6 +98,7 @@ passport.use(
                 logger.info(req.body.callsign + " signed up!");
                 return done(null, user);
             } catch (err) {
+                logger.debug("Error signing up user");
                 logger.debug(err);
                 done(err);
             }

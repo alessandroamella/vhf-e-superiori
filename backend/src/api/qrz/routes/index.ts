@@ -1,10 +1,12 @@
 import { Router } from "express";
-import { param } from "express-validator";
+import { param, query } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { qrz } from "..";
 import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
+import { location } from "../../location";
+import { QrzMappedData } from "../interfaces/qrz";
 
 const router = Router();
 
@@ -20,6 +22,12 @@ const router = Router();
  *          type: string
  *        required: true
  *        description: Callsign to fetch
+ *      - in: query
+ *        name: geocode
+ *        schema:
+ *          type: boolean
+ *        description: Whether to fetch geocode info from Google Maps
+ *        required: false
  *    tags:
  *      - qrz
  *    responses:
@@ -50,10 +58,16 @@ router.get(
         .trim()
         // .isAlphanumeric()
         .toUpperCase(),
+    query("geocode").optional().isBoolean().toBoolean(),
     validate,
     async (req, res) => {
         try {
-            const info = await qrz.getInfo(
+            const info:
+                | (QrzMappedData & {
+                      city?: string;
+                      province?: string;
+                  })
+                | null = await qrz.getInfo(
                 (req.params as { callsign: string }).callsign
             );
             if (!info) {
@@ -61,6 +75,21 @@ router.get(
             }
             logger.debug("QRZ successful");
             logger.debug(info);
+
+            if (req.query.geocode && info.lat && info.lon) {
+                logger.debug("Fetching geocode info");
+                const geocode = await location.reverseGeocode(
+                    info.lat,
+                    info.lon
+                );
+                if (geocode) {
+                    const parsed = location.parseData(geocode);
+                    info.address = parsed.formatted;
+                    info.city = parsed.city;
+                    info.province = parsed.province;
+                }
+            }
+
             res.json(info);
         } catch (err) {
             if (

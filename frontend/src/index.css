@@ -188,3 +188,34 @@ nav ul {
 div.input-large div input {
     @apply text-black dark:text-white dark:bg-gray-700 p-2;
 }
+
+.leaflet-container {
+    @apply w-[80vw] md:w-full h-[60vh] md:h-[80vh] mx-auto z-10;
+}
+
+/* fade-out must be animation where element is faded out (then remains invisible) */
+.fade-out {
+    animation: fadeOut 0.3s forwards !important;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.sticky-container {
+    position: relative; /* Assicurati che l'elemento genitore abbia una posizione relativa o assoluta */
+  }
+  
+  .sticky-content {
+    position: sticky;
+    top: 0; /* Posizione in cui l'elemento diventerà "sticky" */
+    z-index: 10; /* Assicurati che l'elemento "sticky" sia sopra altri elementi */
+    background-color: white; /* Assicurati che l'elemento "sticky" abbia uno sfondo visibile */
+    padding: 10px; /* Aggiungi del padding per una migliore visualizzazione */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Aggiungi un'ombra per separare l'elemento "sticky" dal resto del contenuto */
+  }

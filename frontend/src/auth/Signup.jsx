@@ -21,7 +21,7 @@ import { usePlacesWidget } from "react-google-autocomplete";
 import Layout from "../Layout";
 import Markdown from "react-markdown";
 import ReactPlaceholder from "react-placeholder";
-import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaArrowAltCircleRight, FaExternalLinkAlt } from "react-icons/fa";
 import { Helmet } from "react-helmet";
 
 const useFocus = () => {
@@ -64,6 +64,8 @@ const Signup = () => {
   const [lon, setLon] = useState("");
   const [phoneNumber, setPhoneNumber] = useState(cookies.phoneNumber || "+39");
   const [email, setEmail] = useState(cookies.email || "");
+
+  const [locator, setLocator] = useState(null);
 
   useEffect(() => {
     if (cookies.callsign) {
@@ -112,6 +114,9 @@ const Signup = () => {
 
   const placesWidget = usePlacesWidget({
     apiKey: "AIzaSyAiPVD_IqTn5kMi2GFXwYQCTYaxznEbCfk",
+    options: {
+      types: ["geocode"]
+    },
     onPlaceSelected: place => {
       console.log("place", place);
       const addr = place.formatted_address;
@@ -119,10 +124,10 @@ const Signup = () => {
         c.types.includes("administrative_area_level_3")
       );
       if (cityIndex === -1) {
-        cityIndex = 1;
+        cityIndex = place.formatted_address.length <= 2 ? 0 : 1;
       }
-      const city = place.address_components[cityIndex].long_name;
-      const prov = place.address_components[cityIndex + 1].short_name;
+      const city = place.address_components[cityIndex]?.long_name;
+      const prov = place.address_components[cityIndex + 1]?.short_name;
       setAddress(addr);
       setAddressInput(addr);
       setCity(city);
@@ -134,19 +139,47 @@ const Signup = () => {
   });
   const mapsRef = placesWidget.ref;
 
+  useEffect(() => {
+    if (!lat || !lon) return;
+
+    async function fetchLocator() {
+      try {
+        const { data } = await axios.get(`/api/location/locator/${lat}/${lon}`);
+        console.log("fetched locator", data);
+        setLocator(data.locator);
+      } catch (err) {
+        console.log("locator fetch failed:", err);
+      }
+    }
+
+    fetchLocator();
+  }, [lat, lon]);
+
   async function fetchQrz(force = false) {
     if (callsign.length < 1 || callsign.length > 10) return;
 
     setDisabled(true);
 
     try {
-      const { data } = await axios.get("/api/qrz/" + callsign);
+      const { data } = await axios.get("/api/qrz/" + callsign, {
+        params: {
+          geocode: true
+        }
+      });
       console.log("QRZ data", data);
       if (!name || force) {
         setName(data.name);
       }
       if (!email || force) {
         setEmail(data.email);
+      }
+      if (!address || force) {
+        setAddress(data.address);
+        setAddressInput(data.address);
+        setCity(data.city);
+        setProvince(data.province);
+        setLat(data.lat);
+        setLon(data.lon);
       }
 
       if (data.pictureUrl) {
@@ -279,11 +312,15 @@ const Signup = () => {
     setTosPrivacyError(null);
   }
 
+  const { user } = useContext(UserContext);
+
   return (
     <Layout>
       <Helmet>
         <title>Registrazione - VHF e superiori</title>
       </Helmet>
+      {user &&
+        navigate(searchParams.get("to") || "/profile", { replace: true })}
       <div className="w-full h-full dark:bg-gray-900 dark:text-white">
         <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">
           <Typography variant="h1" className="mb-2">
@@ -314,7 +351,7 @@ const Signup = () => {
 
           <form action="#" method="post" onSubmit={signup}>
             <div className="flex items-end gap-2">
-              {avatar && <Avatar img={avatar} size="lg" />}
+              {avatar && <Avatar rounded img={avatar} size="lg" />}
               <div className="w-full">
                 <div className="mb-2 block">
                   <Label
@@ -333,11 +370,12 @@ const Signup = () => {
                   onBlur={fetchQrz}
                   value={callsign}
                   // replace non alphanumeric characters with empty string
-                  onChange={e =>
+                  onChange={e => {
                     setCallsign(
                       e.target.value.toUpperCase().replace(/[^a-zA-Z0-9]/g, "")
-                    )
-                  }
+                    );
+                    setAvatar(null);
+                  }}
                   disabled={disabled}
                   autoFocus
                   required
@@ -365,10 +403,12 @@ const Signup = () => {
               </div>
               <div>
                 {/* DEBUG in traduzione estera, specifica di inserire il prefisso */}
-                <Label
-                  htmlFor="phoneNumber"
-                  value="Numero di telefono (con prefisso nazionale)"
-                />
+                <div className="mb-2 block">
+                  <Label
+                    htmlFor="phoneNumber"
+                    value="Numero di telefono (con prefisso nazionale)"
+                  />
+                </div>
                 <TextInput
                   type="tel"
                   name="phoneNumber"
@@ -385,7 +425,10 @@ const Signup = () => {
             <div className="my-4" />
 
             <div className="mb-2">
-              <Label htmlFor="addressInput" value="Città (opzionale)" />
+              <Label
+                htmlFor="addressInput"
+                value="Indirizzo completo stazione"
+              />
               <TextInput
                 type="text"
                 name="addressInput"
@@ -396,10 +439,22 @@ const Signup = () => {
                 onChange={e => setAddressInput(e.target.value)}
                 onBlur={() => setAddressInput(address)}
                 ref={mapsRef}
-                helperText="Usato per la visualizzazione dei QSO sulla mappa"
+                helperText="Indirizzo esatto, usato per la visualizzazione dei QSO sulla mappa"
                 disabled={disabled}
               />
             </div>
+
+            {locator && (
+              <div className="ml-2 md:ml-4 mb-4 flex items-center gap-2">
+                <span className="text-gray-600 dark:text-gray-300">
+                  <FaArrowAltCircleRight className="inline mr-1" />
+                  Locatore:{" "}
+                  <span className="dark:text-gray-200 font-bold">
+                    {locator}
+                  </span>
+                </span>
+              </div>
+            )}
 
             <div className="mb-2 block">
               <Label htmlFor="email" value="Email" />

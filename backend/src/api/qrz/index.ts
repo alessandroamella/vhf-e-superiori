@@ -170,9 +170,9 @@ class Qrz {
                 email: this.getProp(info.email),
                 address:
                     (
-                        this.getProp(info.addr1 || "") +
+                        (this.getProp(info.addr1) || "") +
                         " " +
-                        this.getProp(info.addr2 || "")
+                        (this.getProp(info.addr2) || "")
                     ).trim() || undefined,
                 town: this.getProp(info.addr2),
                 country: this.getProp(info.country),

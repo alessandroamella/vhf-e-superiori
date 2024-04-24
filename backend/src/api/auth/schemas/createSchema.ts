@@ -1,6 +1,7 @@
 import { Schema } from "express-validator";
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { Errors } from "../../errors";
+import { logger } from "../../../shared";
 
 const createSchema: Schema = {
     callsign: {
@@ -32,7 +33,14 @@ const createSchema: Schema = {
             errorMessage: Errors.INVALID_PHONE_NUMBER
         },
         customSanitizer: {
-            options: v => parsePhoneNumber(v, "IT").formatInternational()
+            options: v => {
+                try {
+                    return parsePhoneNumber(v, "IT").formatInternational();
+                } catch (err) {
+                    logger.debug("Error while parsing phone number: " + err);
+                    return v;
+                }
+            }
         }
     },
     password: {

@@ -41,11 +41,10 @@ import {
 import { FaArrowLeft, FaBackward, FaExternalLinkAlt } from "react-icons/fa";
 import { Helmet } from "react-helmet";
 
-import { Polyline, TileLayer } from "react-leaflet";
+import { MapContainer, Polyline, TileLayer } from "react-leaflet";
 
 import StationMapMarker from "../shared/StationMapMarker";
 import CallsignLoading from "../shared/CallsignLoading";
-import CustomMapContainer from "../shared/CustomMapContainer";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { getDate } from "date-fns";
 import ReactPlaceholder from "react-placeholder";
@@ -506,10 +505,7 @@ const ViewPublished = () => {
                   </div>
                   {qsoLines && qsoLines.length > 0 ? (
                     <>
-                      <CustomMapContainer
-                        center={[41.895643, 12.4831082]}
-                        zoom={5}
-                      >
+                      <MapContainer center={[41.895643, 12.4831082]} zoom={5}>
                         <MapPrint
                           position="topleft"
                           sizeModes={["A4Portrait", "A4Landscape"]}
@@ -546,7 +542,7 @@ const ViewPublished = () => {
                             weight={2} // make a bit thinner
                           />
                         ))}
-                      </CustomMapContainer>
+                      </MapContainer>
                       <div className="flex items-center gap-1 w-full mt-2 justify-center md:justify-end">
                         <div className="flex items-center gap-1 w-full mt-2 justify-center md:justify-end">
                           {/* <Button onClick={() => setExportMap(true)}>
