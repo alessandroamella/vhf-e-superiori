@@ -1,6 +1,5 @@
 import axios from "axios";
 import { Alert, Button, Label, TextInput } from "flowbite-react";
-import "leaflet/dist/leaflet.css";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import L from "leaflet";
 import { UserContext, getErrorStr } from "..";

@@ -49,11 +49,7 @@ body {
 }
 
 a {
-    @apply text-red-500;
-}
-
-a:hover {
-    @apply dark:text-white;
+    @apply text-red-500 hover:text-red-600 transition-colors;
 }
 
 .carousel__slide {
@@ -191,8 +187,4 @@ nav ul {
 
 div.input-large div input {
     @apply text-black dark:text-white dark:bg-gray-700 p-2;
-}
-
-.leaflet-container {
-    @apply w-[80vw] md:w-full h-[60vh] md:h-[80vh] mx-auto z-10;
 }

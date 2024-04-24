@@ -42,6 +42,7 @@ import {
   AccordionBody
 } from "@material-tailwind/react";
 import { getDate } from "date-fns";
+import CallsignLoading from "../shared/CallsignLoading";
 
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);
@@ -63,6 +64,7 @@ const Profile = () => {
 
   const [oldPw, setOldPw] = useState("");
   const [newPw, setNewPw] = useState("");
+  const [newPwConfirm, setNewPwConfirm] = useState("");
 
   const [joinRequests, setJoinRequests] = useState(null);
 
@@ -124,6 +126,12 @@ const Profile = () => {
 
   async function changePassword(e) {
     e.preventDefault();
+
+    if (newPw !== newPwConfirm) {
+      setPwError("Le password non coincidono");
+      return;
+    }
+
     setChangePwBtnDisabled(true);
 
     try {
@@ -137,6 +145,12 @@ const Profile = () => {
         color: "success",
         msg: "Password modificata con successo"
       });
+
+      window.scrollTo({
+        top: 350,
+        behavior: "smooth"
+      });
+
       setPwError(null);
       setShowChangePwModal(false);
     } catch (err) {
@@ -148,6 +162,12 @@ const Profile = () => {
 
   async function changeData(e) {
     e.preventDefault();
+
+    if (!user) {
+      console.error("user not found in changeData");
+      window.alert("Errore: utente non trovato");
+      return;
+    }
 
     setChangeDataBtnDisabled(true);
     setAlert(null);
@@ -162,7 +182,7 @@ const Profile = () => {
         obj.province = province;
       }
       console.log("obj", obj);
-      const { data } = await axios.put("/api/auth", obj);
+      const { data } = await axios.put("/api/auth/" + user._id, obj);
       console.log("data", data);
       if (data.email === user.email) {
         setAlert({ color: "success", msg: "Dati modificati con successo" });
@@ -307,17 +327,14 @@ const Profile = () => {
           <Modal.Body>
             {pwError && (
               <Alert color="failure" className="mb-4">
-                <span>
-                  <span className="font-medium">Errore</span> {pwError}
-                </span>
+                <span>{pwError}</span>
               </Alert>
             )}
 
-            <div className="flex flex-col gap-4">
+            <div className="-mt-2 flex flex-col gap-4">
               <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 Usa il seguente form per cambiare la password
               </p>
-
               <div>
                 <div className="mb-2 block">
                   <Label htmlFor="current-password" value="Password attuale" />
@@ -347,6 +364,25 @@ const Profile = () => {
                   value={newPw}
                   onChange={e => setNewPw(e.target.value)}
                   helperText="Minimo 8 caratteri, almeno un numero e una maiuscola"
+                />
+              </div>
+              <div>
+                <div className="mb-2 block">
+                  <Label
+                    htmlFor="new-password-confirm"
+                    value="Conferma password"
+                  />
+                </div>
+                <TextInput
+                  id="new-password-confirm"
+                  name="new-password-confirm"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  disabled={!user || changePwBtnDisabled}
+                  value={newPwConfirm}
+                  onChange={e => setNewPwConfirm(e.target.value)}
+                  helperText="Riscrivi la nuova password per confermare"
                 />
               </div>
             </div>
@@ -437,7 +473,7 @@ const Profile = () => {
 
       <div className="bg-white dark:bg-gray-900 dark:text-white py-3 md:py-6 px-6 md:px-12 lg:px-24 min-h-[69vh]">
         <Typography variant="h3" className="my-4">
-          Profilo
+          <CallsignLoading prefix="Profilo di" user={user} />
         </Typography>
         {alert && (
           <Alert
@@ -464,7 +500,7 @@ const Profile = () => {
                   </Typography>
                 </Link>
                 {user?.createdAt && (
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-gray-500 dark:text-gray-300 text-sm">
                     Membro dal
                     {[1, 8].includes(getDate(new Date(user.createdAt)))
                       ? "l'"
@@ -520,10 +556,11 @@ const Profile = () => {
                         id="email"
                         name="email"
                         type="email"
-                        placeholder="alessandro@iu4qsg.it"
+                        placeholder="alexlife@tiscali.it"
                         required
                         value={email}
                         onChange={e => setEmail(e.target.value)}
+                        helperText="Indirizzo email dove ricevere comunicazioni, notifiche ed eQSL"
                         disabled={!user}
                       />
                     ) : (
@@ -532,7 +569,7 @@ const Profile = () => {
                           {user?.email || <Spinner />}
                         </Typography>
                         {user?.isVerified ? (
-                          <span className="flex items-center gap-1 text-green-600">
+                          <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
                             <FaCheck /> Verificata
                           </span>
                         ) : (
@@ -568,7 +605,14 @@ const Profile = () => {
                   </div>
                   <div className={isEditing ? "block" : "flex"}>
                     <div className="mb-2 block">
-                      <Label htmlFor="address" value="Città" />
+                      <Label
+                        htmlFor="address"
+                        value={`Indirizzo di stazione${
+                          isEditing
+                            ? " (il locatore viene calcolato in base all'indirizzo)"
+                            : ""
+                        }`}
+                      />
                     </div>
                     {isEditing ? (
                       <ReactGoogleAutocomplete
@@ -608,7 +652,7 @@ const Profile = () => {
                         onChange={e => setAddressInput(e.target.value)}
                         onBlur={() => setAddressInput(address)}
                         disabled={!user}
-                        helperText="Inserisci la tua città di residenza (opzionale)"
+                        helperText="Inserisci l'indirizzo di stazione (la via)"
                         ref={addressInputRef}
                       />
                     ) : user?.address ? (
@@ -628,7 +672,8 @@ const Profile = () => {
                     <div className="ml-2 -mt-4 flex items-center gap-2">
                       <span className="text-gray-500 dark:text-gray-400">
                         <FaArrowAltCircleRight className="inline mr-1" />
-                        Locatore: {locator}
+                        Locatore:{" "}
+                        <span className="dark:text-gray-300">{locator}</span>
                       </span>
                     </div>
                   )}
@@ -669,44 +714,45 @@ const Profile = () => {
                     )}
                   </div>
                 </form>
+                <div className="mt-8 mb-4 flex items-center gap-4">
+                  <span>
+                    Password attuale: <strong>{"*".repeat(8)}</strong>
+                  </span>
+                  <Button onClick={() => setShowChangePwModal(true)}>
+                    Cambia password
+                  </Button>
+                </div>
+
+                <div className="mt-6 text-sm text-gray-600 dark:text-gray-300">
+                  <p>
+                    Se hai sbagliato a inserire il nominativo o desideri
+                    eliminare il tuo account, per favore contatta un
+                    amministratore.
+                  </p>
+                  <ul className="mt-1">
+                    <li>
+                      <strong>Alessandro IZ5RNF:</strong>
+                      <a
+                        href="mailto:alexlife@tiscali.it"
+                        target="_blank"
+                        className="ml-1"
+                        rel="noreferrer"
+                      >
+                        alexlife@tiscali.it
+                      </a>
+                    </li>
+                  </ul>
+                </div>
 
                 {user && (
-                  <div className="flex justify-center my-8 md:my-16">
+                  <div className="flex justify-center my-4 md:my-8">
                     <Link to={`/u/${user.callsign}`}>
-                      <Button color="dark">
+                      <Button color="dark" size="lg">
                         <FaExternalLinkAlt className="inline mb-1 mr-2" /> Mappa
                         collegamenti
                       </Button>
                     </Link>
                   </div>
-                )}
-
-                {isEditing && (
-                  <>
-                    <div className="my-4 flex items-center gap-4">
-                      <span>
-                        Password attuale: <strong>{"*".repeat(8)}</strong>
-                      </span>
-                      <Button onClick={() => setShowChangePwModal(true)}>
-                        Cambia password
-                      </Button>
-                    </div>
-
-                    <small className="mt-4">
-                      Se hai sbagliato a inserire il nominativo o desideri
-                      eliminare il tuo account, per favore procedi a inviarci
-                      una mail ad{" "}
-                      <a
-                        href="mailto:alessandro@iu4qsg.it"
-                        target="_blank"
-                        className="underline decoration-dotted text-center hover:text-black transition-colors"
-                        rel="noreferrer"
-                      >
-                        alessandro@iu4qsg.it
-                      </a>
-                      .
-                    </small>
-                  </>
                 )}
               </>
             )}
@@ -800,10 +846,10 @@ const Profile = () => {
                             to={"/social/" + p._id}
                             className="w-fit hover:scale-105 transition-transform flex items-center gap-1 p-1"
                           >
-                            <FaLink className="text-gray-500" />
+                            <FaLink className="text-gray-500 dark:text-gray-400" />
                             <span>{p.description}</span>
                           </Link>
-                          <p className="ml-auto text-gray-500">
+                          <p className="ml-auto text-gray-500 dark:text-gray-400">
                             {p.createdAt &&
                               formatInTimeZone(
                                 p.createdAt,
@@ -848,7 +894,7 @@ const Profile = () => {
                 ) : (
                   <Accordion open={qsoOpen}>
                     <AccordionHeader onClick={() => setQsoOpen(!qsoOpen)}>
-                      Visualizza QSO
+                      <span className="dark:text-gray-300">Visualizza QSO</span>
                     </AccordionHeader>
                     <AccordionBody>
                       <Table striped>

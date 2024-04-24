@@ -1,5 +1,6 @@
-import { modelOptions, prop, Ref } from "@typegoose/typegoose";
+import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
 import { UserClass } from "../../auth/models";
+import mongoose from "mongoose";
 
 /**
  * @swagger
@@ -31,7 +32,7 @@ import { UserClass } from "../../auth/models";
 
 @modelOptions({
     schemaOptions: { timestamps: true },
-    options: { customName: "BlogPost" }
+    options: { allowMixed: Severity.ERROR, customName: "BlogPost" }
 })
 export class BlogPostClass {
     // fromStation is User ref
@@ -44,14 +45,14 @@ export class BlogPostClass {
     @prop({ required: true })
     public contentMd!: string; // content in markdown
 
-    @prop({ required: true })
-    public tags!: string[]; // tags for the post
+    @prop({ required: true, default: [], type: String })
+    public tags!: mongoose.Types.Array<string>; // tags for the post
 
     @prop({ required: false })
     public image?: string; // image for the post
 
-    @prop({ required: true, default: [] })
-    public fileContents!: string[];
+    @prop({ required: true, default: [], type: String })
+    public fileContents!: mongoose.Types.Array<string>;
 
     @prop({ required: true, ref: () => UserClass })
     public comments!: Ref<UserClass>[];

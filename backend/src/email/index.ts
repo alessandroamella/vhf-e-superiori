@@ -23,21 +23,6 @@ export class EmailService {
         Array(parseInt(envs.TOT_ADMIN_EMAILS)).keys()
     ).map(i => process.env[`ADMIN_EMAIL_${i}`] as string);
 
-    /**
-     * OLD METHOD TO BE DEPRECATED, use `loadMailFromFile` instead
-     */
-    private static async _loadMailFromFile(name: string, ...params: string[]) {
-        const text = await readFile(path.join(process.cwd(), "emails", name), {
-            encoding: "utf-8"
-        });
-        // replace {0}, {1}, ... with params
-        return params.reduce(
-            (acc, param, i) =>
-                acc.replace(new RegExp(`\\{${i}\\}`, "g"), param),
-            text
-        );
-    }
-
     private static async loadMailFromFile(
         name: string,
         params: { [name: string]: string }
@@ -97,12 +82,12 @@ export class EmailService {
     }
 
     public static async sendResetPwMail(user: UserDoc, code: string) {
-        const html = await EmailService._loadMailFromFile(
-            "changePw.html",
-            user.callsign,
-            user._id.toString(),
-            code
-        );
+        const html = await EmailService.loadMailFromFile("changePw.html", {
+            "{NOMINATIVO}": user.callsign,
+            "{USERID}": user._id.toString(),
+            "{CODE}": code
+        });
+
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
             to: user.email,
@@ -134,16 +119,16 @@ export class EmailService {
         code: string,
         isNewUser: boolean
     ) {
-        logger.debug(
-            "Sending verify mail to " + user.email + " with code: " + code
-        );
-        const html = await EmailService._loadMailFromFile(
-            "verifyEmail.html",
-            user.callsign,
-            isNewUser ? "registrazione" : "cambio email",
-            user._id.toString(),
-            code
-        );
+        const html = await EmailService.loadMailFromFile("signup.html", {
+            "{NOMINATIVO}": user.callsign,
+            "{USERID}": user._id.toString(),
+            "{CODE}": code,
+            "{AZIONE}": isNewUser ? "Benvenuto!" : "Cambio email",
+            "{DESCRIZIONE}": isNewUser
+                ? "grazie per esserti registrato su VHF e superiori"
+                : "abbiamo ricevuto la richiesta di cambio email"
+        });
+
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
             to: user.email,
@@ -160,13 +145,13 @@ export class EmailService {
         event: EventDoc,
         user: UserDoc
     ) {
-        const html = await EmailService._loadMailFromFile(
+        const html = await EmailService.loadMailFromFile(
             "requestStation.html",
-            user.callsign,
-            event.name,
-            moment(event.date)
-                .tz("Europe/Rome")
-                .format("dddd D MMMM Y [alle] HH:mm")
+            {
+                "{NOMINATIVO}": user.callsign,
+                "{EVENTO}": event.name,
+                "{ANTENNA}": joinRequest.antenna
+            }
         );
 
         const message: Mail.Options = {
@@ -181,19 +166,24 @@ export class EmailService {
     }
 
     public static async sendAcceptJoinRequestMail(
-        joinRequest: JoinRequestDoc,
         event: EventDoc,
         user: UserDoc
     ) {
-        const html = await EmailService._loadMailFromFile(
+        const html = await EmailService.loadMailFromFile(
             "acceptedStation.html",
-            user.callsign,
-            event.name,
-            moment(event.date)
-                .tz("Europe/Rome")
-                .format("dddd D MMMM Y [alle] HH:mm")
+            {
+                "{NOMINATIVO}": user.callsign,
+                "{EVENTO}": event.name,
+                "{DATA}": moment(event.date)
+                    .tz("Europe/Rome")
+                    .format("dddd D MMMM YYYY"),
+                "{ORA}": moment(event.date).tz("Europe/Rome").format("HH:mm"),
+                "{PATHIMMAGINE}":
+                    event.logoUrl || "https://www.vhfesuperiori.eu/logo512.png",
+                "{BANDA}": event.band,
+                "{EVENTID}": event._id.toString()
+            }
         );
-
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
             to: user.email,
@@ -253,43 +243,23 @@ export class EmailService {
         post: BasePostDoc,
         comment: CommentDoc
     ) {
+        const scraped = await qrz.getInfo(forUser.callsign);
+
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
             to: fromUser.email,
             subject: `Nuovo commento da ${fromUser.callsign} al tuo post`,
-            html:
-                "<p>Ciao " +
-                forUser.name +
-                ' <span style="font-weight: 600">' +
-                forUser.callsign +
-                "</span>, l'utente " +
-                fromUser.name +
-                ' <span style="font-weight: 600">' +
-                fromUser.callsign +
-                '</span> ha commentato il tuo post <span style="font-weight: 600">' +
-                post.description +
-                "</span>.<br />" +
-                // add card with comment
-                '<div style="padding: 1rem; border: 1px solid #ccc; border-radius: 0.5rem; margin-top: 1rem; margin-bottom: 1rem">' +
-                '<div style="display: flex; align-items: center; margin-bottom: 1rem">' +
-                '<img src="' +
-                (await qrz.getInfo(fromUser.callsign))?.pictureUrl +
-                '" style="width: 3rem; height: 3rem; border-radius: 50%; margin-right: 1rem" />' +
-                '<span style="font-weight: 600">' +
-                fromUser.callsign +
-                "</span>" +
-                "</div>" +
-                '<div style="margin-bottom: 1rem">' +
-                comment.content +
-                "</div>" +
-                "</div>" +
-                // end card with comment
-                'Puoi vedere il tuo post <a href="https://www.vhfesuperiori.eu/social/' +
-                post._id +
-                "#comment-" +
-                comment._id +
-                '">qui</a>.<br />' +
-                'Buona giornata da <a href="https://www.vhfesuperiori.eu">vhfesuperiori.eu</a>!</p>'
+            html: await EmailService.loadMailFromFile("comment.html", {
+                "{NOMINATIVO}": fromUser.callsign,
+                "{POSTID}": post._id.toString(),
+                "{POST}": post.description,
+                "{NOMINATIVO_COMMENTO}": fromUser.callsign,
+                "{CONTENUTO_COMMENTO}": comment.content,
+                "{COMMENTID}": comment._id.toString(),
+                "{PP_COMMENTO}":
+                    scraped?.pictureUrl ||
+                    "https://www.vhfesuperiori.eu/logo192.png"
+            })
         };
 
         await EmailService.sendMail(message);

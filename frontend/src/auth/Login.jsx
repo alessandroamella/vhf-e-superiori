@@ -107,7 +107,19 @@ const Login = () => {
       setDisabled(false);
     }
   }
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const hasAlert = searchParams.get("alert");
+  useEffect(() => {
+    if (hasAlert) {
+      setAlert({
+        color: "success",
+        msg: "Password modificata con successo. Effettua il login"
+      });
+      searchParams.delete("alert");
+      setSearchParams(searchParams);
+    }
+  }, [hasAlert, searchParams, setSearchParams]);
 
   const loginInput = useRef(null);
 

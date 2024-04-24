@@ -109,6 +109,33 @@ const QsoManager = () => {
     if (user?.isAdmin && !users) getUsers();
   }, [event, isEventStation, user, users]);
 
+  const getQsos = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/qso", {
+        params: {
+          event: id,
+          fromStation: user.isAdmin ? undefined : user._id
+        }
+      });
+      console.log("QSOs", data);
+      data.sort((b, a) => new Date(a.qsoDate) - new Date(b.qsoDate));
+      setQsos(data);
+    } catch (err) {
+      console.log("Errore nel caricamento dei QSO", err);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+      setQsos(null);
+    }
+  }, [id, user]);
+
   useEffect(() => {
     async function getEvent() {
       try {
@@ -130,36 +157,11 @@ const QsoManager = () => {
         setEvent(null);
       }
     }
-    async function getQsos() {
-      try {
-        const { data } = await axios.get("/api/qso", {
-          params: {
-            event: id,
-            fromStation: user.isAdmin ? undefined : user._id
-          }
-        });
-        console.log("QSOs", data);
-        data.sort((a, b) => new Date(a.qsoDate) - new Date(b.qsoDate));
-        setQsos(data);
-      } catch (err) {
-        console.log("Errore nel caricamento dei QSO", err);
-        setAlert({
-          color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
-        });
-
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
-
-        setQsos(null);
-      }
-    }
     if (user && id && (event === false || qsos === false)) {
       if (!event) getEvent();
       if (!qsos) getQsos();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event, id, qsos, user]);
 
   useEffect(() => {
@@ -460,11 +462,9 @@ const QsoManager = () => {
       // });
 
       setHighlighted(data._id);
-      setTimeout(() => setHighlighted(null), 1000);
+      setTimeout(() => setHighlighted(null), 2000);
 
-      const newQsos = [...qsos, data];
-      newQsos.sort((a, b) => new Date(a.qsoDate) - new Date(b.qsoDate));
-      setQsos(newQsos);
+      setQsos([data, ...qsos]);
       setCallsign("");
       // resetDate();
 
@@ -594,9 +594,18 @@ const QsoManager = () => {
     }
   }
 
+  const [isImportingAdif, setIsImportingAdif] = useState(false);
+
   async function importAdifSubmit(e) {
     e.preventDefault();
+
+    if (!window.confirm("Vuoi importare i QSO selezionati?")) {
+      return;
+    }
+
     console.log("import adif submit", adifQsos);
+
+    setIsImportingAdif(true);
 
     // send ADIF again, this time with checked QSOs and parameter save=true
     setDisabled(true);
@@ -625,12 +634,16 @@ const QsoManager = () => {
       setAdifQsos(null);
       setAdifChecked({});
       resetAdif();
-      setAlert({
-        color: "success",
-        msg: data.length + " QSO importati con successo"
-      });
-      setDisabled(false);
-      setQsos([...qsos, ...data]);
+
+      await getQsos();
+
+      setTimeout(() => {
+        setAlert({
+          color: "success",
+          msg: data.length + " QSO importati con successo"
+        });
+        setDisabled(false);
+      }, 690);
     } catch (err) {
       console.log(err?.response?.data || err);
       setAlert({
@@ -638,13 +651,14 @@ const QsoManager = () => {
         msg: getErrorStr(err?.response?.data?.err)
       });
       setDisabled(false);
-    } finally {
-      setShowModal(false);
 
       window.scrollTo({
         top: 0,
         behavior: "smooth"
       });
+    } finally {
+      setShowModal(false);
+      setIsImportingAdif(false);
     }
   }
 
@@ -664,6 +678,8 @@ const QsoManager = () => {
       setSelectedQsos(selectedQsos.filter(q => q !== qso._id));
     }
   }
+
+  const [deleteQsoAnimation, setDeleteQsoAnimation] = useState(false);
 
   async function deleteSelected() {
     if (
@@ -689,19 +705,22 @@ const QsoManager = () => {
         color: "success",
         msg: `Eliminat${deleted.length === 1 ? "o" : "i"} ${deleted.length} QSO`
       });
+
+      setDeleteQsoAnimation(true);
+      setTimeout(() => setDeleteQsoAnimation(false), 1000);
     } catch (err) {
       console.log(err?.response?.data || err);
       setAlert({
         color: "failure",
         msg: getErrorStr(err?.response?.data?.err)
       });
-    } finally {
-      setDisabled(false);
 
       window.scrollTo({
         top: 0,
         behavior: "smooth"
       });
+    } finally {
+      setDisabled(false);
     }
   }
 
@@ -805,6 +824,23 @@ const QsoManager = () => {
     console.log("predata", { locator });
   }, [locator, formattedAddress]);
 
+  const autocompleteRef = useRef(null);
+
+  // if clicked outside of autocomplete, close it
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        autocompleteRef.current &&
+        !autocompleteRef.current.contains(event.target)
+      ) {
+        setAutocomplete(null);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [autocompleteRef]);
+
   return user === null ? (
     navigate({
       pathname: "/login",
@@ -823,7 +859,7 @@ const QsoManager = () => {
         position="center"
         size="7xl"
         show={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={isImportingAdif ? undefined : () => setShowModal(false)}
       >
         <form onSubmit={importAdifSubmit}>
           <Modal.Header>Importa QSO da file ADIF</Modal.Header>
@@ -834,7 +870,7 @@ const QsoManager = () => {
                 <Button.Group className="mb-4 p-4 pb-2">
                   <Button
                     color="light"
-                    disabled={disabled}
+                    disabled={disabled || isImportingAdif}
                     onClick={() => {
                       setAdifChecked(
                         adifQsos.reduce((acc, q, i) => {
@@ -848,7 +884,7 @@ const QsoManager = () => {
                   </Button>
                   <Button
                     color="light"
-                    disabled={disabled}
+                    disabled={disabled || isImportingAdif}
                     onClick={() => {
                       setAdifChecked(
                         adifQsos.reduce((acc, q, i) => {
@@ -915,19 +951,36 @@ const QsoManager = () => {
             )}
           </Modal.Body>
           <Modal.Footer>
-            <div className="w-full flex justify-center gap-2">
-              <Button
-                color="gray"
-                type="button"
-                // disabled={!user || changePwBtnDisabled}
-                disabled={disabled}
-                onClick={() => setShowModal(false)}
-              >
-                Chiudi
-              </Button>
-              <Button type="submit" disabled={disabled}>
-                Importa
-              </Button>
+            <div className="w-full flex flex-col items-center">
+              <div className="w-full flex justify-center gap-2">
+                <Button
+                  color="gray"
+                  type="button"
+                  disabled={disabled || isImportingAdif}
+                  onClick={() => setShowModal(false)}
+                >
+                  Chiudi
+                </Button>
+                <Button type="submit" disabled={disabled || isImportingAdif}>
+                  {isImportingAdif ? (
+                    <Spinner
+                      size="sm"
+                      className="dark:text-white dark:fill-white"
+                    />
+                  ) : (
+                    "Importa"
+                  )}
+                </Button>
+              </div>
+
+              {isImportingAdif && (
+                <div className="w-full flex justify-center gap-2 mt-4">
+                  <Spinner className="dark:text-white dark:fill-white" />
+                  <span className="animate-pulse">
+                    Importazione in corso, attendere prego...
+                  </span>
+                </div>
+              )}
             </div>
           </Modal.Footer>
         </form>
@@ -966,7 +1019,278 @@ const QsoManager = () => {
                 ) : null}
 
                 <div className="my-12">
-                  <div className="flex flex-col md:flex-row md:justify-between">
+                  <div
+                    id="create-qso-container"
+                    className=" flex flex-col md:flex-row justify-center md:justify-between gap-4 items-center"
+                  >
+                    <Typography variant="h2" className="my-2 flex items-center">
+                      Crea QSO
+                    </Typography>
+                  </div>
+                  {user ? (
+                    <div>
+                      <form onSubmit={createQso}>
+                        {page === 0 ? (
+                          locatorLoading ? (
+                            <Spinner className="dark:text-white dark:fill-white" />
+                          ) : (
+                            <>
+                              <div className="flex flex-col md:flex-row justify-center items-center gap-4">
+                                {!isEventStation && user.isAdmin && users && (
+                                  <div>
+                                    <Label
+                                      htmlFor="fromStation"
+                                      value="Da stazione attivatrice*"
+                                    />
+                                    <Dropdown
+                                      label={fromStation.callsign}
+                                      disabled={disabled}
+                                      id="fromStation"
+                                      className="w-full"
+                                      required
+                                      color="light"
+                                    >
+                                      {users.map(u => (
+                                        <Dropdown.Item
+                                          key={u._id}
+                                          onClick={() => setFromStation(u)}
+                                        >
+                                          <span
+                                            className={
+                                              u._id === fromStation._id
+                                                ? "font-bold"
+                                                : ""
+                                            }
+                                          >
+                                            {u.callsign}
+                                          </span>
+                                        </Dropdown.Item>
+                                      ))}
+                                    </Dropdown>
+                                    <p className="flex items-center gap-1">
+                                      <FaInfoCircle />
+                                      Vedi questo in quanto sei un{" "}
+                                      <span className="font-bold">
+                                        amministratore
+                                      </span>
+                                    </p>
+                                  </div>
+                                )}
+
+                                <div
+                                  className={`${
+                                    formattedAddress ? "" : "mb-7"
+                                  } flex items-center gap-2`}
+                                >
+                                  <div className="w-full">
+                                    <Label
+                                      htmlFor="locator"
+                                      value="Tuo locatore"
+                                    />
+                                    <TextInput
+                                      color={
+                                        locator?.length === 6 &&
+                                        formattedAddress
+                                          ? "success"
+                                          : formattedAddress === false
+                                          ? "info"
+                                          : "warning"
+                                      }
+                                      disabled={disabled}
+                                      id="locator"
+                                      label="Tuo locatore"
+                                      helperText={
+                                        (formattedAddress !== false &&
+                                          formattedAddress) ||
+                                        "Locatore non valido"
+                                      }
+                                      minLength={6}
+                                      maxLength={6}
+                                      placeholder="Locatore..."
+                                      value={locator}
+                                      onChange={e => {
+                                        setLocator(e.target.value);
+                                        setCookie("locator", e.target.value, {
+                                          path: "/qsomanager",
+                                          maxAge: 60 * 60 * 4
+                                        });
+                                        if (e.target.value.length !== 6) {
+                                          setFormattedAddress(null);
+                                        }
+                                      }}
+                                    />
+                                  </div>
+
+                                  <Button
+                                    color="gray"
+                                    onClick={geolocalize}
+                                    disabled={disabled}
+                                    className="mb-1"
+                                  >
+                                    <FaMapMarkerAlt className="text-xl" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </>
+                          )
+                        ) : (
+                          <div className="flex flex-col gap-2 items-center">
+                            <div className="flex flex-col md:flex-row gap-2 justify-center items-center md:items-end">
+                              <div className="w-full relative">
+                                <Label htmlFor="callsign" value="Nominativo" />
+                                <TextInput
+                                  disabled={disabled}
+                                  id="callsign"
+                                  label="Nominativo"
+                                  sizing="xl"
+                                  minLength={1}
+                                  maxLength={10}
+                                  ref={callsignRef}
+                                  placeholder="Inserisci nominativo"
+                                  value={callsign}
+                                  className="uppercase font-semibold text-2xl input-large text-black"
+                                  onChange={e => {
+                                    const val = e.target.value.toUpperCase();
+                                    setCallsign(val);
+                                    setCookie("callsign", val, {
+                                      path: "/qsomanager",
+                                      maxAge: 60 * 60 * 4
+                                    });
+                                  }}
+                                  required
+                                  autocomplete="off"
+                                  autoComplete="off"
+                                />
+
+                                {callsign && autocomplete && (
+                                  <div
+                                    ref={autocompleteRef}
+                                    className="absolute opacity-95 bottom-20 md:top-20 -left-3 md:left-0 bg-white min-w-[20rem] md:min-w-[28rem] max-w-[50vw] md:max-w-[80vw] dark:bg-gray-800 shadow-lg rounded-lg z-10"
+                                  >
+                                    <Card>
+                                      {/* justify-between */}
+                                      <div className="flex justify-center items-center gap-2 md:gap-4">
+                                        <div className="hidden md:block">
+                                          <Avatar
+                                            img={autocomplete.pictureUrl}
+                                            size="lg"
+                                            rounded
+                                          />
+                                        </div>
+                                        <div className="flex flex-col items-center min-w-[10rem]">
+                                          <span className="font-semibold text-lg flex items-center gap-1">
+                                            <span className="text-gray-500">
+                                              <Avatar
+                                                className="block md:hidden mb-1 mr-1 md:mb-0"
+                                                img={autocomplete.pictureUrl}
+                                                size="xs"
+                                                rounded
+                                              />
+                                              <FaUser className="hidden md:block" />
+                                            </span>{" "}
+                                            {autocomplete.callsign}
+                                          </span>
+                                          {autocomplete.name && (
+                                            // break word if too long
+                                            <span className="text-center text-sm md:text-md text-gray-500 dark:text-gray-400 max-w-[5rem] md:max-w-[15rem]">
+                                              {autocomplete.name}
+                                            </span>
+                                          )}
+                                        </div>
+
+                                        <div className="flex flex-col items-center min-w-[10rem]">
+                                          {autocomplete.email && (
+                                            <span className="text-center font-semibold text-blue-500 dark:text-blue-400 text-sm truncate max-w-[8rem] md:max-w-[15rem]">
+                                              {autocomplete.email}
+                                            </span>
+                                          )}
+                                          {autocomplete.address && (
+                                            <span className="text-center text-sm text-gray-500 dark:text-gray-400 max-w-[8rem] md:max-w-[15rem] line-clamp-2 md:line-clamp-3">
+                                              {autocomplete.address}
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </Card>
+                                  </div>
+                                )}
+                              </div>
+
+                              <Button
+                                type="submit"
+                                disabled={disabled || callsign.length === 0}
+                                size="lg"
+                                color={highlighted ? "success" : "info"}
+                                className="transition-colors duration-500 min-w-[11rem]"
+                              >
+                                {disabled ? (
+                                  <Spinner className="dark:text-white dark:fill-white" />
+                                ) : (
+                                  <span className="flex items-center gap-2">
+                                    <FaSave />
+                                    Inserisci QSO
+                                  </span>
+                                )}
+                                <span className="relative">
+                                  {highlighted && (
+                                    <span className="animate-bounce absolute text-lg font-semibold left-8 w-28 -top-4 text-green-600 dark:text-green-400">
+                                      ✅ Inserito
+                                    </span>
+                                  )}
+                                </span>
+                              </Button>
+                            </div>
+
+                            {/* orario */}
+                          </div>
+                        )}
+                        <div className="mt-4 flex flex-col items-center gap-2">
+                          <div className="flex justify-center">
+                            {page === 0 && (
+                              <Tooltip
+                                content={
+                                  allPredataInserted
+                                    ? "Pagina successiva"
+                                    : "Completa tutti i campi per procedere"
+                                }
+                              >
+                                <Button
+                                  type="button"
+                                  disabled={disabled || !allPredataInserted}
+                                  onClick={() =>
+                                    setIsManuallySettingLocator(false)
+                                  }
+                                  size="lg"
+                                  color={
+                                    allPredataInserted ? "success" : "failure"
+                                  }
+                                  className="transition-colors"
+                                >
+                                  Inserisci nominativo
+                                  <FaForward className="inline ml-2" />
+                                </Button>
+                              </Tooltip>
+                            )}
+                          </div>
+                        </div>
+                      </form>
+
+                      {page === 1 && (
+                        <div className="mt-8 flex justify-end">
+                          <Button
+                            onClick={() => setIsManuallySettingLocator(true)}
+                            disabled={disabled}
+                          >
+                            Modifica locatore anche per portatili /P
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <Spinner className="dark:text-white dark:fill-white" />
+                  )}
+
+                  <div className="mt-12 flex flex-col md:flex-row md:justify-between">
                     <Typography variant="h2" className="mb-2">
                       QSO registrati
                     </Typography>
@@ -1004,7 +1328,11 @@ const QsoManager = () => {
                             <Button.Group className="mb-2">
                               <Button
                                 color="light"
-                                disabled={disabled}
+                                disabled={
+                                  disabled ||
+                                  selectedQsos.length === qsos.length ||
+                                  qsos.length === 0
+                                }
                                 onClick={() => {
                                   setSelectedQsos(qsos.map(q => q._id));
                                 }}
@@ -1013,7 +1341,7 @@ const QsoManager = () => {
                               </Button>
                               <Button
                                 color="light"
-                                disabled={disabled}
+                                disabled={disabled || selectedQsos.length === 0}
                                 onClick={() => {
                                   setSelectedQsos([]);
                                 }}
@@ -1035,7 +1363,9 @@ const QsoManager = () => {
                                 )}
                               </Button>
                               <Button
-                                color="failure"
+                                color={
+                                  deleteQsoAnimation ? "success" : "failure"
+                                }
                                 disabled={
                                   disabled ||
                                   selectedQsos.length === 0 ||
@@ -1255,269 +1585,16 @@ const QsoManager = () => {
                       </p>
                     )}
                   </div>
-
-                  <div
-                    id="create-qso-container"
-                    className="flex flex-col md:flex-row justify-center md:justify-between gap-4 items-center"
-                  >
-                    <Typography variant="h2" className="my-2 flex items-center">
-                      Crea QSO
-                    </Typography>
-                  </div>
-                  {user ? (
-                    <div>
-                      <form onSubmit={createQso}>
-                        {page === 0 ? (
-                          locatorLoading ? (
-                            <Spinner className="dark:text-white dark:fill-white" />
-                          ) : (
-                            <>
-                              <div className="flex flex-col md:flex-row justify-center items-center gap-4">
-                                {!isEventStation && user.isAdmin && users && (
-                                  <div>
-                                    <Label
-                                      htmlFor="fromStation"
-                                      value="Da stazione attivatrice*"
-                                    />
-                                    <Dropdown
-                                      label={fromStation.callsign}
-                                      disabled={disabled}
-                                      id="fromStation"
-                                      className="w-full"
-                                      required
-                                      color="light"
-                                    >
-                                      {users.map(u => (
-                                        <Dropdown.Item
-                                          key={u._id}
-                                          onClick={() => setFromStation(u)}
-                                        >
-                                          <span
-                                            className={
-                                              u._id === fromStation._id
-                                                ? "font-bold"
-                                                : ""
-                                            }
-                                          >
-                                            {u.callsign}
-                                          </span>
-                                        </Dropdown.Item>
-                                      ))}
-                                    </Dropdown>
-                                    <p className="flex items-center gap-1">
-                                      <FaInfoCircle />
-                                      Vedi questo in quanto sei un{" "}
-                                      <span className="font-bold">
-                                        amministratore
-                                      </span>
-                                    </p>
-                                  </div>
-                                )}
-
-                                <div
-                                  className={`${
-                                    formattedAddress ? "" : "mb-7"
-                                  } flex items-center gap-2`}
-                                >
-                                  <div className="w-full">
-                                    <Label
-                                      htmlFor="locator"
-                                      value="Tuo locatore"
-                                    />
-                                    <TextInput
-                                      color={
-                                        locator?.length === 6 &&
-                                        formattedAddress
-                                          ? "success"
-                                          : formattedAddress === false
-                                          ? "info"
-                                          : "warning"
-                                      }
-                                      disabled={disabled}
-                                      id="locator"
-                                      label="Tuo locatore"
-                                      helperText={
-                                        (formattedAddress !== false &&
-                                          formattedAddress) ||
-                                        "Locatore non valido"
-                                      }
-                                      minLength={6}
-                                      maxLength={6}
-                                      placeholder="Locatore..."
-                                      value={locator}
-                                      onChange={e => {
-                                        setLocator(e.target.value);
-                                        setCookie("locator", e.target.value, {
-                                          path: "/qsomanager",
-                                          maxAge: 60 * 60 * 4
-                                        });
-                                        if (e.target.value.length !== 6) {
-                                          setFormattedAddress(null);
-                                        }
-                                      }}
-                                    />
-                                  </div>
-
-                                  <Button
-                                    color="gray"
-                                    onClick={geolocalize}
-                                    disabled={disabled}
-                                    className="mb-1"
-                                  >
-                                    <FaMapMarkerAlt className="text-xl" />
-                                  </Button>
-                                </div>
-                              </div>
-                            </>
-                          )
-                        ) : (
-                          <div className="flex flex-col gap-2 items-center">
-                            <div className="flex flex-col md:flex-row gap-2 justify-center items-center md:items-end">
-                              <div className="w-full relative">
-                                <Label htmlFor="callsign" value="Nominativo" />
-                                <TextInput
-                                  disabled={disabled}
-                                  id="callsign"
-                                  label="Nominativo"
-                                  sizing="xl"
-                                  minLength={1}
-                                  maxLength={10}
-                                  ref={callsignRef}
-                                  placeholder="Inserisci nominativo"
-                                  value={callsign}
-                                  className="uppercase font-semibold text-2xl input-large text-black"
-                                  onChange={e => {
-                                    const val = e.target.value.toUpperCase();
-                                    setCallsign(val);
-                                    setCookie("callsign", val, {
-                                      path: "/qsomanager",
-                                      maxAge: 60 * 60 * 4
-                                    });
-                                  }}
-                                  required
-                                  autocomplete="off"
-                                  autoComplete="off"
-                                />
-
-                                {callsign && autocomplete && (
-                                  <div className="absolute top-20 left-0 bg-white min-w-[28rem] dark:bg-gray-800 shadow-lg rounded-lg z-10">
-                                    <Card>
-                                      {/* justify-between */}
-                                      <div className="flex items-center gap-4">
-                                        <Avatar
-                                          img={autocomplete.pictureUrl}
-                                          size="lg"
-                                        />
-                                        <div className="flex flex-col items-center min-w-[10rem]">
-                                          <span className="font-semibold text-lg flex items-center gap-1">
-                                            <span className="text-gray-500">
-                                              <FaUser />
-                                            </span>{" "}
-                                            {autocomplete.callsign}
-                                          </span>
-                                          {autocomplete.name && (
-                                            <span className="text-center">
-                                              {autocomplete.name}
-                                            </span>
-                                          )}
-                                        </div>
-
-                                        <div className="ml-auto flex flex-col items-center min-w-[10rem]">
-                                          {autocomplete.email && (
-                                            <a
-                                              href={`mailto:${autocomplete.email}`}
-                                              className="text-center font-semibold text-blue-500 dark:text-blue-400 text-sm"
-                                            >
-                                              {autocomplete.email}
-                                            </a>
-                                          )}
-                                          {autocomplete.address && (
-                                            <span className="text-center text-sm text-gray-500 dark:text-gray-400">
-                                              {autocomplete.address}
-                                            </span>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </Card>
-                                  </div>
-                                )}
-                              </div>
-
-                              <Button
-                                type="submit"
-                                disabled={disabled || callsign.length === 0}
-                                size="lg"
-                                color={highlighted ? "success" : "info"}
-                                className="transition-colors duration-500 min-w-[11rem]"
-                              >
-                                {disabled ? (
-                                  <Spinner className="dark:text-white dark:fill-white" />
-                                ) : (
-                                  <span className="flex items-center gap-2">
-                                    <FaSave />
-                                    Inserisci QSO
-                                  </span>
-                                )}
-                              </Button>
-                            </div>
-
-                            {/* orario */}
-                          </div>
-                        )}
-                        <div className="mt-4 flex flex-col items-center gap-2">
-                          <div className="flex justify-center">
-                            {page === 0 && (
-                              <Tooltip
-                                content={
-                                  allPredataInserted
-                                    ? "Pagina successiva"
-                                    : "Completa tutti i campi per procedere"
-                                }
-                              >
-                                <Button
-                                  type="button"
-                                  disabled={disabled || !allPredataInserted}
-                                  onClick={() =>
-                                    setIsManuallySettingLocator(false)
-                                  }
-                                  size="lg"
-                                  color={
-                                    allPredataInserted ? "success" : "failure"
-                                  }
-                                  className="transition-colors"
-                                >
-                                  Inserisci nominativo
-                                  <FaForward className="inline ml-2" />
-                                </Button>
-                              </Tooltip>
-                            )}
-                          </div>
-                        </div>
-                      </form>
-
-                      {page === 1 && (
-                        <div className="mt-8 flex justify-end">
-                          <Button
-                            onClick={() => setIsManuallySettingLocator(true)}
-                          >
-                            Modifica locatore anche per portatili /P
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <Spinner className="dark:text-white dark:fill-white" />
-                  )}
                 </div>
 
                 {user?.isAdmin && qsos && (
                   <div>
-                    <Alert color="failure">
+                    <Alert color="warning">
                       <FaInfoCircle className="inline mr-1" />
                       Vedi questo in quanto sei un{" "}
                       <span className="font-bold">amministratore</span>
                     </Alert>
-                    <Typography variant="h2" className="my-2 flex items-center">
+                    <Typography variant="h2" className="my-4 flex items-center">
                       Mappa QSO
                     </Typography>
 

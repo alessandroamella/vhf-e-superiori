@@ -1,5 +1,5 @@
 import { Schema } from "express-validator";
-import { isValidPhoneNumber } from "libphonenumber-js";
+import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { Errors } from "../../errors";
 
 const createSchema: Schema = {
@@ -30,6 +30,9 @@ const createSchema: Schema = {
         custom: {
             options: v => isValidPhoneNumber(v),
             errorMessage: Errors.INVALID_PHONE_NUMBER
+        },
+        customSanitizer: {
+            options: v => parsePhoneNumber(v, "IT").formatInternational()
         }
     },
     password: {

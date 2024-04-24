@@ -1,7 +1,6 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
-import { INTERNAL_SERVER_ERROR, OK, UNAUTHORIZED } from "http-status";
-import { Errors } from "../../errors";
+import { INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { logger } from "../../../shared/logger";
 import { body } from "express-validator";
 import { createError, validate } from "../../helpers";

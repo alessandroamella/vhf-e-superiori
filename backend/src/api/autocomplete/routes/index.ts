@@ -95,6 +95,8 @@ router.get(
         }
 
         try {
+            const scraped = await qrz.getInfo(callsign);
+
             const user = await User.findOne({
                 callsign
             });
@@ -104,13 +106,13 @@ router.get(
                     callsign,
                     name,
                     email,
-                    address
+                    address,
+                    pictureUrl: scraped?.pictureUrl
                 };
                 cache[callsign] = { ...response, date: moment() };
                 return res.json(response);
             }
 
-            const scraped = await qrz.getInfo(callsign);
             if (!scraped) {
                 return res
                     .status(BAD_REQUEST)

@@ -31,6 +31,8 @@ import Blog from "./blog";
 
 import "react-placeholder/lib/reactPlaceholder.css";
 import "react-medium-image-zoom/dist/styles.css";
+import "leaflet/dist/leaflet.css";
+
 import BlogPostEditor from "./blog/Editor";
 import BlogPostViewer from "./blog/View";
 
@@ -78,6 +80,7 @@ const router = createBrowserRouter([
 export const errors = {
   USER_NOT_FOUND: "Utente non trovato",
   INVALID_PW: "Password non valida",
+  WRONG_PW: "Password errata",
   DOC_NOT_FOUND: "Documento non trovato",
   SERVER_ERROR: "Errore del server",
   LOGIN_TOKEN_EXPIRED: "Login scaduto",
@@ -106,7 +109,8 @@ export const errors = {
   URL_NOT_FOUND: "URL non trovato",
   INVALID_EMAIL: "Email non valida",
   EMAIL_ALREADY_IN_USE: "Email già in uso",
-  INVALID_PHONE_NUMBER: "Numero di telefono non valido",
+  INVALID_PHONE_NUMBER:
+    "Numero di telefono non valido (hai incluso il prefisso?)",
   PHONE_NUMBER_ALREADY_IN_USE: "Numero di telefono già in uso",
   MUST_ACCEPT_SIGNUP_TOS:
     "Per registrarti, devi accettare i termini e condizioni",

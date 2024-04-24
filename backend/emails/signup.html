@@ -248,7 +248,7 @@
                             <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:15px;font-family:arial,helvetica,sans-serif;" align="left">
 
                               <!--[if mso]><table width="100%"><tr><td><![endif]-->
-                              <h1 class="v-text-align" style="margin: 0px; line-height: 200%; text-align: left; word-wrap: break-word; font-family: verdana,geneva; font-size: 28px; font-weight: 700;"><span><span><span><span style="line-height: 50px;"><span style="line-height: 50px;"><span style="line-height: 50px;">Sei amministratore!</span></span></span></span></span></span></h1>
+                              <h1 class="v-text-align" style="margin: 0px; line-height: 200%; text-align: left; word-wrap: break-word; font-family: verdana,geneva; font-size: 28px; font-weight: 700;"><span><span>{AZIONE}</span></span></h1>
                               <!--[if mso]></td></tr></table><![endif]-->
 
                             </td>
@@ -287,8 +287,8 @@
                             <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:arial,helvetica,sans-serif;" align="left">
 
                               <div class="v-text-align" style="font-size: 14px; line-height: 140%; text-align: left; word-wrap: break-word;">
-                                <p style="line-height: 140%;">Ciao <strong>{NOMINATIVO}</strong>, ti è stato assegnato il ruolo di amministratore su VHF e superiori.</p>
-                                <p style="line-height: 140%;">Ora puoi gestire i collegamenti, creare e modificare eventi e altro ancora.</p>
+                                <p style="line-height: 140%;">Ciao <strong>{NOMINATIVO}</strong>, {DESCRIZIONE}.</p>
+                                <p style="line-height: 140%;">Per favore conferma la tua email cliccando sul tasto qua sotto ⬇️</p>
                               </div>
 
                             </td>
@@ -303,11 +303,25 @@
 
                               <!--[if mso]><style>.v-button {background: transparent !important;}</style><![endif]-->
                               <div class="v-text-align" align="center">
-                                <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://www.vhfesuperiori.eu/eventmanager" style="height:37px; v-text-anchor:middle; width:161px;" arcsize="11%"  stroke="f" fillcolor="#3AAEE0"><w:anchorlock/><center style="color:#FFFFFF;"><![endif]-->
-                                <a href="https://www.vhfesuperiori.eu/eventmanager" target="_blank" class="v-button" style="box-sizing: border-box;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #3AAEE0; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
-                                  <span style="display:block;padding:10px 20px;line-height:120%;"><span style="line-height: 16.8px;">Area amministratori</span></span>
+                                <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://www.vhfesuperiori.eu/api/auth/verify/{USERID}/{CODE}" style="height:45px; v-text-anchor:middle; width:120px;" arcsize="9%"  stroke="f" fillcolor="#3AAEE0"><w:anchorlock/><center style="color:#FFFFFF;"><![endif]-->
+                                <a href="https://www.vhfesuperiori.eu/api/auth/verify/{USERID}/{CODE}" target="_blank" class="v-button" style="box-sizing: border-box;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #3AAEE0; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
+                                  <span style="display:block;padding:10px 20px;line-height:120%;"><span style="line-height: 16.8px;">Conferma email</span></span>
                                 </a>
                                 <!--[if mso]></center></v:roundrect><![endif]-->
+                              </div>
+
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+
+                      <table style="font-family:arial,helvetica,sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                        <tbody>
+                          <tr>
+                            <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:arial,helvetica,sans-serif;" align="left">
+
+                              <div class="v-text-align" style="font-size: 14px; line-height: 140%; text-align: left; word-wrap: break-word;">
+                                <p style="line-height: 140%;"><span style="color: #7e8c8d; line-height: 19.6px;">Se non sei stato tu, per favore ignora questa email e faccelo sapere contattandoci ad <a style="color: #7e8c8d;" target="_blank" href="mailto:alexlife@tiscali.it?subject=Segnalazione%20VHF%20e%20superiori" rel="noopener">alexlife@tiscali.it</a>.</span></p>
                               </div>
 
                             </td>

@@ -6,7 +6,6 @@ import viewRoute from "./view";
 import getRoute from "./get";
 import verifyRoute from "./verify";
 import updateRoute from "./update";
-import toggleAdminRoute from "./toggleAdmin";
 import changePwRoute from "./changePw";
 import sendResetPwRoute from "./sendResetPw";
 import resetPwRoute from "./resetPw";
@@ -16,6 +15,7 @@ import { AuthOptions } from "../shared";
 import { logger } from "../../../shared";
 import isLoggedIn from "../../middlewares/isLoggedIn";
 import isAdmin from "../../middlewares/isAdmin";
+
 const router = Router();
 
 logger.debug("Using auth routes");
@@ -39,7 +39,6 @@ router.use("/admins", adminsRoute);
 router.use("/all", isLoggedIn, isAdmin, allRoute);
 router.use("/", getRoute);
 router.use("/", isLoggedIn, viewRoute);
-router.use("/", isLoggedIn, isAdmin, toggleAdminRoute);
 router.use("/", isLoggedIn, updateRoute);
 
 export default router;

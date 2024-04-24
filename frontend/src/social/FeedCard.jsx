@@ -12,6 +12,7 @@ import { Avatar, Badge, Button, Spinner } from "flowbite-react";
 import { UserContext, getErrorStr } from "..";
 import axios from "axios";
 import { FaTrash } from "react-icons/fa";
+import CallsignLoading from "../shared/CallsignLoading";
 
 /**
  * @typedef {object} BasePost
@@ -106,7 +107,7 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
             ready={!!post?.fromUser?.callsign}
           >
             <p className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-              {post?.fromUser?.callsign}
+              <CallsignLoading user={post?.fromUser} />
             </p>
           </ReactPlaceholder>
           {post?.fromUser?.isDev && <Badge color="purple">Dev 👨‍💻</Badge>}

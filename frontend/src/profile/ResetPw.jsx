@@ -3,7 +3,11 @@ import React, { useState } from "react";
 import Layout from "../Layout";
 import { Typography } from "@material-tailwind/react";
 import axios from "axios";
-import { useSearchParams } from "react-router-dom";
+import {
+  createSearchParams,
+  useNavigate,
+  useSearchParams
+} from "react-router-dom";
 import { getErrorStr } from "..";
 import { Helmet } from "react-helmet";
 
@@ -13,6 +17,8 @@ const ResetPw = () => {
   const [disabled, setDisabled] = useState(false);
 
   const [searchParams] = useSearchParams();
+
+  const navigate = useNavigate();
 
   async function resetPw(e) {
     e.preventDefault();
@@ -24,9 +30,12 @@ const ResetPw = () => {
         passwordResetCode: searchParams.get("code"),
         newPassword: pw
       });
-      setAlert({
-        color: "success",
-        msg: "Reset della password effettuato con successo! Puoi navigare al login"
+
+      navigate({
+        pathname: "/login",
+        search: createSearchParams({
+          alert: true
+        }).toString()
       });
     } catch (err) {
       console.log("pw reset error", err);

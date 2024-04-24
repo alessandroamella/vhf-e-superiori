@@ -50,14 +50,12 @@ const router = Router();
  */
 router.post(
     "/",
-    body("oldPassword")
-        .isString()
-        .trim()
-        .isStrongPassword({ minLength: 8, minSymbols: 0 }),
+    body("oldPassword").isString(),
     body("newPassword")
         .isString()
         .trim()
-        .isStrongPassword({ minLength: 8, minSymbols: 0 }),
+        .isStrongPassword({ minLength: 8, minSymbols: 0 })
+        .withMessage(Errors.WEAK_PW),
     validate,
     async (req, res) => {
         if (!req.user) {
@@ -76,7 +74,7 @@ router.post(
                 logger.debug("User change pw invalid pw");
                 return res
                     .status(UNAUTHORIZED)
-                    .json(createError(Errors.INVALID_PW));
+                    .json(createError(Errors.WRONG_PW));
             }
 
             const plainPw = req.body.newPassword;

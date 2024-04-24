@@ -7,7 +7,7 @@ import React, { useContext } from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import {
-  FaArrowLeft,
+  FaBackward,
   FaExclamationTriangle,
   FaInfoCircle
 } from "react-icons/fa";
@@ -184,7 +184,7 @@ const ViewEvent = () => {
       {event ? (
         <EventContainer>
           <Button className="mb-4" onClick={() => navigate(-1)}>
-            <FaArrowLeft />
+            <FaBackward />
           </Button>
 
           <Typography variant="h1" className="flex items-center">

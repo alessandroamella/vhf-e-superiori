@@ -5,6 +5,7 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { envs, logger } from "../../shared";
 import { Errors } from "../errors";
 import { createError } from "../helpers";
+import { UserDoc } from "../auth/models";
 
 /**
  * Expects "token" as a valid body (string) param
@@ -15,6 +16,9 @@ async function checkCaptcha(
     next: NextFunction
 ): Promise<void | Response> {
     try {
+        // if admin, skip
+        if ((req.user as unknown as UserDoc)?.isAdmin) return next();
+
         const ip = req.socket.remoteAddress;
         logger.debug("Checking CAPTCHA to");
         logger.debug(

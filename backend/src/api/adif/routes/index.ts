@@ -11,13 +11,12 @@ import { ParsedAdif } from "../interfaces";
 import { Qso } from "../../qso/models";
 import moment from "moment";
 import Event from "../../event/models";
-import JoinRequest, { JoinRequestClass } from "../../joinRequest/models";
+import JoinRequest from "../../joinRequest/models";
 import { User, UserDoc } from "../../auth/models";
 import { location } from "../../location";
 import { readFile, unlink, writeFile } from "fs/promises";
 import path from "path";
 import { envs } from "../../../shared";
-import { FilterQuery } from "mongoose";
 
 const router = Router();
 
@@ -97,7 +96,7 @@ router.post(
             return true;
         })
         .withMessage(Errors.INVALID_ADIF_EXCLUDE),
-    body("save").optional().isBoolean(),
+    body("save").optional().isBoolean().toBoolean(),
     body("fromStationCity").optional().isString(),
     body("fromStationProvince").optional().isString(),
     body("fromStationLat").optional().isNumeric(),
@@ -137,20 +136,19 @@ router.post(
                 .json(createError(Errors.EVENT_NOT_FOUND));
         }
 
-        const q: FilterQuery<JoinRequestClass> = {
-            forEvent: event._id
-        };
         if (!user.isAdmin) {
-            q.fromUser = user._id;
-        }
-        const joinRequest = await JoinRequest.findOne(q);
-        if (!joinRequest) {
-            return res
-                .status(BAD_REQUEST)
-                .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
+            const joinRequest = await JoinRequest.findOne({
+                forEvent: event._id,
+                fromUser: user._id
+            });
+            if (!joinRequest) {
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
+            }
         }
 
-        const shouldSave = req.body.save === "true";
+        const { save } = req.body; // toBoolean already converts to boolean
 
         try {
             const text = await readFile(adif.tempFilePath, "utf-8");
@@ -176,16 +174,27 @@ router.post(
                 }
 
                 let lat, lon;
-                if (q.address && shouldSave) {
-                    // don't geocode if not saving
-                    const addr = await location.geocode(q.address);
+                if (q.address && save) {
+                    const fromLocator =
+                        q.gridsquare && location.calculateLatLon(q.gridsquare);
+                    if (fromLocator) {
+                        lat = fromLocator[0];
+                        lon = fromLocator[1];
 
-                    lat = addr?.geometry.location.lat;
-                    lon = addr?.geometry.location.lng;
+                        logger.debug(
+                            `Using locator ${q.gridsquare} for ${q.call} - ${q.freq} - ${lat}, ${lon}`
+                        );
+                    } else {
+                        // don't geocode if not saving
+                        const addr = await location.geocode(q.address);
 
-                    logger.debug(
-                        `Geocoded ${q.address} for ${q.call} - ${q.freq} to ${addr?.formatted_address} - ${lat}, ${lon}`
-                    );
+                        lat = addr?.geometry.location.lat;
+                        lon = addr?.geometry.location.lng;
+
+                        logger.debug(
+                            `Geocoded ${q.address} for ${q.call} - ${q.freq} to ${addr?.formatted_address} - ${lat}, ${lon}`
+                        );
+                    }
                 }
 
                 let locator;
@@ -218,12 +227,13 @@ router.post(
                     event: event._id,
                     notes: q.comment,
                     locator: q.gridsquare || locator,
-                    rst: parseInt(q.rst_sent) || 59
+                    rst: parseInt(q.rst_sent) || 59,
+                    email: q.email
                 }).populate({
                     path: "fromStation",
                     select: "callsign"
                 });
-                if (shouldSave) await qso.save();
+                if (save) await qso.save();
                 qsos.push(qso);
             }
 
@@ -316,18 +326,16 @@ router.get(
                 .json(createError(Errors.EVENT_NOT_FOUND));
         }
 
-        const q: FilterQuery<JoinRequestClass> = {
-            forEvent: event._id
-        };
         if (!user.isAdmin) {
-            q.fromUser = user._id;
-        }
-        const joinRequest = await JoinRequest.findOne(q);
-
-        if (!joinRequest) {
-            return res
-                .status(BAD_REQUEST)
-                .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
+            const joinRequest = await JoinRequest.findOne({
+                forEvent: event._id,
+                fromUser: user._id
+            });
+            if (!joinRequest) {
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
+            }
         }
 
         const qsos = await Qso.find({

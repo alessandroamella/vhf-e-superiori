@@ -17,7 +17,6 @@ import axios from "axios";
 import {
   Alert,
   Avatar,
-  Badge,
   Button,
   Card,
   Dropdown,
@@ -39,22 +38,18 @@ import {
   WhatsappIcon,
   EmailIcon
 } from "react-share";
-import { FaArrowLeft, FaExternalLinkAlt } from "react-icons/fa";
+import { FaArrowLeft, FaBackward, FaExternalLinkAlt } from "react-icons/fa";
 import { Helmet } from "react-helmet";
-import { MapContainer, Polyline, TileLayer } from "react-leaflet";
+
+import { Polyline, TileLayer } from "react-leaflet";
+
 import StationMapMarker from "../shared/StationMapMarker";
+import CallsignLoading from "../shared/CallsignLoading";
+import CustomMapContainer from "../shared/CustomMapContainer";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { getDate } from "date-fns";
-import MapWatermark from "../shared/MapWatermark";
 import ReactPlaceholder from "react-placeholder";
-
-const CallsignLoading = ({ user }) => {
-  return (
-    <ReactPlaceholder showLoadingAnimation type="text" ready={!!user?.callsign}>
-      {user?.callsign}
-    </ReactPlaceholder>
-  );
-};
+import MapPrint from "../shared/MapPrint";
 
 const ViewPublished = () => {
   const { splashPlayed } = useContext(SplashContext);
@@ -108,66 +103,23 @@ const ViewPublished = () => {
     fetchPosts();
   }, [callsign]);
 
-  const [userLatLon, setUserLatLon] = useState(null);
-  const qsosToShow = useMemo(() => {
-    if (!user) return;
-    const pushedQsos = [];
-    let _userLatLon;
-    user.qsos.forEach(qso => {
-      if (!qso?.fromStation?.callsign) {
-        console.log("No qso.fromStation.callsign in qso", qso);
-        return;
-      }
-      const isFromUser = qso.fromStation.callsign.includes(user.callsign);
-
-      const lats = [qso.fromStationLat, qso.toStationLat];
-      const lons = [qso.fromStationLon, qso.toStationLon];
-      const locators = [qso.fromLocator, qso.toLocator];
-      const callsigns = [qso.fromStation?.callsign, qso.callsign];
-
-      if (!isFromUser) {
-        lats.reverse();
-        lons.reverse();
-        locators.reverse();
-        callsigns.reverse();
-      }
-
-      if (lats[0] && lons[0] && !_userLatLon) {
-        _userLatLon = [lats[0], lons[0], locators[0]];
-      }
-
-      if (!lats[1] || !lons[1]) return;
-
-      pushedQsos.push({
-        ...qso,
-        fromStationLat: lats[0],
-        fromStationLon: lons[0],
-        fromLocator: locators[0],
-        toStationLat: lats[1],
-        toStationLon: lons[1],
-        toLocator: locators[1],
-
-        callsign: callsigns[1]
-      });
-    });
-    console.log("qsos to show:", pushedQsos);
-
-    if (!userLatLon && _userLatLon) {
-      setUserLatLon(_userLatLon);
-    }
-
-    return pushedQsos;
-  }, [user, userLatLon]);
-
   const [mappedEvents, setMappedEvents] = useState(null);
 
+  const validQsos = useMemo(() => {
+    if (!user?.qsos) return null;
+    return user.qsos.filter(
+      e =>
+        e.fromStationLat && e.fromStationLon && e.toStationLat && e.toStationLon
+    );
+  }, [user]);
+
   useEffect(() => {
-    if (!qsosToShow) return;
-    const events = [...new Set(qsosToShow.map(e => e.event._id))].map(
-      e => qsosToShow.find(q => q.event._id === e).event
+    if (!validQsos) return;
+    const events = [...new Set(validQsos.map(e => e.event._id))].map(
+      e => validQsos.find(q => q.event._id === e).event
     );
     setMappedEvents(events);
-  }, [qsosToShow]);
+  }, [validQsos]);
 
   const _eventToFilter = searchParams.get("event");
 
@@ -190,31 +142,78 @@ const ViewPublished = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(
-    "_eventToFilter",
-    _eventToFilter,
-    "qsostoshow",
-    qsosToShow?.filter(e =>
+  const qsoPoints = useMemo(() => {
+    if (!validQsos) return null;
+
+    const _points = []; // {callsign, locator, lat, lon}[]
+    const filtered = validQsos.filter(e =>
       !_eventToFilter ? true : e.event._id === _eventToFilter
-    ).length
-  );
+    );
 
-  const mappedQsosToShow = useMemo(
-    () =>
-      qsosToShow?.filter(e =>
-        !_eventToFilter ? true : e.event._id === _eventToFilter
-      ),
-    [_eventToFilter, qsosToShow]
-  );
+    for (const qso of filtered) {
+      const from = [qso.fromStationLat, qso.fromStationLon];
+      const to = [qso.toStationLat, qso.toStationLon];
 
-  const [showQsosModal, setShowQsosModal] = useState(false);
+      if (from.every(e => !isNaN(e))) {
+        _points.push({
+          callsign: qso.fromStation?.callsign || qso.callsign,
+          locator: qso.fromLocator || qso.locator,
+          lat: from[0],
+          lon: from[1]
+        });
+      }
+      if (to.every(e => !isNaN(e))) {
+        _points.push({
+          callsign: qso.callsign,
+          locator: qso.locator,
+          lat: to[0],
+          lon: to[1]
+        });
+      }
+    }
+
+    // remove duplicates (same lat and lon)
+    const points = _points.filter(
+      (e, i, a) => a.findIndex(t => t.lat === e.lat && t.lon === e.lon) === i
+    );
+
+    return points;
+  }, [_eventToFilter, validQsos]);
+
+  const qsoLines = useMemo(() => {
+    if (!validQsos) return null;
+
+    const lines = validQsos
+      ?.filter(e => (!_eventToFilter ? true : e.event._id === _eventToFilter))
+      .filter(
+        e =>
+          e.fromStationLat &&
+          e.fromStationLon &&
+          e.toStationLat &&
+          e.toStationLon
+      );
+
+    return lines;
+  }, [_eventToFilter, validQsos]);
+
+  const showQsosModal = searchParams.get("showQsosModal");
+  const setShowQsosModal = show => {
+    if (show) {
+      searchParams.set("showQsosModal", true);
+    } else {
+      searchParams.delete("showQsosModal");
+    }
+    setSearchParams(searchParams);
+  };
+
+  // const [showQsosModal, setShowQsosModal] = useState(false);
 
   const socialTitle = user ? `QSO di ${user?.callsign}` : "Visualizza QSO";
   const socialBody =
     socialTitle +
     " " +
-    (user?.qsos?.length
-      ? `Visualizza i ${user?.qsos?.length} QSO di ${user?.callsign}`
+    (validQsos?.length
+      ? `Visualizza i ${validQsos?.length} QSO di ${user?.callsign}`
       : "Visualizza tutti i QSO");
 
   const location = useLocation();
@@ -234,13 +233,19 @@ const ViewPublished = () => {
         onClose={() => setShowQsosModal(false)}
       >
         <Modal.Header>
-          QSO di <CallsignLoading user={user} />
-          {user?.qsos && (
-            <span>
-              {" "}
-              (<strong>{user.qsos.length}</strong> registrati)
-            </span>
-          )}
+          <CallsignLoading
+            prefix="QSO di"
+            user={user}
+            className="font-bold"
+            suffix={
+              validQsos && (
+                <span>
+                  {" "}
+                  (<strong>{validQsos.length}</strong> registrati)
+                </span>
+              )
+            }
+          />
         </Modal.Header>
         <Modal.Body>
           <div className="max-h-[69vh] -m-6 overflow-y-auto">
@@ -258,7 +263,7 @@ const ViewPublished = () => {
                 <Table.HeadCell>RST</Table.HeadCell>
               </Table.Head>
               <Table.Body>
-                {user?.qsos.map((qso, i) => (
+                {validQsos?.map((qso, i) => (
                   <Table.Row
                     key={qso._id}
                     onClick={() => navigate(`/qso/${qso._id}`)}
@@ -350,7 +355,7 @@ const ViewPublished = () => {
           </Alert>
         )}
         <Button className="mb-4" onClick={() => navigate(-1)}>
-          <FaArrowLeft />
+          <FaBackward />
         </Button>
 
         <Button
@@ -373,14 +378,13 @@ const ViewPublished = () => {
                 <div className="flex gap-4 items-center flex-row justify-center w-full">
                   <Avatar size="lg" img={user?.pp} alt="Profile" />
                   <div className="flex flex-col gap-0">
-                    <h2 className="font-bold text-xl flex items-center gap-2">
-                      {user.callsign}
-                      {user?.isDev && <Badge color="purple">Dev 👨‍💻</Badge>}
-                      {user?.isAdmin && <Badge color="pink">Admin 🛡️</Badge>}
-                    </h2>
+                    <CallsignLoading
+                      user={user}
+                      className="font-bold text-lg"
+                    />
                     <p>{user?.name}</p>
                     {user?.createdAt && (
-                      <p className="text-gray-500 text-sm">
+                      <p className="text-gray-500 dark:text-gray-300 text-sm">
                         Membro dal
                         {[1, 8].includes(getDate(new Date(user.createdAt)))
                           ? "l'"
@@ -424,7 +428,7 @@ const ViewPublished = () => {
               )}
               {!showMap && (
                 <div className="my-2 flex justify-center">
-                  {qsosToShow && userLatLon ? (
+                  {user ? (
                     <Button
                       onClick={() => setIsFakeLoading(true)}
                       size="lg"
@@ -453,7 +457,7 @@ const ViewPublished = () => {
                 rows={10}
                 ready={!isFakeLoading}
               />
-              {qsosToShow && userLatLon && showMap ? (
+              {user && showMap ? (
                 <div
                   id="user-map-container"
                   className="drop-shadow-lg flex flex-col items-center gap-2 relative"
@@ -468,7 +472,7 @@ const ViewPublished = () => {
                         label={
                           (
                             _eventToFilter &&
-                            qsosToShow.find(e => e.event._id === _eventToFilter)
+                            validQsos?.find(e => e.event._id === _eventToFilter)
                           )?.event?.name || "Tutti i miei QSO"
                         }
                         id="filterByEvent"
@@ -477,63 +481,80 @@ const ViewPublished = () => {
                         color="light"
                       >
                         <Dropdown.Item onClick={() => setEventToFilter(null)}>
-                          Tutti
+                          Tutti ({validQsos?.length})
                         </Dropdown.Item>
                         {mappedEvents?.map(e => (
                           <Dropdown.Item
                             key={e._id}
                             onClick={() => setEventToFilter(e._id)}
                           >
-                            {e.name}
+                            {e.name} (
+                            {
+                              validQsos?.filter(q => q.event._id === e._id)
+                                ?.length
+                            }
+                            )
                           </Dropdown.Item>
                         ))}
                       </Dropdown>
                     </div>
                     <Button onClick={() => setShowQsosModal(true)}>
                       <FaExternalLinkAlt className="inline mr-1" />
-                      Visualizza QSO di <CallsignLoading user={user} />
+                      <span className="mr-1">Visualizza QSO di</span>{" "}
+                      <CallsignLoading user={user} />
                     </Button>
                   </div>
-                  {mappedQsosToShow && mappedQsosToShow.length > 0 ? (
+                  {qsoLines && qsoLines.length > 0 ? (
                     <>
-                      <MapContainer center={[41.895643, 12.4831082]} zoom={5}>
+                      <CustomMapContainer
+                        center={[41.895643, 12.4831082]}
+                        zoom={5}
+                      >
+                        <MapPrint
+                          position="topleft"
+                          sizeModes={["A4Portrait", "A4Landscape"]}
+                          hideControlContainer={false}
+                          title="Print"
+                          exportOnly
+                          filename={`mappa-${user.callsign.toLowerCase()}`}
+                        />
+
                         <TileLayer
                           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         />
 
-                        <StationMapMarker
-                          callsign={user.callsign}
-                          lat={userLatLon[0]}
-                          lon={userLatLon[1]}
-                          locator={userLatLon[2]}
-                        />
-                        {mappedQsosToShow?.map(qso => (
-                          <React.Fragment key={qso._id}>
-                            <Polyline
-                              positions={[
-                                [userLatLon[0], userLatLon[1]],
-                                [qso.toStationLat, qso.toStationLon]
-                              ]}
-                              color="blue"
-                            />
-                            <StationMapMarker
-                              key={qso._id}
-                              callsign={qso.callsign}
-                              lat={qso.toStationLat}
-                              lon={qso.toStationLon}
-                              locator={qso.toLocator}
-                              createUrl={
-                                qso.isRegistered &&
-                                qso.callsign !== user.callsign
-                              }
-                            />
-                          </React.Fragment>
+                        {qsoPoints?.map((point, i) => (
+                          <StationMapMarker
+                            key={i}
+                            callsign={point.callsign}
+                            locator={point.locator}
+                            lat={point.lat}
+                            lon={point.lon}
+                            iconRescaleFactor={0.69}
+                          />
                         ))}
 
-                        <MapWatermark />
-                      </MapContainer>
+                        {qsoLines?.map(line => (
+                          <Polyline
+                            key={line._id}
+                            positions={[
+                              [line.fromStationLat, line.fromStationLon],
+                              [line.toStationLat, line.toStationLon]
+                            ]}
+                            color="blue"
+                            weight={2} // make a bit thinner
+                          />
+                        ))}
+                      </CustomMapContainer>
                       <div className="flex items-center gap-1 w-full mt-2 justify-center md:justify-end">
+                        <div className="flex items-center gap-1 w-full mt-2 justify-center md:justify-end">
+                          {/* <Button onClick={() => setExportMap(true)}>
+                            Condividi
+                          </Button> */}
+                          {/* Share buttons */}
+                        </div>
+
                         <FacebookShareButton
                           url={curUrl}
                           quote={socialTitle}
@@ -564,10 +585,29 @@ const ViewPublished = () => {
                       </div>
                     </>
                   ) : (
-                    <Card>
-                      <p>
-                        Nessun QSO registato con nominativo {user?.callsign}
-                      </p>
+                    <Card className="mt-4">
+                      <div className="flex flex-col items-center gap-4">
+                        <p>
+                          Nessun QSO registato con nominativo {user?.callsign}
+                          {_eventToFilter && (
+                            <span>
+                              {" "}
+                              per l'evento{" "}
+                              <strong>
+                                {
+                                  mappedEvents?.find(
+                                    e => e._id === _eventToFilter
+                                  )?.name
+                                }
+                              </strong>
+                            </span>
+                          )}
+                        </p>
+                        <Button onClick={() => setEventToFilter(null)}>
+                          <FaArrowLeft className="inline mr-1" />
+                          Torna alla mappa senza filtro
+                        </Button>
+                      </div>
                     </Card>
                   )}
                 </div>

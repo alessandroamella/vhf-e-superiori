@@ -105,9 +105,10 @@ async function returnUserWithPosts(
                           )
                         : undefined,
                 toLocator:
-                    e.toStationLat && e.toStationLon
+                    e.locator ||
+                    (e.toStationLat && e.toStationLon
                         ? location.calculateQth(e.toStationLat, e.toStationLon)
-                        : undefined,
+                        : undefined),
                 isRegistered: await User.exists({ callsign: e.callsign })
             }))
         );

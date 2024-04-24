@@ -25,6 +25,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState
 } from "react";
 import { it } from "date-fns/locale";
@@ -39,7 +40,8 @@ import {
   FaClipboardCheck,
   FaClipboard,
   FaUserShield,
-  FaUserSlash
+  FaKey,
+  FaExclamationTriangle
 } from "react-icons/fa";
 import {
   Link,
@@ -57,6 +59,9 @@ import { isFuture } from "date-fns";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { Helmet } from "react-helmet";
+import ReactPlaceholder from "react-placeholder";
+import ReactGoogleAutocomplete from "react-google-autocomplete";
+import CallsignLoading from "../shared/CallsignLoading";
 
 const AdminManager = () => {
   const { user } = useContext(UserContext);
@@ -112,22 +117,22 @@ const AdminManager = () => {
     (eventPage - 1) * eventsPerPage + eventsPerPage
   ];
 
-  useEffect(() => {
-    async function getUsers() {
-      try {
-        const { data } = await axios.get("/api/auth/all");
-        console.log("users", data);
-        setUsers(data);
-        // set page to last
-      } catch (err) {
-        console.log("Errore nel caricamento degli utenti", err);
-        setAlert({
-          color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
-        });
-        setUsers(null);
-      }
+  async function getUsers() {
+    try {
+      const { data } = await axios.get("/api/auth/all");
+      console.log("users", data);
+      setUsers(data);
+      // set page to last
+    } catch (err) {
+      console.log("Errore nel caricamento degli utenti", err);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+      setUsers(null);
     }
+  }
+  useEffect(() => {
     async function getPosts() {
       try {
         const { data } = await axios.get("/api/post");
@@ -577,30 +582,86 @@ const AdminManager = () => {
     fetchBlogPosts();
   }, []);
 
-  async function makeAdmin(user, isAdmin) {
+  const [_showEditUserModal, _setShowEditUserModal] = useState(null);
+  const [userEditing, setUserEditing] = useState(null);
+
+  const [addressInput, setAddressInput] = useState("");
+  const addressInputRef = useRef(null);
+
+  useEffect(() => {
+    if (!userEditing) {
+      _setShowEditUserModal(false);
+      setAddressInput("");
+      return;
+    }
+    _setShowEditUserModal(true);
+    setAddressInput(userEditing.address || "");
+  }, [userEditing]);
+
+  const [editAlert, setEditAlert] = useState(null);
+
+  async function submitEditUser(e) {
+    e.preventDefault();
+
+    setEditAlert(null);
+
+    if (!window.confirm(`Vuoi modificare l'utente ${userEditing.callsign}?`)) {
+      return;
+    }
+
+    setDisabled(true);
+    try {
+      await axios.put("/api/auth/" + userEditing._id, userEditing);
+      await getUsers();
+      setUserEditing(null);
+    } catch (err) {
+      console.log(err);
+      setEditAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+    } finally {
+      setDisabled(false);
+    }
+  }
+
+  const editUserRef = useRef(null);
+
+  useEffect(() => {
+    if (!editAlert || !editUserRef.current) return;
+
+    // scroll div to top
+    editUserRef.current.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }, [editAlert]);
+
+  async function sendPwResetMail() {
     if (
       !window.confirm(
-        `Vuoi ${isAdmin ? "rendere" : "RIMUOVERE come"} ADMIN l'utente ${
-          user.callsign
-        }?`
+        `Vuoi inviare una email di reset password all'utente ${userEditing.callsign} (email: ${userEditing.email})?`
       )
     ) {
       return;
     }
     setDisabled(true);
     try {
-      await axios.put("/api/auth/admin/" + user._id, {
-        isAdmin
+      await axios.post("/api/auth/sendresetpw", {
+        email: userEditing.email,
+        token: "nope" // admin so no captcha
       });
-      const _users = [...users];
-      const i = _users.findIndex(u => u._id === user._id);
-      _users[i].isAdmin = isAdmin;
-      setUsers(_users);
+      window.alert("Email inviata");
     } catch (err) {
       console.log(err);
       setAlert({
         color: "failure",
         msg: getErrorStr(err?.response?.data?.err)
+      });
+      setUserEditing(null);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
       });
     } finally {
       setDisabled(false);
@@ -1005,6 +1066,225 @@ const AdminManager = () => {
         </Modal.Body>
       </Modal>
 
+      <Modal
+        position="center"
+        size="7xl"
+        show={_showEditUserModal}
+        onClose={() => _setShowEditUserModal(null)}
+      >
+        <form onSubmit={submitEditUser}>
+          <Modal.Header>
+            <div className="flex items-center gap-2">
+              Modifica utente <CallsignLoading user={userEditing} />
+            </div>
+          </Modal.Header>
+          <Modal.Body>
+            <ReactPlaceholder
+              ready={userEditing}
+              showLoadingAnimation
+              type="text"
+              rows={10}
+            >
+              <div
+                ref={editUserRef}
+                className="space-y-2 flex flex-col gap-4 overflow-y-auto max-h-[60vh] pr-4"
+              >
+                {editAlert && (
+                  <Alert
+                    color={editAlert.color}
+                    onDismiss={() => setEditAlert(null)}
+                  >
+                    <span>{editAlert.msg}</span>
+                  </Alert>
+                )}
+                <div>
+                  <div className="mb-2 block">
+                    <Label htmlFor="user-name" value="Nome" />
+                  </div>
+                  <TextInput
+                    id="user-name"
+                    type="text"
+                    required={true}
+                    value={userEditing?.name}
+                    onChange={e =>
+                      setUserEditing({ ...userEditing, name: e.target.value })
+                    }
+                    disabled={disabled}
+                  />
+                </div>
+                <div>
+                  <div className="mb-2 block">
+                    <Label htmlFor="user-address" value="Indirizzo" />
+                  </div>
+                  <ReactGoogleAutocomplete
+                    apiKey="AIzaSyAiPVD_IqTn5kMi2GFXwYQCTYaxznEbCfk"
+                    options={{
+                      types: ["geocode"]
+                    }}
+                    onPlaceSelected={place => {
+                      console.log("place", place);
+                      const addr = place.formatted_address;
+                      let cityIndex = place.address_components.findIndex(c =>
+                        c.types.includes("administrative_area_level_3")
+                      );
+                      if (cityIndex === -1) {
+                        cityIndex = 1;
+                      }
+                      const city =
+                        place.address_components[cityIndex].long_name;
+                      const province =
+                        place.address_components[cityIndex + 1].short_name;
+
+                      setUserEditing({
+                        ...userEditing,
+                        city,
+                        province,
+                        lat: place.geometry.location.lat(),
+                        lon: place.geometry.location.lng(),
+                        address: addr
+                      });
+                    }}
+                    className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 rounded-lg p-2.5 text-sm"
+                    id="address"
+                    name="addressInput"
+                    lang="it"
+                    language="it"
+                    type="text"
+                    placeholder="Modena"
+                    autoComplete="address-level4"
+                    value={addressInput}
+                    onChange={e => setAddressInput(e.target.value)}
+                    onBlur={() => setAddressInput(userEditing?.address || "")}
+                    disabled={!user}
+                    helperText="Inserisci l'indirizzo di stazione (la via)"
+                    ref={addressInputRef}
+                  />
+                </div>
+                <div>
+                  <div className="mb-2 block">
+                    <Label
+                      htmlFor="user-email"
+                      value={`Email ${
+                        userEditing?.isVerified
+                          ? "(verificata)"
+                          : "(non verificata, clicca su 'Applica modifiche' per forzare la verifica)"
+                      }`}
+                    />
+                  </div>
+                  <TextInput
+                    id="user-email"
+                    type="email"
+                    required={true}
+                    value={userEditing?.email}
+                    onChange={e =>
+                      setUserEditing({
+                        ...userEditing,
+                        email: e.target.value
+                      })
+                    }
+                    disabled={disabled}
+                  />
+                </div>
+                <div>
+                  <div className="mb-2 block">
+                    <Label htmlFor="user-phone" value="Telefono" />
+                  </div>
+                  <TextInput
+                    id="user-phone"
+                    type="tel"
+                    required={true}
+                    value={userEditing?.phoneNumber}
+                    onChange={e =>
+                      setUserEditing({
+                        ...userEditing,
+                        phoneNumber: e.target.value
+                      })
+                    }
+                    disabled={disabled}
+                  />
+                </div>
+                <div>
+                  <div className="mb-2 block">
+                    <Label htmlFor="user-callsign" value="Nominativo" />
+                  </div>
+                  <TextInput
+                    id="user-callsign"
+                    type="text"
+                    required={true}
+                    value={userEditing?.callsign}
+                    onChange={e =>
+                      setUserEditing({
+                        ...userEditing,
+                        callsign: e.target.value
+                      })
+                    }
+                    disabled={disabled}
+                  />
+                </div>
+                <div className="p-3 rounded-lg bg-red-100 dark:bg-red-900 flex flex-col items-center gap-4">
+                  <h3 className="text-red-800 dark:text-red-200 font-semibold flex items-center gap-2">
+                    <FaExclamationTriangle className="inline" />
+                    Attenzione a modificare i permessi!
+                  </h3>
+                  <div className="flex justify-center gap-4 md:gap-8">
+                    <div className="flex items-center gap-2">
+                      <Tooltip
+                        content={
+                          userEditing?._id === user?._id
+                            ? "Non puoi rimuovere i tuoi permessi"
+                            : "ATTENZIONE: rimuovendo i permessi di amministratore, l'utente non potrà più accedere a questa pagina e non potrà più gestire gli eventi."
+                        }
+                      >
+                        <Checkbox
+                          id="user-admin"
+                          checked={userEditing?.isAdmin}
+                          onChange={e =>
+                            setUserEditing({
+                              ...userEditing,
+                              isAdmin: e.target.checked
+                            })
+                          }
+                          disabled={disabled || userEditing?._id === user?._id}
+                        />
+                        <Label
+                          className="ml-1 select-none dark:text-gray-100"
+                          htmlFor="user-admin"
+                          value="Amministratore"
+                        />
+                      </Tooltip>
+                    </div>
+                    <Button
+                      color="info"
+                      onClick={() => sendPwResetMail()}
+                      disabled={disabled}
+                    >
+                      <FaKey className="inline mr-1" />
+                      Invia email reset password
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </ReactPlaceholder>
+          </Modal.Body>
+          <Modal.Footer>
+            <div className="w-full flex justify-center gap-2">
+              <Button
+                color="gray"
+                type="button"
+                // disabled={!user || changePwBtnDisabled}
+                disabled={disabled}
+                onClick={() => setUserEditing(null)}
+              >
+                Chiudi
+              </Button>
+              <Button disabled={disabled} color="info" type="submit">
+                Applica modifiche
+              </Button>
+            </div>
+          </Modal.Footer>
+        </form>
+      </Modal>
+
       <div className="w-full h-full pb-24 dark:text-white dark:bg-gray-900">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           {alert && (
@@ -1044,39 +1324,19 @@ const AdminManager = () => {
                       </Table.Head>
                       <Table.Body>
                         {users?.map(u => (
-                          <Table.Row
-                            key={u._id}
-                            className={`${u.isAdmin ? "font-bold" : ""}`}
-                          >
+                          <Table.Row key={u._id}>
                             <Table.Cell className="flex gap-2 items-center whitespace-nowrap text-gray-900 dark:text-white">
-                              <Tooltip
-                                content={
-                                  u.isAdmin
-                                    ? "Rimuovi permessi di amministratore"
-                                    : "Rendi amministratore"
-                                }
+                              <Button
+                                size="sm"
+                                color="info"
+                                onClick={() => setUserEditing(u)}
+                                disabled={disabled}
                               >
-                                <Button
-                                  size="sm"
-                                  color={u.isAdmin ? "warning" : "failure"}
-                                  onClick={() => makeAdmin(u, !u.isAdmin)}
-                                  disabled={disabled}
-                                >
-                                  {u.isAdmin ? (
-                                    <FaUserSlash />
-                                  ) : (
-                                    <FaUserShield />
-                                  )}
-                                </Button>
-                              </Tooltip>
-                              {u.isAdmin ? (
-                                <span className="bg-red-200 dark:bg-red-500 rounded p-[2px]">
-                                  <FaUserShield className="inline mr-1 scale-90" />
-                                  {u.callsign}
-                                </span>
-                              ) : (
-                                <span>{u.callsign}</span>
-                              )}
+                                {u.isAdmin && (
+                                  <FaUserShield className="inline mr-1" />
+                                )}
+                                {u.callsign}
+                              </Button>
                             </Table.Cell>
                             <Table.Cell className="dark:text-gray-300">
                               {u.isAdmin ? (

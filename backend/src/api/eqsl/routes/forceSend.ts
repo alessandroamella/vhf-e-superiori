@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { param } from "express-validator";
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "http-status";
 import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
@@ -90,7 +90,7 @@ router.get(
                 if (!joinRequest) {
                     logger.debug("Join request not found");
                     return res
-                        .status(401)
+                        .status(UNAUTHORIZED)
                         .json(createError(Errors.NOT_AUTHORIZED_TO_EQSL));
                 }
             }

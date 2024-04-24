@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { checkSchema } from "express-validator";
+import { checkSchema, param } from "express-validator";
 import randomstring from "randomstring";
 import bcrypt from "bcrypt";
 import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "http-status";
 import updateSchema from "../schemas/updateSchema";
 import { User, UserDoc } from "../models";
 import { Errors } from "../../errors";
@@ -15,9 +15,17 @@ const router = Router();
 
 /**
  * @openapi
- * /api/auth:
+ * /api/auth/{id}:
  *  put:
- *    summary: Updates currently logged in user
+ *    summary: Updates user
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        schema:
+ *          type: string
+ *          format: ObjectId
+ *        required: true
+ *        description: ObjectId of the user to update (must be the same as the logged in user's _id if not admin)
  *    requestBody:
  *      required: true
  *      content:
@@ -61,16 +69,40 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.put(
-    "/",
+    "/:_id",
+    param("_id").isMongoId(),
     checkSchema(updateSchema),
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
-        if (!req.user) {
+        const curUser = req.user as unknown as UserDoc;
+        if (!curUser) {
             throw new Error("No req.user in user update");
         }
+        const user = await User.findOne({
+            _id: req.params._id
+        });
+
+        if (!user) {
+            return res
+                .status(BAD_REQUEST)
+                .json(createError(Errors.USER_NOT_FOUND));
+        }
+
+        // if user is not admin, check _id is the same as the user's _id
+        if (curUser._id.toString() !== req.params._id && !curUser.isAdmin) {
+            logger.debug(
+                `User ${curUser.callsign} tried to update user ${user.callsign} without admin privileges`
+            );
+
+            return res
+                .status(UNAUTHORIZED)
+                .json(createError(Errors.NOT_AN_ADMIN));
+        }
+
         try {
             // DEBUG email conferma
             const {
+                callsign,
                 name,
                 email,
                 phoneNumber,
@@ -80,10 +112,11 @@ router.put(
                 city,
                 province
             } = req.body;
+
             if (email) {
                 const emailExists = await User.exists({
                     email,
-                    callsign: { $ne: (req.user as unknown as UserDoc).callsign }
+                    callsign: { $ne: user.callsign }
                 });
                 if (emailExists) {
                     return res
@@ -91,10 +124,11 @@ router.put(
                         .json(createError(Errors.EMAIL_ALREADY_IN_USE));
                 }
             }
+
             if (phoneNumber) {
                 const phoneNumberExists = await User.exists({
                     phoneNumber,
-                    callsign: { $ne: (req.user as unknown as UserDoc).callsign }
+                    callsign: { $ne: user.callsign }
                 });
                 if (phoneNumberExists) {
                     return res
@@ -103,7 +137,7 @@ router.put(
                 }
             }
 
-            const oldEmail = (req.user as unknown as UserDoc).email;
+            const oldEmail = user.email;
             const obj = {
                 name,
                 email,
@@ -118,14 +152,24 @@ router.put(
                 obj.province = province;
             }
 
-            const user = await User.findOneAndUpdate(
-                { _id: (req.user as unknown as UserDoc)._id },
+            if (curUser.isAdmin) {
+                obj.callsign = callsign || user.callsign;
+            }
+
+            const newUser = await User.findOneAndUpdate(
+                { _id: user._id },
                 obj,
-                { new: true }
+                {
+                    new: true
+                }
             );
+            if (!newUser) {
+                throw new Error("User not found in update");
+            }
 
             logger.debug("Updated user with data:");
             logger.debug({
+                callsign,
                 name,
                 email,
                 phoneNumber,
@@ -136,16 +180,12 @@ router.put(
                 province
             });
 
-            if (!user) {
-                throw new Error("User in user update not found");
-            }
-
-            if (oldEmail !== email) {
+            if (oldEmail !== email && !newUser.isAdmin) {
                 logger.debug(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    `User ${(req.user as any).callsign} update: email was "${
+                    `User ${user.callsign} update: email was "${
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        (req.user as any).email
+                        user.email
                     }", now is "${email}"`
                 );
                 // user was not verified, create new verification code and send new verification email
@@ -154,30 +194,35 @@ router.put(
                     charset: "alphanumeric"
                 });
 
-                user.verificationCode = bcrypt.hashSync(newVerifCode, 10);
-                user.isVerified = false;
-                await user.save();
+                newUser.verificationCode = bcrypt.hashSync(newVerifCode, 10);
+                newUser.isVerified = false;
+                await newUser.save();
 
                 logger.debug(
-                    `New verification code for ${user.callsign}: ${newVerifCode} (hash: ${user.verificationCode})`
+                    `New verification code for ${newUser.callsign}: ${newVerifCode} (hash: ${user.verificationCode})`
                 );
 
-                await EmailService.sendVerifyMail(user, newVerifCode, false);
+                await EmailService.sendVerifyMail(newUser, newVerifCode, false);
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            req.user = user.toObject() as any;
+            if (curUser._id === user._id) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                req.user = user.toObject() as any;
+            }
 
-            // res.json(user.toObject());
-            return next();
+            return returnUserWithPosts(
+                req,
+                res,
+                next,
+                undefined,
+                newUser._id.toString()
+            );
         } catch (err) {
             logger.error("Error while updating user");
             logger.error(err);
             return res.status(INTERNAL_SERVER_ERROR).json(createError());
         }
-    },
-    (req: Request, res: Response, next: NextFunction) =>
-        returnUserWithPosts(req, res, next)
+    }
 );
 
 export default router;

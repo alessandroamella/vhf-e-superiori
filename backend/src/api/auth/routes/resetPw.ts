@@ -59,7 +59,8 @@ router.post(
     body("newPassword")
         .isString()
         .trim()
-        .isStrongPassword({ minLength: 8, minSymbols: 0 }),
+        .isStrongPassword({ minLength: 8, minSymbols: 0 })
+        .withMessage(Errors.INVALID_PW),
     validate,
     async (req, res) => {
         try {
