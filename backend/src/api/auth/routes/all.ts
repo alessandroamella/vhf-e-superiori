@@ -5,6 +5,7 @@ import { createError, validate } from "../../helpers";
 import { User } from "../models";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import JoinRequest from "../../joinRequest/models";
+import { location } from "../../location";
 
 const router = Router();
 
@@ -94,7 +95,11 @@ router.get(
                     );
                     return {
                         ...u.toJSON(),
-                        joinRequests: _joinRequests
+                        joinRequests: _joinRequests,
+                        locator:
+                            u.lat && u.lon
+                                ? location.calculateQth(u.lat, u.lon)
+                                : null
                     };
                 })
             );

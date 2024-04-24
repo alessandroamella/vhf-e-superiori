@@ -1318,6 +1318,7 @@ const AdminManager = () => {
                         <Table.HeadCell>Email</Table.HeadCell>
                         <Table.HeadCell>Telefono</Table.HeadCell>
                         <Table.HeadCell>Creazione</Table.HeadCell>
+                        <Table.HeadCell>Locatore</Table.HeadCell>
                         <Table.HeadCell>Richieste</Table.HeadCell>
                       </Table.Head>
                       <Table.Body>
@@ -1367,6 +1368,19 @@ const AdminManager = () => {
                                 u.createdAt,
                                 "Europe/Rome",
                                 "dd/MM/yyyy "
+                              )}
+                            </Table.Cell>
+                            <Table.Cell>
+                              {u.locator ? (
+                                <Tooltip
+                                  content={`${u.lat},${u.lon} (${
+                                    u.address || "Indirizzo sconosciuto"
+                                  })`}
+                                >
+                                  <span>{u.locator}</span>
+                                </Tooltip>
+                              ) : (
+                                <FaTimes />
                               )}
                             </Table.Cell>
                             <Table.Cell>
