@@ -78,10 +78,11 @@ const router = createBrowserRouter([
 ]);
 
 export const errors = {
-  USER_NOT_FOUND: "Utente non trovato",
+  USER_NOT_FOUND: "Utente non trovato. Potrebbe essere stato cancellato",
   INVALID_PW: "Password non valida",
   WRONG_PW: "Password errata",
-  DOC_NOT_FOUND: "Documento non trovato",
+  DOC_NOT_FOUND:
+    "Documento non trovato. Potrebbe essere stato cancellato o non esistere",
   SERVER_ERROR: "Errore del server",
   LOGIN_TOKEN_EXPIRED: "Login scaduto",
   UNKNOWN_ERROR: "Errore sconosciuto",
@@ -136,14 +137,14 @@ export const errors = {
   TOO_MANY_FILES: "Troppi file",
   TOO_MANY_PICTURES: "Troppe immagini",
   TOO_MANY_VIDEOS: "Troppi video",
-  POST_NOT_FOUND: "Post non trovato",
+  POST_NOT_FOUND: "Post non trovato. Potrebbe essere stato cancellato",
   MUST_BE_POST_OWNER: "Devi essere il proprietario del post per procedere",
   VIDEO_COMPRESS_NO_OUTPUT_PATH:
     "Percorso di output per compressione video non presente",
   NO_CONTENT: "Nessun contenuto",
   INVALID_QSO: "QSO non valido",
   JOIN_REQUEST_NOT_APPROVED: "Richiesta di partecipazione non approvata",
-  QSO_NOT_FOUND: "QSO non trovato",
+  QSO_NOT_FOUND: "QSO non trovato. Potrebbe essere stato cancellato",
   QSO_NOT_OWNED: "Devi essere il proprietario del QSO per procedere",
   ERROR_CREATING_IMAGE: "Errore nella creazione dell'immagine",
   NOT_AUTHORIZED_TO_EQSL: "Non sei autorizzato a creare una eQSL",
@@ -156,7 +157,7 @@ export const errors = {
   POST_IS_PROCESSING: "Il post è in fase di elaborazione",
   BEACON_EXISTS: "Beacon già esistente",
   INVALID_BEACON: "Beacon non valido",
-  BEACON_NOT_FOUND: "Beacon non trovato",
+  BEACON_NOT_FOUND: "Beacon non trovato. Potrebbe essere stato cancellato",
   NO_EMAIL_FOUND: "Nessuna email trovata",
   ERROR_QTH_PARSE: "Errore nel parsing del QTH",
   INVALID_MODE: "Modo non valido",

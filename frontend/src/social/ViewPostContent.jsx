@@ -21,6 +21,7 @@ import { Button } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaTrash } from "react-icons/fa";
+import CallsignLoading from "../shared/CallsignLoading";
 
 /**
  * @typedef {import('./NewPost').PostType} PostType
@@ -149,7 +150,13 @@ const ViewPostContent = React.memo(
                     <p className="uppercase tracking-tight font-semibold text-lg text-gray-700">
                       {post?.fromUser?.callsign && (
                         <Link to={`/u/${post?.fromUser?.callsign}`}>
-                          {post?.fromUser?.callsign}
+                          {post?.fromUser ? (
+                            <CallsignLoading user={post.fromUser} />
+                          ) : (
+                            <span className="text-gray-500 dark:text-gray-300">
+                              Utente non trovato
+                            </span>
+                          )}
                         </Link>
                         // <a
                         //   href={
@@ -257,7 +264,13 @@ const ViewPostContent = React.memo(
                             to={`/u/${comment?.fromUser?.callsign}`}
                             className="text-blue-500 hover:text-blue-700 transition-colors dark:text-gray-300 font-semibold"
                           >
-                            {comment?.fromUser?.callsign || "Anonimo"}
+                            {comment?.fromUser ? (
+                              <CallsignLoading user={comment.fromUser} />
+                            ) : (
+                              <span className="text-gray-500 dark:text-gray-300">
+                                Utente non trovato
+                              </span>
+                            )}
                           </Link>
                           <p className="text-gray-600 dark:text-gray-400">
                             {comment?.content}
