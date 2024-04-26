@@ -1165,9 +1165,13 @@ const AdminManager = () => {
                     <Label
                       htmlFor="user-email"
                       value={`Email ${
-                        userEditing?.isVerified
-                          ? "(verificata)"
-                          : "(non verificata, clicca su 'Applica modifiche' per forzare la verifica)"
+                        typeof userEditing?.isVerified !== "boolean" ? (
+                          <Spinner />
+                        ) : userEditing?.isVerified ? (
+                          "(✅ verificata)"
+                        ) : (
+                          "(❌ non verificata, clicca su 'Applica modifiche' per forzare la verifica)"
+                        )
                       }`}
                     />
                   </div>
@@ -1232,7 +1236,9 @@ const AdminManager = () => {
                         content={
                           userEditing?._id === user?._id
                             ? "Non puoi rimuovere i tuoi permessi"
-                            : "ATTENZIONE: rimuovendo i permessi di amministratore, l'utente non potrà più accedere a questa pagina e non potrà più gestire gli eventi."
+                            : userEditing?.isAdmin
+                            ? "ATTENZIONE: rimuovendo i permessi di amministratore, l'utente non potrà più accedere a questa pagina e non potrà più gestire gli eventi."
+                            : "Concedi i permessi di amministratore"
                         }
                       >
                         <Checkbox

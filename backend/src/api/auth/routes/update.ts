@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { checkSchema, param } from "express-validator";
+import { checkSchema, body, param } from "express-validator";
 import randomstring from "randomstring";
 import bcrypt from "bcrypt";
 import { createError, validate } from "../../helpers";
@@ -72,6 +72,7 @@ router.put(
     "/:_id",
     param("_id").isMongoId(),
     checkSchema(updateSchema),
+    body("isAdmin").optional().isBoolean().toBoolean(),
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
         const curUser = req.user as unknown as UserDoc;
@@ -110,7 +111,8 @@ router.put(
                 lat,
                 lon,
                 city,
-                province
+                province,
+                isAdmin
             } = req.body;
 
             if (email) {
@@ -154,6 +156,7 @@ router.put(
 
             if (curUser.isAdmin) {
                 obj.callsign = callsign || user.callsign;
+                obj.isAdmin = isAdmin || user.isAdmin;
             }
 
             const newUser = await User.findOneAndUpdate(
