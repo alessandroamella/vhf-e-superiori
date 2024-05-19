@@ -8,7 +8,7 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "http-status";
 import updateSchema from "../schemas/updateSchema";
 import { User, UserDoc } from "../models";
 import { Errors } from "../../errors";
-import EmailService from "../../../email";
+import EmailService from "../../email";
 import returnUserWithPosts from "../../middlewares/returnUserWithPosts";
 
 const router = Router();

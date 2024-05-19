@@ -9,7 +9,7 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { Errors } from "../../errors";
 import moment from "moment";
 import { User, UserDoc } from "../../auth/models";
-import EmailService from "../../../email";
+import EmailService from "../../email";
 
 const router = Router();
 

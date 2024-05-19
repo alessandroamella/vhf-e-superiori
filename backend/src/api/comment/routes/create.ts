@@ -8,7 +8,7 @@ import createSchema from "../schemas/createSchema";
 import { User, UserDoc } from "../../auth/models";
 import { BasePost } from "../../post/models";
 import { Comment } from "../models";
-import EmailService from "../../../email";
+import EmailService from "../../email";
 
 const router = Router();
 

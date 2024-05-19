@@ -4,7 +4,7 @@ import { param } from "express-validator";
 import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
-import EmailService from "../../../email";
+import EmailService from "../../email";
 import { User } from "../../auth/models";
 import { Errors } from "../../errors";
 import { isDocument } from "@typegoose/typegoose";

@@ -5,7 +5,7 @@ import randomstring from "randomstring";
 import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
 import { User, UserDoc } from "../models";
-import EmailService from "../../../email";
+import EmailService from "../../email";
 import { parsePhoneNumber } from "libphonenumber-js";
 
 passport.use(

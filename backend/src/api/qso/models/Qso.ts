@@ -10,7 +10,7 @@ import { EventClass, EventDoc } from "../../event/models";
 import sharp from "sharp";
 import EqslPic from "../../eqsl/eqsl";
 import { logger } from "../../../shared";
-import EmailService from "../../../email";
+import EmailService from "../../email";
 import { qrz } from "../../qrz";
 import { Qso } from ".";
 import { location } from "../../location";
