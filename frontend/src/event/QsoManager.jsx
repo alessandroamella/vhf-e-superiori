@@ -1289,7 +1289,7 @@ const QsoManager = () => {
                             </div>
                           )}
                           <div className="mt-4 flex flex-col items-center gap-2">
-                            <div className="flex justify-center">
+                            <div className="flex justify-center pb-2">
                               {page === 0 && (
                                 <Tooltip
                                   content={
