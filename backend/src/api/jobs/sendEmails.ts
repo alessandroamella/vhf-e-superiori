@@ -75,7 +75,9 @@ async function sendEqslEmail() {
                 : (await qrz.getInfo(callsignClean))?.email;
             if (!email) {
                 logger.warn(
-                    `Event ${event.name} QSO ${qso._id} no email found for ${fromStation.callsign}`
+                    `Event ${event.name} QSO ${qso._id} no email found for ${
+                        qso.fromStationCallsignOverride || fromStation.callsign
+                    }`
                 );
                 continue;
             }

@@ -8,6 +8,16 @@ const createSchema: Schema = {
         isMongoId: { options: [] },
         optional: true
     },
+    fromStationCallsignOverride: {
+        isString: { options: [] },
+        trim: { options: [] },
+        isLength: { options: { min: 1, max: 10 } },
+        toUpperCase: { options: [] },
+        // TODO add prefix and suffix support
+        // isAlphanumeric: { options: [] },
+        errorMessage: Errors.INVALID_CALLSIGN,
+        optional: true
+    },
     callsign: {
         isString: { options: [] },
         trim: { options: [] },

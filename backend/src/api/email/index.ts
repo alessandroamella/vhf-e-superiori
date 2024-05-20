@@ -313,7 +313,8 @@ export class EmailService {
 
         const html = await EmailService.loadMailFromFile("eqsl.html", {
             "{NOMINATIVO}": qso.callsign,
-            "{STAZIONE}": fromStation.callsign,
+            "{STAZIONE}":
+                qso.fromStationCallsignOverride || fromStation.callsign,
             "{QSOID}": qso._id.toString(),
             "{EVENTO}": event.name,
             "{EVENTID}": event._id.toString(),
@@ -331,7 +332,9 @@ export class EmailService {
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
             to: toEmail,
-            subject: "eQSL per il QSO con " + fromStation.callsign,
+            subject:
+                "eQSL per il QSO con " +
+                (qso.fromStationCallsignOverride || fromStation.callsign),
             html,
             attachments: [
                 {

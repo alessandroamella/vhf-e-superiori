@@ -155,7 +155,11 @@ const ViewPublished = () => {
 
       if (from.every(e => !isNaN(e))) {
         _points.push({
-          callsign: qso.fromStation?.callsign || qso.callsign,
+          callsign:
+            qso.fromStationCallsignOverride ||
+            qso.fromStationCallsignOverride ||
+            qso.fromStation?.callsign ||
+            qso.callsign,
           locator: qso.fromLocator || qso.locator,
           lat: from[0],
           lon: from[1]
@@ -273,16 +277,21 @@ const ViewPublished = () => {
                     </Table.Cell>
                     <Table.Cell
                       className={
-                        qso.fromStation?.callsign &&
+                        (qso.fromStationCallsignOverride ||
+                          qso.fromStation?.callsign) &&
                         user?.callsign &&
-                        qso.fromStation?.callsign.includes(user?.callsign)
+                        (
+                          qso.fromStationCallsignOverride ||
+                          qso.fromStation?.callsign
+                        ).includes(user?.callsign)
                           ? "font-bold"
                           : ""
                       }
                     >
-                      {qso.fromStation?.callsign || (
-                        <span className="text-red-500">--</span>
-                      )}
+                      {qso.fromStationCallsignOverride ||
+                        qso.fromStation?.callsign || (
+                          <span className="text-red-500">--</span>
+                        )}
                     </Table.Cell>
                     <Table.Cell
                       className={

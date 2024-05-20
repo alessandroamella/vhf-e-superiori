@@ -75,10 +75,13 @@ const Qso = () => {
 
   const navigate = useNavigate();
 
+  const fromCallsign =
+    qso?.fromStationCallsignOverride || qso?.fromStation?.callsign;
+
   const socialTitle = qso && `QSO ${qso?.callsign} - ${qso?.event?.name}`;
   const socialBody =
     qso &&
-    `QSO ${qso?.callsign} - ${qso?.fromStation?.callsign} - ${qso?.event?.name} - ${qso?.qsoDate} UTC - ${qso?.frequency} MHz - ${qso?.mode} - VHF e superiori`;
+    `QSO ${qso?.callsign} - ${fromCallsign} - ${qso?.event?.name} - ${qso?.qsoDate} UTC - ${qso?.frequency} MHz - ${qso?.mode} - VHF e superiori`;
 
   return (
     <Layout>
@@ -133,7 +136,7 @@ const Qso = () => {
                         <Table.Row className="dark:text-white dark:bg-gray-800">
                           <Table.Cell>{qso?.event?.name}</Table.Cell>
                           <Table.Cell>{qso?.callsign}</Table.Cell>
-                          <Table.Cell>{qso?.fromStation?.callsign}</Table.Cell>
+                          <Table.Cell>{fromCallsign}</Table.Cell>
                           <Table.Cell>
                             {qso?.qsoDate &&
                               formatInTimeZone(
@@ -245,7 +248,7 @@ const Qso = () => {
                     />
 
                     <StationMapMarker
-                      callsign={qso.fromStation.callsign}
+                      callsign={fromCallsign}
                       lat={qso.fromStationLat}
                       lon={qso.fromStationLon}
                       locator={qso.fromLocator}

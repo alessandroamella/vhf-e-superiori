@@ -88,7 +88,8 @@ const Rankings = () => {
                 .filter(
                   r =>
                     r.callsign === showRankings ||
-                    r.fromStation?.callsign === showRankings
+                    (r.fromStationCallsignOverride ||
+                      r.fromStation?.callsign) === showRankings
                 )
                 .map(r => (
                   <Table striped>

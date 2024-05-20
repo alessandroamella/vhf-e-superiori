@@ -134,15 +134,17 @@ router.get(
                 );
                 continue;
             }
-            if (!map.has(qso.fromStation.callsign)) {
-                map.set(qso.fromStation.callsign, {
+
+            const fromCallsign =
+                qso.fromStationCallsignOverride || qso.fromStation.callsign;
+
+            if (!map.has(fromCallsign)) {
+                map.set(fromCallsign, {
                     qsos: [],
-                    isStation: stationCallsigns.includes(
-                        qso.fromStation.callsign
-                    )
+                    isStation: stationCallsigns.includes(fromCallsign)
                 });
             }
-            map.get(qso.fromStation.callsign)?.qsos.push(qso);
+            map.get(fromCallsign)?.qsos.push(qso);
         }
 
         const _rankings: (Omit<Ranking, "position"> & {

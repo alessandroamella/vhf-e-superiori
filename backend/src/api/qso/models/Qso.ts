@@ -207,6 +207,9 @@ export class QsoClass {
     public fromStation!: Ref<UserClass>;
 
     @prop({ required: false })
+    public fromStationCallsignOverride?: string;
+
+    @prop({ required: false })
     public fromStationLat?: number;
 
     @prop({ required: false })

@@ -110,6 +110,7 @@ router.post(
 
             const {
                 callsign,
+                fromStationCallsignOverride,
                 event,
                 frequency,
                 band,
@@ -130,6 +131,7 @@ router.post(
             logger.info({
                 fromStation,
                 callsign,
+                fromStationCallsignOverride,
                 event,
                 frequency,
                 band,
@@ -145,6 +147,7 @@ router.post(
             });
             const qso = new Qso({
                 fromStation,
+                fromStationCallsignOverride,
                 callsign,
                 event,
                 frequency,

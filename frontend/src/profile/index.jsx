@@ -915,14 +915,16 @@ const Profile = () => {
                             >
                               <Table.Cell
                                 className={
-                                  qso.fromStation?.callsign.includes(
-                                    user?.callsign
-                                  )
+                                  (
+                                    qso.fromStationCallsignOverride ||
+                                    qso.fromStation?.callsign
+                                  ).includes(user?.callsign)
                                     ? "font-bold"
                                     : ""
                                 }
                               >
-                                {qso.fromStation?.callsign}
+                                {qso.fromStationCallsignOverride ||
+                                  qso.fromStation?.callsign}
                               </Table.Cell>
                               <Table.Cell
                                 className={

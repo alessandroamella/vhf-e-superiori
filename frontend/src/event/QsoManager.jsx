@@ -136,6 +136,12 @@ const QsoManager = () => {
     }
   }, [id, user]);
 
+  const [callsignOverride, setCallsignOverride] = useState(null);
+  useEffect(() => {
+    if (!user) return;
+    setCallsignOverride(user.callsign);
+  }, [user]);
+
   useEffect(() => {
     async function getEvent() {
       try {
@@ -430,6 +436,7 @@ const QsoManager = () => {
       const obj = {
         // fromStation,
         callsign,
+        fromStationCallsignOverride: callsignOverride,
         event: id,
         band: event.band,
         mode: "SSB/CW",
@@ -1081,58 +1088,84 @@ const QsoManager = () => {
                                     </div>
                                   )}
 
-                                  <div
-                                    className={`${
-                                      formattedAddress ? "" : "mb-7"
-                                    } flex items-center gap-2`}
-                                  >
-                                    <div className="w-full">
+                                  <div className="flex flex-col md:flex-row gap-4 items-center md:items-start">
+                                    <div>
                                       <Label
-                                        htmlFor="locator"
-                                        value="Tuo locatore"
+                                        htmlFor="callsignOverride"
+                                        value="Tuo nominativo"
                                       />
                                       <TextInput
+                                        id="callsignOverride"
                                         color={
-                                          locator?.length === 6 &&
-                                          formattedAddress
+                                          callsignOverride
                                             ? "success"
-                                            : formattedAddress === false
-                                            ? "info"
                                             : "warning"
                                         }
-                                        disabled={disabled}
-                                        id="locator"
-                                        label="Tuo locatore"
-                                        helperText={
-                                          (formattedAddress !== false &&
-                                            formattedAddress) ||
-                                          "Locatore non valido"
+                                        value={callsignOverride}
+                                        onChange={e =>
+                                          setCallsignOverride(
+                                            e.target.value.toUpperCase()
+                                          )
                                         }
-                                        minLength={6}
-                                        maxLength={6}
-                                        placeholder="Locatore..."
-                                        value={locator}
-                                        onChange={e => {
-                                          setLocator(e.target.value);
-                                          setCookie("locator", e.target.value, {
-                                            path: "/qsomanager",
-                                            maxAge: 60 * 60 * 4
-                                          });
-                                          if (e.target.value.length !== 6) {
-                                            setFormattedAddress(null);
-                                          }
-                                        }}
                                       />
                                     </div>
-
-                                    <Button
-                                      color="gray"
-                                      onClick={geolocalize}
-                                      disabled={disabled}
-                                      className="mb-1"
+                                    <div
+                                      className={`${
+                                        formattedAddress ? "" : "mb-7"
+                                      } flex items-center gap-2`}
                                     >
-                                      <FaMapMarkerAlt className="text-xl" />
-                                    </Button>
+                                      <div className="w-full">
+                                        <Label
+                                          htmlFor="locator"
+                                          value="Tuo locatore"
+                                        />
+                                        <TextInput
+                                          color={
+                                            locator?.length === 6 &&
+                                            formattedAddress
+                                              ? "success"
+                                              : formattedAddress === false
+                                              ? "info"
+                                              : "warning"
+                                          }
+                                          disabled={disabled}
+                                          id="locator"
+                                          label="Tuo locatore"
+                                          helperText={
+                                            (formattedAddress !== false &&
+                                              formattedAddress) ||
+                                            "Locatore non valido"
+                                          }
+                                          minLength={6}
+                                          maxLength={6}
+                                          placeholder="Locatore..."
+                                          value={locator}
+                                          onChange={e => {
+                                            setLocator(e.target.value);
+                                            setCookie(
+                                              "locator",
+                                              e.target.value,
+                                              {
+                                                path: "/qsomanager",
+                                                maxAge: 60 * 60 * 4
+                                              }
+                                            );
+                                            if (e.target.value.length !== 6) {
+                                              setFormattedAddress(null);
+                                            }
+                                          }}
+                                        />
+                                      </div>
+
+                                      <Button
+                                        color="gray"
+                                        onClick={geolocalize}
+                                        disabled={disabled}
+                                        className="mb-1"
+                                      >
+                                        <FaMapMarkerAlt className="text-xl" />
+                                      </Button>
+                                    </div>
                                   </div>
                                 </div>
                               </>
@@ -1470,7 +1503,8 @@ const QsoManager = () => {
                                     </Table.Cell>
                                     {user?.isAdmin && (
                                       <Table.Cell>
-                                        {q.fromStation?.callsign}
+                                        {q.fromStationCallsignOverride ||
+                                          q.fromStation?.callsign}
                                       </Table.Cell>
                                     )}
                                     <Table.Cell>
@@ -1639,7 +1673,10 @@ const QsoManager = () => {
                             />
 
                             <StationMapMarker
-                              callsign={q.fromStation.callsign}
+                              callsign={
+                                q.fromStationCallsignOverride ||
+                                q.fromStation.callsign
+                              }
                               lat={q.fromStationLat}
                               lon={q.fromStationLon}
                               locator={q.fromLocator}

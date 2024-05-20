@@ -110,7 +110,9 @@ class EqslPic {
             : 460;
         logger.debug("Offset2: " + offset2);
 
-        const text3 = `Da: ${fromStation.callsign} (${qso.fromStationCity}, ${qso.fromStationProvince})`;
+        const text3 = `Da: ${
+            qso.fromStationCallsignOverride || fromStation.callsign
+        } (${qso.fromStationCity}, ${qso.fromStationProvince})`;
 
         // offset3 should be height / 2.1
         const offset3 = height ? Math.round(Math.min(height, 1920) / 2.5) : 500;
