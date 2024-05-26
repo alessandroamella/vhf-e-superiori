@@ -106,17 +106,22 @@ router.get(
             path: "fromUser",
             select: "callsign"
         });
-        const stationCallsigns = stations
-            .map(e => {
-                if (!isDocument(e.fromUser)) {
-                    logger.error(
-                        `JoinRequest.fromUser ${e.fromUser} is not a document for JoinRequest ${e._id} in event ${event._id}`
-                    );
-                    return null;
-                }
-                return (e.fromUser as unknown as UserDoc).callsign;
-            })
-            .filter(e => e !== null) as string[];
+        const stationCallsigns = [
+            ...new Set([
+                ...(stations
+                    .map(e => {
+                        if (!isDocument(e.fromUser)) {
+                            logger.error(
+                                `JoinRequest.fromUser ${e.fromUser} is not a document for JoinRequest ${e._id} in event ${event._id}`
+                            );
+                            return null;
+                        }
+                        return (e.fromUser as unknown as UserDoc).callsign;
+                    })
+                    .filter(e => e !== null) as string[]),
+                ...qsos.map(e => e.fromStationCallsignOverride)
+            ])
+        ];
 
         const map = new Map<string, { qsos: QsoDoc[]; isStation: boolean }>();
         for (const qso of qsos) {
