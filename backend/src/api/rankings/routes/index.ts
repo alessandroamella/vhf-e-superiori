@@ -9,7 +9,7 @@ import { logger } from "../../../shared";
 import { Qso, QsoDoc } from "../../qso/models";
 import { isDocument } from "@typegoose/typegoose";
 import JoinRequest from "../../joinRequest/models";
-import { UserDoc } from "../../auth/models";
+import { User, UserDoc } from "../../auth/models";
 
 const router = Router();
 
@@ -106,6 +106,13 @@ router.get(
             path: "fromUser",
             select: "callsign"
         });
+
+        const stationUsers = await User.find({
+            _id: {
+                $in: qsos.map(e => e.fromStation)
+            }
+        });
+
         const stationCallsigns = [
             ...new Set([
                 ...(stations
@@ -119,7 +126,8 @@ router.get(
                         return (e.fromUser as unknown as UserDoc).callsign;
                     })
                     .filter(e => e !== null) as string[]),
-                ...qsos.map(e => e.fromStationCallsignOverride)
+                ...qsos.map(e => e.fromStationCallsignOverride),
+                ...stationUsers.map(e => e.callsign)
             ])
         ];
 
