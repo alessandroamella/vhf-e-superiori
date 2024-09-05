@@ -1,6 +1,6 @@
 import Layout from "../Layout";
-import { useContext, useEffect, useState } from "react";
-import { getErrorStr, UserContext } from "..";
+import React, { useContext, useEffect, useState } from "react";
+import { UserContext } from "../App";
 
 import axios from "axios";
 import { Alert, Button, Spinner } from "flowbite-react";
@@ -8,6 +8,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import ViewPostContent from "./ViewPostContent";
 import { FaBackward, FaTrash } from "react-icons/fa";
 import { Helmet } from "react-helmet";
+import { getErrorStr } from "../shared";
 
 const ViewPost = () => {
   const { id } = useParams();
@@ -96,7 +97,7 @@ const ViewPost = () => {
         </div>
         {alert && (
           <Alert
-            className="mb-6"
+            className="mb-6 dark:text-black"
             color={alert.color}
             onDismiss={() => setAlert(null)}
           >

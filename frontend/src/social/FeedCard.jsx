@@ -9,10 +9,11 @@ import "swiper/css/pagination";
 // import "swiper/css/scrollbar";
 import TimeAgo from "./TimeAgo";
 import { Avatar, Badge, Button, Spinner } from "flowbite-react";
-import { UserContext, getErrorStr } from "..";
+import { UserContext } from "../App";
 import axios from "axios";
 import { FaTrash } from "react-icons/fa";
 import CallsignLoading from "../shared/CallsignLoading";
+import { getErrorStr } from "../shared";
 
 /**
  * @typedef {object} BasePost

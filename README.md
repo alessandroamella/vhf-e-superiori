@@ -1,9 +1,10 @@
-# vhf-e-superiori
+# VHF e superiori
 
 Il frontend va su 8904
 
-Installa ImageMagick
+Installa ImageMagick e le dependencies richieste
 
 ```
-sudo apt-get install imagemagick
+sudo apt update
+sudo apt install libvips-dev imagemagick
 ```

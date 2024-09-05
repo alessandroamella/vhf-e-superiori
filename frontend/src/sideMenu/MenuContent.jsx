@@ -20,13 +20,9 @@ import {
   useLocation,
   useNavigate
 } from "react-router-dom";
-import {
-  getErrorStr,
-  JoinOpenContext,
-  SidebarOpenContext,
-  UserContext
-} from "..";
+import { JoinOpenContext, SidebarOpenContext, UserContext } from "../App";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { getErrorStr } from "../shared";
 
 const SectionHref = ({ href, wip, children }) => {
   const { setSidebarOpen } = useContext(SidebarOpenContext);

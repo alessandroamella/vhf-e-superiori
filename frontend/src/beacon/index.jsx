@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { Alert, Button, Table } from "flowbite-react";
-import { UserContext, getErrorStr } from "..";
+import { UserContext } from "../App";
 import Layout from "../Layout";
 import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import ReactPlaceholder from "react-placeholder";
 import { Card, Typography } from "@material-tailwind/react";
 import { FaPlus } from "react-icons/fa";
 import { Helmet } from "react-helmet";
+import { getErrorStr } from "../shared";
 
 const BeaconHomepage = () => {
   const [alert, setAlert] = useState(null);
@@ -55,7 +56,7 @@ const BeaconHomepage = () => {
         <div className="mx-auto px-4 w-full md:w-11/12 py-12">
           {alert && (
             <Alert
-              className="mb-6"
+              className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() => setAlert(null)}
             >

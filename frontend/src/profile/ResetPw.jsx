@@ -1,5 +1,5 @@
 import { Alert, Button, Label, TextInput } from "flowbite-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import Layout from "../Layout";
 import { Typography } from "@material-tailwind/react";
 import axios from "axios";
@@ -8,8 +8,8 @@ import {
   useNavigate,
   useSearchParams
 } from "react-router-dom";
-import { getErrorStr } from "..";
 import { Helmet } from "react-helmet";
+import { getErrorStr } from "../shared";
 
 const ResetPw = () => {
   const [pw, setPw] = useState("");
@@ -64,7 +64,7 @@ const ResetPw = () => {
 
         {alert && (
           <Alert
-            className="mb-6"
+            className="mb-6 dark:text-black"
             color={alert.color}
             onDismiss={() => setAlert(null)}
           >

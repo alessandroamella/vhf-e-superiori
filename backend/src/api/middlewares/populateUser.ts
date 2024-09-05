@@ -9,6 +9,7 @@ async function populateUser(req: Request, res: Response, next: NextFunction) {
     passport.authenticate(
         "jwt",
         { session: false },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         async (_err: any, user: any) => {
             logger.debug("populateUser for callsign " + user?.callsign);
 
@@ -41,7 +42,8 @@ async function populateUser(req: Request, res: Response, next: NextFunction) {
                     });
                     return next(new Error(Errors.SERVER_ERROR));
                 }
-                req.user = foundUser.toObject();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                req.user = foundUser.toObject() as any;
                 logger.debug(
                     "populateUser successful for user " + foundUser.callsign
                 );

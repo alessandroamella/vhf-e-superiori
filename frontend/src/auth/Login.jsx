@@ -1,14 +1,15 @@
 import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
-import React, { createRef, useRef, useState } from "react";
+import { createRef, useRef, useState } from "react";
 import { useEffect } from "react";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { getErrorStr, UserContext } from "..";
+import { UserContext } from "../App";
 import ReCAPTCHA from "react-google-recaptcha";
 import Layout from "../Layout";
 import { Helmet } from "react-helmet";
+import { getErrorStr } from "../shared";
 
 const Login = () => {
   const [callsign, setCallsign] = useState("");
@@ -150,7 +151,7 @@ const Login = () => {
 
           {alert && (
             <Alert
-              className="mb-6"
+              className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() => setAlert(null)}
             >

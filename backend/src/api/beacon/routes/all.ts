@@ -3,7 +3,6 @@ import { logger } from "../../../shared/logger";
 import { createError, validate } from "../../helpers";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { Beacon, BeaconDocWithProp, BeaconProperties } from "../models";
-import moment from "moment";
 
 const router = Router();
 
@@ -38,9 +37,10 @@ const router = Router();
  */
 router.get("/", validate, async (req, res) => {
     try {
-        const beacons: BeaconDocWithProp[] = await Beacon.find()
+        const beacons: BeaconDocWithProp[] = (await Beacon.find()
             .sort("callsign")
-            .lean();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .lean()) as any;
         for (const beacon of beacons) {
             const propsArr = await BeaconProperties.find(
                 {

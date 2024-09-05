@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { JoinOpenContext, ReadyContext, SidebarOpenContext } from "..";
+import { JoinOpenContext, ReadyContext, SidebarOpenContext } from "../App";
 import { reveal as BurgerMenuComponent } from "react-burger-menu";
 import MenuContent from "./MenuContent";
 

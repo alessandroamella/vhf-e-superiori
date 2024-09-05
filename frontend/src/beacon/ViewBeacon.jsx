@@ -2,7 +2,7 @@ import axios from "axios";
 import { Alert, Button, Card, Pagination, Tooltip } from "flowbite-react";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import L from "leaflet";
-import { UserContext, getErrorStr } from "..";
+import { UserContext } from "../App";
 import Layout from "../Layout";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -17,6 +17,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { Helmet } from "react-helmet";
 import MapWatermark from "../shared/MapWatermark";
+import { getErrorStr } from "../shared";
 
 const ViewBeacon = () => {
   const [alert, setAlert] = useState(null);
@@ -156,7 +157,7 @@ const ViewBeacon = () => {
 
           {alert && (
             <Alert
-              className="mb-6"
+              className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() => setAlert(null)}
             >
@@ -211,7 +212,7 @@ const ViewBeacon = () => {
                 </div>
 
                 {/* nice card instead of table */}
-                <Card className="mb-6">
+                <Card className="mb-6 dark:text-black">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <p>

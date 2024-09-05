@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import Layout from "../Layout";
 import { Helmet } from "react-helmet";
 import axios from "axios";
-import { UserContext, getErrorStr } from "..";
+import { UserContext } from "../App";
 import { Alert, Button, Card, Tooltip } from "flowbite-react";
 import ReactPlaceholder from "react-placeholder";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -11,6 +11,7 @@ import { FaCircle, FaPlus } from "react-icons/fa";
 import Markdown from "react-markdown";
 import { formatDistance } from "date-fns";
 import { it } from "date-fns/locale";
+import { getErrorStr } from "../shared";
 
 const Blog = () => {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -48,7 +49,7 @@ const Blog = () => {
         <div className="mx-auto px-4 w-full md:w-5/6 my-4">
           {alert && (
             <Alert
-              className="mb-6"
+              className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() => setAlert(null)}
             >

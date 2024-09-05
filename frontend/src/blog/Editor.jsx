@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import Layout from "../Layout";
 import { Helmet } from "react-helmet";
 import axios from "axios";
-import { UserContext, getErrorStr } from "..";
+import { UserContext } from "../App";
 import {
   Alert,
   Badge,
@@ -38,6 +38,7 @@ import {
 } from "@mdxeditor/editor";
 import { FaExclamationTriangle, FaPlus, FaTrash, FaUndo } from "react-icons/fa";
 import { useCookies } from "react-cookie";
+import { getErrorStr } from "../shared";
 
 const BlogPostEditor = ({ blogPost }) => {
   const [alert, setAlert] = useState(null);
@@ -198,7 +199,7 @@ const BlogPostEditor = ({ blogPost }) => {
         <div className="mx-auto px-4 w-full md:w-5/6 my-4">
           {alert && (
             <Alert
-              className="mb-6"
+              className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() => setAlert(null)}
             >

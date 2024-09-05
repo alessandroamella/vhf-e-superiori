@@ -14,8 +14,9 @@ import {
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { FaInfo } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { EventsContext, getErrorStr, UserContext } from "..";
+import { EventsContext, UserContext } from "../App";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import { getErrorStr } from "../shared";
 
 const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
   const { user } = useContext(UserContext);
@@ -109,6 +110,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
 
     if (!event) return;
     if (!isBetweenDates()) setDisabled(false);
+    28;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event]);
 

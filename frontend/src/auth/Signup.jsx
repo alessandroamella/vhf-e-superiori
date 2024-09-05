@@ -1,20 +1,14 @@
 import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Avatar, Card, Label, TextInput, Tooltip } from "flowbite-react";
-import React, {
-  createRef,
-  useEffect,
-  useRef,
-  useState,
-  useContext
-} from "react";
+import { createRef, useEffect, useRef, useState, useContext } from "react";
 import {
   Link,
   createSearchParams,
   useNavigate,
   useSearchParams
 } from "react-router-dom";
-import { getErrorStr, UserContext } from "..";
+import { UserContext } from "../App";
 import { useCookies } from "react-cookie";
 import ReCAPTCHA from "react-google-recaptcha";
 import { usePlacesWidget } from "react-google-autocomplete";
@@ -23,6 +17,7 @@ import Markdown from "react-markdown";
 import ReactPlaceholder from "react-placeholder";
 import { FaArrowAltCircleRight, FaExternalLinkAlt } from "react-icons/fa";
 import { Helmet } from "react-helmet";
+import { getErrorStr } from "../shared";
 
 const useFocus = () => {
   const htmlElRef = useRef(null);
@@ -341,7 +336,7 @@ const Signup = () => {
 
           {alert && (
             <Alert
-              className="mb-6"
+              className="mb-6 dark:text-black"
               color="failure"
               onDismiss={() => setAlert(null)}
             >

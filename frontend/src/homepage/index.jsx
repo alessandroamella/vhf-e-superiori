@@ -5,10 +5,9 @@ import {
   EventsContext,
   ReadyContext,
   SplashContext,
-  UserContext,
-  getErrorStr
-} from "..";
-import { useContext } from "react";
+  UserContext
+} from "../App";
+import React, { useContext } from "react";
 import { Accordion, Alert, Card, Spinner, Table } from "flowbite-react";
 import {
   differenceInDays,
@@ -39,6 +38,7 @@ import axios from "axios";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { Helmet } from "react-helmet";
 import ReactPlaceholder from "react-placeholder";
+import { getErrorStr } from "../shared";
 
 const Homepage = () => {
   const { user } = useContext(UserContext);
@@ -255,7 +255,7 @@ const Homepage = () => {
             <div className="flex flex-col">
               {alert && (
                 <Alert
-                  className="mb-6"
+                  className="mb-6 dark:text-black"
                   color={alert.color}
                   onDismiss={() => setAlert(null)}
                 >

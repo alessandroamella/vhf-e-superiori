@@ -1,6 +1,5 @@
 import axios from "axios";
 import React from "react";
-import { getErrorStr } from "..";
 import {
   FaBan,
   FaDownload,
@@ -13,6 +12,7 @@ import ReactHTMLTableToExcel from "react-html-table-to-excel";
 import { Link } from "react-router-dom";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { it } from "date-fns/locale";
+import { getErrorStr } from "../shared";
 
 const ViewJoinRequest = ({
   disabled,

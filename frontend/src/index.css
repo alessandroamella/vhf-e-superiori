@@ -219,3 +219,11 @@ div.input-large div input {
     padding: 10px; /* Aggiungi del padding per una migliore visualizzazione */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Aggiungi un'ombra per separare l'elemento "sticky" dal resto del contenuto */
   }
+
+  .make-square div img {
+    @apply aspect-square;
+  }
+
+  [data-testid="table-element"] div.absolute {
+    @apply hidden;
+  }

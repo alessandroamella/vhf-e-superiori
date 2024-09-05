@@ -1,7 +1,7 @@
 import Layout from "../Layout";
-import React, { useEffect, useMemo, useState } from "react";
-import { ReadyContext, SplashContext, getErrorStr } from "..";
-import { useContext } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { ReadyContext, SplashContext } from "../App";
+import React, { useContext } from "react";
 import {
   Link,
   useLocation,
@@ -49,6 +49,7 @@ import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { getDate } from "date-fns";
 import ReactPlaceholder from "react-placeholder";
 import MapPrint from "../shared/MapPrint";
+import { getErrorStr } from "../shared";
 
 const ViewPublished = () => {
   const { splashPlayed } = useContext(SplashContext);
@@ -338,7 +339,7 @@ const ViewPublished = () => {
       <div className="px-0 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
         {alert && (
           <Alert
-            className="mb-6"
+            className="mb-6 dark:text-black"
             color={alert.color}
             onDismiss={() => setAlert(null)}
           >
@@ -348,7 +349,7 @@ const ViewPublished = () => {
 
         {searchParams?.get("created") && (
           <Alert
-            className="mb-6"
+            className="mb-6 dark:text-black"
             color="success"
             onDismiss={() => navigate("/social")}
           >

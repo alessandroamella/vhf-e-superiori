@@ -2,8 +2,8 @@ import { Link, useLocation } from "react-router-dom";
 import Flags from "./Flags";
 import { Button, Spinner } from "flowbite-react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { useContext } from "react";
-import { UserContext } from ".";
+import React, { useContext } from "react";
+import { UserContext } from "./App";
 
 const LinkButton = ({ to, children, keepCurrent }) => {
   const location = useLocation();

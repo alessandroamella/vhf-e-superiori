@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "../Layout";
 import Markdown from "react-markdown";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { getErrorStr } from "..";
 import { Alert, Card } from "flowbite-react";
 import ReactPlaceholder from "react-placeholder";
+import { getErrorStr } from "../shared";
 
 const MdViewer = () => {
   const { name } = useParams();

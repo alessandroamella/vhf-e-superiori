@@ -1,7 +1,6 @@
 import axios from "axios";
 import { Alert, Button, Table } from "flowbite-react";
-import React, { useEffect, useState } from "react";
-import { getErrorStr } from "..";
+import { useEffect, useState } from "react";
 import Layout from "../Layout";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -27,6 +26,7 @@ import { MapContainer, Polyline, TileLayer, useMap } from "react-leaflet";
 import { latLngBounds } from "leaflet";
 import StationMapMarker from "../shared/StationMapMarker";
 import MapWatermark from "../shared/MapWatermark";
+import { getErrorStr } from "../shared";
 
 function ChangeView({ center, markers }) {
   const map = useMap();
@@ -99,7 +99,7 @@ const Qso = () => {
           </div>
           {alert && (
             <Alert
-              className="mb-6"
+              className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() => (qso !== null ? setAlert(null) : navigate("/"))}
             >

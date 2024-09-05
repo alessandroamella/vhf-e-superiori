@@ -1,7 +1,6 @@
 import axios from "axios";
 import { Alert, Button, Modal, Spinner, Table, Tabs } from "flowbite-react";
-import React, { useEffect, useState } from "react";
-import { getErrorStr } from "..";
+import { useEffect, useState } from "react";
 import Layout from "../Layout";
 import { useNavigate, useParams } from "react-router-dom";
 import ReactPlaceholder from "react-placeholder";
@@ -21,6 +20,7 @@ import {
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { FaExclamationTriangle } from "react-icons/fa";
 import { Helmet } from "react-helmet";
+import { getErrorStr } from "../shared";
 
 const Rankings = () => {
   const { id } = useParams();
@@ -92,7 +92,7 @@ const Rankings = () => {
                       r.fromStation?.callsign) === showRankings
                 )
                 .map(r => (
-                  <Table striped>
+                  <Table striped key={r.callsign}>
                     <Table.Head>
                       <Table.HeadCell>Attivatore</Table.HeadCell>
                       <Table.HeadCell>Nominativo</Table.HeadCell>
@@ -150,7 +150,7 @@ const Rankings = () => {
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           {alert && (
             <Alert
-              className="mb-6"
+              className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() =>
                 event !== null ? setAlert(null) : navigate("/")
@@ -184,60 +184,47 @@ const Rankings = () => {
                 )}
               </h1>
 
-              {/* <div className="flex flex-col justify-center md:flex-row md:justify-between gap-4">
-                <div>
-                  <TextInput
-                    type="text"
-                    placeholder="Cerca per nominativo"
-                    icon={FaSearch}
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                  />
-                </div>
-              </div> */}
-
-              <Tabs.Group>
-                {["Cacciatori", "Attivatori"].map((tab, i) => (
-                  <Tabs.Item title={tab} key={i}>
-                    <h1 className="text-4xl md:text-5xl uppercase text-red-500 font-bold text-center mt-4 mb-8 animate-pulse">
-                      Classifica {tab}
-                    </h1>
-                    {(i === 1 ? stationRankings : userRankings).length > 0 ? (
-                      <Table striped className="text-2xl">
-                        <Table.Head>
-                          <Table.HeadCell>Posizione</Table.HeadCell>
-                          <Table.HeadCell>Nominativo</Table.HeadCell>
-                          <Table.HeadCell>Punti</Table.HeadCell>
-                        </Table.Head>
-                        <Table.Body>
-                          {(i === 1 ? stationRankings : userRankings).map(r => (
-                            <Table.Row
-                              key={r.callsign}
-                              onClick={() => setShowRankings(r.callsign)}
-                              className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                            >
-                              <Table.Cell>
-                                {/* show 🥇, 🥈 or 🥉 if r.callsign === rankings[0,1,2].callsign, else i + 1 */}
-                                {["🥇", "🥈", "🥉"][r.position - 1] ||
-                                  r.position}
-                              </Table.Cell>
-                              <Table.Cell className="font-semibold">
-                                {r.callsign}
-                              </Table.Cell>
-                              <Table.Cell>{r.qsos.length}</Table.Cell>
-                            </Table.Row>
-                          ))}
-                        </Table.Body>
-                      </Table>
-                    ) : (
-                      <Alert color="gray" className="text-center">
-                        <FaExclamationTriangle className="inline-block mr-1 mb-1" />
-                        Nessun collegamento trovato
-                      </Alert>
-                    )}
-                  </Tabs.Item>
-                ))}
-              </Tabs.Group>
+              {/* <Tabs.Group> */}
+              {["Cacciatori", "Attivatori"].map((tab, i) => (
+                <Tabs.Item title={tab} key={i}>
+                  <h1 className="text-4xl md:text-5xl uppercase text-red-500 font-bold text-center mt-8 mb-8 animate-pulse">
+                    Classifica {tab}
+                  </h1>
+                  {(i === 1 ? stationRankings : userRankings).length > 0 ? (
+                    <Table striped className="text-2xl">
+                      <Table.Head>
+                        <Table.HeadCell>Posizione</Table.HeadCell>
+                        <Table.HeadCell>Nominativo</Table.HeadCell>
+                        <Table.HeadCell>Punti</Table.HeadCell>
+                      </Table.Head>
+                      <Table.Body>
+                        {(i === 1 ? stationRankings : userRankings).map(r => (
+                          <Table.Row
+                            key={r.callsign}
+                            onClick={() => setShowRankings(r.callsign)}
+                            className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          >
+                            <Table.Cell>
+                              {/* show 🥇, 🥈 or 🥉 if r.callsign === rankings[0,1,2].callsign, else i + 1 */}
+                              {["🥇", "🥈", "🥉"][r.position - 1] || r.position}
+                            </Table.Cell>
+                            <Table.Cell className="font-semibold">
+                              {r.callsign}
+                            </Table.Cell>
+                            <Table.Cell>{r.qsos.length}</Table.Cell>
+                          </Table.Row>
+                        ))}
+                      </Table.Body>
+                    </Table>
+                  ) : (
+                    <Alert color="gray" className="text-center">
+                      <FaExclamationTriangle className="inline-block mr-1 mb-1" />
+                      Nessun collegamento trovato
+                    </Alert>
+                  )}
+                </Tabs.Item>
+              ))}
+              {/* </Tabs.Group> */}
             </div>
           )}
 

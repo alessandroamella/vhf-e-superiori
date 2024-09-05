@@ -6,7 +6,6 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 
 import ReactPlaceholder from "react-placeholder/lib";
-import { formatInTimeZone } from "date-fns-tz";
 import { it } from "date-fns/locale";
 import {
   LazyLoadImage,
@@ -15,13 +14,15 @@ import {
 
 import MediaSwiper from "./MediaSwiper";
 import Description from "./Description";
-import { UserContext, getErrorStr } from "..";
+import { UserContext } from "../App";
 import { Alert, Card, Spinner, Textarea } from "flowbite-react";
 import { Button } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaTrash } from "react-icons/fa";
 import CallsignLoading from "../shared/CallsignLoading";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
+import { getErrorStr } from "../shared";
 
 /**
  * @typedef {import('./NewPost').PostType} PostType
@@ -200,7 +201,7 @@ const ViewPostContent = React.memo(
             </h2>
             {alert && (
               <Alert
-                className="mb-6"
+                className="mb-6 dark:text-black"
                 color={alert.color}
                 onDismiss={() => setAlert(null)}
               >

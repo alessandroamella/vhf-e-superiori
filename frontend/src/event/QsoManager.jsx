@@ -16,7 +16,7 @@ import {
   Card,
   Avatar
 } from "flowbite-react";
-import React, {
+import {
   createRef,
   useCallback,
   useContext,
@@ -24,7 +24,7 @@ import React, {
   useRef,
   useState
 } from "react";
-import { getErrorStr, UserContext } from "..";
+import { UserContext } from "../App";
 import Layout from "../Layout";
 import {
   Link,
@@ -51,6 +51,7 @@ import { Helmet } from "react-helmet";
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
 import StationMapMarker from "../shared/StationMapMarker";
 import MapWatermark from "../shared/MapWatermark";
+import { getErrorStr } from "../shared";
 
 const QsoManager = () => {
   const { user } = useContext(UserContext);
@@ -997,7 +998,7 @@ const QsoManager = () => {
         <div className="mx-auto px-4 w-full md:w-5/6 pt-12">
           {alert && (
             <Alert
-              className="mb-6"
+              className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() => (hasPermission ? setAlert(null) : navigate("/"))}
             >
@@ -1015,7 +1016,7 @@ const QsoManager = () => {
                 </Typography>
               </div>
 
-              <div className="mb-6">
+              <div className="mb-6 dark:text-black">
                 {event === null ? (
                   <p>
                     Errore nel caricamento dell'evento (prova a ricaricare la
@@ -1033,7 +1034,7 @@ const QsoManager = () => {
                     <div className="flex flex-col md:flex-row justify-center md:justify-between gap-4 items-center">
                       <Typography
                         variant="h2"
-                        className="my-2 flex items-center"
+                        className="my-2 flex items-center dark:text-white"
                       >
                         Crea QSO
                       </Typography>
@@ -1078,7 +1079,7 @@ const QsoManager = () => {
                                           </Dropdown.Item>
                                         ))}
                                       </Dropdown>
-                                      <p className="flex items-center gap-1">
+                                      <p className="flex items-center dark:text-gray-200 gap-1 md:mt-2">
                                         <FaInfoCircle />
                                         Vedi questo in quanto sei un{" "}
                                         <span className="font-bold">
@@ -1308,7 +1309,7 @@ const QsoManager = () => {
                                     color={
                                       allPredataInserted ? "success" : "failure"
                                     }
-                                    className="transition-colors"
+                                    className="transition-colors px-1"
                                   >
                                     Inserisci nominativo
                                     <FaForward className="inline ml-2" />

@@ -17,11 +17,12 @@ import {
   useNavigate,
   useParams
 } from "react-router-dom";
-import { EventsContext, getErrorStr, UserContext } from "..";
+import { EventsContext, UserContext } from "../App";
 import Layout from "../Layout";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { Helmet } from "react-helmet";
+import { getErrorStr } from "../shared";
 
 const EventContainer = ({ event, children }) =>
   event?.logoUrl ? (
@@ -195,7 +196,7 @@ const ViewEvent = () => {
 
           {alert && (
             <Alert
-              className="mb-6"
+              className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() => setAlert(null)}
             >

@@ -1,7 +1,7 @@
 import Layout from "../Layout";
 import { Typography } from "@material-tailwind/react";
-import { useContext, useRef, useState, useEffect } from "react";
-import { EventsContext, getErrorStr, UserContext } from "..";
+import React, { useContext, useRef, useState, useEffect } from "react";
+import { EventsContext, UserContext } from "../App";
 import {
   Alert,
   Avatar,
@@ -22,7 +22,7 @@ import {
   useNavigate,
   useSearchParams
 } from "react-router-dom";
-import { isAfter } from "date-fns/esm";
+import { isAfter } from "date-fns";
 import { it, itCH } from "date-fns/locale";
 import {
   FaArrowAltCircleRight,
@@ -43,6 +43,7 @@ import {
 } from "@material-tailwind/react";
 import { getDate } from "date-fns";
 import CallsignLoading from "../shared/CallsignLoading";
+import { getErrorStr } from "../shared";
 
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);
@@ -495,6 +496,7 @@ const Profile = () => {
                       rounded
                       size={user?.pp ? "lg" : "md"}
                       img={user?.pp}
+                      className="make-square"
                     />
                     <span className="ml-2">{user.callsign}</span>
                   </Typography>

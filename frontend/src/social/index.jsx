@@ -1,7 +1,7 @@
 import Layout from "../Layout";
 import { useEffect, useMemo, useState } from "react";
-import { ReadyContext, SplashContext } from "..";
-import { useContext } from "react";
+import { ReadyContext, SplashContext } from "../App";
+import React, { useContext } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Splash from "../Splash";
 
@@ -101,7 +101,7 @@ const Social = () => {
       <div className="px-0 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
         {alert && (
           <Alert
-            className="mb-6"
+            className="mb-6 dark:text-black"
             color={alert.color}
             onDismiss={() => setAlert(null)}
           >
@@ -111,7 +111,7 @@ const Social = () => {
 
         {searchParams?.get("created") && (
           <Alert
-            className="mb-6"
+            className="mb-6 dark:text-black"
             color="success"
             onDismiss={() => navigate("/social")}
           >
@@ -160,7 +160,7 @@ const Social = () => {
           </div>
           <div className="col-span-2">
             {/* DEBUG */}
-            {/* <Alert className="mb-6" color="warning">
+            {/* <Alert className="mb-6 dark:text-black" color="warning">
               <div className="flex items-center gap-1">
                 <FaExclamationTriangle />{" "}
                 <h3 className="text-lg font-semibold">

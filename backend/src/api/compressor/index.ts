@@ -24,7 +24,7 @@ class VideoCompressor {
                 ])
                 .videoCodec("libx264")
                 .on("progress", progress => {
-                    this.percent = progress.percent;
+                    this.percent = progress.percent || 0;
                 })
                 .on("end", () => {
                     resolve();

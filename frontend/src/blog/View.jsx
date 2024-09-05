@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import Layout from "../Layout";
 import { Helmet } from "react-helmet";
 import axios from "axios";
-import { UserContext, getErrorStr } from "..";
+import { UserContext } from "../App";
 import { Alert, Button, Spinner } from "flowbite-react";
 import ReactPlaceholder from "react-placeholder";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -12,6 +12,7 @@ import { it } from "date-fns/locale";
 import { FaBackward, FaTrash } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import { getErrorStr } from "../shared";
 
 const BlogPostViewer = () => {
   const [post, setPost] = useState(null);
@@ -97,7 +98,7 @@ const BlogPostViewer = () => {
         <div className="mx-auto px-4 w-full md:w-5/6 my-4">
           {alert && (
             <Alert
-              className="mb-6"
+              className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() => setAlert(null)}
             >

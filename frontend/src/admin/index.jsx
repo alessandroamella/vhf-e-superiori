@@ -20,7 +20,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import React, {
+import {
   createRef,
   useCallback,
   useContext,
@@ -29,7 +29,7 @@ import React, {
   useState
 } from "react";
 import { it } from "date-fns/locale";
-import { EventsContext, getErrorStr, UserContext } from "..";
+import { EventsContext, UserContext } from "../App";
 import Layout from "../Layout";
 // import { DefaultEditor } from "react-simple-wysiwyg";
 import {
@@ -62,6 +62,7 @@ import { Helmet } from "react-helmet";
 import ReactPlaceholder from "react-placeholder";
 import ReactGoogleAutocomplete from "react-google-autocomplete";
 import CallsignLoading from "../shared/CallsignLoading";
+import { getErrorStr } from "../shared";
 
 const AdminManager = () => {
   const { user } = useContext(UserContext);
@@ -117,7 +118,12 @@ const AdminManager = () => {
     (eventPage - 1) * eventsPerPage + eventsPerPage
   ];
 
+  const isFetchingUsers = useRef(false);
+
   async function getUsers() {
+    if (isFetchingUsers.current) return null;
+    isFetchingUsers.current = true;
+
     try {
       const { data } = await axios.get("/api/auth/all");
       console.log("users", data);
@@ -130,9 +136,17 @@ const AdminManager = () => {
         msg: getErrorStr(err?.response?.data?.err)
       });
       setUsers(null);
+    } finally {
+      isFetchingUsers.current = false;
     }
   }
+
+  const isFetchingPosts = useRef(false);
+
   useEffect(() => {
+    if (isFetchingPosts.current) return null;
+    isFetchingPosts.current = true;
+
     async function getPosts() {
       try {
         const { data } = await axios.get("/api/post");
@@ -195,7 +209,7 @@ const AdminManager = () => {
 
       try {
         const { data } = await axios.get("/api/event");
-        console.log("events", data);
+        console.log("events fetched (admin)", data);
         setEvents(data);
       } catch (err) {
         console.log("Errore nel caricamento degli eventi", err);
@@ -1295,7 +1309,7 @@ const AdminManager = () => {
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           {alert && (
             <Alert
-              className="mb-6"
+              className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() => setAlert(null)}
             >
@@ -1316,103 +1330,101 @@ const AdminManager = () => {
               </Accordion.Title>
               <Accordion.Content>
                 {users ? (
-                  <div>
-                    <Table striped>
-                      <Table.Head>
-                        <Table.HeadCell>Nominativo</Table.HeadCell>
-                        <Table.HeadCell>Nome</Table.HeadCell>
-                        <Table.HeadCell>Email</Table.HeadCell>
-                        <Table.HeadCell>Telefono</Table.HeadCell>
-                        <Table.HeadCell>Creazione</Table.HeadCell>
-                        <Table.HeadCell>Locatore</Table.HeadCell>
-                        <Table.HeadCell>Richieste</Table.HeadCell>
-                      </Table.Head>
-                      <Table.Body>
-                        {users?.map(u => (
-                          <Table.Row key={u._id}>
-                            <Table.Cell className="flex gap-2 items-center whitespace-nowrap text-gray-900 dark:text-white">
+                  <Table striped>
+                    <Table.Head>
+                      <Table.HeadCell>Nominativo</Table.HeadCell>
+                      <Table.HeadCell>Nome</Table.HeadCell>
+                      <Table.HeadCell>Email</Table.HeadCell>
+                      <Table.HeadCell>Telefono</Table.HeadCell>
+                      <Table.HeadCell>Creazione</Table.HeadCell>
+                      <Table.HeadCell>Locatore</Table.HeadCell>
+                      <Table.HeadCell>Richieste</Table.HeadCell>
+                    </Table.Head>
+                    <Table.Body>
+                      {users?.map(u => (
+                        <Table.Row key={u._id}>
+                          <Table.Cell className="flex gap-2 items-center whitespace-nowrap text-gray-900 dark:text-white">
+                            <Button
+                              size="sm"
+                              color="info"
+                              onClick={() => setUserEditing(u)}
+                              disabled={disabled}
+                            >
+                              {u.isAdmin && (
+                                <FaUserShield className="inline mr-1" />
+                              )}
+                              {u.callsign}
+                            </Button>
+                          </Table.Cell>
+                          <Table.Cell className="dark:text-gray-300">
+                            {u.isAdmin ? (
+                              <Tooltip content="Amministratore">
+                                {" "}
+                                {u.name}
+                              </Tooltip>
+                            ) : (
+                              <span>{u.name}</span>
+                            )}
+                          </Table.Cell>
+                          <Table.Cell>
+                            <a
+                              href={"mailto:" + u.email}
+                              className="text-red-500 hover:text-red-600 transition-colors"
+                            >
+                              {u.email}
+                            </a>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <a
+                              href={"tel:" + u.phoneNumber}
+                              className="text-red-500 hover:text-red-600 transition-colors"
+                            >
+                              {u.phoneNumber}
+                            </a>
+                          </Table.Cell>
+                          <Table.Cell>
+                            {formatInTimeZone(
+                              u.createdAt,
+                              "Europe/Rome",
+                              "dd/MM/yyyy "
+                            )}
+                          </Table.Cell>
+                          <Table.Cell>
+                            {u.locator ? (
+                              <Tooltip
+                                content={`${u.lat},${u.lon} (${
+                                  u.address || "Indirizzo sconosciuto"
+                                })`}
+                              >
+                                <span>{u.locator}</span>
+                              </Tooltip>
+                            ) : (
+                              <FaTimes />
+                            )}
+                          </Table.Cell>
+                          <Table.Cell>
+                            {u.joinRequests.length !== 0 ? (
                               <Button
-                                size="sm"
                                 color="info"
-                                onClick={() => setUserEditing(u)}
-                                disabled={disabled}
+                                onClick={() =>
+                                  setJoinRequestsModal(u.joinRequests)
+                                }
                               >
-                                {u.isAdmin && (
-                                  <FaUserShield className="inline mr-1" />
-                                )}
-                                {u.callsign}
+                                <Badge color="info">
+                                  {u.joinRequests.length}
+                                </Badge>
+                                <span className="ml-1">
+                                  <FaExternalLinkAlt />
+                                </span>
                               </Button>
-                            </Table.Cell>
-                            <Table.Cell className="dark:text-gray-300">
-                              {u.isAdmin ? (
-                                <Tooltip content="Amministratore">
-                                  {" "}
-                                  {u.name}
-                                </Tooltip>
-                              ) : (
-                                <span>{u.name}</span>
-                              )}
-                            </Table.Cell>
-                            <Table.Cell>
-                              <a
-                                href={"mailto:" + u.email}
-                                className="text-red-500 hover:text-red-600 transition-colors"
-                              >
-                                {u.email}
-                              </a>
-                            </Table.Cell>
-                            <Table.Cell>
-                              <a
-                                href={"tel:" + u.phoneNumber}
-                                className="text-red-500 hover:text-red-600 transition-colors"
-                              >
-                                {u.phoneNumber}
-                              </a>
-                            </Table.Cell>
-                            <Table.Cell>
-                              {formatInTimeZone(
-                                u.createdAt,
-                                "Europe/Rome",
-                                "dd/MM/yyyy "
-                              )}
-                            </Table.Cell>
-                            <Table.Cell>
-                              {u.locator ? (
-                                <Tooltip
-                                  content={`${u.lat},${u.lon} (${
-                                    u.address || "Indirizzo sconosciuto"
-                                  })`}
-                                >
-                                  <span>{u.locator}</span>
-                                </Tooltip>
-                              ) : (
-                                <FaTimes />
-                              )}
-                            </Table.Cell>
-                            <Table.Cell>
-                              {u.joinRequests.length !== 0 ? (
-                                <Button
-                                  color="info"
-                                  onClick={() =>
-                                    setJoinRequestsModal(u.joinRequests)
-                                  }
-                                >
-                                  <Badge color="info">
-                                    {u.joinRequests.length}
-                                  </Badge>
-                                  <span className="ml-1">
-                                    <FaExternalLinkAlt />
-                                  </span>
-                                </Button>
-                              ) : (
-                                <FaTimes />
-                              )}
-                            </Table.Cell>
-                          </Table.Row>
-                        ))}
-                      </Table.Body>
-                    </Table>
-                  </div>
+                            ) : (
+                              <FaTimes />
+                            )}
+                          </Table.Cell>
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </Table>
                 ) : users === false ? (
                   <Spinner />
                 ) : (
@@ -1422,7 +1434,7 @@ const AdminManager = () => {
             </Accordion.Panel>
 
             <Accordion.Panel>
-              <Accordion.Title>Post</Accordion.Title>
+              <Accordion.Title>Post ({posts?.length || "-"})</Accordion.Title>
               <Accordion.Content>
                 {posts ? (
                   <div>
@@ -1702,14 +1714,18 @@ const AdminManager = () => {
           </Accordion>
 
           <div className="mt-8">
-            <Alert color="failure">
+            <Alert color="failure" className="dark:text-black">
               <h3 className="font-bold text-2xl">ATTENZIONE</h3>
               <p>
                 Il backup è un'operazione costosa che richiede un po' di tempo,
                 si consiglia di effettuarlo solo in caso di necessità
               </p>
               <a href="/api/backup" target="_blank" rel="noopener noreferrer">
-                <Button color="failure" size="lg" className="mt-2">
+                <Button
+                  color="failure"
+                  size="lg"
+                  className="mt-2 px-1 dark:text-black"
+                >
                   Backup dati
                 </Button>
               </a>

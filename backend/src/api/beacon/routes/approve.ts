@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { Beacon, BeaconProperties } from "../models";
+import { BeaconProperties } from "../models";
 import { checkSchema } from "express-validator";
 import { createError, validate } from "../../helpers";
 import { logger } from "../../../shared";

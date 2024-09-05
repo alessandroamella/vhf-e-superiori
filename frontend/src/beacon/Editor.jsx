@@ -2,7 +2,7 @@ import axios from "axios";
 import { Alert, Button, Label, TextInput } from "flowbite-react";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import L from "leaflet";
-import { UserContext, getErrorStr } from "..";
+import { UserContext } from "../App";
 import Layout from "../Layout";
 import {
   Link,
@@ -21,6 +21,7 @@ import {
 } from "react-leaflet";
 import { Helmet } from "react-helmet";
 import MapWatermark from "../shared/MapWatermark";
+import { getErrorStr } from "../shared";
 
 const MyMarker = ({
   showPos,
@@ -333,7 +334,7 @@ const BeaconEditor = () => {
 
           {alert && (
             <Alert
-              className="mb-6"
+              className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() => setAlert(null)}
             >

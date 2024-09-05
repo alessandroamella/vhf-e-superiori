@@ -1,7 +1,6 @@
 import Layout from "../Layout";
-import React, { useEffect, useMemo, useState } from "react";
-import { getErrorStr, UserContext } from "..";
-import { useContext } from "react";
+import React, { useEffect, useMemo, useState, useContext } from "react";
+import { UserContext } from "../App";
 import { useForm } from "react-hook-form";
 
 import axios from "axios";
@@ -18,6 +17,7 @@ import { createSearchParams, useNavigate } from "react-router-dom";
 import { Typography } from "@material-tailwind/react";
 import ViewPostContent from "./ViewPostContent";
 import FileUploader from "./FileUploader";
+import { getErrorStr } from "../shared";
 
 const FileUploaderMemo = React.memo(
   ({ files, setFiles, disabled, maxPhotos, maxVideos }) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MapContainer as LeafletMapContainer, TileLayer } from "react-leaflet";
 
 const CustomMapContainer = ({ children, ...props }) => {

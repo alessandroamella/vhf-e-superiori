@@ -66,10 +66,10 @@ router.post(
         .isStrongPassword({ minLength: 8, minSymbols: 0 }),
     validate,
     async (req, res, next) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         passport.authenticate(
             "login",
-            async (_err: any, user: any, info: any) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            async (_err: any, user: any) => {
                 logger.debug("Logging in callsign " + user?.callsign);
                 try {
                     if (_err || !user) {
