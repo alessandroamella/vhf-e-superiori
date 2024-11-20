@@ -576,11 +576,15 @@ const Homepage = () => {
 
                         <p>
                           Per l'occasione le stazioni che si sono rese
-                          disponibili vengono denominate "attivatrici"e viene
-                          assegnata loro una frequenza di riferimento per i
-                          collegamenti, da utilizzare nel corso delle due ore
-                          della manifestazione che si terrà l'ultima domenica di
-                          ogni mese.
+                          disponibili vengono denominate "ATTIVATRICI" e viene
+                          assegnata loro una frequenza consigliata, quindi
+                          indicativa e modificabile a discrezione dell'operatore
+                          da utilizzare nel corso delle due ore della
+                          manifestazione. La manistazione si terrà l'ultima
+                          domenica di ogni mese. Nel caso che la frequenza
+                          indicata nella locandina sia modificata dall'operatore
+                          è pregato di comunicare la nuova frequenza ai
+                          partecipanti tramite la chat.
                         </p>
 
                         <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
@@ -726,12 +730,12 @@ const Homepage = () => {
                         spiega a <strong>IZ5IOQ</strong> Giacomo Matteucci,
                         amico di vecchia data, cosa ha in mente di fare e chiede
                         se lui condivide gli intenti e se acconsente a creare il
-                        gruppo con lui. Accordato da Giacomo l’impegno, può
+                        gruppo con lui. Accordato da Giacomo l'impegno, può
                         nascere la chat.
                       </p>
 
                       <p>
-                        Il primo vantaggio offerto dall’utilizzo del gruppo è
+                        Il primo vantaggio offerto dall'utilizzo del gruppo è
                         quello di poter orientare correttamente le antenne in
                         direzione del corrispondente, evitando così di fare
                         chiamate in direzioni dove non ci fossero stazioni
@@ -739,21 +743,21 @@ const Homepage = () => {
                       </p>
 
                       <p>
-                        Negli ultimi anni c’è stato un tracollo nell’utilizzo di
+                        Negli ultimi anni c'è stato un tracollo nell'utilizzo di
                         queste bande, fino a creare un vero e proprio tam tam
-                        negativo che diceva che non c’erano più operatori su
+                        negativo che diceva che non c'erano più operatori su
                         queste frequenze, definite ormai “morte”. Seguendo il
                         progetto iniziale di formare un gruppo più numeroso
                         possibile nei primi due anni, Alessandro invita nella
                         neonata chat tutti gli operatori di stazione che collega
                         durante la sua attività radiantistica in SSB 144MHz e
-                        432MHz. Alcuni accettavano l’invito e altri rifiutavano.
+                        432MHz. Alcuni accettavano l'invito e altri rifiutavano.
                       </p>
 
                       <p>
                         Il primo risultato che si era prefissato era quello di
                         “interrompere” il tam tam che da tempo si sentiva
-                        ripetere: “In VHF SSB non c’è più nessuno, figuriamoci
+                        ripetere: “In VHF SSB non c'è più nessuno, figuriamoci
                         sulle bande superiori”. Lentamente gli amici collegati
                         in radio che accettavano di essere inseriti passarono da
                         3 a 5 a 20 a 30 a 50, ma molte zone del paese rimanevano
@@ -797,7 +801,7 @@ const Homepage = () => {
                         numero delle stazioni operative e del numero dei
                         collegamenti, sia quotidianamente che in occasione di
                         manifestazioni, con un trend ancora oggi in continua
-                        crescita. L’entusiasmo e la passione per questo hobby
+                        crescita. L'entusiasmo e la passione per questo hobby
                         sta coinvolgendo e divertendo sempre più appassionati.
                         Ad oggi, 27 febbraio 2023, il gruppo conta oltre 400
                         partecipanti da tutta Italia, Spagna, Svizzera, Francia,
