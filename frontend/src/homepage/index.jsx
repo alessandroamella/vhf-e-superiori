@@ -210,6 +210,28 @@ const Homepage = () => {
     return _events[_events.length - 1] ?? null;
   }, [events]);
 
+  const _eqslEvent = useCallback(async () => {
+    if (!events) return null;
+    const now = new Date();
+    const _events = [...events].filter(e => {
+      const eventDate = new Date(e.date);
+      // within 15 days in future or 12 hours in past
+      return (
+        (isBefore(eventDate, addDays(now, 15)) && isAfter(eventDate, now)) ||
+        (isAfter(eventDate, addHours(now, -12)) && isBefore(eventDate, now))
+      );
+    });
+    // Sort by date, showing the latest event
+    _events.sort((a, b) => new Date(b.date) - new Date(a.date));
+    return _events[0] || null;
+  }, [events]);
+
+  const [eqslEventToShow, setEqslEventToShow] = useState(null);
+  useEffect(() => {
+    // returns eqslEventToShow
+    _eqslEvent().then(setEqslEventToShow);
+  }, [_eqslEvent]);
+
   const [rankingsEventToShow, setRankingsEventToShow] = useState(null);
   const [stationEventToShow, setStationEventToShow] = useState(null);
   useEffect(() => {
@@ -669,6 +691,38 @@ const Homepage = () => {
 
                           <Link
                             to={"/qsomanager/" + stationEventToShow._id}
+                            className="underline decoration-dotted hover:text-black transition-colors"
+                          >
+                            <Button className="text-lg mt-4">Invia EQSL</Button>
+                          </Link>
+                        </Card>
+                      </div>
+                    )}
+
+                  {eqslEventToShow &&
+                    Object.keys(eqslEventToShow).length > 0 && (
+                      <div className="mt-4">
+                        <Card className="text-center">
+                          {eqslEventToShow.logoUrl && (
+                            <Link
+                              to={"/logqso/" + eqslEventToShow._id}
+                              className="underline decoration-dotted hover:text-black transition-colors"
+                            >
+                              <LazyLoadImage
+                                src={
+                                  eqslEventToShow.eqslUrl ||
+                                  eqslEventToShow.logoUrl
+                                }
+                                alt={`Invia EQSL per ${eqslEventToShow.name}`}
+                                className={`w-full mx-auto mb-2 object-contain max-h-48 transition-all duration-300 drop-shadow hover:drop-shadow-xl`}
+                              />
+                            </Link>
+                          )}
+                          <h2 className="text-2xl font-bold">
+                            {eqslEventToShow.name}
+                          </h2>
+                          <Link
+                            to={"/logqso/" + eqslEventToShow._id}
                             className="underline decoration-dotted hover:text-black transition-colors"
                           >
                             <Button className="text-lg mt-4">Invia EQSL</Button>

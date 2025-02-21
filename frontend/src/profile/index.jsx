@@ -752,9 +752,9 @@ const Profile = () => {
                 {user && (
                   <div className="flex justify-center my-4 md:my-8">
                     <Link to={`/u/${user.callsign}`}>
-                      <Button color="dark" size="lg">
-                        <FaExternalLinkAlt className="inline mb-1 mr-2" /> Mappa
-                        collegamenti
+                      <Button color="dark" size="lg" className="px-3">
+                        <FaExternalLinkAlt className="inline mr-1 mt-[2px]" />
+                        Mappa collegamenti
                       </Button>
                     </Link>
                   </div>

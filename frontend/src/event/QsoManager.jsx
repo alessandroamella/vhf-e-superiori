@@ -72,15 +72,6 @@ const QsoManager = () => {
 
   const eqslSending = useMap();
 
-  const isEventStation =
-    event &&
-    user &&
-    Array.isArray(event.joinRequests) &&
-    event.joinRequests
-      ?.filter(e => e.isApproved)
-      ?.map(e => e.fromUser.callsign)
-      ?.includes(user.callsign);
-
   useEffect(() => {
     async function getUsers() {
       try {
@@ -108,7 +99,7 @@ const QsoManager = () => {
       }
     }
     if (user?.isAdmin && !users) getUsers();
-  }, [event, isEventStation, user, users]);
+  }, [event, user, users]);
 
   const getQsos = useCallback(async () => {
     try {
@@ -184,12 +175,11 @@ const QsoManager = () => {
       });
 
       return;
-    } else if (user && event && !isEventStation) {
+    } else if (user && event) {
       console.log(
         "not event station",
         user,
         event,
-        isEventStation,
         "f",
         !!event,
         !!user,
@@ -247,7 +237,7 @@ const QsoManager = () => {
       setDisabled(false);
       setHasPermission(true);
     }
-  }, [event, isEventStation, qsos, user]);
+  }, [event, qsos, user]);
 
   const [cookies, setCookie] = useCookies(["qsoManagerCache"]);
 
@@ -454,7 +444,7 @@ const QsoManager = () => {
         // email,
         // imageHref
       };
-      if (user.isAdmin && !isEventStation && fromStation) {
+      if (user.isAdmin && fromStation) {
         console.log("fromStation changed", fromStation);
         obj.fromStation = fromStation._id;
       } else {
@@ -998,11 +988,11 @@ const QsoManager = () => {
         <div className="mx-auto px-4 w-full md:w-5/6 pt-12">
           {alert && (
             <Alert
-              className="mb-6 dark:text-black"
+              className="mb-6 dark:border border-white"
               color={alert.color}
               onDismiss={() => (hasPermission ? setAlert(null) : navigate("/"))}
             >
-              <span>{alert.msg}</span>
+              <span className="dark:text-white">{alert.msg}</span>
             </Alert>
           )}
 
@@ -1048,7 +1038,7 @@ const QsoManager = () => {
                             ) : (
                               <>
                                 <div className="flex flex-col md:flex-row justify-center items-center gap-4">
-                                  {!isEventStation && user.isAdmin && users && (
+                                  {user.isAdmin && users && (
                                     <div>
                                       <Label
                                         htmlFor="fromStation"

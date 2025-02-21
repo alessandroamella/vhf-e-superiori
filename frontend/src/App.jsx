@@ -16,6 +16,7 @@ import axios, { isAxiosError } from "axios";
 import Profile from "./profile";
 import AdminManager from "./admin";
 import ViewEvent from "./event/ViewEvent";
+import UserQsoManager from "./event/UserQsoManager";
 // import Regolamento from "./homepage/Regolamento";
 // import Info from "./homepage/Info";
 import ResetPw from "./profile/ResetPw";
@@ -60,6 +61,7 @@ const router = createBrowserRouter([
   { path: "/u/:callsign", element: <ViewPublished /> },
   { path: "/social/:id", element: <ViewPost /> },
   { path: "/eventmanager", element: <AdminManager /> },
+  { path: "/logqso/:id", element: <UserQsoManager /> },
   { path: "/qsomanager/:id", element: <QsoManager /> },
   { path: "/rankings/:id", element: <Rankings /> },
   { path: "/eqsl/:id", element: <EqslRedirect /> },
