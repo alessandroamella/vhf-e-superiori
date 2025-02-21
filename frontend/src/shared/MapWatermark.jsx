@@ -1,5 +1,3 @@
-import React from "react";
-
 const MapWatermark = () => {
   return (
     <div className="absolute right-8 bottom-8 z-50 flex items-center gap-1">

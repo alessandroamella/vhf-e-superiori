@@ -2,8 +2,9 @@ import { Link, useLocation } from "react-router-dom";
 import Flags from "./Flags";
 import { Button, Spinner } from "flowbite-react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { UserContext } from "./App";
+import PropTypes from "prop-types";
 
 const LinkButton = ({ to, children, keepCurrent }) => {
   const location = useLocation();
@@ -25,6 +26,12 @@ const LinkButton = ({ to, children, keepCurrent }) => {
       </Button>
     </Link>
   );
+};
+
+LinkButton.propTypes = {
+  to: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  keepCurrent: PropTypes.bool
 };
 
 const Header = () => {

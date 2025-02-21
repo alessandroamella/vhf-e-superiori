@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlaceholder from "react-placeholder";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,7 @@ import axios from "axios";
 import { FaTrash } from "react-icons/fa";
 import CallsignLoading from "../shared/CallsignLoading";
 import { getErrorStr } from "../shared";
+import PropTypes from "prop-types";
 
 /**
  * @typedef {object} BasePost
@@ -217,5 +218,16 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
     </div>
   );
 };
+
+FeedCard.propTypes = {
+  posts: PropTypes.array,
+  setPosts: PropTypes.func,
+  post: PropTypes.object,
+  pp: PropTypes.string,
+  setAlert: PropTypes.func,
+  id: PropTypes.string
+};
+
+FeedCard.displayName = "FeedCard";
 
 export default FeedCard;

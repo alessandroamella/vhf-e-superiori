@@ -23,6 +23,7 @@ import { FaTrash } from "react-icons/fa";
 import CallsignLoading from "../shared/CallsignLoading";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { getErrorStr } from "../shared";
+import PropTypes from "prop-types";
 
 /**
  * @typedef {import('./NewPost').PostType} PostType
@@ -313,4 +314,14 @@ const ViewPostContent = React.memo(
   }
 );
 
-export default trackWindowScroll(ViewPostContent);
+ViewPostContent.propTypes = {
+  post: PropTypes.object,
+  pic: PropTypes.string,
+  scrollPosition: PropTypes.number,
+  hideComments: PropTypes.bool
+};
+
+ViewPostContent.displayName = "ViewPostContent";
+
+const TrackedViewPostContent = trackWindowScroll(ViewPostContent);
+export default TrackedViewPostContent;

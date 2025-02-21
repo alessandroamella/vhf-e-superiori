@@ -3,7 +3,7 @@ import axios from "axios";
 import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
 import { createRef, useRef, useState } from "react";
 import { useEffect } from "react";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { UserContext } from "../App";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -33,6 +33,7 @@ const Login = () => {
     try {
       token = captchaRef.current.getValue();
     } catch (err) {
+      console.log("captcha error", err);
       window.scrollTo({
         top: 0,
         behavior: "smooth"

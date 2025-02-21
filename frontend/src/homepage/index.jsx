@@ -7,7 +7,7 @@ import {
   SplashContext,
   UserContext
 } from "../App";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Accordion, Alert, Card, Spinner, Table } from "flowbite-react";
 import {
   differenceInDays,
@@ -305,15 +305,15 @@ const Homepage = () => {
                     className="text-gray-600 dark:text-gray-100 mb-8 mt-4 md:pr-4 text-justify"
                   >
                     <p>
-                      Nasce da un'idea di <strong>IU4JJJ</strong> Pietro Cerrone
-                      membro della chat VHF e superiori che la propone a{" "}
+                      Nasce da un&apos;idea di <strong>IU4JJJ</strong> Pietro
+                      Cerrone membro della chat VHF e superiori che la propone a{" "}
                       <strong>IZ5RNF</strong> Alessandro Ronca creatore del
                       gruppo.
                     </p>
 
                     <p>
-                      Accolta l'idea viene creato un gruppo di lavoro con la
-                      collaborazione di{" "}
+                      Accolta l&apos;idea viene creato un gruppo di lavoro con
+                      la collaborazione di{" "}
                       <a
                         href="https://www.qrz.com/db/IC8TEM"
                         target="_blank"
@@ -342,9 +342,9 @@ const Homepage = () => {
                     </p>
 
                     <p>
-                      Ispirandosi proprio al "flash mob" che si prefigge lo
-                      scopo di far incontrare più persone possibile per poco
-                      tempo usando mail e social ,da qui il nome.
+                      Ispirandosi proprio al &quot;flash mob&quot; che si
+                      prefigge lo scopo di far incontrare più persone possibile
+                      per poco tempo usando mail e social ,da qui il nome.
                     </p>
 
                     <p>
@@ -369,9 +369,9 @@ const Homepage = () => {
                     </div>
 
                     <p>
-                      Le stazioni dette "attivatrici" chiamate così per
-                      l'occasione ricevono molte richieste di contatto da tutta
-                      Italia.
+                      Le stazioni dette &quot;attivatrici&quot; chiamate così
+                      per l&apos;occasione ricevono molte richieste di contatto
+                      da tutta Italia.
                     </p>
 
                     <p>
@@ -386,14 +386,14 @@ const Homepage = () => {
                       conferma del contatto da ogni stazione attivatrice e
                       successivamente Vengono raccolti e pubblicati i dati dei
                       relativi ai partecipanti e al numero contatti, sia dei
-                      "cacciatori" che delle stazioni "attivatrici" e attribuito
-                      un punteggio pari ad un punto per ogni collegamento
-                      avvenuto
+                      &quot;cacciatori&quot; che delle stazioni
+                      &quot;attivatrici&quot; e attribuito un punteggio pari ad
+                      un punto per ogni collegamento avvenuto
                     </p>
 
                     <p>
-                      L'evento non è una gara ma ha lo scopo di aumentare il
-                      numero di stazioni operanti sulle bande VHF e superiori
+                      L&apos;evento non è una gara ma ha lo scopo di aumentare
+                      il numero di stazioni operanti sulle bande VHF e superiori
                       con uno spirito partecipativo e non competitivo.
                     </p>
                   </div>
@@ -589,24 +589,23 @@ const Homepage = () => {
                         <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
                           COSA È IL RADIO FLASH MOB
                         </p>
-
                         <p>
-                          L'intento di questo evento è quello di incentivare
-                          l'utilizzo delle frequenze VHF 144MHz e UHF
-                          432/1200MHz e superiori nei modi fonia e CW.
+                          L&apos;intento di questo evento è quello di
+                          incentivare l&apos;utilizzo delle frequenze VHF 144MHz
+                          e UHF 432/1200MHz e superiori nei modi fonia e CW.
                         </p>
 
                         <p>
-                          Per l'occasione le stazioni che si sono rese
-                          disponibili vengono denominate "ATTIVATRICI" e viene
-                          assegnata loro una frequenza consigliata, quindi
-                          indicativa e modificabile a discrezione dell'operatore
-                          da utilizzare nel corso delle due ore della
-                          manifestazione. La manistazione si terrà l'ultima
-                          domenica di ogni mese. Nel caso che la frequenza
-                          indicata nella locandina sia modificata dall'operatore
-                          è pregato di comunicare la nuova frequenza ai
-                          partecipanti tramite la chat.
+                          Per l&apos;occasione le stazioni che si sono rese
+                          disponibili vengono denominate &quot;ATTIVATRICI&quot;
+                          e viene assegnata loro una frequenza consigliata,
+                          quindi indicativa e modificabile a discrezione
+                          dell&apos;operatore da utilizzare nel corso delle due
+                          ore della manifestazione. La manistazione si terrà
+                          l&apos;ultima domenica di ogni mese. Nel caso che la
+                          frequenza indicata nella locandina sia modificata
+                          dall&apos;operatore è pregato di comunicare la nuova
+                          frequenza ai partecipanti tramite la chat.
                         </p>
 
                         <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
@@ -617,7 +616,7 @@ const Homepage = () => {
                           Le stazioni che attuano il contatto si scambiano
                           nominativo, rapporto e locatore e a conferma del
                           collegamento verrà inviata QSL elettronica concepita
-                          per l'occasione.
+                          per l&apos;occasione.
                         </p>
 
                         <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
@@ -625,9 +624,9 @@ const Homepage = () => {
                         </p>
 
                         <p>
-                          Si consiglia l'uso della Chat per organizzare sked
-                          specialmente per i collegamenti a lunga distanza e
-                          quindi più difficili.
+                          Si consiglia l&apos;uso della Chat per organizzare
+                          sked specialmente per i collegamenti a lunga distanza
+                          e quindi più difficili.
                         </p>
 
                         <p>
@@ -784,40 +783,41 @@ const Homepage = () => {
                         spiega a <strong>IZ5IOQ</strong> Giacomo Matteucci,
                         amico di vecchia data, cosa ha in mente di fare e chiede
                         se lui condivide gli intenti e se acconsente a creare il
-                        gruppo con lui. Accordato da Giacomo l'impegno, può
+                        gruppo con lui. Accordato da Giacomo l&apos;impegno, può
                         nascere la chat.
                       </p>
 
                       <p>
-                        Il primo vantaggio offerto dall'utilizzo del gruppo è
-                        quello di poter orientare correttamente le antenne in
+                        Il primo vantaggio offerto dall&apos;utilizzo del gruppo
+                        è quello di poter orientare correttamente le antenne in
                         direzione del corrispondente, evitando così di fare
                         chiamate in direzioni dove non ci fossero stazioni
                         operanti e senza quindi ricevere risposta alle chiamate.
                       </p>
 
                       <p>
-                        Negli ultimi anni c'è stato un tracollo nell'utilizzo di
-                        queste bande, fino a creare un vero e proprio tam tam
-                        negativo che diceva che non c'erano più operatori su
-                        queste frequenze, definite ormai “morte”. Seguendo il
-                        progetto iniziale di formare un gruppo più numeroso
-                        possibile nei primi due anni, Alessandro invita nella
-                        neonata chat tutti gli operatori di stazione che collega
-                        durante la sua attività radiantistica in SSB 144MHz e
-                        432MHz. Alcuni accettavano l'invito e altri rifiutavano.
+                        Negli ultimi anni c&apos;è stato un tracollo
+                        nell&apos;utilizzo di queste bande, fino a creare un
+                        vero e proprio tam tam negativo che diceva che non
+                        c&apos;erano più operatori su queste frequenze, definite
+                        ormai “morte”. Seguendo il progetto iniziale di formare
+                        un gruppo più numeroso possibile nei primi due anni,
+                        Alessandro invita nella neonata chat tutti gli operatori
+                        di stazione che collega durante la sua attività
+                        radiantistica in SSB 144MHz e 432MHz. Alcuni accettavano
+                        l&apos;invito e altri rifiutavano.
                       </p>
 
                       <p>
                         Il primo risultato che si era prefissato era quello di
                         “interrompere” il tam tam che da tempo si sentiva
-                        ripetere: “In VHF SSB non c'è più nessuno, figuriamoci
-                        sulle bande superiori”. Lentamente gli amici collegati
-                        in radio che accettavano di essere inseriti passarono da
-                        3 a 5 a 20 a 30 a 50, ma molte zone del paese rimanevano
-                        purtroppo ancora scoperte. Fu per lui un risultato
-                        memorabile il superamento della soglia dei 100
-                        partecipanti dopo un lavoro portato avanti
+                        ripetere: “In VHF SSB non c&apos;è più nessuno,
+                        figuriamoci sulle bande superiori”. Lentamente gli amici
+                        collegati in radio che accettavano di essere inseriti
+                        passarono da 3 a 5 a 20 a 30 a 50, ma molte zone del
+                        paese rimanevano purtroppo ancora scoperte. Fu per lui
+                        un risultato memorabile il superamento della soglia dei
+                        100 partecipanti dopo un lavoro portato avanti
                         ininterrottamente per due anni di contatti radio, inviti
                         e inserimenti. Così la chat inizia a essere utile e i
                         messaggi iniziano a essere sempre più numerosi grazie al
@@ -855,11 +855,11 @@ const Homepage = () => {
                         numero delle stazioni operative e del numero dei
                         collegamenti, sia quotidianamente che in occasione di
                         manifestazioni, con un trend ancora oggi in continua
-                        crescita. L'entusiasmo e la passione per questo hobby
-                        sta coinvolgendo e divertendo sempre più appassionati.
-                        Ad oggi, 27 febbraio 2023, il gruppo conta oltre 400
-                        partecipanti da tutta Italia, Spagna, Svizzera, Francia,
-                        Croazia, Malta ecc.
+                        crescita. L&apos;entusiasmo e la passione per questo
+                        hobby sta coinvolgendo e divertendo sempre più
+                        appassionati. Ad oggi, 27 febbraio 2023, il gruppo conta
+                        oltre 400 partecipanti da tutta Italia, Spagna,
+                        Svizzera, Francia, Croazia, Malta ecc.
                       </p>
 
                       <p>

@@ -19,6 +19,7 @@ import { FaArrowAltCircleRight, FaExternalLinkAlt } from "react-icons/fa";
 import { Helmet } from "react-helmet";
 import { getErrorStr } from "../shared";
 import { mapsApiKey } from "../constants/mapsApiKey";
+import PropTypes from "prop-types";
 
 const useFocus = () => {
   const htmlElRef = useRef(null);
@@ -41,6 +42,10 @@ const OpenExternally = ({ doc }) => {
       esternamente
     </Link>
   );
+};
+
+OpenExternally.propTypes = {
+  doc: PropTypes.string.isRequired
 };
 
 const Signup = () => {

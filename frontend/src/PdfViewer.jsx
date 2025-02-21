@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-
-// import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-// import "react-pdf/dist/esm/Page/TextLayer.css";
 import { MediaBlock } from "react-placeholder/lib/placeholders";
+import PropTypes from "prop-types";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -34,5 +32,12 @@ const LazyPDFViewer = ({ pdfName, shouldRender }) => {
     </div>
   );
 };
+
+LazyPDFViewer.propTypes = {
+  pdfName: PropTypes.string.isRequired,
+  shouldRender: PropTypes.bool.isRequired
+};
+
+LazyPDFViewer.displayName = "LazyPDFViewer";
 
 export default LazyPDFViewer;

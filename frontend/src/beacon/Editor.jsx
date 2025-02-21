@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Alert, Button, Label, TextInput } from "flowbite-react";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import L from "leaflet";
 import { UserContext } from "../App";
 import Layout from "../Layout";
@@ -22,6 +22,7 @@ import {
 import { Helmet } from "react-helmet";
 import MapWatermark from "../shared/MapWatermark";
 import { getErrorStr } from "../shared";
+import PropTypes from "prop-types";
 
 const MyMarker = ({
   showPos,
@@ -591,5 +592,18 @@ const BeaconEditor = () => {
     </Layout>
   );
 };
+
+MyMarker.propTypes = {
+  showPos: PropTypes.bool,
+  setShowPos: PropTypes.func,
+  lat: PropTypes.number,
+  setLat: PropTypes.func,
+  lon: PropTypes.number,
+  setLon: PropTypes.func,
+  fly: PropTypes.bool,
+  updateFn: PropTypes.func
+};
+
+MyMarker.displayName = "MyMarker";
 
 export default BeaconEditor;

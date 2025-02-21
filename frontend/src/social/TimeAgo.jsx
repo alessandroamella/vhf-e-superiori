@@ -1,5 +1,6 @@
 import { formatDistanceToNow } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
+import PropTypes from "prop-types";
 
 const TimeAgo = ({ createdAt }) => {
   // Converte la data in ora locale.
@@ -29,6 +30,9 @@ const TimeAgo = ({ createdAt }) => {
     .trim(); // Rimuove eventuali spazi bianchi all'inizio o alla fine.
 
   return <span>{abbreviatedTimeAgo}</span>;
+};
+TimeAgo.propTypes = {
+  createdAt: PropTypes.string.isRequired
 };
 
 export default TimeAgo;

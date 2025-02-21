@@ -11,12 +11,13 @@ import {
   Spinner,
   TextInput
 } from "flowbite-react";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { FaInfo } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { EventsContext, UserContext } from "../App";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { getErrorStr } from "../shared";
+import PropTypes from "prop-types";
 
 const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
   const { user } = useContext(UserContext);
@@ -233,7 +234,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
               <div className="flex flex-col gap-4">
                 <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
                   Usa il seguente form per fare richiesta di partecipazione
-                  all'evento
+                  all&apos;evento
                 </p>
 
                 <div>
@@ -297,5 +298,14 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
     </Modal>
   );
 };
+
+JoinRequestModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  setOpen: PropTypes.func.isRequired,
+  event: PropTypes.object,
+  setEvent: PropTypes.func.isRequired
+};
+
+JoinRequestModal.displayName = "JoinRequestModal";
 
 export default JoinRequestModal;

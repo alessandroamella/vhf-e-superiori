@@ -1,7 +1,7 @@
 import Layout from "../Layout";
 import { useEffect, useMemo, useState } from "react";
 import { ReadyContext, SplashContext } from "../App";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Splash from "../Splash";
 
@@ -211,8 +211,8 @@ const Social = () => {
                     <p>Ancora nessun post</p>
                   ) : (
                     <p>
-                      Nessun post trovato con nominativo "
-                      <strong>{filterCallsign}</strong>"
+                      Nessun post trovato con nominativo &quot;
+                      <strong>{filterCallsign}</strong>&quot;
                     </p>
                   )}
                 </div>

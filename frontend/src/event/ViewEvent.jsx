@@ -3,7 +3,7 @@ import axios from "axios";
 import { isAfter } from "date-fns";
 import it from "date-fns/locale/it";
 import { Alert, Checkbox, Label, Modal, TextInput } from "flowbite-react";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import {
@@ -23,6 +23,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { Helmet } from "react-helmet";
 import { getErrorStr } from "../shared";
+import PropTypes from "prop-types";
 
 const EventContainer = ({ event, children }) =>
   event?.logoUrl ? (
@@ -125,7 +126,7 @@ const ViewEvent = () => {
             <div className="flex flex-col gap-4">
               <p className="text-base leading-relaxed text-gray-500 dark:text-gray-300">
                 Usa il seguente form per fare richiesta di partecipazione
-                all'evento
+                all&apos;evento
               </p>
 
               <div>
@@ -225,7 +226,7 @@ const ViewEvent = () => {
             />
           ) : (
             <p className="font-normal text-gray-700 dark:text-gray-400">
-              "-- nessuna descrizione --"
+              -- nessuna descrizione --
             </p>
           )}
 
@@ -290,7 +291,7 @@ const ViewEvent = () => {
                   variant="paragraph"
                   className="font-normal mb-2 mt-6"
                 >
-                  Vuoi partecipare all'evento?{" "}
+                  Vuoi partecipare all&apos;evento?{" "}
                   {user ? (
                     <span>Fanne richiesta</span>
                   ) : (
@@ -342,12 +343,21 @@ const ViewEvent = () => {
         <MTAlert color="red" className="mt-3">
           <div className="flex items-center">
             <FaExclamationTriangle />
-            <span className="ml-1">Errore nel caricamento dell'evento</span>
+            <span className="ml-1">
+              Errore nel caricamento dell&apos;evento
+            </span>
           </div>
         </MTAlert>
       )}
     </Layout>
   );
 };
+
+EventContainer.propTypes = {
+  event: PropTypes.object,
+  children: PropTypes.node
+};
+
+EventContainer.displayName = "EventContainer";
 
 export default ViewEvent;

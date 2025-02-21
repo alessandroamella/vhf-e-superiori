@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Button, Spinner } from "flowbite-react";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   FaArchive,
   FaCalendar,
@@ -23,6 +23,7 @@ import {
 import { JoinOpenContext, SidebarOpenContext, UserContext } from "../App";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { getErrorStr } from "../shared";
+import PropTypes from "prop-types";
 
 const SectionHref = ({ href, wip, children }) => {
   const { setSidebarOpen } = useContext(SidebarOpenContext);
@@ -50,6 +51,12 @@ const SectionHref = ({ href, wip, children }) => {
   ) : (
     <SectionLink to={"/" + href}>{children}</SectionLink>
   );
+};
+
+SectionHref.propTypes = {
+  href: PropTypes.string.isRequired,
+  wip: PropTypes.bool,
+  children: PropTypes.node.isRequired
 };
 
 const SectionLink = ({ to, children, redirectBack, ...rest }) => {
@@ -80,6 +87,12 @@ const SectionLink = ({ to, children, redirectBack, ...rest }) => {
   );
 };
 
+SectionLink.propTypes = {
+  to: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  redirectBack: PropTypes.bool
+};
+
 const SectionTitle = ({ children, className, ...rest }) => {
   return (
     <h3
@@ -93,6 +106,11 @@ const SectionTitle = ({ children, className, ...rest }) => {
   );
 };
 
+SectionTitle.propTypes = {
+  children: PropTypes.node.isRequired,
+  className: PropTypes.string
+};
+
 const MenuContent = ({ isSideBar }) => {
   const { user, setUser } = useContext(UserContext);
   const { joinOpen, setJoinOpen } = useContext(JoinOpenContext);
@@ -104,7 +122,6 @@ const MenuContent = ({ isSideBar }) => {
     if (joinOpen) {
       setMenuOpen(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [joinOpen]);
 
   const navigate = useNavigate();
@@ -257,5 +274,11 @@ const MenuContent = ({ isSideBar }) => {
     </>
   );
 };
+
+MenuContent.propTypes = {
+  isSideBar: PropTypes.bool
+};
+
+MenuContent.displayName = "MenuContent";
 
 export default MenuContent;

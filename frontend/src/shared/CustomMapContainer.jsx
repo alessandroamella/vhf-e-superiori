@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { MapContainer as LeafletMapContainer, TileLayer } from "react-leaflet";
+import PropTypes from "prop-types";
 
 const CustomMapContainer = ({ children, ...props }) => {
   const [height, setHeight] = useState(400);
@@ -33,5 +34,11 @@ const CustomMapContainer = ({ children, ...props }) => {
     </div>
   );
 };
+
+CustomMapContainer.propTypes = {
+  children: PropTypes.node
+};
+
+CustomMapContainer.displayName = "CustomMapContainer";
 
 export default CustomMapContainer;

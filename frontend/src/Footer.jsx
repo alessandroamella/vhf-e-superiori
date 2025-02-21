@@ -1,7 +1,6 @@
 import { Spinner } from "flowbite-react";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { FaCircle } from "react-icons/fa";
-// import { FaCircle, FaDotCircle } from "react-icons/fa";
 import { ReadyContext, ViewsContext } from "./App";
 import { Link } from "react-router-dom";
 

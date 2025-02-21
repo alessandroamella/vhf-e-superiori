@@ -11,9 +11,8 @@ import { Button } from "@material-tailwind/react";
 import { trackWindowScroll } from "react-lazy-load-image-component";
 import LazyPDFViewer from "../PdfViewer";
 
-SwiperCore.use([Navigation, Pagination]);
-
-const ProgettiGianni = ({ scrollPosition }) => {
+const ProgettiGianni = () => {
+  SwiperCore.use([Navigation, Pagination]);
   const documents = [
     "10wi4gbz",
     "11KK4GBZ",
@@ -66,4 +65,5 @@ const ProgettiGianni = ({ scrollPosition }) => {
   );
 };
 
-export default trackWindowScroll(ProgettiGianni);
+const TrackedProgettiGianni = trackWindowScroll(ProgettiGianni);
+export default TrackedProgettiGianni;

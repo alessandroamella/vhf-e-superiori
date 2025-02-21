@@ -1,5 +1,4 @@
 import axios from "axios";
-import React from "react";
 import {
   FaBan,
   FaDownload,
@@ -13,6 +12,7 @@ import { Link } from "react-router-dom";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { it } from "date-fns/locale";
 import { getErrorStr } from "../shared";
+import PropTypes from "prop-types";
 
 const ViewJoinRequest = ({
   disabled,
@@ -222,5 +222,16 @@ const ViewJoinRequest = ({
     </>
   );
 };
+
+ViewJoinRequest.propTypes = {
+  disabled: PropTypes.bool,
+  setDisabled: PropTypes.func,
+  joinRequests: PropTypes.array,
+  setJoinRequests: PropTypes.func,
+  setAlert: PropTypes.func,
+  showEvent: PropTypes.bool
+};
+
+ViewJoinRequest.displayName = "ViewJoinRequest";
 
 export default ViewJoinRequest;

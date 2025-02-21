@@ -28,7 +28,6 @@ import {
   useRef,
   useState
 } from "react";
-import wait from "wait";
 import { it } from "date-fns/locale";
 import { EventsContext, UserContext } from "../App";
 import Layout from "../Layout";
@@ -936,7 +935,7 @@ const AdminManager = () => {
                 <p className="dark:text-white">
                   <span className="font-bold">QSO Manager</span>:{" "}
                   <span className="font-normal">
-                    disponibile solo dopo la creazione dell'evento
+                    disponibile solo dopo la creazione dell&apos;evento
                   </span>
                 </p>
               )}
@@ -1731,8 +1730,8 @@ const AdminManager = () => {
             <Alert color="failure" className="dark:text-black">
               <h3 className="font-bold text-2xl">ATTENZIONE</h3>
               <p>
-                Il backup è un'operazione costosa che richiede un po' di tempo,
-                si consiglia di effettuarlo solo in caso di necessità
+                Il backup è un&apos;operazione costosa che richiede un po&apos;
+                di tempo, si consiglia di effettuarlo solo in caso di necessità
               </p>
               <a href="/api/backup" target="_blank" rel="noopener noreferrer">
                 <Button

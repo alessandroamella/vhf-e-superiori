@@ -1,8 +1,8 @@
 import { Button, Typography } from "@material-tailwind/react";
 import { it } from "date-fns/locale";
-import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import PropTypes from "prop-types";
 
 const EventPreview = ({ event, ...props }) => {
   return (
@@ -56,5 +56,11 @@ const EventPreview = ({ event, ...props }) => {
     </div>
   );
 };
+
+EventPreview.propTypes = {
+  event: PropTypes.object.isRequired
+};
+
+EventPreview.displayName = "EventPreview";
 
 export default EventPreview;

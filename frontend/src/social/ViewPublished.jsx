@@ -1,7 +1,7 @@
 import Layout from "../Layout";
 import { useEffect, useMemo, useState } from "react";
 import { ReadyContext, SplashContext } from "../App";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import {
   Link,
   useLocation,
@@ -283,7 +283,8 @@ const ViewPublished = () => {
                         user?.callsign &&
                         (
                           qso.fromStationCallsignOverride ||
-                          qso.fromStation?.callsign
+                          qso.fromStation?.callsign ||
+                          ""
                         ).includes(user?.callsign)
                           ? "font-bold"
                           : ""
@@ -598,7 +599,7 @@ const ViewPublished = () => {
                           {_eventToFilter && (
                             <span>
                               {" "}
-                              per l'evento{" "}
+                              per l&apos;evento{" "}
                               <strong>
                                 {
                                   mappedEvents?.find(

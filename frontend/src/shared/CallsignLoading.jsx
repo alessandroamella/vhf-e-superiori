@@ -1,6 +1,6 @@
 import { Badge } from "flowbite-react";
-import React from "react";
 import ReactPlaceholder from "react-placeholder";
+import PropTypes from "prop-types";
 
 const CallsignLoading = ({ user, className, prefix, suffix }) => {
   return (
@@ -19,5 +19,14 @@ const CallsignLoading = ({ user, className, prefix, suffix }) => {
     </div>
   );
 };
+
+CallsignLoading.propTypes = {
+  user: PropTypes.object,
+  className: PropTypes.string,
+  prefix: PropTypes.node,
+  suffix: PropTypes.node
+};
+
+CallsignLoading.displayName = "CallsignLoading";
 
 export default CallsignLoading;

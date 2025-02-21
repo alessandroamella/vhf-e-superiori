@@ -5,7 +5,14 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 
 export default [
-    { ignores: ["dist", "tailwind.config.js"] },
+    {
+        ignores: [
+            "dist",
+            "tailwind.config.js",
+            "src/setupProxy.js",
+            "postcss.config.js"
+        ]
+    },
     {
         files: ["**/*.{js,jsx}"],
         languageOptions: {

@@ -1,5 +1,5 @@
 import Layout from "../Layout";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 
 import axios from "axios";

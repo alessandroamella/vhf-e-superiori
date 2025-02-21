@@ -1,10 +1,10 @@
-import React from "react";
 import { useDropzone } from "react-dropzone";
 import { FaTrash } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlayer from "react-player";
 import heic2any from "heic2any";
 import { v4 as uuidv4 } from "uuid";
+import PropTypes from "prop-types";
 
 const FileUploader = ({
   files,
@@ -145,5 +145,16 @@ const FileUploader = ({
     </div>
   );
 };
+
+FileUploader.propTypes = {
+  files: PropTypes.array.isRequired,
+  setFiles: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+  color: PropTypes.string,
+  maxPhotos: PropTypes.number,
+  maxVideos: PropTypes.number
+};
+
+FileUploader.displayName = "FileUploader";
 
 export default FileUploader;

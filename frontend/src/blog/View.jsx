@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Layout from "../Layout";
 import { Helmet } from "react-helmet";
 import axios from "axios";

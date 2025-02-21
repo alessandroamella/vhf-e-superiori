@@ -2,7 +2,7 @@ import Layout from "../Layout";
 import React, { useEffect, useMemo, useState, useContext } from "react";
 import { UserContext } from "../App";
 import { useForm } from "react-hook-form";
-
+import PropTypes from "prop-types";
 import axios from "axios";
 import {
   Alert,
@@ -313,7 +313,7 @@ const NewPost = () => {
                       className="text-center text-red flex gap-2 items-center"
                     >
                       <FaInfoCircle />
-                      Compila tutti i campi per vedere l'anteprima
+                      Compila tutti i campi per vedere l&apos;anteprima
                     </Typography>
                   </Alert>
                 )}
@@ -327,5 +327,15 @@ const NewPost = () => {
     </Layout>
   );
 };
+
+FileUploaderMemo.propTypes = {
+  files: PropTypes.array,
+  setFiles: PropTypes.func,
+  disabled: PropTypes.bool,
+  maxPhotos: PropTypes.number,
+  maxVideos: PropTypes.number
+};
+
+FileUploaderMemo.displayName = "FileUploaderMemo";
 
 export default NewPost;

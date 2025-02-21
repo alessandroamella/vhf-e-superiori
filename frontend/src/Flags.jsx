@@ -1,7 +1,6 @@
-import React from "react";
 import Flag from "react-world-flags";
 
-const Flags = ({ scrollPosition }) => {
+const Flags = () => {
   // Italy, Spain, France, Germany, Malta
   return (
     <div className="flex gap-2">

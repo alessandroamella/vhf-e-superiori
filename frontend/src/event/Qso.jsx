@@ -27,6 +27,7 @@ import { latLngBounds } from "leaflet";
 import StationMapMarker from "../shared/StationMapMarker";
 import MapWatermark from "../shared/MapWatermark";
 import { getErrorStr } from "../shared";
+import PropTypes from "prop-types";
 
 function ChangeView({ center, markers }) {
   const map = useMap();
@@ -42,6 +43,11 @@ function ChangeView({ center, markers }) {
 
   return null;
 }
+
+ChangeView.propTypes = {
+  center: PropTypes.object,
+  markers: PropTypes.array
+};
 
 const Qso = () => {
   const { id } = useParams();
@@ -278,7 +284,7 @@ const Qso = () => {
               {qso && (
                 <div className="mt-8 text-lg">
                   Grazie <span className="font-bold">{qso?.callsign}</span> per
-                  aver partecipato all'evento{" "}
+                  aver partecipato all&apos;evento{" "}
                   <span className="font-bold">{qso?.event?.name}</span>!
                   <Link to="/">
                     <Button>

@@ -1,10 +1,9 @@
 import { useMemo } from "react";
 import { Marker, Popup } from "react-leaflet";
 import L from "leaflet";
-// import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const StationMapMarker = ({
-  createUrl,
   iconRescaleFactor,
   callsign,
   lat,
@@ -46,5 +45,16 @@ const StationMapMarker = ({
     </Marker>
   );
 };
+
+StationMapMarker.propTypes = {
+  iconRescaleFactor: PropTypes.number,
+  callsign: PropTypes.string.isRequired,
+  lat: PropTypes.number.isRequired,
+  lon: PropTypes.number.isRequired,
+  locator: PropTypes.string,
+  icon: PropTypes.object
+};
+
+StationMapMarker.displayName = "StationMapMarker";
 
 export default StationMapMarker;

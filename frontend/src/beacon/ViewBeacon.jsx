@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Alert, Button, Card, Pagination, Tooltip } from "flowbite-react";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import L from "leaflet";
 import { UserContext } from "../App";
 import Layout from "../Layout";

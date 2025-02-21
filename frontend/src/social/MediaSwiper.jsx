@@ -2,7 +2,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-
+import PropTypes from "prop-types";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper";
 import Zoom from "react-medium-image-zoom";
@@ -38,5 +38,12 @@ const MediaSwiper = React.memo(({ postPictures, postVideos }) => (
     ))}
   </Swiper>
 ));
+
+MediaSwiper.propTypes = {
+  postPictures: PropTypes.array,
+  postVideos: PropTypes.array
+};
+
+MediaSwiper.displayName = "MediaSwiper";
 
 export default MediaSwiper;

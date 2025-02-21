@@ -1009,8 +1009,8 @@ const QsoManager = () => {
               <div className="mb-6 dark:text-black">
                 {event === null ? (
                   <p>
-                    Errore nel caricamento dell'evento (prova a ricaricare la
-                    pagina)
+                    Errore nel caricamento dell&apos;evento (prova a ricaricare
+                    la pagina)
                   </p>
                 ) : !event ? (
                   <Spinner className="dark:text-white dark:fill-white" />

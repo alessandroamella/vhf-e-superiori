@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import ReactPlaceholder from "react-placeholder";
 
 const Description = React.memo(({ description }) => (
@@ -13,5 +14,10 @@ const Description = React.memo(({ description }) => (
     </ReactPlaceholder>
   </h5>
 ));
+Description.propTypes = {
+  description: PropTypes.string
+};
+
+Description.displayName = "Description";
 
 export default Description;

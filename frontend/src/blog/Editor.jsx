@@ -39,6 +39,7 @@ import {
 import { FaExclamationTriangle, FaPlus, FaTrash, FaUndo } from "react-icons/fa";
 import { useCookies } from "react-cookie";
 import { getErrorStr } from "../shared";
+import PropTypes from "prop-types";
 
 const BlogPostEditor = ({ blogPost }) => {
   const [alert, setAlert] = useState(null);
@@ -382,5 +383,11 @@ const BlogPostEditor = ({ blogPost }) => {
     </Layout>
   );
 };
+
+BlogPostEditor.propTypes = {
+  blogPost: PropTypes.object
+};
+
+BlogPostEditor.displayName = "BlogPostEditor";
 
 export default BlogPostEditor;

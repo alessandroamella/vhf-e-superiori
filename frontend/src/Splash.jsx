@@ -1,31 +1,8 @@
-import React from "react";
 import AnimatedText from "react-animated-text-content";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import PropTypes from "prop-types";
 
 const Splash = ({ ready }) => {
-  // const { events } = useContext(EventsContext);
-
-  // const [shownEvent, setShownEvent] = useState(null);
-
-  // useEffect(() => {
-  //   if (!events) return;
-  //   const now = new Date();
-  //   console.log("lo c erco", events);
-  //   for (const e of events) {
-  //     const diff = differenceInDays(new Date(e.date), now);
-  //     if (
-  //       diff >= 0 &&
-  //       diff <= 14 &&
-  //       e.logoUrl &&
-  //       e.logoUrl !== "/logo-min.png"
-  //     ) {
-  //       console.log({ diff });
-  //       setShownEvent(e);
-  //       return;
-  //     }
-  //   }
-  // }, [events]);
-
   return (
     <div
       className={`splashLeave absolute z-50 transition-transform duration-1000 ease-in bg-gray-900 text-white first-letter flex top-0 left-0 right-0 overflow-hidden ${
@@ -71,6 +48,10 @@ const Splash = ({ ready }) => {
       </div>
     </div>
   );
+};
+
+Splash.propTypes = {
+  ready: PropTypes.bool.isRequired
 };
 
 export default Splash;

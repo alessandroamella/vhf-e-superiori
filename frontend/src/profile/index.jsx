@@ -1,6 +1,6 @@
 import Layout from "../Layout";
 import { Typography } from "@material-tailwind/react";
-import React, { useContext, useRef, useState, useEffect } from "react";
+import { useContext, useRef, useState, useEffect } from "react";
 import { EventsContext, UserContext } from "../App";
 import {
   Alert,
@@ -447,7 +447,7 @@ const Profile = () => {
                 </p>
               )}
               <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                ⚠️ L'annullamento non è revocabile!
+                ⚠️ L&apos;annullamento non è revocabile!
               </p>
             </div>
           </Modal.Body>
@@ -920,7 +920,8 @@ const Profile = () => {
                                 className={
                                   (
                                     qso.fromStationCallsignOverride ||
-                                    qso.fromStation?.callsign
+                                    qso.fromStation?.callsign ||
+                                    ""
                                   ).includes(user?.callsign)
                                     ? "font-bold"
                                     : ""
