@@ -28,6 +28,7 @@ import {
   useRef,
   useState
 } from "react";
+import wait from "wait";
 import { it } from "date-fns/locale";
 import { EventsContext, UserContext } from "../App";
 import Layout from "../Layout";
@@ -63,6 +64,7 @@ import ReactPlaceholder from "react-placeholder";
 import ReactGoogleAutocomplete from "react-google-autocomplete";
 import CallsignLoading from "../shared/CallsignLoading";
 import { getErrorStr } from "../shared";
+import { mapsApiKey } from "../constants/mapsApiKey";
 
 const AdminManager = () => {
   const { user } = useContext(UserContext);
@@ -506,6 +508,17 @@ const AdminManager = () => {
     }
     try {
       setDisabled(true);
+
+      if (!_offsetCallsign || !_offsetData || !_offsetFrom) {
+        const { offsetCallsign, offsetData, offsetFrom } = editOffset(false);
+
+        console.log("got:", { offsetCallsign, offsetData, offsetFrom });
+
+        _offsetCallsign = offsetCallsign;
+        _offsetData = offsetData;
+        _offsetFrom = offsetFrom;
+      }
+
       const res2 = await axios.post("/api/eqsl/preview", {
         href: _eqslPic,
         offsetCallsign: _offsetCallsign,
@@ -552,10 +565,12 @@ const AdminManager = () => {
 
   const [joinRequestsModal, setJoinRequestsModal] = useState(null);
 
-  const editOffset = () => {
-    const offsetCallsign = window.prompt("Inserisci offset NOMINATIVO");
-    const offsetData = window.prompt("Inserisci offset DATI");
-    const offsetFrom = window.prompt("Inserisci offset DA CHI");
+  const editOffset = (renderExample = true) => {
+    const offsetCallsign = parseInt(
+      window.prompt("Inserisci offset NOMINATIVO")
+    );
+    const offsetData = parseInt(window.prompt("Inserisci offset DATI"));
+    const offsetFrom = parseInt(window.prompt("Inserisci offset DA CHI"));
 
     if (
       [offsetCallsign, offsetData, offsetFrom].some(e => isNaN(parseInt(e)))
@@ -570,11 +585,15 @@ const AdminManager = () => {
     setOffsetData(offsetData);
     setOffsetFrom(offsetFrom);
 
-    renderEqslExample(null, offsetCallsign, offsetData, offsetFrom);
-
     window.alert(
       `Offset impostato a:\nNominativo: ${offsetCallsign}\nDati: ${offsetData}\nDa: ${offsetFrom}`
     );
+
+    if (renderExample) {
+      renderEqslExample(null, offsetCallsign, offsetData, offsetFrom);
+    }
+
+    return { offsetCallsign, offsetData, offsetFrom };
   };
 
   const [blogPosts, setBlogPosts] = useState([]);
@@ -914,7 +933,7 @@ const AdminManager = () => {
                   <hr className="mt-2" />
                 </div>
               ) : (
-                <p>
+                <p className="dark:text-white">
                   <span className="font-bold">QSO Manager</span>:{" "}
                   <span className="font-normal">
                     disponibile solo dopo la creazione dell'evento
@@ -1131,7 +1150,7 @@ const AdminManager = () => {
                     <Label htmlFor="user-address" value="Indirizzo" />
                   </div>
                   <ReactGoogleAutocomplete
-                    apiKey="AIzaSyAiPVD_IqTn5kMi2GFXwYQCTYaxznEbCfk"
+                    apiKey={mapsApiKey}
                     options={{
                       types: ["geocode"]
                     }}
@@ -1641,14 +1660,9 @@ const AdminManager = () => {
                       {events?.length === 0 && <p>Nessun evento salvato</p>}
                     </div>
                     <div className="w-full flex justify-center my-3 py-1 border-y border-gray-200">
-                      <Button
-                        className="flex h-full my-auto text-md flex-col justify-center items-center"
-                        onClick={newEventModal}
-                      >
-                        <span className="text-5xl mb-1 mr-2">
-                          <FaPlusCircle />
-                        </span>{" "}
-                        Nuovo evento
+                      <Button onClick={newEventModal}>
+                        <FaPlusCircle className="inline-block mr-2 mt-[2px]" />
+                        <span>Nuovo evento</span>
                       </Button>
                     </div>
                     <Pagination

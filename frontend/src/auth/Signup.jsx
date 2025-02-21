@@ -18,6 +18,7 @@ import ReactPlaceholder from "react-placeholder";
 import { FaArrowAltCircleRight, FaExternalLinkAlt } from "react-icons/fa";
 import { Helmet } from "react-helmet";
 import { getErrorStr } from "../shared";
+import { mapsApiKey } from "../constants/mapsApiKey";
 
 const useFocus = () => {
   const htmlElRef = useRef(null);
@@ -108,7 +109,7 @@ const Signup = () => {
   const [searchParams] = useSearchParams();
 
   const placesWidget = usePlacesWidget({
-    apiKey: "AIzaSyAiPVD_IqTn5kMi2GFXwYQCTYaxznEbCfk",
+    apiKey: mapsApiKey,
     options: {
       types: ["geocode"]
     },
@@ -346,7 +347,9 @@ const Signup = () => {
 
           <form action="#" method="post" onSubmit={signup}>
             <div className="flex items-end gap-2">
-              {avatar && <Avatar rounded img={avatar} size="lg" />}
+              {avatar && (
+                <Avatar rounded className="w-20 h-20" img={avatar} size="lg" />
+              )}
               <div className="w-full">
                 <div className="mb-2 block">
                   <Label
@@ -399,10 +402,7 @@ const Signup = () => {
               <div>
                 {/* DEBUG in traduzione estera, specifica di inserire il prefisso */}
                 <div className="mb-2 block">
-                  <Label
-                    htmlFor="phoneNumber"
-                    value="Numero di telefono (con prefisso nazionale)"
-                  />
+                  <Label htmlFor="phoneNumber" value="Numero di telefono" />
                 </div>
                 <TextInput
                   type="tel"

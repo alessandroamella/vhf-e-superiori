@@ -1,6 +1,6 @@
 import { Schema } from "express-validator";
 import { JSDOM } from "jsdom";
-import DOMPurify from "dompurify";
+import DOMPurify, { WindowLike } from "dompurify";
 
 const createSchema: Schema = {
     name: {
@@ -16,7 +16,7 @@ const createSchema: Schema = {
         customSanitizer: {
             options: v => {
                 const window = new JSDOM("").window;
-                const purify = DOMPurify(window as unknown as Window);
+                const purify = DOMPurify(window as unknown as WindowLike);
                 return purify.sanitize(v, { USE_PROFILES: { html: true } });
             }
         }

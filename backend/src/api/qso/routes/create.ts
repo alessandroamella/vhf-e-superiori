@@ -7,7 +7,6 @@ import { Errors } from "../../errors";
 import createSchema from "../schemas/createSchema";
 import { User, UserDoc } from "../../auth/models";
 import { Qso } from "../models";
-import JoinRequest from "../../joinRequest/models";
 import { location } from "../../location";
 
 const router = Router();
@@ -82,30 +81,32 @@ router.post(
                 }
                 _fromStation = fromStation;
             } else {
+                // commented out - now we allow everyone who is logged in
+                // to log their QSOs
                 // find join request with same event and user to check for permissions
-                const joinRequest = await JoinRequest.findOne({
-                    forEvent: req.body.event,
-                    fromUser: user._id
-                });
-                if (!joinRequest) {
-                    logger.debug(
-                        `Join request not found for event ${
-                            req.body.event
-                        } and user ${user._id.toString()}`
-                    );
-                    return res
-                        .status(BAD_REQUEST)
-                        .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
-                } else if (!joinRequest.isApproved) {
-                    logger.debug(
-                        `Join request not approved for event ${
-                            req.body.event
-                        } and user ${user._id.toString()}`
-                    );
-                    return res
-                        .status(BAD_REQUEST)
-                        .json(createError(Errors.JOIN_REQUEST_NOT_APPROVED));
-                }
+                // const joinRequest = await JoinRequest.findOne({
+                //     forEvent: req.body.event,
+                //     fromUser: user._id
+                // });
+                // if (!joinRequest) {
+                //     logger.debug(
+                //         `Join request not found for event ${
+                //             req.body.event
+                //         } and user ${user._id.toString()}`
+                //     );
+                //     return res
+                //         .status(BAD_REQUEST)
+                //         .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
+                // } else if (!joinRequest.isApproved) {
+                //     logger.debug(
+                //         `Join request not approved for event ${
+                //             req.body.event
+                //         } and user ${user._id.toString()}`
+                //     );
+                //     return res
+                //         .status(BAD_REQUEST)
+                //         .json(createError(Errors.JOIN_REQUEST_NOT_APPROVED));
+                // }
             }
 
             const {

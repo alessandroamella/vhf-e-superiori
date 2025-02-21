@@ -44,6 +44,7 @@ import {
 import { getDate } from "date-fns";
 import CallsignLoading from "../shared/CallsignLoading";
 import { getErrorStr } from "../shared";
+import { mapsApiKey } from "../constants/mapsApiKey";
 
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);
@@ -618,7 +619,7 @@ const Profile = () => {
                     </div>
                     {isEditing ? (
                       <ReactGoogleAutocomplete
-                        apiKey="AIzaSyAiPVD_IqTn5kMi2GFXwYQCTYaxznEbCfk"
+                        apiKey={mapsApiKey}
                         options={{
                           types: ["geocode"]
                         }}

@@ -1,41 +1,41 @@
-import { Errors } from "../api/errors";
+import { str, cleanEnv } from "envalid";
 import { logger } from "./logger";
+import { Errors } from "../api/errors";
 
-const requiredEnvs = [
-    "NODE_ENV",
-    "PORT",
-    "JWT_SECRET",
-    "COOKIE_SECRET",
-    "MONGODB_URI",
-    "QRZ_USERNAME",
-    "QRZ_PASSWORD",
-    "RECAPTCHA_SECRET",
-    "MAIL_SERVER",
-    "MAIL_USERNAME",
-    "MAIL_PASSWORD",
-    "SEND_EMAIL_FROM",
-    "TOT_ADMIN_EMAILS",
-    "AWS_BUCKET_NAME",
-    "AWS_ACCESS_KEY_ID",
-    "AWS_SECRET_ACCESS_KEY",
-    "BASE_TEMP_DIR",
-    "FILE_UPLOAD_TMP_FOLDER",
-    "QSL_CARD_TMP_FOLDER",
-    "MONGODUMP_FOLDER",
-    "GOOGLE_MAPS_API_KEY"
-] as const;
-export type Env = (typeof requiredEnvs)[number];
-
-for (const e of requiredEnvs) {
-    logger.debug("Checking env " + e);
-    if (!(e in process.env)) {
-        logger.error(Errors.MISSING_ENV + ": " + e);
-        process.exit(1);
+export const envs = cleanEnv(
+    process.env,
+    {
+        NODE_ENV: str(),
+        PORT: str(),
+        JWT_SECRET: str(),
+        COOKIE_SECRET: str(),
+        MONGODB_URI: str(),
+        QRZ_USERNAME: str(),
+        QRZ_PASSWORD: str(),
+        RECAPTCHA_SECRET: str(),
+        MAIL_SERVER: str(),
+        MAIL_USERNAME: str(),
+        MAIL_PASSWORD: str(),
+        SEND_EMAIL_FROM: str(),
+        TOT_ADMIN_EMAILS: str(),
+        AWS_BUCKET_NAME: str(),
+        AWS_ACCESS_KEY_ID: str(),
+        AWS_SECRET_ACCESS_KEY: str(),
+        BASE_TEMP_DIR: str(),
+        FILE_UPLOAD_TMP_FOLDER: str(),
+        QSL_CARD_TMP_FOLDER: str(),
+        MONGODUMP_FOLDER: str(),
+        GOOGLE_MAPS_API_KEY: str(),
+        AWS_REGION: str()
+    },
+    {
+        reporter: ({ errors }) => {
+            if (Object.keys(errors).length > 0) {
+                for (const [envVar, error] of Object.entries(errors)) {
+                    logger.error(`${Errors.MISSING_ENV}: ${envVar} (${error})`);
+                }
+                process.exit(1);
+            }
+        }
     }
-}
-
-type Envs = {
-    [env in Env]: string;
-};
-
-export const envs: Envs = process.env as never;
+);

@@ -1,13 +1,25 @@
-import AWS from "aws-sdk";
+import { S3Client as S3ClientV3 } from "@aws-sdk/client-s3";
+import {
+    PutObjectCommand,
+    DeleteObjectCommand,
+    DeleteObjectsCommand,
+    HeadObjectCommand,
+    GetObjectCommand,
+    ListObjectsV2Command
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import moment from "moment";
 import mime from "mime-types";
 import randomstring from "randomstring";
 import { envs, logger } from "../../shared";
 import { readFile, unlink } from "fs/promises";
 
-const s3 = new AWS.S3({
-    accessKeyId: envs.AWS_ACCESS_KEY_ID,
-    secretAccessKey: envs.AWS_SECRET_ACCESS_KEY
+const s3 = new S3ClientV3({
+    credentials: {
+        accessKeyId: envs.AWS_ACCESS_KEY_ID,
+        secretAccessKey: envs.AWS_SECRET_ACCESS_KEY
+    },
+    region: envs.AWS_REGION // Add region configuration
 });
 
 /**
@@ -29,6 +41,21 @@ interface S3GenerateFileName {
 
 interface S3FileDelete {
     filePath: string;
+    bucket?: string;
+}
+
+interface S3GetFileMeta {
+    filePath: string;
+    bucket?: string;
+}
+
+interface S3GetFile {
+    filePath: string;
+    bucket?: string;
+}
+
+interface S3ListFiles {
+    folder?: string;
     bucket?: string;
 }
 
@@ -54,23 +81,30 @@ export class S3Client {
         filePath: string;
     }): Promise<string> {
         const fileContent = await readFile(filePath);
-        return new Promise((resolve, reject) => {
-            s3.upload(
-                {
-                    Bucket: bucket || envs.AWS_BUCKET_NAME,
-                    Key: `${folder}/${fileName}`,
-                    Body: fileContent,
-                    ContentType: mimeType
-                },
-                async (err: Error, data: AWS.S3.ManagedUpload.SendData) => {
-                    if (err) return reject(err);
-                    logger.debug(`Uploaded file to location ${data.Location}`);
-                    // Delete temp file
-                    await this._deleteTempFile({ filePath });
-                    return resolve(data.Location);
-                }
-            );
-        });
+        const bucketName = bucket || envs.AWS_BUCKET_NAME;
+        const key = `${folder}/${fileName}`;
+
+        const params = {
+            Bucket: bucketName,
+            Key: key,
+            Body: fileContent,
+            ContentType: mimeType
+        };
+
+        const command = new PutObjectCommand(params);
+
+        try {
+            await s3.send(command);
+            const fileLocation = `https://${bucketName}.s3.${envs.AWS_REGION}.amazonaws.com/${key}`;
+            logger.debug(`Uploaded file to location ${fileLocation}`);
+            // Delete temp file
+            await this._deleteTempFile({ filePath });
+            return fileLocation;
+        } catch (err) {
+            logger.error("Error uploading file to S3");
+            logger.error(err);
+            throw err; // Re-throw the error to be handled by the caller
+        }
     }
 
     private async _deleteTempFile({
@@ -89,109 +123,142 @@ export class S3Client {
         }
     }
 
-    deleteFile({ filePath, bucket }: S3FileDelete): Promise<void> {
-        return new Promise((resolve, reject) => {
-            s3.deleteObject(
-                {
-                    Bucket: bucket || envs.AWS_BUCKET_NAME,
-                    Key: filePath
-                },
-                (err: Error) => {
-                    if (err) return reject(err);
-                    return resolve();
-                }
-            );
-        });
+    async deleteFile({ filePath, bucket }: S3FileDelete): Promise<void> {
+        const bucketName = bucket || envs.AWS_BUCKET_NAME;
+        const params = {
+            Bucket: bucketName,
+            Key: filePath
+        };
+        const command = new DeleteObjectCommand(params);
+        try {
+            await s3.send(command);
+            logger.debug(`Deleted file from S3 at path ${filePath}`);
+        } catch (err) {
+            logger.error("Error deleting file from S3");
+            logger.error(err);
+            throw err;
+        }
     }
 
-    deleteMultiple({
+    async deleteMultiple({
         filePaths,
         bucket
     }: {
         filePaths: string[];
         bucket?: string;
     }): Promise<void> {
-        return new Promise((resolve, reject) => {
-            const Objects = filePaths.map(fp => ({ Key: fp }));
-            logger.debug("Deleting files from S3");
-            logger.debug(Objects);
-            s3.deleteObjects(
-                {
-                    Bucket: bucket || envs.AWS_BUCKET_NAME,
-                    Delete: {
-                        Objects: filePaths.map(fp => ({ Key: fp }))
-                    }
-                },
-                (err: Error) => {
-                    if (err) return reject(err);
-                    return resolve();
-                }
-            );
-        });
+        const bucketName = bucket || envs.AWS_BUCKET_NAME;
+        const Objects = filePaths.map(fp => ({ Key: fp }));
+        logger.debug("Deleting files from S3");
+        logger.debug(Objects);
+
+        const params = {
+            Bucket: bucketName,
+            Delete: {
+                Objects: Objects
+            }
+        };
+        const command = new DeleteObjectsCommand(params);
+        try {
+            await s3.send(command);
+            logger.debug(`Deleted multiple files from S3`);
+        } catch (err) {
+            logger.error("Error deleting multiple files from S3");
+            logger.error(err);
+            throw err;
+        }
     }
 
-    getFileMeta({
+    async getFileMeta({
         filePath,
         bucket
-    }: {
-        filePath: string;
-        bucket?: string;
-    }): Promise<AWS.S3.HeadObjectOutput> {
-        return new Promise((resolve, reject) => {
-            s3.headObject(
-                {
-                    Bucket: bucket || envs.AWS_BUCKET_NAME,
-                    Key: filePath
-                },
-                (err: Error, data: AWS.S3.HeadObjectOutput) => {
-                    if (err) return reject(err);
-                    return resolve(data);
-                }
-            );
-        });
+    }: S3GetFileMeta): Promise<import("@aws-sdk/client-s3").HeadObjectOutput> {
+        const bucketName = bucket || envs.AWS_BUCKET_NAME;
+        const params = {
+            Bucket: bucketName,
+            Key: filePath
+        };
+        const command = new HeadObjectCommand(params);
+        try {
+            const data = await s3.send(command);
+            return data;
+        } catch (err) {
+            logger.error(`Error getting file metadata for ${filePath} from S3`);
+            logger.error(err);
+            throw err;
+        }
     }
 
-    // DEBUG: TO BE IMPLEMENTED
-    getFile({
+    async getFile({
         filePath,
         bucket
-    }: {
-        filePath: string;
-        bucket?: string;
-    }): Promise<AWS.S3.Body | undefined> {
-        return new Promise((resolve, reject) => {
-            s3.getObject(
-                {
-                    Bucket: bucket || envs.AWS_BUCKET_NAME,
-                    Key: filePath
-                },
-                (err: Error, data: AWS.S3.GetObjectOutput) => {
-                    if (err) return reject(err);
-                    return resolve(data.Body);
-                }
-            );
-        });
+    }: S3GetFile): Promise<Buffer | undefined> {
+        const bucketName = bucket || envs.AWS_BUCKET_NAME;
+        const params = {
+            Bucket: bucketName,
+            Key: filePath
+        };
+        const command = new GetObjectCommand(params);
+        try {
+            const data = await s3.send(command);
+            if (data.Body) {
+                const bodyContent = await data.Body.transformToByteArray();
+                return Buffer.from(bodyContent);
+            } else {
+                return undefined;
+            }
+        } catch (err) {
+            logger.error(`Error getting file ${filePath} from S3`);
+            logger.error(err);
+            throw err;
+        }
     }
 
-    listFiles({
+    async listFiles({
         folder,
         bucket
-    }: {
-        folder?: string;
-        bucket?: string;
-    }): Promise<AWS.S3.ListObjectsOutput> {
-        return new Promise((resolve, reject) => {
-            s3.listObjectsV2(
-                {
-                    Bucket: bucket || envs.AWS_BUCKET_NAME,
-                    Prefix: folder
-                },
-                (err: Error, data: AWS.S3.ListObjectsOutput) => {
-                    if (err) return reject(err);
-                    return resolve(data);
-                }
-            );
-        });
+    }: S3ListFiles): Promise<import("@aws-sdk/client-s3").ListObjectsV2Output> {
+        const bucketName = bucket || envs.AWS_BUCKET_NAME;
+        const params = {
+            Bucket: bucketName,
+            Prefix: folder
+        };
+        const command = new ListObjectsV2Command(params);
+        try {
+            const data = await s3.send(command);
+            return data;
+        } catch (err) {
+            logger.error(`Error listing files in folder ${folder} from S3`);
+            logger.error(err);
+            throw err;
+        }
+    }
+
+    /**
+     * Generates a signed URL for accessing a private S3 object.
+     * @param {S3GetFile} params - Parameters including filePath and optional bucket.
+     * @param {number} [expiresIn=3600] - Expiration time for the signed URL in seconds (default: 1 hour).
+     * @returns {Promise<string>} - Resolves with the signed URL.
+     */
+    async getSignedUrl(
+        { filePath, bucket }: S3GetFile,
+        expiresIn: number = 3600
+    ): Promise<string> {
+        const bucketName = bucket || envs.AWS_BUCKET_NAME;
+        const params = {
+            Bucket: bucketName,
+            Key: filePath
+        };
+        const command = new GetObjectCommand(params);
+
+        try {
+            const url = await getSignedUrl(s3, command, { expiresIn });
+            return url;
+        } catch (error) {
+            logger.error(`Error generating signed URL for ${filePath} from S3`);
+            logger.error(error);
+            throw error;
+        }
     }
 }
 

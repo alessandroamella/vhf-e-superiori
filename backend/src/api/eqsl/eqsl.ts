@@ -20,7 +20,7 @@ class EqslPic {
         if (href instanceof Buffer) {
             this.image = href;
         } else {
-            this.href = href;
+            this.href = href.toString(); // string
         }
     }
 

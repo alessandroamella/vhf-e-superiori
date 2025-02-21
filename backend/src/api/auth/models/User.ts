@@ -7,7 +7,7 @@ import {
 } from "@typegoose/typegoose";
 import IsEmail from "isemail";
 import bcrypt from "bcrypt";
-import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
+import parsePhoneNumber, { isValidPhoneNumber } from "libphonenumber-js";
 import { logger } from "../../../shared";
 
 /**
@@ -69,7 +69,7 @@ import { logger } from "../../../shared";
     this.phoneNumber = parsePhoneNumber(
         this.phoneNumber,
         "IT"
-    ).formatInternational();
+    )!.formatInternational();
     logger.debug("Parsed phone number: " + this.phoneNumber);
 })
 export class UserClass {
@@ -97,7 +97,11 @@ export class UserClass {
     @prop({ required: true, validate: IsEmail.validate })
     public email!: string;
 
-    @prop({ required: true, validate: isValidPhoneNumber })
+    @prop({
+        required: true,
+        validate: (e: unknown) =>
+            typeof e === "string" && isValidPhoneNumber(e, "IT")
+    })
     public phoneNumber!: string;
 
     @prop({ required: true })

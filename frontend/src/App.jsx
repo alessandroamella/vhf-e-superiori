@@ -150,8 +150,8 @@ export const App = () => {
 
     try {
       const { data } = await axios.post("https://checkip.amazonaws.com");
-      console.log("ip:", data);
-      return data;
+      console.log("ip:", data.trim());
+      return data.trim();
     } catch (err) {
       console.log("error while fetching ip");
       if (!isAxiosError(err)) return console.error(err);
