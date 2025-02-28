@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@material-tailwind/react";
 import axios, { isAxiosError } from "axios";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AdminManager from "./admin";
 import Login from "./auth/Login";
@@ -138,19 +138,24 @@ export const App = () => {
 
   const isGettingIp = useRef(false);
 
-  const getIp = useCallback(async () => {
-    if (isGettingIp.current) return null;
-    isGettingIp.current = true;
+  const [ip, setIp] = useState(null);
+  useEffect(() => {
+    async function getIp() {
+      if (isGettingIp.current) return null;
+      isGettingIp.current = true;
 
-    try {
-      const { data } = await axios.post("https://checkip.amazonaws.com");
-      console.log("ip:", data.trim());
-      return data.trim();
-    } catch (err) {
-      console.log("error while fetching ip");
-      if (!isAxiosError(err)) return console.error(err);
-      return null;
+      try {
+        const { data } = await axios.post("https://checkip.amazonaws.com");
+        console.log("ip:", data.trim());
+        setIp(data.trim());
+      } catch (err) {
+        console.log("error while fetching ip");
+        if (!isAxiosError(err)) return console.error(err);
+        return null;
+      }
     }
+
+    getIp();
   }, []);
 
   const isFetchingViews = useRef(false);
@@ -159,13 +164,11 @@ export const App = () => {
     // count view
     let fetchWithoutPost = false;
     async function countView() {
-      if (isFetchingViews.current) return null;
+      if (isFetchingViews.current || !ip) return null;
       isFetchingViews.current = true;
 
       try {
-        const { data } = await axios.post("/api/counter", {
-          ip: await getIp()
-        });
+        const { data } = await axios.post("/api/counter", { ip });
         console.log("views counted, total:", data);
         setViews(data.views);
       } catch (err) {
@@ -188,8 +191,7 @@ export const App = () => {
     }
 
     countView();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [ip]);
 
   return (
     <ThemeProvider>
