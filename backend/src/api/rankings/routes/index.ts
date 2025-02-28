@@ -1,15 +1,15 @@
+import { isDocument } from "@typegoose/typegoose";
 import { Router } from "express";
 import { param } from "express-validator";
-import { createError, validate } from "../../helpers";
-import Event, { EventDoc } from "../../event/models";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
+import { logger } from "../../../shared";
+import { User, UserDoc } from "../../auth/models";
 import { Errors } from "../../errors";
 import { Ranking } from "../../event/interfaces";
-import { logger } from "../../../shared";
-import { Qso, QsoDoc } from "../../qso/models";
-import { isDocument } from "@typegoose/typegoose";
+import Event, { EventDoc } from "../../event/models";
+import { createError, validate } from "../../helpers";
 import JoinRequest from "../../joinRequest/models";
-import { User, UserDoc } from "../../auth/models";
+import { Qso, QsoDoc } from "../../qso/models";
 
 const router = Router();
 
@@ -129,7 +129,7 @@ router.get(
                 ...qsos.map(e => e.fromStationCallsignOverride),
                 ...stationUsers.map(e => e.callsign)
             ])
-        ];
+        ].filter(Boolean) as string[];
 
         const map = new Map<string, { qsos: QsoDoc[]; isStation: boolean }>();
         for (const qso of qsos) {
@@ -139,7 +139,7 @@ router.get(
                     isStation: stationCallsigns.includes(qso.callsign)
                 });
             }
-            map.get(qso.callsign)?.qsos.push(qso);
+            map.get(qso.callsign)!.qsos.push(qso);
 
             if (!isDocument(qso.fromStation)) {
                 logger.error(
@@ -157,33 +157,45 @@ router.get(
                     isStation: stationCallsigns.includes(fromCallsign)
                 });
             }
-            map.get(fromCallsign)?.qsos.push(qso);
+            map.get(fromCallsign)!.qsos.push(qso);
         }
 
         const _rankings: (Omit<Ranking, "position"> & {
             isStation: boolean;
+            points: number;
         })[] = [];
         for (const [callsign, data] of map) {
             _rankings.push({
                 callsign,
                 qsos: data.qsos,
-                isStation: data.isStation
+                isStation: data.isStation,
+                // 2 points if QSO to a station, 1 point if not
+                points: data.qsos.reduce(
+                    (acc, qso) =>
+                        acc + (stationCallsigns.includes(qso.callsign) ? 2 : 1),
+                    0
+                )
             });
         }
 
-        _rankings.sort((a, b) => b.qsos.length - a.qsos.length);
+        _rankings.sort((a, b) => b.points - a.points);
 
         logger.debug(`Event ${event._id} has ${_rankings.length} rankings`);
 
-        const [stationRankings, userRankings] = [true, false].map(
-            b =>
-                _rankings
-                    .filter(e => e.isStation === b)
-                    .map((ranking, index) => ({
+        const [stationRankings, userRankings] = [true, false].map(b =>
+            _rankings
+                .filter(e => e.isStation === b)
+                .map((_ranking, index) => {
+                    const { points, ...ranking } = _ranking;
+                    logger.debug(
+                        `Ranking ${ranking.callsign} has ${ranking.qsos.length} QSOs and ${points} points`
+                    );
+                    return {
                         callsign: ranking.callsign,
                         qsos: ranking.qsos,
                         position: index + 1
-                    })) as Ranking[]
+                    };
+                })
         );
 
         res.json({ event, rankings: { stationRankings, userRankings } });
