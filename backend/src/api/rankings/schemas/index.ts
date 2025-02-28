@@ -1,4 +1,4 @@
-import { QsoDoc } from "../qso/models";
+import { QsoDoc } from "../../qso/models";
 
 /**
  * @swagger
@@ -24,9 +24,15 @@ import { QsoDoc } from "../qso/models";
  *          position:
  *            type: number
  *            description: The position of the station in the ranking
+ *            example: 1
+ *          points:
+ *            type: number
+ *            description: The points of the station in the ranking
+ *            example: 100
  */
 export interface Ranking {
     callsign: string;
     qsos: QsoDoc[];
     position: number;
+    points: number;
 }

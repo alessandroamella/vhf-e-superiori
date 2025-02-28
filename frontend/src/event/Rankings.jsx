@@ -1,26 +1,26 @@
 import axios from "axios";
+import { it } from "date-fns/locale";
 import { Alert, Button, Modal, Spinner, Table, Tabs } from "flowbite-react";
 import { useEffect, useState } from "react";
-import Layout from "../Layout";
-import { useNavigate, useParams } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import { FaExclamationTriangle } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
-import { it } from "date-fns/locale";
+import { useNavigate, useParams } from "react-router-dom";
 import {
-  FacebookShareButton,
-  TelegramShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
+  EmailIcon,
   EmailShareButton,
   FacebookIcon,
+  FacebookShareButton,
   TelegramIcon,
+  TelegramShareButton,
   TwitterIcon,
+  TwitterShareButton,
   WhatsappIcon,
-  EmailIcon
+  WhatsappShareButton
 } from "react-share";
-import { formatInTimeZone } from "../shared/formatInTimeZone";
-import { FaExclamationTriangle } from "react-icons/fa";
-import { Helmet } from "react-helmet";
+import Layout from "../Layout";
 import { getErrorStr } from "../shared";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
 
 const Rankings = () => {
   const { id } = useParams();
@@ -211,7 +211,7 @@ const Rankings = () => {
                             <Table.Cell className="font-semibold">
                               {r.callsign}
                             </Table.Cell>
-                            <Table.Cell>{r.qsos.length}</Table.Cell>
+                            <Table.Cell>{r.points}</Table.Cell>
                           </Table.Row>
                         ))}
                       </Table.Body>

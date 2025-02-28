@@ -5,11 +5,11 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared";
 import { User, UserDoc } from "../../auth/models";
 import { Errors } from "../../errors";
-import { Ranking } from "../../event/interfaces";
 import Event, { EventDoc } from "../../event/models";
 import { createError, validate } from "../../helpers";
 import JoinRequest from "../../joinRequest/models";
 import { Qso, QsoDoc } from "../../qso/models";
+import { Ranking } from "../schemas";
 
 const router = Router();
 
@@ -162,7 +162,6 @@ router.get(
 
         const _rankings: (Omit<Ranking, "position"> & {
             isStation: boolean;
-            points: number;
         })[] = [];
         for (const [callsign, data] of map) {
             _rankings.push({
@@ -185,14 +184,17 @@ router.get(
         const [stationRankings, userRankings] = [true, false].map(b =>
             _rankings
                 .filter(e => e.isStation === b)
-                .map((_ranking, index) => {
-                    const { points, ...ranking } = _ranking;
+                .map((ranking, index) => {
+                    const { isStation, ...rest } = ranking;
                     logger.debug(
-                        `Ranking ${ranking.callsign} has ${ranking.qsos.length} QSOs and ${points} points`
+                        `Ranking for ${isStation ? "station" : "hunter"} ${
+                            ranking.callsign
+                        } has ${ranking.qsos.length} QSOs and ${
+                            ranking.points
+                        } points`
                     );
                     return {
-                        callsign: ranking.callsign,
-                        qsos: ranking.qsos,
+                        ...rest,
                         position: index + 1
                     };
                 })
