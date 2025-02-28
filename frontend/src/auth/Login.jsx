@@ -1,14 +1,13 @@
 import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
-import { createRef, useRef, useState } from "react";
-import { useEffect } from "react";
-import { useContext } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
+import { Helmet } from "react-helmet";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { UserContext } from "../App";
-import ReCAPTCHA from "react-google-recaptcha";
+import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
 import Layout from "../Layout";
-import { Helmet } from "react-helmet";
 import { getErrorStr } from "../shared";
 
 const Login = () => {
@@ -23,7 +22,7 @@ const Login = () => {
 
   const { user, setUser } = useContext(UserContext);
 
-  const captchaRef = createRef();
+  const captchaRef = useRef();
 
   async function sendResetPw(e) {
     e.preventDefault();
@@ -134,7 +133,7 @@ const Login = () => {
         navigate(searchParams.get("to") || "/profile", { replace: true })}
       <div className="w-full h-full min-h-[70vh] dark:bg-gray-900 dark:text-white">
         <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">
-          <Typography variant="h1" className="mb-2">
+          <Typography variant="h1" className="dark:text-white mb-2">
             Login
           </Typography>
 
@@ -232,10 +231,7 @@ const Login = () => {
                   required
                 />
                 <div className="my-4" />
-                <ReCAPTCHA
-                  sitekey="6LfdByQkAAAAALGExGRPnH8i16IyKNaUXurnW1rm"
-                  ref={captchaRef}
-                />
+                <ReCAPTCHA sitekey={recaptchaSiteKey} ref={captchaRef} />
                 <div className="my-4" />
                 <Button type="submit" disabled={disabled}>
                   Invia richiesta

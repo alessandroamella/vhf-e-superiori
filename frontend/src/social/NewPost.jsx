@@ -1,8 +1,4 @@
-import Layout from "../Layout";
-import React, { useEffect, useMemo, useState, useContext } from "react";
-import { UserContext } from "../App";
-import { useForm } from "react-hook-form";
-import PropTypes from "prop-types";
+import { Typography } from "@material-tailwind/react";
 import axios from "axios";
 import {
   Alert,
@@ -12,12 +8,16 @@ import {
   Spinner,
   Textarea
 } from "flowbite-react";
+import PropTypes from "prop-types";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { FaBackward, FaInfoCircle, FaPlus } from "react-icons/fa";
 import { createSearchParams, useNavigate } from "react-router-dom";
-import { Typography } from "@material-tailwind/react";
-import ViewPostContent from "./ViewPostContent";
-import FileUploader from "./FileUploader";
+import { UserContext } from "../App";
+import Layout from "../Layout";
 import { getErrorStr } from "../shared";
+import FileUploader from "./FileUploader";
+import ViewPostContent from "./ViewPostContent";
 
 const FileUploaderMemo = React.memo(
   ({ files, setFiles, disabled, maxPhotos, maxVideos }) => {
@@ -232,7 +232,7 @@ const NewPost = () => {
         {user ? (
           <>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Typography variant="h2" className="mt-3">
+              <Typography variant="h2" className="dark:text-white mt-3">
                 Nuovo post
               </Typography>
               <FileUploaderMemo
@@ -300,7 +300,10 @@ const NewPost = () => {
             </form>
 
             <div className="mt-8">
-              <Typography variant="h2" className="text-center mb-2">
+              <Typography
+                variant="h2"
+                className="dark:text-white text-center mb-2"
+              >
                 Anteprima
               </Typography>
               <div className="flex justify-center">
@@ -310,7 +313,7 @@ const NewPost = () => {
                   <Alert color="info">
                     <Typography
                       variant="h5"
-                      className="text-center text-red flex gap-2 items-center"
+                      className="text-center text-red flex gap-2 items-center dark:text-gray-200"
                     >
                       <FaInfoCircle />
                       Compila tutti i campi per vedere l&apos;anteprima

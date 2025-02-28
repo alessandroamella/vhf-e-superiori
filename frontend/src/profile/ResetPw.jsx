@@ -1,14 +1,14 @@
-import { Alert, Button, Label, TextInput } from "flowbite-react";
-import { useState } from "react";
-import Layout from "../Layout";
 import { Typography } from "@material-tailwind/react";
 import axios from "axios";
+import { Alert, Button, Label, TextInput } from "flowbite-react";
+import { useState } from "react";
+import { Helmet } from "react-helmet";
 import {
   createSearchParams,
   useNavigate,
   useSearchParams
 } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 
 const ResetPw = () => {
@@ -53,7 +53,7 @@ const ResetPw = () => {
         <title>Reset password - VHF e superiori</title>
       </Helmet>
       <div className="p-4 h-full flex flex-col justify-center items-center">
-        <Typography variant="h1" className="mb-2">
+        <Typography variant="h1" className="dark:text-white mb-2">
           Reset password
         </Typography>
 

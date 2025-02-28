@@ -1,7 +1,12 @@
-import Layout from "../Layout";
-import { Typography } from "@material-tailwind/react";
-import { useContext, useRef, useState, useEffect } from "react";
-import { EventsContext, UserContext } from "../App";
+import {
+  Accordion,
+  AccordionBody,
+  AccordionHeader,
+  Typography
+} from "@material-tailwind/react";
+import axios from "axios";
+import { getDate, isAfter } from "date-fns";
+import { it, itCH } from "date-fns/locale";
 import {
   Alert,
   Avatar,
@@ -15,15 +20,9 @@ import {
   TextInput,
   Tooltip
 } from "flowbite-react";
-import axios from "axios";
-import {
-  createSearchParams,
-  Link,
-  useNavigate,
-  useSearchParams
-} from "react-router-dom";
-import { isAfter } from "date-fns";
-import { it, itCH } from "date-fns/locale";
+import { useContext, useEffect, useRef, useState } from "react";
+import ReactGoogleAutocomplete from "react-google-autocomplete";
+import { Helmet } from "react-helmet";
 import {
   FaArrowAltCircleRight,
   FaCheck,
@@ -32,19 +31,19 @@ import {
   FaLink,
   FaTrash
 } from "react-icons/fa";
-import ReactGoogleAutocomplete from "react-google-autocomplete";
-import { formatInTimeZone } from "../shared/formatInTimeZone";
-import { Helmet } from "react-helmet";
 import ReactPlaceholder from "react-placeholder";
 import {
-  Accordion,
-  AccordionHeader,
-  AccordionBody
-} from "@material-tailwind/react";
-import { getDate } from "date-fns";
-import CallsignLoading from "../shared/CallsignLoading";
-import { getErrorStr } from "../shared";
+  createSearchParams,
+  Link,
+  useNavigate,
+  useSearchParams
+} from "react-router-dom";
+import { EventsContext, UserContext } from "../App";
 import { mapsApiKey } from "../constants/mapsApiKey";
+import Layout from "../Layout";
+import { getErrorStr } from "../shared";
+import CallsignLoading from "../shared/CallsignLoading";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
 
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);
@@ -474,7 +473,7 @@ const Profile = () => {
       </Modal>
 
       <div className="bg-white dark:bg-gray-900 dark:text-white py-3 md:py-6 px-6 md:px-12 lg:px-24 min-h-[69vh]">
-        <Typography variant="h3" className="my-4">
+        <Typography variant="h3" className="dark:text-white my-4">
           <CallsignLoading prefix="Profilo di" user={user} />
         </Typography>
         {alert && (
@@ -492,7 +491,10 @@ const Profile = () => {
             {user ? (
               <div className="flex flex-col mb-8">
                 <Link to={`/u/` + user?.callsign} className="mb-2">
-                  <Typography variant="h1" className="flex items-center">
+                  <Typography
+                    variant="h1"
+                    className="dark:text-white flex items-center"
+                  >
                     <Avatar
                       rounded
                       size={user?.pp ? "lg" : "md"}
@@ -765,7 +767,7 @@ const Profile = () => {
 
           <div>
             <div>
-              <Typography variant="h3" className="my-4">
+              <Typography variant="h3" className="dark:text-white my-4">
                 Partecipazioni
               </Typography>
 
@@ -838,7 +840,7 @@ const Profile = () => {
             </div>
 
             <div className="mt-10">
-              <Typography variant="h3" className="my-4">
+              <Typography variant="h3" className="dark:text-white my-4">
                 Post
               </Typography>
               {user?.posts ? (
@@ -884,7 +886,7 @@ const Profile = () => {
             </div>
 
             <div className="mt-10">
-              <Typography variant="h3" className="my-4">
+              <Typography variant="h3" className="dark:text-white my-4">
                 QSO
               </Typography>
 

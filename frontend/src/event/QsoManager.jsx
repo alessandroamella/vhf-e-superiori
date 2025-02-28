@@ -1,37 +1,25 @@
 import { Typography } from "@material-tailwind/react";
+import { useMap } from "@uidotdev/usehooks";
 import axios from "axios";
 import {
   Alert,
+  Avatar,
   Badge,
   Button,
+  Card,
+  Checkbox,
   Dropdown,
   FileInput,
-  Checkbox,
   Label,
   Modal,
   Spinner,
   Table,
   TextInput,
-  Tooltip,
-  Card,
-  Avatar
+  Tooltip
 } from "flowbite-react";
-import {
-  createRef,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState
-} from "react";
-import { UserContext } from "../App";
-import Layout from "../Layout";
-import {
-  Link,
-  createSearchParams,
-  useNavigate,
-  useParams
-} from "react-router-dom";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { Helmet } from "react-helmet";
 import {
   FaCheck,
   FaEnvelope,
@@ -44,14 +32,19 @@ import {
   FaUndo,
   FaUser
 } from "react-icons/fa";
-import { useCookies } from "react-cookie";
-import { formatInTimeZone } from "../shared/formatInTimeZone";
-import { useMap } from "@uidotdev/usehooks";
-import { Helmet } from "react-helmet";
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
-import StationMapMarker from "../shared/StationMapMarker";
-import MapWatermark from "../shared/MapWatermark";
+import {
+  Link,
+  createSearchParams,
+  useNavigate,
+  useParams
+} from "react-router-dom";
+import { UserContext } from "../App";
+import Layout from "../Layout";
 import { getErrorStr } from "../shared";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
+import MapWatermark from "../shared/MapWatermark";
+import StationMapMarker from "../shared/StationMapMarker";
 
 const QsoManager = () => {
   const { user } = useContext(UserContext);
@@ -195,20 +188,22 @@ const QsoManager = () => {
           color: "info",
           msg: "Non sei una stazione attivatrice per questo evento, ma sei un amministratore e puoi comunque gestire i QSO"
         });
-      } else {
-        setAlert({
-          color: "failure",
-          msg: "Non sei una stazione attivatrice per questo evento"
-        });
-
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
-
-        setHasPermission(false);
-        return;
       }
+      // now we allow everyone
+      //  else {
+      //   setAlert({
+      //     color: "failure",
+      //     msg: "Non sei una stazione attivatrice per questo evento"
+      //   });
+
+      //   window.scrollTo({
+      //     top: 0,
+      //     behavior: "smooth"
+      //   });
+
+      //   setHasPermission(false);
+      //   return;
+      // }
     } else if (event === null) {
       setAlert({
         color: "failure",
@@ -538,7 +533,7 @@ const QsoManager = () => {
   const [showModal, setShowModal] = useState(false);
   const [hasFile, setHasFile] = useState(false);
 
-  const adifInputRef = createRef(null);
+  const adifInputRef = useRef(null);
 
   const [page, setPage] = useState(0); // 0 = pre data, 1 = insert qso
 
@@ -988,18 +983,21 @@ const QsoManager = () => {
         <div className="mx-auto px-4 w-full md:w-5/6 pt-12">
           {alert && (
             <Alert
-              className="mb-6 dark:border border-white"
+              className="mb-6 dark:border dark:border-white dark:text-black"
               color={alert.color}
               onDismiss={() => (hasPermission ? setAlert(null) : navigate("/"))}
             >
-              <span className="dark:text-white">{alert.msg}</span>
+              <span>{alert.msg}</span>
             </Alert>
           )}
 
           {hasPermission && (
             <>
               <div className="mb-8 flex flex-col md:flex-row md:justify-between gap-4 items-center">
-                <Typography variant="h1" className="flex items-center gap-2">
+                <Typography
+                  variant="h1"
+                  className="dark:text-white flex items-center gap-2"
+                >
                   <Badge size="lg" color="info">
                     {event?.name || "..."}
                   </Badge>
@@ -1327,11 +1325,16 @@ const QsoManager = () => {
                   )}
 
                   <div className="mt-12 flex flex-col md:flex-row md:justify-between">
-                    <Typography variant="h2" className="mb-2">
+                    <Typography
+                      variant="h2"
+                      className="dark:text-white mb-2 dark:text-white"
+                    >
                       QSO registrati
                     </Typography>
                     <div>
-                      <h3 className="font-bold">Importa QSO da file ADIF</h3>
+                      <h3 className="font-bold dark:text-gray-400">
+                        Importa QSO da file ADIF
+                      </h3>
                       <div className="mb-8 flex items-center gap-2">
                         <FileInput
                           disabled={disabled}
@@ -1624,14 +1627,12 @@ const QsoManager = () => {
                   </div>
                 </div>
 
-                {user?.isAdmin && qsos && (
+                {qsos && (
                   <div>
-                    <Alert color="warning">
-                      <FaInfoCircle className="inline mr-1" />
-                      Vedi questo in quanto sei un{" "}
-                      <span className="font-bold">amministratore</span>
-                    </Alert>
-                    <Typography variant="h2" className="my-4 flex items-center">
+                    <Typography
+                      variant="h2"
+                      className="dark:text-white my-4 flex items-center"
+                    >
                       Mappa QSO
                     </Typography>
 

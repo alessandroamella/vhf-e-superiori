@@ -1,5 +1,6 @@
 import { Typography } from "@material-tailwind/react";
 import axios from "axios";
+import { it } from "date-fns/locale";
 import {
   Accordion,
   Alert,
@@ -16,33 +17,33 @@ import {
   TextInput,
   Tooltip
 } from "flowbite-react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import {
-  createRef,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState
-} from "react";
-import { it } from "date-fns/locale";
 import { EventsContext, UserContext } from "../App";
 import Layout from "../Layout";
 // import { DefaultEditor } from "react-simple-wysiwyg";
+import Compressor from "compressorjs";
+import { isFuture } from "date-fns";
+import ReactGoogleAutocomplete from "react-google-autocomplete";
+import { Helmet } from "react-helmet";
 import {
+  FaClipboard,
+  FaClipboardCheck,
+  FaExclamationTriangle,
+  FaExternalLinkAlt,
+  FaKey,
   FaPlusCircle,
   FaTimes,
   FaUndo,
-  FaExternalLinkAlt,
-  FaClipboardCheck,
-  FaClipboard,
-  FaUserShield,
-  FaKey,
-  FaExclamationTriangle
+  FaUserShield
 } from "react-icons/fa";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import Zoom from "react-medium-image-zoom";
+import ReactPlaceholder from "react-placeholder";
+import ReactPlayer from "react-player";
 import {
   Link,
   createSearchParams,
@@ -51,19 +52,11 @@ import {
 } from "react-router-dom";
 import { Navigation, Pagination as SwiperPagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
-import Zoom from "react-medium-image-zoom";
-import ReactPlayer from "react-player";
-import Compressor from "compressorjs";
-import ViewJoinRequest from "./ViewJoinRequest";
-import { isFuture } from "date-fns";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import { formatInTimeZone } from "../shared/formatInTimeZone";
-import { Helmet } from "react-helmet";
-import ReactPlaceholder from "react-placeholder";
-import ReactGoogleAutocomplete from "react-google-autocomplete";
-import CallsignLoading from "../shared/CallsignLoading";
-import { getErrorStr } from "../shared";
 import { mapsApiKey } from "../constants/mapsApiKey";
+import { getErrorStr } from "../shared";
+import CallsignLoading from "../shared/CallsignLoading";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
+import ViewJoinRequest from "./ViewJoinRequest";
 
 const AdminManager = () => {
   const { user } = useContext(UserContext);
@@ -100,8 +93,8 @@ const AdminManager = () => {
 
   const [isCompressingPic, setIsCompressingPic] = useState(false);
 
-  const pictureInputRef = createRef(null);
-  const eqslInputRef = createRef(null);
+  const pictureInputRef = useRef(null);
+  const eqslInputRef = useRef(null);
 
   const [postPage, setPostPage] = useState(1);
   const [eventPage, setEventPage] = useState(1);
@@ -1335,7 +1328,10 @@ const AdminManager = () => {
             </Alert>
           )}
 
-          <Typography variant="h1" className="mb-6 flex items-center">
+          <Typography
+            variant="h1"
+            className="dark:text-white mb-6 flex items-center"
+          >
             <Badge size="lg" color="info" className="mr-2">
               Admin
             </Badge>

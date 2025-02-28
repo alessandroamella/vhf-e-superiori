@@ -1,40 +1,37 @@
-import { useCallback, useEffect, useState, useRef } from "react";
-import "./index.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@material-tailwind/react";
-import Homepage from "./homepage";
+import axios, { isAxiosError } from "axios";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import AdminManager from "./admin";
 import Login from "./auth/Login";
 import Signup from "./auth/Signup";
-import reportWebVitals from "./reportWebVitals";
-import axios, { isAxiosError } from "axios";
-import Profile from "./profile";
-import AdminManager from "./admin";
 import ViewEvent from "./event/ViewEvent";
-import UserQsoManager from "./event/UserQsoManager";
+import Homepage from "./homepage";
+import "./index.css";
+import Profile from "./profile";
+import reportWebVitals from "./reportWebVitals";
 // import Regolamento from "./homepage/Regolamento";
 // import Info from "./homepage/Info";
-import ResetPw from "./profile/ResetPw";
-import Social from "./social";
-import NewPost from "./social/NewPost";
-import ViewPost from "./social/ViewPost";
-import ProgettiGianni from "./homepage/ProgettiGianni";
-import ViewPublished from "./social/ViewPublished";
-import QsoManager from "./event/QsoManager";
-import EqslRedirect from "./event/EqslRedirect";
-import Qso from "./event/Qso";
-import MdViewer from "./document/MdViewer";
-import Rankings from "./event/Rankings";
 import BeaconHomepage from "./beacon";
 import BeaconEditor from "./beacon/Editor";
 import ViewBeacon from "./beacon/ViewBeacon";
 import Blog from "./blog";
+import MdViewer from "./document/MdViewer";
+import EqslRedirect from "./event/EqslRedirect";
+import Qso from "./event/Qso";
+import QsoManager from "./event/QsoManager";
+import Rankings from "./event/Rankings";
+import ProgettiGianni from "./homepage/ProgettiGianni";
+import ResetPw from "./profile/ResetPw";
+import Social from "./social";
+import NewPost from "./social/NewPost";
+import ViewPost from "./social/ViewPost";
+import ViewPublished from "./social/ViewPublished";
 
-import "react-placeholder/lib/reactPlaceholder.css";
-import "react-medium-image-zoom/dist/styles.css";
 import "leaflet/dist/leaflet.css";
+import "react-medium-image-zoom/dist/styles.css";
+import "react-placeholder/lib/reactPlaceholder.css";
 
-import BlogPostEditor from "./blog/Editor";
-import BlogPostViewer from "./blog/View";
 import {
   EventsContext,
   JoinOpenContext,
@@ -44,6 +41,8 @@ import {
   UserContext,
   ViewsContext
 } from "./App";
+import BlogPostEditor from "./blog/Editor";
+import BlogPostViewer from "./blog/View";
 
 const router = createBrowserRouter([
   { path: "/", element: <Homepage /> },
@@ -56,7 +55,6 @@ const router = createBrowserRouter([
   { path: "/u/:callsign", element: <ViewPublished /> },
   { path: "/social/:id", element: <ViewPost /> },
   { path: "/eventmanager", element: <AdminManager /> },
-  { path: "/logqso/:id", element: <UserQsoManager /> },
   { path: "/qsomanager/:id", element: <QsoManager /> },
   { path: "/rankings/:id", element: <Rankings /> },
   { path: "/eqsl/:id", element: <EqslRedirect /> },

@@ -704,7 +704,7 @@ const Homepage = () => {
                         <Card className="text-center">
                           {eqslEventToShow.logoUrl && (
                             <Link
-                              to={"/logqso/" + eqslEventToShow._id}
+                              to={"/qsomanager/" + eqslEventToShow._id}
                               className="underline decoration-dotted hover:text-black transition-colors"
                             >
                               <LazyLoadImage
@@ -721,7 +721,7 @@ const Homepage = () => {
                             {eqslEventToShow.name}
                           </h2>
                           <Link
-                            to={"/logqso/" + eqslEventToShow._id}
+                            to={"/qsomanager/" + eqslEventToShow._id}
                             className="underline decoration-dotted hover:text-black transition-colors"
                           >
                             <Button className="text-lg mt-4">Invia EQSL</Button>

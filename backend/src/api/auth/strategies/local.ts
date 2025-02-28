@@ -91,7 +91,19 @@ passport.use(
 
                 const user = (await User.create(obj)) as UserDoc;
 
-                await EmailService.sendVerifyMail(user, verificationCode, true);
+                // don't await this, we don't want to block the response
+                EmailService.sendVerifyMail(user, verificationCode, true)
+                    .then(() => {
+                        logger.debug(
+                            `Verification email sent to ${user.email}`
+                        );
+                    })
+                    .catch(err => {
+                        logger.error(
+                            `Error sending verification email to ${user.email}`
+                        );
+                        logger.error(err);
+                    });
 
                 logger.debug(user);
 

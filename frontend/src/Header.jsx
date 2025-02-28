@@ -1,10 +1,11 @@
-import { Link, useLocation } from "react-router-dom";
-import Flags from "./Flags";
 import { Button, Spinner } from "flowbite-react";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import { useContext } from "react";
-import { UserContext } from "./App";
 import PropTypes from "prop-types";
+import { useContext, useEffect, useState } from "react";
+import { HiMoon, HiSun } from "react-icons/hi"; // Import icons
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { Link, useLocation } from "react-router-dom";
+import { UserContext } from "./App";
+import Flags from "./Flags";
 
 const LinkButton = ({ to, children, keepCurrent }) => {
   const location = useLocation();
@@ -39,6 +40,32 @@ const Header = () => {
   const location = useLocation();
   const isHome = location.pathname === "/";
 
+  const [darkMode, setDarkMode] = useState(false); // State for dark mode
+
+  useEffect(() => {
+    // On mount, check localStorage for dark mode preference
+    const storedDarkMode = localStorage.getItem("darkMode");
+    if (storedDarkMode === "true") {
+      setDarkMode(true);
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
+  useEffect(() => {
+    // Update localStorage and html class when darkMode changes
+    if (darkMode) {
+      localStorage.setItem("darkMode", "true");
+      document.documentElement.classList.add("dark");
+    } else {
+      localStorage.setItem("darkMode", "false");
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
   return (
     <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-2 md:px-8">
       <div className="flex flex-col lg:flex-row md:items-center gap-4">
@@ -62,7 +89,7 @@ const Header = () => {
         <div className="hidden md:block">
           <Flags />
         </div>
-        <div className="mx-auto md:ml-auto md:mr-16 lg:mr-20 scale-125">
+        <div className="mx-auto md:ml-auto md:mr-16 lg:mr-20 scale-125 flex items-center gap-4">
           <form
             action="https://www.paypal.com/donate"
             method="post"
@@ -92,6 +119,18 @@ const Header = () => {
               height="1"
             />
           </form>
+          {/* Dark mode toggle button */}
+          <Button
+            onClick={toggleDarkMode}
+            color="light"
+            size="sm"
+            className="mb-2 dark:bg-gray-700 dark:hover:bg-gray-600"
+            title={
+              darkMode ? "Abilita modalità chiara" : "Abilita modalità scura"
+            }
+          >
+            {darkMode ? <HiSun className="w-4" /> : <HiMoon className="w-4" />}
+          </Button>
         </div>
       </div>
       <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 justify-items-center">

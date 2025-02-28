@@ -2,13 +2,13 @@ import { Request, Response, Router } from "express";
 import { body, param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { logger } from "../../../shared";
-import { createError, validate } from "../../helpers";
-import { Errors } from "../../errors";
 import { User, UserDoc } from "../../auth/models";
-import { Qso } from "../models";
-import JoinRequest from "../../joinRequest/models";
-import { location } from "../../location";
+import { Errors } from "../../errors";
 import Event from "../../event/models";
+import { createError, validate } from "../../helpers";
+import { location } from "../../location";
+import { getEventDate } from "../../utils/eventDate";
+import { Qso } from "../models";
 
 const router = Router();
 
@@ -81,25 +81,27 @@ router.put(
                 throw new Error("User not found in change locator");
             }
 
-            if (!user.isAdmin) {
-                const joinRequest = await JoinRequest.findOne({
-                    isApproved: true,
-                    fromUser: user._id,
-                    forEvent: req.params._id
-                });
-                if (!joinRequest) {
-                    return res
-                        .status(BAD_REQUEST)
-                        .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
-                } else if (!joinRequest.isApproved) {
-                    return res
-                        .status(BAD_REQUEST)
-                        .json(createError(Errors.JOIN_REQUEST_NOT_APPROVED));
-                }
-            }
+            // no longer required
+            // if (!user.isAdmin) {
+            //     const joinRequest = await JoinRequest.findOne({
+            //         isApproved: true,
+            //         fromUser: user._id,
+            //         forEvent: req.params._id
+            //     });
+            //     if (!joinRequest) {
+            //         return res
+            //             .status(BAD_REQUEST)
+            //             .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
+            //     } else if (!joinRequest.isApproved) {
+            //         return res
+            //             .status(BAD_REQUEST)
+            //             .json(createError(Errors.JOIN_REQUEST_NOT_APPROVED));
+            //     }
+            // }
 
             const event = await Event.findOne({
-                _id: req.params._id
+                _id: req.params._id,
+                ...getEventDate(user)
             });
 
             if (!event) {

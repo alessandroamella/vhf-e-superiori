@@ -1,7 +1,15 @@
 import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Avatar, Card, Label, TextInput, Tooltip } from "flowbite-react";
-import { createRef, useEffect, useRef, useState, useContext } from "react";
+import PropTypes from "prop-types";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { usePlacesWidget } from "react-google-autocomplete";
+import ReCAPTCHA from "react-google-recaptcha";
+import { Helmet } from "react-helmet";
+import { FaArrowAltCircleRight, FaExternalLinkAlt } from "react-icons/fa";
+import Markdown from "react-markdown";
+import ReactPlaceholder from "react-placeholder";
 import {
   Link,
   createSearchParams,
@@ -9,17 +17,10 @@ import {
   useSearchParams
 } from "react-router-dom";
 import { UserContext } from "../App";
-import { useCookies } from "react-cookie";
-import ReCAPTCHA from "react-google-recaptcha";
-import { usePlacesWidget } from "react-google-autocomplete";
-import Layout from "../Layout";
-import Markdown from "react-markdown";
-import ReactPlaceholder from "react-placeholder";
-import { FaArrowAltCircleRight, FaExternalLinkAlt } from "react-icons/fa";
-import { Helmet } from "react-helmet";
-import { getErrorStr } from "../shared";
 import { mapsApiKey } from "../constants/mapsApiKey";
-import PropTypes from "prop-types";
+import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
+import Layout from "../Layout";
+import { getErrorStr } from "../shared";
 
 const useFocus = () => {
   const htmlElRef = useRef(null);
@@ -70,7 +71,8 @@ const Signup = () => {
 
   useEffect(() => {
     if (cookies.callsign) {
-      fetchQrz(true);
+      console.log("fetching QRZ data");
+      fetchQrz();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -87,12 +89,6 @@ const Signup = () => {
   }, []);
 
   useEffect(() => {
-    console.log("set cookie", {
-      callsign,
-      name,
-      phoneNumber,
-      email
-    });
     setCookie("callsign", callsign, { path: "/signup", maxAge: 60 * 5 });
     setCookie("name", name, { path: "/signup", maxAge: 60 * 5 });
     setCookie("phoneNumber", phoneNumber, { path: "/signup", maxAge: 60 * 5 });
@@ -100,7 +96,8 @@ const Signup = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callsign, name, phoneNumber, email]);
 
-  const captchaRef = createRef();
+  const captchaRef = useRef();
+  const alertRef = useRef();
 
   const { setUser } = useContext(UserContext);
 
@@ -119,6 +116,7 @@ const Signup = () => {
       types: ["geocode"]
     },
     onPlaceSelected: place => {
+      if (!place) return;
       console.log("place", place);
       const addr = place.formatted_address;
       let cityIndex = place.address_components.findIndex(c =>
@@ -156,7 +154,7 @@ const Signup = () => {
     fetchLocator();
   }, [lat, lon]);
 
-  async function fetchQrz(force = false) {
+  async function fetchQrz() {
     if (callsign.length < 1 || callsign.length > 10) return;
 
     setDisabled(true);
@@ -168,13 +166,9 @@ const Signup = () => {
         }
       });
       console.log("QRZ data", data);
-      if (!name || force) {
-        setName(data.name);
-      }
-      if (!email || force) {
-        setEmail(data.email);
-      }
-      if (!address || force) {
+      if (!name) setName(data.name);
+      if (!email) setEmail(data.email);
+      if (!address && data.city && data.province && data.lat && data.lon) {
         setAddress(data.address);
         setAddressInput(data.address);
         setCity(data.city);
@@ -199,11 +193,19 @@ const Signup = () => {
     }
   }
 
-  async function signup(e) {
-    e.preventDefault();
+  async function signup(e, recaptchaValue) {
+    e?.preventDefault();
+
+    if (!recaptchaValue) {
+      try {
+        recaptchaValue = captchaRef.current.getValue();
+      } catch (err) {
+        return handleReCaptchaError(err);
+      }
+    }
 
     try {
-      if (!captchaRef.current.getValue()) {
+      if (!recaptchaValue) {
         window.scrollTo({
           top: 0,
           behavior: "smooth"
@@ -211,10 +213,7 @@ const Signup = () => {
         return setAlert("Verifica di non essere un robot");
       }
     } catch (err) {
-      console.log("ReCAPTCHA error", err);
-      return setAlert(
-        "Errore nel caricamento del ReCAPTCHA, per favore ricarica la pagina"
-      );
+      return handleReCaptchaError(err);
     }
 
     if (password !== repeatPassword) {
@@ -233,7 +232,7 @@ const Signup = () => {
         password,
         phoneNumber,
         email,
-        token: captchaRef.current.getValue()
+        token: recaptchaValue
       };
       if (address) {
         obj.address = address;
@@ -280,6 +279,11 @@ const Signup = () => {
     }
   }
 
+  const formattedAddress = useMemo(() => {
+    if (!address || !city || !province) return null;
+    return `${address}, ${city} (${province})`;
+  }, [address, city, province]);
+
   const [tos, setTos] = useState(null);
   const [privacyPolicy, setPrivacyPolicy] = useState(null);
   const [tosPrivacyShown, setTosPrivacyShown] = useState(false);
@@ -315,6 +319,61 @@ const Signup = () => {
 
   const { user } = useContext(UserContext);
 
+  async function handleReCaptchaError(err) {
+    console.log("ReCAPTCHA error", err, "\nReCAPTCHA ref:", captchaRef.current);
+    if (
+      err instanceof Error &&
+      err.message.includes("reCAPTCHA client element has been removed")
+    ) {
+      let widgetId;
+      try {
+        const res = await window.grecaptcha.getResponse();
+        console.log("getResponse", res);
+        return signup(null, res);
+      } catch (err) {
+        console.log("getResponse failed:", err);
+      }
+      try {
+        console.log("getWidgetId");
+        widgetId = captchaRef.current.getWidgetId();
+        console.log("widgetId", widgetId);
+      } catch (err) {
+        console.log("getWidgetId failed:", err);
+      }
+      try {
+        console.log("getWidgetId");
+        console.log("resetting ReCAPTCHA");
+        window.grecaptcha.reset(widgetId);
+        console.log("ReCAPTCHA reset");
+      } catch (err) {
+        console.log("ReCAPTCHA reset failed:", err, "\ntrying to re-render it");
+        try {
+          console.log("re-rendering ReCAPTCHA");
+          window.grecaptcha.render(
+            document.querySelector(".recaptcha-backup-wrapper"),
+            {
+              sitekey: recaptchaSiteKey,
+              theme:
+                localStorage.getItem("darkMode") === "true" ? "dark" : "light"
+            }
+          );
+          console.log("ReCAPTCHA re-rendered");
+        } catch (err) {
+          console.log("ReCAPTCHA re-render failed:", err);
+        }
+      }
+    } else {
+      setAlert(
+        "Errore nel caricamento del ReCAPTCHA, per favore ricarica la pagina"
+      );
+    }
+    setTimeout(() => {
+      alertRef.current?.scrollIntoView({
+        behavior: "smooth"
+      });
+    }, 100);
+  }
+
   return (
     <Layout>
       <Helmet>
@@ -324,7 +383,7 @@ const Signup = () => {
         navigate(searchParams.get("to") || "/profile", { replace: true })}
       <div className="w-full h-full dark:bg-gray-900 dark:text-white">
         <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">
-          <Typography variant="h1" className="mb-2">
+          <Typography variant="h1" className="dark:text-white mb-2">
             Registrazione
           </Typography>
 
@@ -345,6 +404,7 @@ const Signup = () => {
               className="mb-6 dark:text-black"
               color="failure"
               onDismiss={() => setAlert(null)}
+              ref={alertRef}
             >
               <span>{alert}</span>
             </Alert>
@@ -439,7 +499,11 @@ const Signup = () => {
                 onChange={e => setAddressInput(e.target.value)}
                 onBlur={() => setAddressInput(address)}
                 ref={mapsRef}
-                helperText="Indirizzo esatto, usato per la visualizzazione dei QSO sulla mappa"
+                helperText={
+                  formattedAddress
+                    ? `OK! Indirizzo inserito: ${formattedAddress}`
+                    : "Indirizzo esatto, usato per la visualizzazione dei QSO sulla mappa"
+                }
                 disabled={disabled}
               />
             </div>
@@ -556,9 +620,11 @@ const Signup = () => {
               </div>
             )}
             <div className="my-4" />
+            <div className="recaptcha-backup-wrapper" />
             <ReCAPTCHA
-              sitekey="6LfdByQkAAAAALGExGRPnH8i16IyKNaUXurnW1rm"
+              sitekey={recaptchaSiteKey}
               ref={captchaRef}
+              onError={handleReCaptchaError}
             />
             <div className="my-4" />
             <Button type="submit" disabled={disabled}>

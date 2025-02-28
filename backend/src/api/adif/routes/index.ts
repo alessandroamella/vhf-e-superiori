@@ -1,22 +1,22 @@
-import { AdifParser, AdifFormatter, SimpleAdif } from "adif-parser-ts";
+import { AdifFormatter, AdifParser, SimpleAdif } from "adif-parser-ts";
 
 import { Router } from "express";
 import { body, query } from "express-validator";
-import { BAD_REQUEST } from "http-status";
-import { logger } from "../../../shared/logger";
-import { Errors } from "../../errors";
-import { createError, validate } from "../../helpers";
-import isLoggedIn from "../../middlewares/isLoggedIn";
-import { ParsedAdif } from "../interfaces";
-import { Qso } from "../../qso/models";
-import moment from "moment";
-import Event from "../../event/models";
-import JoinRequest from "../../joinRequest/models";
-import { User, UserDoc } from "../../auth/models";
-import { location } from "../../location";
 import { readFile, unlink, writeFile } from "fs/promises";
+import { BAD_REQUEST } from "http-status";
+import moment from "moment";
 import path from "path";
 import { envs } from "../../../shared";
+import { logger } from "../../../shared/logger";
+import { User, UserDoc } from "../../auth/models";
+import { Errors } from "../../errors";
+import Event from "../../event/models";
+import { createError, validate } from "../../helpers";
+import { location } from "../../location";
+import isLoggedIn from "../../middlewares/isLoggedIn";
+import { Qso } from "../../qso/models";
+import { getEventDate } from "../../utils/eventDate";
+import { ParsedAdif } from "../interfaces";
 
 const router = Router();
 
@@ -128,7 +128,8 @@ router.post(
         }
 
         const event = await Event.findOne({
-            _id: req.body.event
+            _id: req.body.event,
+            ...getEventDate(user)
         });
         if (!event) {
             return res
@@ -136,17 +137,18 @@ router.post(
                 .json(createError(Errors.EVENT_NOT_FOUND));
         }
 
-        if (!user.isAdmin) {
-            const joinRequest = await JoinRequest.findOne({
-                forEvent: event._id,
-                fromUser: user._id
-            });
-            if (!joinRequest) {
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
-            }
-        }
+        // no longer required
+        // if (!user.isAdmin) {
+        //     const joinRequest = await JoinRequest.findOne({
+        //         forEvent: event._id,
+        //         fromUser: user._id
+        //     });
+        //     if (!joinRequest) {
+        //         return res
+        //             .status(BAD_REQUEST)
+        //             .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
+        //     }
+        // }
 
         const { save } = req.body; // toBoolean already converts to boolean
 
@@ -318,7 +320,8 @@ router.get(
         }
 
         const event = await Event.findOne({
-            _id: req.query.event
+            _id: req.query.event,
+            ...getEventDate(user)
         });
         if (!event) {
             return res
@@ -326,17 +329,18 @@ router.get(
                 .json(createError(Errors.EVENT_NOT_FOUND));
         }
 
-        if (!user.isAdmin) {
-            const joinRequest = await JoinRequest.findOne({
-                forEvent: event._id,
-                fromUser: user._id
-            });
-            if (!joinRequest) {
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
-            }
-        }
+        // no longer required
+        // if (!user.isAdmin) {
+        //     const joinRequest = await JoinRequest.findOne({
+        //         forEvent: event._id,
+        //         fromUser: user._id
+        //     });
+        //     if (!joinRequest) {
+        //         return res
+        //             .status(BAD_REQUEST)
+        //             .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
+        //     }
+        // }
 
         const qsos = await Qso.find({
             _id: { $in: (req.query.qsos as string).split(",") }

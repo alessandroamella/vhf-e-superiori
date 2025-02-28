@@ -1,16 +1,17 @@
-import { Alert as MTAlert, Button, Typography } from "@material-tailwind/react";
+import { Button, Alert as MTAlert, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { isAfter } from "date-fns";
 import it from "date-fns/locale/it";
 import { Alert, Checkbox, Label, Modal, TextInput } from "flowbite-react";
-import { useContext } from "react";
-import { useState } from "react";
-import { useEffect } from "react";
+import PropTypes from "prop-types";
+import { useContext, useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import {
   FaBackward,
   FaExclamationTriangle,
   FaInfoCircle
 } from "react-icons/fa";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import {
   createSearchParams,
   Link,
@@ -19,11 +20,8 @@ import {
 } from "react-router-dom";
 import { EventsContext, UserContext } from "../App";
 import Layout from "../Layout";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import { formatInTimeZone } from "../shared/formatInTimeZone";
-import { Helmet } from "react-helmet";
 import { getErrorStr } from "../shared";
-import PropTypes from "prop-types";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
 
 const EventContainer = ({ event, children }) =>
   event?.logoUrl ? (
@@ -189,7 +187,10 @@ const ViewEvent = () => {
             <FaBackward />
           </Button>
 
-          <Typography variant="h1" className="flex items-center">
+          <Typography
+            variant="h1"
+            className="dark:text-white flex items-center"
+          >
             <span>{event.name}</span>
           </Typography>
 

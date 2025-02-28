@@ -1,13 +1,13 @@
-import { useContext, useEffect, useState } from "react";
+import { Card, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Button, Table } from "flowbite-react";
+import { useContext, useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
+import { FaPlus } from "react-icons/fa";
+import ReactPlaceholder from "react-placeholder";
+import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
 import Layout from "../Layout";
-import { Link, createSearchParams, useNavigate } from "react-router-dom";
-import ReactPlaceholder from "react-placeholder";
-import { Card, Typography } from "@material-tailwind/react";
-import { FaPlus } from "react-icons/fa";
-import { Helmet } from "react-helmet";
 import { getErrorStr } from "../shared";
 
 const BeaconHomepage = () => {
@@ -99,7 +99,7 @@ const BeaconHomepage = () => {
                   rows={3}
                   ready={!loading}
                 >
-                  <Typography variant="h2" className="mb-4">
+                  <Typography variant="h2" className="dark:text-white mb-4">
                     Banda {band} MHz
                   </Typography>
                   {Array.isArray(beacons) && beacons.length !== 0 ? (

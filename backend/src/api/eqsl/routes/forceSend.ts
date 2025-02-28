@@ -1,16 +1,16 @@
 import { Request, Response, Router } from "express";
 import { param } from "express-validator";
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "http-status";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
-import { Errors } from "../../errors";
-import { createError, validate } from "../../helpers";
 import { User, UserDoc } from "../../auth/models";
-import isLoggedIn from "../../middlewares/isLoggedIn";
-import JoinRequest from "../../joinRequest/models";
-import { Qso } from "../../qso/models";
-import previewRoute from "./preview";
+import { Errors } from "../../errors";
 import Event from "../../event/models";
+import { createError, validate } from "../../helpers";
+import isLoggedIn from "../../middlewares/isLoggedIn";
 import { qrz } from "../../qrz";
+import { Qso } from "../../qso/models";
+import { getEventDate } from "../../utils/eventDate";
+import previewRoute from "./preview";
 
 const router = Router();
 
@@ -74,26 +74,30 @@ router.get(
                     .json(createError(Errors.QSO_NOT_FOUND));
             }
 
-            const event = await Event.findOne({ _id: qso.event });
+            const event = await Event.findOne({
+                _id: qso.event,
+                ...getEventDate(user)
+            });
             if (!event) {
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.EVENT_NOT_FOUND));
             }
 
-            if (!user.isAdmin) {
-                const joinRequest = await JoinRequest.findOne({
-                    fromUser: (req.user as unknown as UserDoc)._id,
-                    forEvent: qso.event,
-                    isApproved: true
-                });
-                if (!joinRequest) {
-                    logger.debug("Join request not found");
-                    return res
-                        .status(UNAUTHORIZED)
-                        .json(createError(Errors.NOT_AUTHORIZED_TO_EQSL));
-                }
-            }
+            // no longer required
+            // if (!user.isAdmin) {
+            //     const joinRequest = await JoinRequest.findOne({
+            //         fromUser: (req.user as unknown as UserDoc)._id,
+            //         forEvent: qso.event,
+            //         isApproved: true
+            //     });
+            //     if (!joinRequest) {
+            //         logger.debug("Join request not found");
+            //         return res
+            //             .status(UNAUTHORIZED)
+            //             .json(createError(Errors.NOT_AUTHORIZED_TO_EQSL));
+            //     }
+            // }
 
             if (!event.eqslUrl) {
                 logger.debug("Event has no eQSL URL");

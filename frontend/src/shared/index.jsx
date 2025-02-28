@@ -31,8 +31,7 @@ export const errors = {
   URL_NOT_FOUND: "URL non trovato",
   INVALID_EMAIL: "Email non valida",
   EMAIL_ALREADY_IN_USE: "Email già in uso",
-  INVALID_PHONE_NUMBER:
-    "Numero di telefono non valido (hai incluso il prefisso?)",
+  INVALID_PHONE_NUMBER: "Numero di telefono non valido",
   PHONE_NUMBER_ALREADY_IN_USE: "Numero di telefono già in uso",
   MUST_ACCEPT_SIGNUP_TOS:
     "Per registrarti, devi accettare i termini e condizioni",
@@ -79,7 +78,8 @@ export const errors = {
   BEACON_EXISTS: "Beacon già esistente",
   INVALID_BEACON: "Beacon non valido",
   BEACON_NOT_FOUND: "Beacon non trovato. Potrebbe essere stato cancellato",
-  NO_EMAIL_FOUND: "Nessuna email trovata",
+  NO_EMAIL_FOUND:
+    "Nessuna email trovata. Forse il nominativo è errato, o l'utente non ha inserito la propria email su QRZ.",
   ERROR_QTH_PARSE: "Errore nel parsing del QTH",
   INVALID_MODE: "Modo non valido",
   INVALID_DATE: "Data non valida",
