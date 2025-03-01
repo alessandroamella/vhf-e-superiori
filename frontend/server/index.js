@@ -35,7 +35,8 @@ app.use(
           "https://maps.googleapis.com",
           "https://maps.gstatic.com",
           "https://www.googletagmanager.com",
-          "https://cdnjs.cloudflare.com"
+          "https://cdnjs.cloudflare.com",
+          "https://www.google.com"
         ],
         styleSrc: [
           "'self'",
@@ -52,7 +53,8 @@ app.use(
           "https://*.googleapis.com",
           "https://www.googletagmanager.com",
           "https://www.paypalobjects.com",
-          "https://*.paypal.com"
+          "https://*.paypal.com",
+          "https://www.google-analytics.com"
         ],
         connectSrc: [
           "'self'",
@@ -62,12 +64,12 @@ app.use(
           "https://*.google-analytics.com",
           "https://checkip.amazonaws.com"
         ],
-        fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"], // ADD 'data:' here
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
         objectSrc: ["'none'"],
         frameAncestors: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],
-        workerSrc: ["'self'", "https://cdnjs.cloudflare.com", "blob:"], // ADD 'blob:' here
+        workerSrc: ["'self'", "https://cdnjs.cloudflare.com", "blob:"],
         childSrc: ["'self'"]
       }
     }
