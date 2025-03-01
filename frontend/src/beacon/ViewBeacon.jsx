@@ -212,7 +212,7 @@ const ViewBeacon = () => {
                 </div>
 
                 {/* nice card instead of table */}
-                <Card className="mb-6 dark:text-black">
+                <Card className="mb-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <p>
