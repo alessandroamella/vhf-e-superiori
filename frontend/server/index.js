@@ -60,7 +60,12 @@ app.use(
         baseUri: ["'self'"],
         formAction: ["'self'", "https://www.paypal.com"],
         workerSrc: ["'self'", "https://cdnjs.cloudflare.com", "blob:"],
-        childSrc: ["'self'"]
+        childSrc: ["'self'"],
+        mediaSrc: [
+          "'self'",
+          "https://vhfesuperiori.s3.eu-central-1.amazonaws.com",
+          "https://vhfesuperiori.s3.amazonaws.com"
+        ]
       }
     }
   })

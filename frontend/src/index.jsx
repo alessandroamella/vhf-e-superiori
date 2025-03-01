@@ -108,7 +108,7 @@ export const App = () => {
 
   useEffect(() => {
     async function fetchUser() {
-      if (isFetchingUser.current) return null;
+      if (isFetchingUser.current) return;
       isFetchingUser.current = true;
 
       try {
@@ -130,7 +130,7 @@ export const App = () => {
 
   useEffect(() => {
     async function fetchEvents() {
-      if (isFetchingEvents.current) return null;
+      if (isFetchingEvents.current) return;
       isFetchingEvents.current = true;
 
       try {
@@ -152,7 +152,7 @@ export const App = () => {
   const [ip, setIp] = useState(null);
   useEffect(() => {
     async function getIp() {
-      if (isGettingIp.current) return null;
+      if (isGettingIp.current) return;
       isGettingIp.current = true;
 
       try {
@@ -162,7 +162,7 @@ export const App = () => {
       } catch (err) {
         console.log("error while fetching ip");
         if (!isAxiosError(err)) return console.error(err);
-        return null;
+        return;
       }
     }
 
@@ -175,7 +175,7 @@ export const App = () => {
     // count view
     let fetchWithoutPost = false;
     async function countView() {
-      if (isFetchingViews.current || !ip) return null;
+      if (isFetchingViews.current || !ip) return;
       isFetchingViews.current = true;
 
       try {

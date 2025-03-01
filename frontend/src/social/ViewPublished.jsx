@@ -104,7 +104,7 @@ const ViewPublished = () => {
   const [mappedEvents, setMappedEvents] = useState(null);
 
   const validQsos = useMemo(() => {
-    if (!user?.qsos) return null;
+    if (!user?.qsos) return;
     return user.qsos.filter(
       e =>
         e.fromStationLat && e.fromStationLon && e.toStationLat && e.toStationLon
@@ -141,7 +141,7 @@ const ViewPublished = () => {
   }, []);
 
   const qsoPoints = useMemo(() => {
-    if (!validQsos) return null;
+    if (!validQsos) return;
 
     const _points = []; // {callsign, locator, lat, lon}[]
     const filtered = validQsos.filter(e =>
@@ -183,7 +183,7 @@ const ViewPublished = () => {
   }, [_eventToFilter, validQsos]);
 
   const qsoLines = useMemo(() => {
-    if (!validQsos) return null;
+    if (!validQsos) return;
 
     const lines = validQsos
       ?.filter(e => (!_eventToFilter ? true : e.event._id === _eventToFilter))
