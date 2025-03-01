@@ -54,7 +54,9 @@ app.use(
           "https://www.googletagmanager.com",
           "https://www.paypalobjects.com",
           "https://*.paypal.com",
-          "https://www.google-analytics.com"
+          "https://www.google-analytics.com",
+          "https://vhfesuperiori.s3.eu-central-1.amazonaws.com",
+          "https://vhfesuperiori.s3.amazonaws.com"
         ],
         connectSrc: [
           "'self'",
