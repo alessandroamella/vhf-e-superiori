@@ -45,19 +45,7 @@ app.use(
           "https://maps.googleapis.com",
           "https://maps.gstatic.com"
         ],
-        imgSrc: [
-          "'self'",
-          "data:",
-          "blob:",
-          "https://maps.gstatic.com",
-          "https://*.googleapis.com",
-          "https://www.googletagmanager.com",
-          "https://www.paypalobjects.com",
-          "https://*.paypal.com",
-          "https://www.google-analytics.com",
-          "https://vhfesuperiori.s3.eu-central-1.amazonaws.com",
-          "https://vhfesuperiori.s3.amazonaws.com"
-        ],
+        imgSrc: ["*", "data:", "blob:"],
         connectSrc: [
           "'self'",
           "https://maps.googleapis.com",
