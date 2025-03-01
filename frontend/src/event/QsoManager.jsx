@@ -1320,10 +1320,7 @@ const QsoManager = () => {
                   )}
 
                   <div className="mt-12 flex flex-col md:flex-row md:justify-between">
-                    <Typography
-                      variant="h2"
-                      className="dark:text-white mb-2 dark:text-white"
-                    >
+                    <Typography variant="h2" className="dark:text-white mb-2">
                       QSO registrati
                     </Typography>
                     <div>
@@ -1609,12 +1606,12 @@ const QsoManager = () => {
                           </div>
                         </div>
                       ) : (
-                        <p>Nessun QSO registrato</p>
+                        <p className="dark:text-white">Nessun QSO registrato</p>
                       )
                     ) : qsos === false ? (
                       <Spinner className="dark:text-white dark:fill-white" />
                     ) : (
-                      <p>
+                      <p className="dark:text-white">
                         Errore nel caricamento dei QSO (prova a ricaricare la
                         pagina)
                       </p>
