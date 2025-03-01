@@ -51,7 +51,7 @@ const BeaconHomepage = () => {
       <Helmet>
         <title>Beacon - VHF e superiori</title>
       </Helmet>
-      <div className="w-full overflow-y-auto h-full pb-4 dark:text-white dark:bg-gray-900 -mt-4">
+      <div className="w-full overflow-y-auto h-full pb-4 dark:text-white dark:bg-gray-900">
         <div className="mx-auto px-4 w-full md:w-11/12 py-12">
           {alert && (
             <Alert
