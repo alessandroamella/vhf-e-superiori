@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Button, Spinner } from "flowbite-react";
+import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
 import {
   FaArchive,
@@ -14,16 +15,15 @@ import {
   FaUserShield,
   FaWhatsapp
 } from "react-icons/fa";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import {
   createSearchParams,
   Link,
   useLocation,
   useNavigate
-} from "react-router-dom";
+} from "react-router";
 import { JoinOpenContext, SidebarOpenContext, UserContext } from "../App";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { getErrorStr } from "../shared";
-import PropTypes from "prop-types";
 
 const SectionHref = ({ href, wip, children }) => {
   const { setSidebarOpen } = useContext(SidebarOpenContext);
@@ -88,7 +88,7 @@ const SectionLink = ({ to, children, redirectBack, ...rest }) => {
 };
 
 SectionLink.propTypes = {
-  to: PropTypes.string.isRequired,
+  to: PropTypes.string,
   children: PropTypes.node.isRequired,
   redirectBack: PropTypes.bool
 };
@@ -107,7 +107,7 @@ const SectionTitle = ({ children, className, ...rest }) => {
 };
 
 SectionTitle.propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
   className: PropTypes.string
 };
 

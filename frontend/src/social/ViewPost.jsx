@@ -1,14 +1,14 @@
-import Layout from "../Layout";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
+import Layout from "../Layout";
 
 import axios from "axios";
 import { Alert, Button, Spinner } from "flowbite-react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import ViewPostContent from "./ViewPostContent";
-import { FaBackward, FaTrash } from "react-icons/fa";
 import { Helmet } from "react-helmet";
+import { FaBackward, FaTrash } from "react-icons/fa";
+import { Link, useNavigate, useParams } from "react-router";
 import { getErrorStr } from "../shared";
+import ViewPostContent from "./ViewPostContent";
 
 const ViewPost = () => {
   const { id } = useParams();

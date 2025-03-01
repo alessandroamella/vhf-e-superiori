@@ -15,7 +15,7 @@ import {
   createSearchParams,
   useNavigate,
   useSearchParams
-} from "react-router-dom";
+} from "react-router";
 import { UserContext } from "../App";
 import { mapsApiKey } from "../constants/mapsApiKey";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";

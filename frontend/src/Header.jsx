@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
 import { HiMoon, HiSun } from "react-icons/hi"; // Import icons
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router";
 import { UserContext } from "./App";
 import Flags from "./Flags";
 

@@ -1,20 +1,20 @@
 import { useContext, useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlaceholder from "react-placeholder";
-import { useNavigate } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { useNavigate } from "react-router";
 import "swiper/css";
 import "swiper/css/pagination";
+import { Swiper, SwiperSlide } from "swiper/react";
 // import "swiper/css/navigation";
 // import "swiper/css/scrollbar";
-import TimeAgo from "./TimeAgo";
-import { Avatar, Badge, Button, Spinner } from "flowbite-react";
-import { UserContext } from "../App";
 import axios from "axios";
-import { FaTrash } from "react-icons/fa";
-import CallsignLoading from "../shared/CallsignLoading";
-import { getErrorStr } from "../shared";
+import { Avatar, Badge, Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
+import { FaTrash } from "react-icons/fa";
+import { UserContext } from "../App";
+import { getErrorStr } from "../shared";
+import CallsignLoading from "../shared/CallsignLoading";
+import TimeAgo from "./TimeAgo";
 
 /**
  * @typedef {object} BasePost

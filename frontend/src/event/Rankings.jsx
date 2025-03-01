@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { FaExclamationTriangle } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import {
   EmailIcon,
   EmailShareButton,

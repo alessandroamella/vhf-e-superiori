@@ -1,8 +1,8 @@
 import { Spinner } from "flowbite-react";
 import { useContext } from "react";
 import { FaCircle } from "react-icons/fa";
+import { Link } from "react-router";
 import { ReadyContext, ViewsContext } from "./App";
-import { Link } from "react-router-dom";
 
 const Footer = () => {
   const { ready } = useContext(ReadyContext);
@@ -14,7 +14,7 @@ const Footer = () => {
         <span className="text-center">
           Sito sviluppato da Alessandro Amella{" "}
           <a
-            href="https://www.bitrey.it"
+            href="https://www.bitrey.dev"
             target="_blank"
             rel="noopener noreferrer"
             className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"

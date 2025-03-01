@@ -11,13 +11,13 @@ import {
   Spinner,
   TextInput
 } from "flowbite-react";
+import PropTypes from "prop-types";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { FaInfo } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { EventsContext, UserContext } from "../App";
-import { formatInTimeZone } from "../shared/formatInTimeZone";
 import { getErrorStr } from "../shared";
-import PropTypes from "prop-types";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
 
 const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
   const { user } = useContext(UserContext);

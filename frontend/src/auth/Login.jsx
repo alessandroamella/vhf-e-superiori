@@ -4,7 +4,7 @@ import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Helmet } from "react-helmet";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { UserContext } from "../App";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
 import Layout from "../Layout";

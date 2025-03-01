@@ -1,7 +1,8 @@
 import { ThemeProvider } from "@material-tailwind/react";
 import axios, { isAxiosError } from "axios";
 import { useEffect, useRef, useState } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter } from "react-router";
+import { RouterProvider } from "react-router/dom";
 import AdminManager from "./admin";
 import Login from "./auth/Login";
 import Signup from "./auth/Signup";

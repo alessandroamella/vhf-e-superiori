@@ -49,7 +49,7 @@ import {
   createSearchParams,
   useNavigate,
   useSearchParams
-} from "react-router-dom";
+} from "react-router";
 import { Navigation, Pagination as SwiperPagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { mapsApiKey } from "../constants/mapsApiKey";

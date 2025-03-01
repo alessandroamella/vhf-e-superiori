@@ -3,11 +3,7 @@ import axios from "axios";
 import { Alert, Button, Label, TextInput } from "flowbite-react";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
-import {
-  createSearchParams,
-  useNavigate,
-  useSearchParams
-} from "react-router-dom";
+import { createSearchParams, useNavigate, useSearchParams } from "react-router";
 import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 

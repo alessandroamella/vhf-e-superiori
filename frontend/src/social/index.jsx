@@ -1,17 +1,16 @@
-import Layout from "../Layout";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { ReadyContext, SplashContext } from "../App";
-import { useContext } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import Layout from "../Layout";
 import Splash from "../Splash";
 
 import FeedCard from "./FeedCard";
 
 import axios from "axios";
 import { Alert, Button, Spinner, TextInput } from "flowbite-react";
+import { FaPlus, FaUserTag } from "react-icons/fa";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MenuContent from "../sideMenu/MenuContent";
-import { FaPlus, FaUserTag } from "react-icons/fa";
 
 const Social = () => {
   const { splashPlayed } = useContext(SplashContext);

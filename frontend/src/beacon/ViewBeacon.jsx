@@ -1,10 +1,8 @@
 import axios from "axios";
 import { Alert, Button, Card, Pagination, Tooltip } from "flowbite-react";
-import { useContext, useEffect, useMemo, useState } from "react";
 import L from "leaflet";
-import { UserContext } from "../App";
-import Layout from "../Layout";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { Helmet } from "react-helmet";
 import {
   FaBackward,
   FaCheckCircle,
@@ -12,12 +10,14 @@ import {
   FaPen,
   FaTrash
 } from "react-icons/fa";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import ReactPlaceholder from "react-placeholder";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { formatInTimeZone } from "../shared/formatInTimeZone";
-import { Helmet } from "react-helmet";
-import MapWatermark from "../shared/MapWatermark";
+import { Link, useNavigate, useParams } from "react-router";
+import { UserContext } from "../App";
+import Layout from "../Layout";
 import { getErrorStr } from "../shared";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
+import MapWatermark from "../shared/MapWatermark";
 
 const ViewBeacon = () => {
   const [alert, setAlert] = useState(null);

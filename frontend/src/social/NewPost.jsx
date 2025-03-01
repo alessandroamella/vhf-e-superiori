@@ -12,7 +12,7 @@ import PropTypes from "prop-types";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaBackward, FaInfoCircle, FaPlus } from "react-icons/fa";
-import { createSearchParams, useNavigate } from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router";
 import { UserContext } from "../App";
 import Layout from "../Layout";
 import { getErrorStr } from "../shared";

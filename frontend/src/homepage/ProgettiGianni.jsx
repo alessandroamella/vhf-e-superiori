@@ -1,14 +1,14 @@
+import { Button } from "@material-tailwind/react";
 import React from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { FaHome } from "react-icons/fa";
+import { trackWindowScroll } from "react-lazy-load-image-component";
+import { Link } from "react-router";
 import SwiperCore, { Navigation, Pagination } from "swiper/core";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { Swiper, SwiperSlide } from "swiper/react";
 import Layout from "../Layout";
-import { Link } from "react-router-dom";
-import { FaHome } from "react-icons/fa";
-import { Button } from "@material-tailwind/react";
-import { trackWindowScroll } from "react-lazy-load-image-component";
 import LazyPDFViewer from "../PdfViewer";
 
 const ProgettiGianni = () => {

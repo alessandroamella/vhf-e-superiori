@@ -5,25 +5,25 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 
-import ReactPlaceholder from "react-placeholder/lib";
 import { it } from "date-fns/locale";
 import {
   LazyLoadImage,
   trackWindowScroll
 } from "react-lazy-load-image-component";
+import ReactPlaceholder from "react-placeholder/lib";
 
-import MediaSwiper from "./MediaSwiper";
-import Description from "./Description";
-import { UserContext } from "../App";
-import { Alert, Card, Spinner, Textarea } from "flowbite-react";
 import { Button } from "@material-tailwind/react";
-import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Alert, Card, Spinner, Textarea } from "flowbite-react";
+import PropTypes from "prop-types";
 import { FaTrash } from "react-icons/fa";
+import { Link, useNavigate } from "react-router";
+import { UserContext } from "../App";
+import { getErrorStr } from "../shared";
 import CallsignLoading from "../shared/CallsignLoading";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
-import { getErrorStr } from "../shared";
-import PropTypes from "prop-types";
+import Description from "./Description";
+import MediaSwiper from "./MediaSwiper";
 
 /**
  * @typedef {import('./NewPost').PostType} PostType

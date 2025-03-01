@@ -3,6 +3,13 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
     plugins: [react()],
+    build: {
+        minify: "esbuild",
+        target: "es2015",
+        cssMinify: "lightningcss",
+        outDir: "./server/dist",
+        emptyOutDir: true
+    },
     server: {
         proxy: {
             "/api": {

@@ -1,33 +1,33 @@
+import { Card } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Button, Table } from "flowbite-react";
+import { latLngBounds } from "leaflet";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import Layout from "../Layout";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import ReactPlaceholder from "react-placeholder";
-import Zoom from "react-medium-image-zoom";
-import { Card } from "@material-tailwind/react";
+import { Helmet } from "react-helmet";
 import { FaBackward, FaHome, FaInfoCircle } from "react-icons/fa";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { MapContainer, Polyline, TileLayer, useMap } from "react-leaflet";
+import Zoom from "react-medium-image-zoom";
+import ReactPlaceholder from "react-placeholder";
+import { Link, useNavigate, useParams } from "react-router";
 import {
-  FacebookShareButton,
-  TelegramShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
+  EmailIcon,
   EmailShareButton,
   FacebookIcon,
+  FacebookShareButton,
   TelegramIcon,
+  TelegramShareButton,
   TwitterIcon,
+  TwitterShareButton,
   WhatsappIcon,
-  EmailIcon
+  WhatsappShareButton
 } from "react-share";
-import { formatInTimeZone } from "../shared/formatInTimeZone";
-import { Helmet } from "react-helmet";
-import { MapContainer, Polyline, TileLayer, useMap } from "react-leaflet";
-import { latLngBounds } from "leaflet";
-import StationMapMarker from "../shared/StationMapMarker";
-import MapWatermark from "../shared/MapWatermark";
+import Layout from "../Layout";
 import { getErrorStr } from "../shared";
-import PropTypes from "prop-types";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
+import MapWatermark from "../shared/MapWatermark";
+import StationMapMarker from "../shared/StationMapMarker";
 
 function ChangeView({ center, markers }) {
   const map = useMap();

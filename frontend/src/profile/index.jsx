@@ -37,7 +37,7 @@ import {
   Link,
   useNavigate,
   useSearchParams
-} from "react-router-dom";
+} from "react-router";
 import { EventsContext, UserContext } from "../App";
 import { mapsApiKey } from "../constants/mapsApiKey";
 import Layout from "../Layout";

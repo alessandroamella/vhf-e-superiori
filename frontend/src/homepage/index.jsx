@@ -1,44 +1,42 @@
-import Layout from "../Layout";
-import { useCallback, useMemo, useState } from "react";
+import { Button } from "@material-tailwind/react";
 import {
-  JoinOpenContext,
-  EventsContext,
-  ReadyContext,
-  SplashContext,
-  UserContext
-} from "../App";
-import { useContext } from "react";
-import { Accordion, Alert, Card, Spinner, Table } from "flowbite-react";
-import {
+  addDays,
+  addHours,
   differenceInDays,
   isAfter,
-  isBefore,
-  addDays,
-  addHours
+  isBefore
 } from "date-fns";
 import { it } from "date-fns/locale";
+import { Accordion, Alert, Card, Spinner, Table } from "flowbite-react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { FaExternalLinkAlt, FaWhatsapp } from "react-icons/fa";
+import Zoom, { Controlled as ControlledZoom } from "react-medium-image-zoom";
+import { Carousel } from "react-round-carousel";
 import {
   Link,
   createSearchParams,
   useNavigate,
   useSearchParams
-} from "react-router-dom";
-import { useEffect } from "react";
+} from "react-router";
+import {
+  EventsContext,
+  JoinOpenContext,
+  ReadyContext,
+  SplashContext,
+  UserContext
+} from "../App";
+import Layout from "../Layout";
 import Splash from "../Splash";
-import { FaExternalLinkAlt, FaWhatsapp } from "react-icons/fa";
-import { Carousel } from "react-round-carousel";
-import Zoom, { Controlled as ControlledZoom } from "react-medium-image-zoom";
 import JoinRequestModal from "./JoinRequestModal";
-import { Button } from "@material-tailwind/react";
 
+import axios from "axios";
+import { Helmet } from "react-helmet";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import ReactPlaceholder from "react-placeholder";
 import "react-round-carousel/src/index.css";
 import Flags from "../Flags";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import axios from "axios";
-import { formatInTimeZone } from "../shared/formatInTimeZone";
-import { Helmet } from "react-helmet";
-import ReactPlaceholder from "react-placeholder";
 import { getErrorStr } from "../shared";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
 
 const Homepage = () => {
   const { user } = useContext(UserContext);
@@ -98,6 +96,7 @@ const Homepage = () => {
   useEffect(() => {
     if (!events) return;
     const now = new Date();
+    console.log("filtering events", events);
     const _events = [...events].filter(e => isAfter(new Date(e.date), now));
     _events.sort(
       (a, b) =>
@@ -123,6 +122,7 @@ const Homepage = () => {
     if (!events) return null;
     const _inverted = [...events];
     _inverted.sort((a, b) => new Date(b.date) - new Date(a.date));
+    console.log("filtering _inverted", _inverted);
     return _inverted
       .filter(e => e.logoUrl && !e.logoUrl.endsWith("logo-min.png"))
       .map(e => ({
@@ -161,6 +161,7 @@ const Homepage = () => {
     if (!events || !user) return null;
     const now = new Date();
     // show for next 25 days after event has started and 10 days before
+    console.log("events to filter (_stationEvent)", events);
     const _events = [...events].filter(
       e =>
         isAfter(new Date(e.date), addDays(now, -25)) &&
@@ -197,6 +198,7 @@ const Homepage = () => {
     if (!events) return null;
     const now = new Date();
     // show for 2 hours after event has started and 20 days before
+    console.log("events to filter (_rankingsEvent)", events);
     const _events = [...events].filter(
       e =>
         isAfter(now, addHours(new Date(e.date), 2)) &&
@@ -213,6 +215,7 @@ const Homepage = () => {
   const _eqslEvent = useCallback(async () => {
     if (!events) return null;
     const now = new Date();
+    console.log("events to filter (_eqslEvent)", events);
     const _events = [...events].filter(e => {
       const eventDate = new Date(e.date);
       // within 15 days in future or 12 hours in past

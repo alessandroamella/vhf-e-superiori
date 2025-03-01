@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { FaPlus } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
-import { Link, createSearchParams, useNavigate } from "react-router-dom";
+import { Link, createSearchParams, useNavigate } from "react-router";
 import { UserContext } from "../App";
 import Layout from "../Layout";
 import { getErrorStr } from "../shared";

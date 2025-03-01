@@ -12,12 +12,7 @@ import {
   FaInfoCircle
 } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import {
-  createSearchParams,
-  Link,
-  useNavigate,
-  useParams
-} from "react-router-dom";
+import { createSearchParams, Link, useNavigate, useParams } from "react-router";
 import { EventsContext, UserContext } from "../App";
 import Layout from "../Layout";
 import { getErrorStr } from "../shared";

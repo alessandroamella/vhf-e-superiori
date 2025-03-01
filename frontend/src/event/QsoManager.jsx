@@ -33,12 +33,7 @@ import {
   FaUser
 } from "react-icons/fa";
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
-import {
-  Link,
-  createSearchParams,
-  useNavigate,
-  useParams
-} from "react-router-dom";
+import { Link, createSearchParams, useNavigate, useParams } from "react-router";
 import { UserContext } from "../App";
 import Layout from "../Layout";
 import { getErrorStr } from "../shared";
