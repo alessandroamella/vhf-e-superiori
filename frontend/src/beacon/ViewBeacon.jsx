@@ -14,7 +14,6 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import ReactPlaceholder from "react-placeholder";
 import { Link, useNavigate, useParams } from "react-router";
 import { UserContext } from "../App";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import MapWatermark from "../shared/MapWatermark";
@@ -141,7 +140,7 @@ const ViewBeacon = () => {
   }
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>Beacon {beacon?.callsign || ""} - VHF e superiori</title>
       </Helmet>
@@ -350,7 +349,7 @@ const ViewBeacon = () => {
           </ReactPlaceholder>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

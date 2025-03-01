@@ -1,7 +1,8 @@
-import Header from "./Header";
-import Footer from "./Footer";
-import BurgerMenu from "./sideMenu/BurgerMenu";
 import PropTypes from "prop-types";
+import { Outlet } from "react-router";
+import Footer from "./Footer";
+import Header from "./Header";
+import BurgerMenu from "./sideMenu/BurgerMenu";
 
 const Layout = ({ children }) => (
   <div className="m-0 p-0 dark:bg-gray-700" id="outer-container">
@@ -9,6 +10,7 @@ const Layout = ({ children }) => (
     <div id="page-wrap" className="m-0 p-0">
       <Header />
       {children}
+      <Outlet />
       <Footer />
     </div>
   </div>

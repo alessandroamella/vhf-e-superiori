@@ -19,7 +19,6 @@ import {
 import { UserContext } from "../App";
 import { mapsApiKey } from "../constants/mapsApiKey";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 
 const useFocus = () => {
@@ -375,7 +374,7 @@ const Signup = () => {
   }
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>Registrazione - VHF e superiori</title>
       </Helmet>
@@ -633,7 +632,7 @@ const Signup = () => {
           </form>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

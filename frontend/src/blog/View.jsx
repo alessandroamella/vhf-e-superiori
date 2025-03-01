@@ -10,7 +10,6 @@ import Zoom from "react-medium-image-zoom";
 import ReactPlaceholder from "react-placeholder";
 import { Link, useNavigate, useParams } from "react-router";
 import { UserContext } from "../App";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 
@@ -73,7 +72,7 @@ const BlogPostViewer = () => {
   }
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>{post ? post.title : "Blog"} - VHF e superiori</title>
       </Helmet>
@@ -151,7 +150,7 @@ const BlogPostViewer = () => {
           )}
         </div>
       </ReactPlaceholder>
-    </Layout>
+    </>
   );
 };
 

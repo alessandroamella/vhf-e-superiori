@@ -38,7 +38,6 @@ import { Helmet } from "react-helmet";
 import { FaExclamationTriangle, FaPlus, FaTrash, FaUndo } from "react-icons/fa";
 import { createSearchParams, useNavigate } from "react-router";
 import { UserContext } from "../App";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 
 const BlogPostEditor = ({ blogPost }) => {
@@ -192,7 +191,7 @@ const BlogPostEditor = ({ blogPost }) => {
   }, [postPic]);
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>Blog post editor - VHF e superiori</title>
       </Helmet>
@@ -380,7 +379,7 @@ const BlogPostEditor = ({ blogPost }) => {
           <Spinner size="xl" />
         </div>
       )}
-    </Layout>
+    </>
   );
 };
 

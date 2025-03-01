@@ -1,8 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
-import Layout from "../Layout";
 
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { Alert, Button, Spinner } from "flowbite-react";
 import { Helmet } from "react-helmet";
 import { FaBackward, FaTrash } from "react-icons/fa";
@@ -31,10 +30,18 @@ const ViewPost = () => {
         if (data.pp) setPic(data.pp);
       } catch (err) {
         console.log(err);
-        setAlert({
-          color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
-        });
+        if (isAxiosError(err) && err.response.status === 404) {
+          setAlert({
+            color: "failure",
+            msg: "Post non trovato"
+          });
+        } else {
+          setAlert({
+            color: "failure",
+            msg: getErrorStr(err?.response?.data?.err)
+          });
+        }
+        setPost(false);
         window.scrollTo({
           top: 0,
           behavior: "smooth"
@@ -74,7 +81,7 @@ const ViewPost = () => {
   }
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>{post?.description || "Post"} - VHF e superiori</title>
       </Helmet>
@@ -97,7 +104,7 @@ const ViewPost = () => {
         </div>
         {alert && (
           <Alert
-            className="mb-6 dark:text-black"
+            className="my-6 dark:text-black"
             color={alert.color}
             onDismiss={() => setAlert(null)}
           >
@@ -109,7 +116,7 @@ const ViewPost = () => {
           <ViewPostContent post={post} pic={pic} />
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

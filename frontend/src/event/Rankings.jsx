@@ -18,7 +18,6 @@ import {
   WhatsappIcon,
   WhatsappShareButton
 } from "react-share";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 
@@ -67,7 +66,7 @@ const Rankings = () => {
   const [showRankings, setShowRankings] = useState(null);
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>{event?.name || "Evento"} - Classifiche - VHF e superiori</title>
       </Helmet>
@@ -266,7 +265,7 @@ const Rankings = () => {
           )}
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

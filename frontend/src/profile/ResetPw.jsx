@@ -4,7 +4,6 @@ import { Alert, Button, Label, TextInput } from "flowbite-react";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { createSearchParams, useNavigate, useSearchParams } from "react-router";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 
 const ResetPw = () => {
@@ -44,7 +43,7 @@ const ResetPw = () => {
   }
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>Reset password - VHF e superiori</title>
       </Helmet>
@@ -89,7 +88,7 @@ const ResetPw = () => {
           </Button>
         </form>
       </div>
-    </Layout>
+    </>
   );
 };
 

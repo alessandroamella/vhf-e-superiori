@@ -7,7 +7,6 @@ import { FaPlus } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
 import { Link, createSearchParams, useNavigate } from "react-router";
 import { UserContext } from "../App";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 
 const BeaconHomepage = () => {
@@ -48,7 +47,7 @@ const BeaconHomepage = () => {
   const navigate = useNavigate();
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>Beacon - VHF e superiori</title>
       </Helmet>
@@ -198,7 +197,7 @@ const BeaconHomepage = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

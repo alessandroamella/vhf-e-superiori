@@ -1,14 +1,14 @@
 import { isDocument } from "@typegoose/typegoose";
 import { Router } from "express";
 import { param } from "express-validator";
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND } from "http-status";
 import { logger } from "../../../shared/logger";
 import { UserDoc } from "../../auth/models";
+import { Comment } from "../../comment/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import { qrz } from "../../qrz";
 import { BasePost } from "../models";
-import { Comment } from "../../comment/models";
 
 const router = Router();
 
@@ -41,7 +41,13 @@ const router = Router();
  *                pp:
  *                  type: string
  *      '400':
- *        description: Invalid ObjectId or post not found
+ *        description: Invalid ObjectId
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ResErr'
+ *      '404':
+ *        description: Post not found
  *        content:
  *          application/json:
  *            schema:
@@ -53,51 +59,58 @@ const router = Router();
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  */
-router.get("/:_id", param("_id").isMongoId(), validate, async (req, res) => {
-    try {
-        const post = await BasePost.findOne({
-            _id: req.params?._id,
-            isProcessing: false,
-            hidden: false
-        }).populate({
-            path: "fromUser",
-            select: "callsign name"
-        });
-        if (post?.isProcessing) {
-            return res
-                .status(BAD_REQUEST)
-                .json(createError(Errors.POST_IS_PROCESSING));
+router.get(
+    "/:_id",
+    param("_id", "Post ID is invalid").isMongoId(),
+    validate,
+    async (req, res) => {
+        try {
+            const post = await BasePost.findOne({
+                _id: req.params?._id,
+                isProcessing: false,
+                hidden: false
+            }).populate({
+                path: "fromUser",
+                select: "callsign name"
+            });
+            if (post?.isProcessing) {
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.POST_IS_PROCESSING));
+            }
+
+            if (!post) {
+                return res
+                    .status(NOT_FOUND)
+                    .json(createError(Errors.POST_NOT_FOUND));
+            } else if (!isDocument(post.fromUser)) {
+                return res
+                    .status(BAD_REQUEST)
+                    .json(createError(Errors.USER_NOT_FOUND));
+            }
+
+            logger.debug("Fetched post " + post?._id);
+
+            const comments = await Comment.find({
+                forPost: post._id
+            }).populate({ path: "fromUser", select: "callsign name" });
+
+            const pp = (
+                await qrz.getInfo(
+                    (post.fromUser as unknown as UserDoc).callsign
+                )
+            )?.pictureUrl;
+
+            res.json({
+                post: { ...post.toJSON(), comments },
+                pp
+            });
+        } catch (err) {
+            logger.error("Error in post get");
+            logger.error(err);
+            return res.status(INTERNAL_SERVER_ERROR).json(createError());
         }
-
-        if (!post) {
-            return res
-                .status(BAD_REQUEST)
-                .json(createError(Errors.POST_NOT_FOUND));
-        } else if (!isDocument(post.fromUser)) {
-            return res
-                .status(BAD_REQUEST)
-                .json(createError(Errors.USER_NOT_FOUND));
-        }
-
-        logger.debug("Fetched post " + post?._id);
-
-        const comments = await Comment.find({
-            forPost: post._id
-        }).populate({ path: "fromUser", select: "callsign name" });
-
-        const pp = (
-            await qrz.getInfo((post.fromUser as unknown as UserDoc).callsign)
-        )?.pictureUrl;
-
-        res.json({
-            post: { ...post.toJSON(), comments },
-            pp
-        });
-    } catch (err) {
-        logger.error("Error in post get");
-        logger.error(err);
-        return res.status(INTERNAL_SERVER_ERROR).json(createError());
     }
-});
+);
 
 export default router;

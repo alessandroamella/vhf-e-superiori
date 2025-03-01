@@ -20,7 +20,6 @@ import {
   useSearchParams
 } from "react-router";
 import { UserContext } from "../App";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 import MapWatermark from "../shared/MapWatermark";
 
@@ -149,7 +148,7 @@ const BeaconEditor = () => {
 
   useEffect(() => {
     if (user === null)
-      return navigate({
+      navigate({
         pathname: "/login",
         search: createSearchParams({
           to: "/beacon/editor" + (id ? `?id=${id}` : "")
@@ -317,7 +316,7 @@ const BeaconEditor = () => {
   }
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>
           {isEditing ? "Modifica" : "Nuovo"} beacon - VHF e superiori
@@ -589,7 +588,7 @@ const BeaconEditor = () => {
           </ReactPlaceholder>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

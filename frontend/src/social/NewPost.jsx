@@ -10,11 +10,11 @@ import {
 } from "flowbite-react";
 import PropTypes from "prop-types";
 import React, { useContext, useEffect, useMemo, useState } from "react";
+import { Helmet } from "react-helmet";
 import { useForm } from "react-hook-form";
 import { FaBackward, FaInfoCircle, FaPlus } from "react-icons/fa";
 import { createSearchParams, useNavigate } from "react-router";
 import { UserContext } from "../App";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 import FileUploader from "./FileUploader";
 import ViewPostContent from "./ViewPostContent";
@@ -201,14 +201,10 @@ const NewPost = () => {
   }, [createdAt, postDescription, postPictures, postVideos, postUser]);
 
   return (
-    <Layout>
-      {!user &&
-        navigate({
-          pathname: "/login",
-          search: createSearchParams({
-            to: "/social/new"
-          }).toString()
-        })}
+    <>
+      <Helmet>
+        <title>Nuovo post - VHF e superiori</title>
+      </Helmet>
       <div className="px-4 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
         <Button onClick={navigateBack} disabled={isSubmitting} color="light">
           <FaBackward />
@@ -327,7 +323,7 @@ const NewPost = () => {
           <Spinner />
         )}
       </div>
-    </Layout>
+    </>
   );
 };
 

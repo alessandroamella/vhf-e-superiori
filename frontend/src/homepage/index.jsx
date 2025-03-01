@@ -25,7 +25,6 @@ import {
   SplashContext,
   UserContext
 } from "../App";
-import Layout from "../Layout";
 import Splash from "../Splash";
 import JoinRequestModal from "./JoinRequestModal";
 
@@ -261,7 +260,7 @@ const Homepage = () => {
   }, []);
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>VHF e Superiori - Flash Mob Radioamatoriale</title>
       </Helmet>
@@ -895,7 +894,7 @@ const Homepage = () => {
           </div>
         </div>
       )}
-    </Layout>
+    </>
   );
 };
 

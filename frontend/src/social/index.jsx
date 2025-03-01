@@ -1,7 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from "react";
+import { Helmet } from "react-helmet";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { ReadyContext, SplashContext } from "../App";
-import Layout from "../Layout";
 import Splash from "../Splash";
 
 import FeedCard from "./FeedCard";
@@ -94,8 +94,16 @@ const Social = () => {
   }, [filterCallsign, posts]);
 
   return (
-    <Layout>
+    <>
       {!splashPlayed && <Splash ready={ready} />}
+
+      <Helmet>
+        <title>Social</title>
+        <meta
+          name="description"
+          content="Visualizza e condividi foto e video con gli altri piloti"
+        />
+      </Helmet>
 
       <div className="px-0 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
         {alert && (
@@ -140,10 +148,10 @@ const Social = () => {
 
         <Button
           className="flex rounded-full uppercase items-center fixed bottom-8 right-8 z-40"
-          onClick={() => navigate("new")}
+          onClick={() => navigate("/social/new")}
         >
           <Link
-            to="new"
+            to="/social/new"
             className="text-xl text-white font-bold flex items-center gap-2"
           >
             <FaPlus />
@@ -226,7 +234,7 @@ const Social = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

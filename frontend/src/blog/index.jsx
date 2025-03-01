@@ -10,7 +10,6 @@ import Markdown from "react-markdown";
 import ReactPlaceholder from "react-placeholder";
 import { Link } from "react-router";
 import { UserContext } from "../App";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 
 const Blog = () => {
@@ -41,7 +40,7 @@ const Blog = () => {
   }, []);
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>Blog - VHF e superiori</title>
       </Helmet>
@@ -138,7 +137,7 @@ const Blog = () => {
           <p>Errore nel caricamento</p>
         )}
       </ReactPlaceholder>
-    </Layout>
+    </>
   );
 };
 

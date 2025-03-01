@@ -23,7 +23,6 @@ import {
   WhatsappIcon,
   WhatsappShareButton
 } from "react-share";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import MapWatermark from "../shared/MapWatermark";
@@ -90,7 +89,7 @@ const Qso = () => {
     `QSO ${qso?.callsign} - ${fromCallsign} - ${qso?.event?.name} - ${qso?.qsoDate} UTC - ${qso?.frequency} MHz - ${qso?.mode} - VHF e superiori`;
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>{socialTitle || "QSO"} - VHF e superiori</title>
       </Helmet>
@@ -297,7 +296,7 @@ const Qso = () => {
           )}
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

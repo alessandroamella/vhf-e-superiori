@@ -14,7 +14,6 @@ import {
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { createSearchParams, Link, useNavigate, useParams } from "react-router";
 import { EventsContext, UserContext } from "../App";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 
@@ -96,7 +95,7 @@ const ViewEvent = () => {
   const navigate = useNavigate();
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>{event?.name || "Evento"} - VHF e superiori</title>
       </Helmet>
@@ -345,7 +344,7 @@ const ViewEvent = () => {
           </div>
         </MTAlert>
       )}
-    </Layout>
+    </>
   );
 };
 

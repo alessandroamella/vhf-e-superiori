@@ -40,7 +40,6 @@ import {
 } from "react-router";
 import { EventsContext, UserContext } from "../App";
 import { mapsApiKey } from "../constants/mapsApiKey";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 import CallsignLoading from "../shared/CallsignLoading";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
@@ -311,7 +310,7 @@ const Profile = () => {
   const [qsoOpen, setQsoOpen] = useState(false);
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>
           Profilo{user?.callsign ? " di " + user.callsign : ""} - VHF e
@@ -961,7 +960,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import ReactPlaceholder from "react-placeholder";
 import { useParams } from "react-router";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 
 const MdViewer = () => {
@@ -26,7 +25,7 @@ const MdViewer = () => {
   }, [name]);
 
   return (
-    <Layout>
+    <>
       <Card className="md:mx-4 lg:mx-6 shadow">
         {error ? (
           <Alert color="failure">{error}</Alert>
@@ -41,7 +40,7 @@ const MdViewer = () => {
           </ReactPlaceholder>
         )}
       </Card>
-    </Layout>
+    </>
   );
 };
 

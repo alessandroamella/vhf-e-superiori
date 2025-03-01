@@ -33,9 +33,14 @@ import {
   FaUser
 } from "react-icons/fa";
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
-import { Link, createSearchParams, useNavigate, useParams } from "react-router";
+import {
+  Link,
+  Navigate,
+  createSearchParams,
+  useNavigate,
+  useParams
+} from "react-router";
 import { UserContext } from "../App";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import MapWatermark from "../shared/MapWatermark";
@@ -830,14 +835,16 @@ const QsoManager = () => {
   }, [autocompleteRef]);
 
   return user === null ? (
-    navigate({
-      pathname: "/login",
-      search: createSearchParams({
-        to: window.location.pathname + window.location.search
-      }).toString()
-    })
+    <Navigate
+      to={{
+        pathname: "/login",
+        search: createSearchParams({
+          to: window.location.pathname + window.location.search
+        }).toString()
+      }}
+    />
   ) : (
-    <Layout>
+    <>
       <Helmet>
         <title>
           Gestione QSO -{event ? ` ${event.name} -` : ""} VHF e superiori
@@ -1685,7 +1692,7 @@ const QsoManager = () => {
           )}
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

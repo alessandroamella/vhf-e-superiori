@@ -7,7 +7,6 @@ import { Helmet } from "react-helmet";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { UserContext } from "../App";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
-import Layout from "../Layout";
 import { getErrorStr } from "../shared";
 
 const Login = () => {
@@ -125,7 +124,7 @@ const Login = () => {
   const loginInput = useRef(null);
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>Login - VHF e superiori</title>
       </Helmet>
@@ -241,7 +240,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

@@ -118,7 +118,7 @@ const ViewPostContent = React.memo(
       }
     }
 
-    return (
+    return post === false ? null : (
       <div className="w-full px-4 md:px-0 md:w-4/5 rounded-xl border border-gray-200 dark:border-gray-800 mb-4 overflow-hidden">
         <ReactPlaceholder
           showLoadingAnimation

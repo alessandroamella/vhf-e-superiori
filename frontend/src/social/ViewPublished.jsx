@@ -7,7 +7,6 @@ import {
   useSearchParams
 } from "react-router";
 import { ReadyContext, SplashContext } from "../App";
-import Layout from "../Layout";
 import Splash from "../Splash";
 
 import FeedCard from "./FeedCard";
@@ -223,7 +222,7 @@ const ViewPublished = () => {
   const curUrl = "https://" + window.location.hostname + location.pathname;
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>{user?.callsign || callsign} - VHF e superiori</title>
       </Helmet>
@@ -368,11 +367,11 @@ const ViewPublished = () => {
         </Button>
 
         <Button
-          onClick={() => navigate("new")}
+          onClick={() => navigate("/social/new")}
           // className="flex rounded-full w-16 h-16 aspect-square items-center fixed bottom-8 right-8 z-40"
           className="flex rounded-full uppercase items-center fixed bottom-8 right-8 z-40"
         >
-          <Link to="new" className="text-xl text-white font-bold">
+          <Link to="/social/new" className="text-xl text-white font-bold">
             {/* <FaPlus /> */}
             Inserisci foto / video
           </Link>
@@ -630,7 +629,7 @@ const ViewPublished = () => {
           )}
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

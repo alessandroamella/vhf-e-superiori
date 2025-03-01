@@ -1,8 +1,6 @@
 import { ThemeProvider } from "@material-tailwind/react";
 import axios, { isAxiosError } from "axios";
 import { useEffect, useRef, useState } from "react";
-import { createBrowserRouter } from "react-router";
-import { RouterProvider } from "react-router/dom";
 import AdminManager from "./admin";
 import Login from "./auth/Login";
 import Signup from "./auth/Signup";
@@ -33,6 +31,7 @@ import "leaflet/dist/leaflet.css";
 import "react-medium-image-zoom/dist/styles.css";
 import "react-placeholder/lib/reactPlaceholder.css";
 
+import { BrowserRouter, Route, Routes } from "react-router";
 import {
   EventsContext,
   JoinOpenContext,
@@ -44,38 +43,49 @@ import {
 } from "./App";
 import BlogPostEditor from "./blog/Editor";
 import BlogPostViewer from "./blog/View";
+import Layout from "./Layout";
+import NotFoundPage from "./NotFound";
 
-const router = createBrowserRouter([
-  { path: "/", element: <Homepage /> },
-  { path: "/progetti-gianni", element: <ProgettiGianni /> },
-  { path: "/login", element: <Login /> },
-  { path: "/signup", element: <Signup /> },
-  { path: "/profile", element: <Profile /> },
-  { path: "/social", element: <Social /> },
-  { path: "/social/new", element: <NewPost /> },
-  { path: "/u/:callsign", element: <ViewPublished /> },
-  { path: "/social/:id", element: <ViewPost /> },
-  { path: "/eventmanager", element: <AdminManager /> },
-  { path: "/qsomanager/:id", element: <QsoManager /> },
-  { path: "/rankings/:id", element: <Rankings /> },
-  { path: "/eqsl/:id", element: <EqslRedirect /> },
-  { path: "/qso/:id", element: <Qso /> },
-  // { path: "/regolamento", element: <Regolamento /> },
-  // { path: "/info", element: <Info /> },
-  { path: "/resetpw", element: <ResetPw /> },
-  { path: "/event/:id", element: <ViewEvent /> },
-  { path: "/document/:name", element: <MdViewer /> },
-  { path: "/beacon", element: <BeaconHomepage /> },
-  { path: "/beacon/editor", element: <BeaconEditor /> },
-  { path: "/beacon/:id", element: <ViewBeacon /> },
-  { path: "/blog", element: <Blog /> },
-  { path: "/blog/editor", element: <BlogPostEditor /> },
-  { path: "/blog/:id", element: <BlogPostViewer /> }
-  // {
-  //   path: "contacts/:contactId",
-  //   element: <Contact />,
-  // },
-]);
+const AppRoutes = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Homepage />} />
+          <Route path="/progetti-gianni" element={<ProgettiGianni />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/social" element={<Social />} />
+          <Route path="/social/new" element={<NewPost />} />
+          <Route path="/u/:callsign" element={<ViewPublished />} />
+          <Route path="/social/:id" element={<ViewPost />} />
+          <Route path="/eventmanager" element={<AdminManager />} />
+          <Route path="/qsomanager/:id" element={<QsoManager />} />
+          <Route path="/rankings/:id" element={<Rankings />} />
+          <Route path="/eqsl/:id" element={<EqslRedirect />} />
+          <Route path="/qso/:id" element={<Qso />} />
+          {/* <Route path="/regolamento" element={<Regolamento />} /> */}
+          {/* <Route path="/info" element={<Info />} /> */}
+          <Route path="/resetpw" element={<ResetPw />} />
+          <Route path="/event/:id" element={<ViewEvent />} />
+          <Route path="/document/:name" element={<MdViewer />} />
+          <Route path="/beacon" element={<BeaconHomepage />} />
+          <Route path="/beacon/editor" element={<BeaconEditor />} />
+          <Route path="/beacon/:id" element={<ViewBeacon />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/editor" element={<BlogPostEditor />} />
+          <Route path="/blog/:id" element={<BlogPostViewer />} />
+          <Route path="*" element={<NotFoundPage />} />
+          {/* <Route
+          path="contacts/:contactId"
+          element={<Contact />}
+        /> */}
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
 export const App = () => {
   const [user, setUser] = useState(false);
@@ -210,7 +220,7 @@ export const App = () => {
                   <SidebarOpenContext.Provider
                     value={{ sidebarOpen, setSidebarOpen }}
                   >
-                    <RouterProvider router={router} />
+                    <AppRoutes />
                   </SidebarOpenContext.Provider>
                 </ViewsContext.Provider>
               </JoinOpenContext.Provider>

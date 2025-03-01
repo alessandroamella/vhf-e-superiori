@@ -23,7 +23,6 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import { EventsContext, UserContext } from "../App";
-import Layout from "../Layout";
 // import { DefaultEditor } from "react-simple-wysiwyg";
 import Compressor from "compressorjs";
 import { isFuture } from "date-fns";
@@ -705,7 +704,7 @@ const AdminManager = () => {
   ) : user && !user.isAdmin ? (
     navigate(-1)
   ) : (
-    <Layout>
+    <>
       <Helmet>
         <title>Admin - VHF e superiori</title>
       </Helmet>
@@ -1742,7 +1741,7 @@ const AdminManager = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

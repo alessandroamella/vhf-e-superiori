@@ -8,7 +8,6 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Swiper, SwiperSlide } from "swiper/react";
-import Layout from "../Layout";
 import LazyPDFViewer from "../PdfViewer";
 
 const ProgettiGianni = () => {
@@ -30,7 +29,7 @@ const ProgettiGianni = () => {
   };
 
   return (
-    <Layout>
+    <>
       <div className="px-4 select-none md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
         <Link to="/">
           <Button className="mb-2">
@@ -61,7 +60,7 @@ const ProgettiGianni = () => {
           ))}
         </Swiper>
       </div>
-    </Layout>
+    </>
   );
 };
 
