@@ -1,16 +1,16 @@
 import axios, { isAxiosError } from "axios";
-import { envs, logger } from "../../shared";
-import { s3Client } from "../aws";
-import path from "path";
-import sharp from "sharp";
 import { spawn } from "child_process";
-import { QsoDoc } from "../qso/models";
-import moment from "moment";
 import { existsSync } from "fs";
 import { unlink } from "fs/promises";
-import { UserDoc } from "../auth/models";
+import moment from "moment";
+import path from "path";
+import sharp from "sharp";
 import { v4 as uuidv4 } from "uuid";
+import { envs, logger } from "../../shared";
+import { UserDoc } from "../auth/models";
+import { s3Client } from "../aws";
 import { EventDoc } from "../event/models";
+import { QsoDoc } from "../qso/models";
 
 class EqslPic {
     private href: string | null = null;
@@ -38,6 +38,8 @@ class EqslPic {
             return;
         } else if (!this.href) {
             throw new Error("No href in fetchImage");
+        } else if (this.href === "/logo-min.png") {
+            this.href = "https://www.vhfesuperiori.eu/logo-min.png";
         }
 
         try {
