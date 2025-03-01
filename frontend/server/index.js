@@ -58,7 +58,7 @@ app.use(
         objectSrc: ["'none'"],
         frameAncestors: ["'none'"],
         baseUri: ["'self'"],
-        formAction: ["'self'"],
+        formAction: ["'self'", "https://www.paypal.com"],
         workerSrc: ["'self'", "https://cdnjs.cloudflare.com", "blob:"],
         childSrc: ["'self'"]
       }
