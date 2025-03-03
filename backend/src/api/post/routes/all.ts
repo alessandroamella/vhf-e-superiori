@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { query } from "express-validator";
 import { INTERNAL_SERVER_ERROR } from "http-status";
+import { FilterQuery, isValidObjectId } from "mongoose";
 import { logger } from "../../../shared/logger";
 import { UserDoc } from "../../auth/models";
+import { Comment } from "../../comment/models";
 import { createError, validate } from "../../helpers";
 import { qrz } from "../../qrz";
 import { BasePost } from "../models";
-import { Comment } from "../../comment/models";
-import { FilterQuery, isValidObjectId } from "mongoose";
 import { BasePostClass } from "../models/BasePost";
 
 const router = Router();
@@ -121,7 +121,7 @@ router.get(
                 .exec();
 
             const comments = await Comment.find({
-                forPost: { $in: posts.map(p => p._id) }
+                forPost: { $in: posts.map((p) => p._id) }
             }).populate({ path: "fromUser", select: "callsign name" });
 
             logger.debug("Fetched " + posts.length + " posts");
@@ -129,22 +129,24 @@ router.get(
             const callsigns = [
                 ...new Set(
                     posts
-                        .map(p => (p.fromUser as unknown as UserDoc)?.callsign)
-                        .filter(c => c)
+                        .map(
+                            (p) => (p.fromUser as unknown as UserDoc)?.callsign
+                        )
+                        .filter(Boolean)
                 )
             ];
-            const promiseUrls = callsigns.map(c => qrz.getInfo(c));
+            const promiseUrls = callsigns.map((c) => qrz.getInfo(c));
             const users = await Promise.all(promiseUrls);
-            const urls = users.map(u => u?.pictureUrl);
+            const urls = users.map((u) => u?.pictureUrl);
 
             const pps = callsigns.map((c, i) => ({
                 callsign: c,
                 url: urls[i]
             }));
 
-            const postsMapped = posts.map(p => {
+            const postsMapped = posts.map((p) => {
                 const _comments = comments.filter(
-                    c => c.forPost.toString() === p._id.toString()
+                    (c) => c.forPost.toString() === p._id.toString()
                 );
                 return {
                     ...p.toJSON(),
@@ -154,7 +156,7 @@ router.get(
 
             res.json({
                 posts: postsMapped,
-                pp: pps.filter(p => p.url)
+                pp: pps.filter((p) => p.url)
             });
         } catch (err) {
             logger.error("Error in posts get");

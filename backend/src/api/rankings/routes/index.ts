@@ -3,7 +3,7 @@ import { Router } from "express";
 import { param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared";
-import { User, UserDoc } from "../../auth/models";
+import { UserDoc } from "../../auth/models";
 import { Errors } from "../../errors";
 import Event, { EventDoc } from "../../event/models";
 import { createError, validate } from "../../helpers";
@@ -107,36 +107,35 @@ router.get(
             select: "callsign"
         });
 
-        const stationUsers = await User.find({
-            _id: {
-                $in: qsos.map(e => e.fromStation)
-            }
-        });
+        // const stationUsers = await User.find({
+        //     _id: {
+        //         $in: qsos.map(e => e.fromStation)
+        //     }
+        // });
 
-        const stationCallsigns = [
-            ...new Set([
-                ...(stations
-                    .map(e => {
-                        if (!isDocument(e.fromUser)) {
-                            logger.error(
-                                `JoinRequest.fromUser ${e.fromUser} is not a document for JoinRequest ${e._id} in event ${event._id}`
-                            );
-                            return null;
-                        }
-                        return (e.fromUser as unknown as UserDoc).callsign;
-                    })
-                    .filter(e => e !== null) as string[]),
-                ...qsos.map(e => e.fromStationCallsignOverride),
-                ...stationUsers.map(e => e.callsign)
-            ])
-        ].filter(Boolean) as string[];
+        const stationCallsigns = new Set<string>(
+            stations
+                .filter((e) => isDocument(e.fromUser))
+                .map((e) => (e.fromUser as unknown as UserDoc).callsign)
+            // ...stationUsers.map(e => e.callsign)
+        );
+
+        // also add eventually overriden callsigns
+        for (const { fromStationCallsignOverride } of qsos.filter(
+            (e) =>
+                isDocument(e.fromStation) &&
+                e.fromStationCallsignOverride &&
+                stationCallsigns.has(e.fromStation.callsign)
+        )) {
+            stationCallsigns.add(fromStationCallsignOverride!);
+        }
 
         const map = new Map<string, { qsos: QsoDoc[]; isStation: boolean }>();
         for (const qso of qsos) {
             if (!map.has(qso.callsign)) {
                 map.set(qso.callsign, {
                     qsos: [],
-                    isStation: stationCallsigns.includes(qso.callsign)
+                    isStation: stationCallsigns.has(qso.callsign)
                 });
             }
             map.get(qso.callsign)!.qsos.push(qso);
@@ -154,7 +153,7 @@ router.get(
             if (!map.has(fromCallsign)) {
                 map.set(fromCallsign, {
                     qsos: [],
-                    isStation: stationCallsigns.includes(fromCallsign)
+                    isStation: stationCallsigns.has(fromCallsign)
                 });
             }
             map.get(fromCallsign)!.qsos.push(qso);
@@ -171,7 +170,7 @@ router.get(
                 // 2 points if QSO to a station, 1 point if not
                 points: data.qsos.reduce(
                     (acc, qso) =>
-                        acc + (stationCallsigns.includes(qso.callsign) ? 2 : 1),
+                        acc + (stationCallsigns.has(qso.callsign) ? 2 : 1),
                     0
                 )
             });
@@ -181,9 +180,9 @@ router.get(
 
         logger.debug(`Event ${event._id} has ${_rankings.length} rankings`);
 
-        const [stationRankings, userRankings] = [true, false].map(b =>
+        const [stationRankings, userRankings] = [true, false].map((b) =>
             _rankings
-                .filter(e => e.isStation === b)
+                .filter((e) => e.isStation === b)
                 .map((ranking, index) => {
                     const { isStation, ...rest } = ranking;
                     logger.debug(
