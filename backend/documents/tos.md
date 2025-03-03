@@ -22,7 +22,7 @@ Benvenuto su VHF e superiori [https://www.vhfesuperiori.eu/](https://www.vhfesup
 
 0.8. "Privacy Policy" si riferisce alla nostra politica sulla privacy, disponibile all'indirizzo: [Privacy Policy](https://www.vhfesuperiori.eu/document/privacy).
 
-0.9. "Regolamento" si riferisce al regolamento per le Stazioni Attivatrici, disponibile all'indirizzo: [Regolamento](https://www.vhfesuperiori.eu/Regolamento_FLASH_MOB_2023_01_23.pdf).
+0.9. "Regolamento" si riferisce al regolamento per le Stazioni Attivatrici, disponibile all'indirizzo: [Regolamento](https://www.vhfesuperiori.eu/docs/Regolamento_FLASH_MOB_2023_01_23.pdf).
 
 0.10. "Donazione" si riferisce a qualsiasi contributo volontario offerto da un Utente a VHF e superiori.
 
@@ -54,7 +54,7 @@ Benvenuto su VHF e superiori [https://www.vhfesuperiori.eu/](https://www.vhfesup
 
 2.6. Le candidature possono essere annullate dall'Utente che le ha create. In caso di annullamento, l'Utente si impegna a comunicare tempestivamente la decisione agli Amministratori.
 
-2.7. L'Utente, candidandosi come Stazione Attivatrice, accetta incondizionatamente il Regolamento, disponibile all'indirizzo: [Regolamento](https://www.vhfesuperiori.eu/Regolamento_FLASH_MOB_2023_01_23.pdf).
+2.7. L'Utente, candidandosi come Stazione Attivatrice, accetta incondizionatamente il Regolamento, disponibile all'indirizzo: [Regolamento](https://www.vhfesuperiori.eu/docs/Regolamento_FLASH_MOB_2023_01_23.pdf).
 
 ## 3. Creazione di Post nella Sezione Social
 

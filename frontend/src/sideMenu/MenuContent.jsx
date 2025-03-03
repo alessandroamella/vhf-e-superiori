@@ -150,11 +150,7 @@ const MenuContent = ({ isSideBar }) => {
       </Link>
 
       {user?.isAdmin && (
-        <Button
-          color="failure"
-          size="lg"
-          onClick={() => navigate("/eventmanager")}
-        >
+        <Button color="failure" size="lg" as={Link} to="/eventmanager">
           Area admin
         </Button>
       )}
@@ -264,11 +260,7 @@ const MenuContent = ({ isSideBar }) => {
         Foto / video
       </SectionLink>
 
-      <Button
-        className="text-xl mb-4"
-        color="purple"
-        onClick={() => navigate("/beacon")}
-      >
+      <Button className="text-xl mb-4" color="purple" as={Link} to="/beacon">
         Beacon
       </Button>
     </>

@@ -82,7 +82,7 @@ const Social = () => {
   const filteredPosts = useMemo(() => {
     if (!posts) return [];
     return posts.filter(
-      p =>
+      (p) =>
         !filterCallsign ||
         p.fromUser.callsign.includes(
           filterCallsign
@@ -140,7 +140,7 @@ const Social = () => {
         <div className="flex justify-center gap-4">
           <TextInput
             value={filterCallsign}
-            onChange={e => setFilterCallsign(e.target.value || null)}
+            onChange={(e) => setFilterCallsign(e.target.value || null)}
             placeholder="Cerca per nominativo..."
             icon={FaUserTag}
           />
@@ -148,7 +148,8 @@ const Social = () => {
 
         <Button
           className="flex rounded-full uppercase items-center fixed bottom-8 right-8 z-40"
-          onClick={() => navigate("/social/new")}
+          as={Link}
+          to="/social/new"
         >
           <Link
             to="/social/new"
@@ -199,7 +200,7 @@ const Social = () => {
                   }
                 >
                   <div className="p-0 md:p-5">
-                    {filteredPosts.map(p => (
+                    {filteredPosts.map((p) => (
                       <FeedCard
                         id={"post-" + p._id}
                         setAlert={setAlert}
@@ -226,7 +227,7 @@ const Social = () => {
               )
             ) : (
               <div className="p-5">
-                {[...Array(10).keys()].map(e => (
+                {[...Array(10).keys()].map((e) => (
                   <FeedCard key={e} />
                 ))}
               </div>

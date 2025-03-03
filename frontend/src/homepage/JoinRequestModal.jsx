@@ -27,7 +27,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
   useEffect(() => {
     if (!events) return;
     const now = new Date();
-    const joinable = events.filter(e => isAfter(new Date(e.date), now));
+    const joinable = events.filter((e) => isAfter(new Date(e.date), now));
     setJoinableEvents(joinable);
   }, [events]);
 
@@ -123,7 +123,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
   return (
     <Modal
       position="center"
-      dismissible="true"
+      dismissible
       show={open}
       onClose={() => setOpen(!open)}
     >
@@ -143,7 +143,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                 value={joinableEvents && joinableEvents[0].name}
               >
                 {joinableEvents &&
-                  joinableEvents.map(e => (
+                  joinableEvents.map((e) => (
                     <Option key={e._id} onClick={() => setEvent(e)}>
                       {e.name}{" "}
                       <span className="text-gray-400">
@@ -249,7 +249,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                     required
                     disabled={disabled}
                     value={antenna}
-                    onChange={e => setAntenna(e.target.value)}
+                    onChange={(e) => setAntenna(e.target.value)}
                     helperText="Informazioni sull'antenna utilizzata per questo evento"
                   />
                 </div>
@@ -263,7 +263,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                     Dichiaro di aver preso visione e di accettare
                     incondizionatamente il{" "}
                     <a
-                      href="/Regolamento_FLASH_MOB_2023_01_23.pdf"
+                      href="/docs/Regolamento_FLASH_MOB_2023_01_23.pdf"
                       target="_blank"
                       className="underline"
                     >

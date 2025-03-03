@@ -106,22 +106,22 @@ const ViewPublished = () => {
   const validQsos = useMemo(() => {
     if (!user?.qsos) return;
     return user.qsos.filter(
-      e =>
+      (e) =>
         e.fromStationLat && e.fromStationLon && e.toStationLat && e.toStationLon
     );
   }, [user]);
 
   useEffect(() => {
     if (!validQsos) return;
-    const events = [...new Set(validQsos.map(e => e.event._id))].map(
-      e => validQsos.find(q => q.event._id === e).event
+    const events = [...new Set(validQsos.map((e) => e.event._id))].map(
+      (e) => validQsos.find((q) => q.event._id === e).event
     );
     setMappedEvents(events);
   }, [validQsos]);
 
   const _eventToFilter = searchParams.get("event");
 
-  const setEventToFilter = _id => {
+  const setEventToFilter = (_id) => {
     if (_id === null) {
       searchParams.delete("event");
     } else {
@@ -144,7 +144,7 @@ const ViewPublished = () => {
     if (!validQsos) return;
 
     const _points = []; // {callsign, locator, lat, lon}[]
-    const filtered = validQsos.filter(e =>
+    const filtered = validQsos.filter((e) =>
       !_eventToFilter ? true : e.event._id === _eventToFilter
     );
 
@@ -152,7 +152,7 @@ const ViewPublished = () => {
       const from = [qso.fromStationLat, qso.fromStationLon];
       const to = [qso.toStationLat, qso.toStationLon];
 
-      if (from.every(e => !isNaN(e))) {
+      if (from.every((e) => !isNaN(e))) {
         _points.push({
           callsign:
             qso.fromStationCallsignOverride ||
@@ -164,7 +164,7 @@ const ViewPublished = () => {
           lon: from[1]
         });
       }
-      if (to.every(e => !isNaN(e))) {
+      if (to.every((e) => !isNaN(e))) {
         _points.push({
           callsign: qso.callsign,
           locator: qso.locator,
@@ -176,7 +176,7 @@ const ViewPublished = () => {
 
     // remove duplicates (same lat and lon)
     const points = _points.filter(
-      (e, i, a) => a.findIndex(t => t.lat === e.lat && t.lon === e.lon) === i
+      (e, i, a) => a.findIndex((t) => t.lat === e.lat && t.lon === e.lon) === i
     );
 
     return points;
@@ -186,9 +186,9 @@ const ViewPublished = () => {
     if (!validQsos) return;
 
     const lines = validQsos
-      ?.filter(e => (!_eventToFilter ? true : e.event._id === _eventToFilter))
+      ?.filter((e) => (!_eventToFilter ? true : e.event._id === _eventToFilter))
       .filter(
-        e =>
+        (e) =>
           e.fromStationLat &&
           e.fromStationLon &&
           e.toStationLat &&
@@ -199,7 +199,7 @@ const ViewPublished = () => {
   }, [_eventToFilter, validQsos]);
 
   const showQsosModal = searchParams.get("showQsosModal");
-  const setShowQsosModal = show => {
+  const setShowQsosModal = (show) => {
     if (show) {
       searchParams.set("showQsosModal", true);
     } else {
@@ -362,13 +362,13 @@ const ViewPublished = () => {
             {/* <p>Dovrà essere approvato prima di essere visibile pubblicamente</p> */}
           </Alert>
         )}
-        <Button className="mb-4" onClick={() => navigate(-1)}>
+        <Button className="mb-4" as={Link} to="..">
           <FaBackward />
         </Button>
 
         <Button
-          onClick={() => navigate("/social/new")}
-          // className="flex rounded-full w-16 h-16 aspect-square items-center fixed bottom-8 right-8 z-40"
+          as={Link}
+          to="/social/new"
           className="flex rounded-full uppercase items-center fixed bottom-8 right-8 z-40"
         >
           <Link to="/social/new" className="text-xl text-white font-bold">
@@ -420,7 +420,7 @@ const ViewPublished = () => {
             <div>
               {user?.posts ? (
                 <div className="p-0 md:p-5 gap-2 grid grid-cols-1 md:grid-cols-2">
-                  {user.posts.map(p => (
+                  {user.posts.map((p) => (
                     <FeedCard
                       setAlert={setAlert}
                       key={p._id}
@@ -480,7 +480,9 @@ const ViewPublished = () => {
                         label={
                           (
                             _eventToFilter &&
-                            validQsos?.find(e => e.event._id === _eventToFilter)
+                            validQsos?.find(
+                              (e) => e.event._id === _eventToFilter
+                            )
                           )?.event?.name || "Tutti i miei QSO"
                         }
                         id="filterByEvent"
@@ -491,14 +493,14 @@ const ViewPublished = () => {
                         <Dropdown.Item onClick={() => setEventToFilter(null)}>
                           Tutti ({validQsos?.length})
                         </Dropdown.Item>
-                        {mappedEvents?.map(e => (
+                        {mappedEvents?.map((e) => (
                           <Dropdown.Item
                             key={e._id}
                             onClick={() => setEventToFilter(e._id)}
                           >
                             {e.name} (
                             {
-                              validQsos?.filter(q => q.event._id === e._id)
+                              validQsos?.filter((q) => q.event._id === e._id)
                                 ?.length
                             }
                             )
@@ -540,7 +542,7 @@ const ViewPublished = () => {
                           />
                         ))}
 
-                        {qsoLines?.map(line => (
+                        {qsoLines?.map((line) => (
                           <Polyline
                             key={line._id}
                             positions={[
@@ -601,7 +603,7 @@ const ViewPublished = () => {
                               <strong>
                                 {
                                   mappedEvents?.find(
-                                    e => e._id === _eventToFilter
+                                    (e) => e._id === _eventToFilter
                                   )?.name
                                 }
                               </strong>
@@ -622,7 +624,7 @@ const ViewPublished = () => {
             </div>
           ) : (
             <div className="p-5">
-              {[...Array(10).keys()].map(e => (
+              {[...Array(10).keys()].map((e) => (
                 <FeedCard key={e} />
               ))}
             </div>

@@ -16,7 +16,7 @@ module.exports = withMT({
         extend: {
             colors: {
                 materialBlue: {
-                    normal: "rgb(63 131 248)"
+                    normal: "#3f83f8"
                 },
                 lightGray: {
                     normal: "#f7f7f7"

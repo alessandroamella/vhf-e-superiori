@@ -1,17 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import axios, { AxiosInstance } from "axios";
-import { parseStringPromise } from "xml2js";
 import { CronJob } from "cron";
+import moment from "moment-timezone";
+import { parseStringPromise } from "xml2js";
 import { envs } from "../../shared/envs";
 import { logger } from "../../shared/logger";
 import { OkQrzDatabase, QrzMappedData, QrzReturnData } from "./interfaces/qrz";
 
 interface CachedData {
-    url?: string;
-    date: Date;
-    email?: string;
-    name?: string;
-    address?: string;
+    data: QrzMappedData;
+    expiry: moment.Moment;
 }
 
 interface CachedDataObj {
@@ -110,10 +108,23 @@ class Qrz {
             await this._refreshLogin();
         }
 
+        // **Cache Logic Start**
+        const cachedEntry = this.cachedData[callsign.toUpperCase()];
+        if (cachedEntry) {
+            if (moment().isBefore(cachedEntry.expiry)) {
+                logger.debug(`Cache hit for ${callsign}`);
+                return cachedEntry.data;
+            } else {
+                logger.debug(`Cache expired for ${callsign}, refreshing`);
+                delete this.cachedData[callsign.toUpperCase()];
+            }
+        }
+        // **Cache Logic End**
+
         let json: QrzReturnData | null = null;
         try {
             logger.debug(`QRZ callsign: ${callsign}`);
-            const d = Date.parse(new Date().toString());
+            const d = moment().valueOf();
             const { data } = await this.xmlInstance.get("/xml/current/", {
                 params: {
                     s: await this.key,
@@ -122,8 +133,6 @@ class Qrz {
                 },
                 timeout: 2000 // 10 seconds
             });
-            // logger.debug("QRZ raw data:");
-            // logger.debug(data);
             const parsed: QrzReturnData = await parseStringPromise(data);
             json = parsed;
 
@@ -162,7 +171,7 @@ class Qrz {
             )!;
             logger.debug("QRZ info:");
             logger.debug(info);
-            return {
+            const mappedData: QrzMappedData = {
                 callsign: this.getProp(info.call) || callsign,
                 name:
                     this.getProp(info.name_fmt) ||
@@ -186,6 +195,19 @@ class Qrz {
                 pictureUrl: this.getProp(info.image),
                 zip: this.getProp(info.zip)
             };
+
+            // **Cache Storage**
+            this.cachedData[callsign.toUpperCase()] = {
+                data: mappedData,
+                expiry: moment().add(1, "hour")
+            };
+            logger.debug(
+                `Cached data for ${callsign} until ${this.cachedData[
+                    callsign.toUpperCase()
+                ].expiry.format()}`
+            );
+
+            return mappedData;
         } catch (err) {
             logger.error("Error while fetching info from qrz.com");
             if (axios.isAxiosError(err)) {

@@ -61,7 +61,7 @@ const Homepage = () => {
   }, []);
 
   const getNumbersFromString = useCallback(
-    str => str.match(/\d+/g)?.map(Number) || [],
+    (str) => str.match(/\d+/g)?.map(Number) || [],
     []
   );
 
@@ -96,7 +96,7 @@ const Homepage = () => {
     if (!events) return;
     const now = new Date();
     console.log("filtering events", events);
-    const _events = [...events].filter(e => isAfter(new Date(e.date), now));
+    const _events = [...events].filter((e) => isAfter(new Date(e.date), now));
     _events.sort(
       (a, b) =>
         differenceInDays(now, new Date(b.date)) -
@@ -123,14 +123,14 @@ const Homepage = () => {
     _inverted.sort((a, b) => new Date(b.date) - new Date(a.date));
     console.log("filtering _inverted", _inverted);
     return _inverted
-      .filter(e => e.logoUrl && !e.logoUrl.endsWith("logo-min.png"))
-      .map(e => ({
+      .filter((e) => e.logoUrl && !e.logoUrl.endsWith("logo-min.png"))
+      .map((e) => ({
         alt: "Locandina " + e.i,
         image: e.logoUrl,
         content: (
           <ControlledZoom
             isZoomed={zoomedImg?.includes(e.logoUrl)}
-            onZoomChange={s => handleZoomChange(s, e.logoUrl)}
+            onZoomChange={(s) => handleZoomChange(s, e.logoUrl)}
           >
             <LazyLoadImage
               src={e.logoUrl}
@@ -162,7 +162,7 @@ const Homepage = () => {
     // show for next 25 days after event has started and 10 days before
     console.log("events to filter (_stationEvent)", events);
     const _events = [...events].filter(
-      e =>
+      (e) =>
         isAfter(new Date(e.date), addDays(now, -25)) &&
         isBefore(new Date(e.date), addDays(now, 25))
     );
@@ -199,7 +199,7 @@ const Homepage = () => {
     // show for 2 hours after event has started and 20 days before
     console.log("events to filter (_rankingsEvent)", events);
     const _events = [...events].filter(
-      e =>
+      (e) =>
         isAfter(now, addHours(new Date(e.date), 2)) &&
         isBefore(new Date(e.date), addDays(now, 20))
     );
@@ -215,7 +215,7 @@ const Homepage = () => {
     if (!events) return null;
     const now = new Date();
     console.log("events to filter (_eqslEvent)", events);
-    const _events = [...events].filter(e => {
+    const _events = [...events].filter((e) => {
       const eventDate = new Date(e.date);
       // within 15 days in future or 12 hours in past
       return (
@@ -298,7 +298,7 @@ const Homepage = () => {
               <div className="grid grid-cols-1 md:grid-cols-3">
                 <div>
                   <LazyLoadImage
-                    src="/flashmob.png"
+                    src="/images/flashmob.png"
                     alt="Flash mob"
                     className="dark:p-3 dark:bg-gray-100 w-full fit max-w-md md:max-w-xl lg:max-w-2xl py-4 mx-auto"
                   />
@@ -419,10 +419,10 @@ const Homepage = () => {
                               <Spinner />
                             ) : (
                               events
-                                .filter(e =>
+                                .filter((e) =>
                                   isAfter(new Date(e.date), new Date())
                                 )
-                                .map(e => (
+                                .map((e) => (
                                   <Table.Row
                                     key={e._id}
                                     className="bg-white dark:border-gray-700 dark:bg-gray-800"
@@ -490,7 +490,7 @@ const Homepage = () => {
                 <div className="md:px-4">
                   <div
                     id="eventi"
-                    onClick={e => {
+                    onClick={(e) => {
                       if (e.target.dataset.rmizContent) {
                         const img =
                           e.target?.parentNode?.parentNode?.parentNode?.querySelector(
@@ -500,7 +500,7 @@ const Homepage = () => {
                         if (img) setZoomedImg(img);
                       }
                     }}
-                    onMouseEnter={e => {
+                    onMouseEnter={(e) => {
                       if (
                         [...e.target.classList].includes(
                           "carousel__control--prev"
@@ -744,7 +744,7 @@ const Homepage = () => {
 
                       <div className="mx-auto dark:pb-2 dark:px-4">
                         {admins ? (
-                          admins.map(e => (
+                          admins.map((e) => (
                             <Link
                               to={"/u/" + e.callsign}
                               key={e}

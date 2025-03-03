@@ -1,17 +1,51 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
-import { logger } from "../../shared/logger";
+import moment from "moment";
 import { envs } from "../../shared/envs";
+import { logger } from "../../shared/logger";
 import { ParsedData, QthData } from "./interfaces";
+
+interface CacheEntry {
+    data: QthData | null;
+    timestamp: moment.Moment;
+}
 
 class Location {
     private static str_chr_up = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // Constants.
     private static str_chr_lo = "abcdefghijklmnopqrstuvwxyz";
     private static str_num = "0123456789";
 
+    private geocodeCache: Map<string, CacheEntry> = new Map();
+    private reverseGeocodeCache: Map<string, CacheEntry> = new Map();
+
+    private cacheExpirationHours = 12;
+
+    constructor(cacheExpirationHours?: number) {
+        if (cacheExpirationHours) {
+            this.cacheExpirationHours = cacheExpirationHours;
+        }
+    }
+
+    private isCacheValid(timestamp: moment.Moment): boolean {
+        const now = moment();
+        const expirationTime = moment(timestamp).add(
+            this.cacheExpirationHours,
+            "hours"
+        );
+        return now.isBefore(expirationTime);
+    }
+
     public async geocode(address: string): Promise<QthData | null> {
+        // Check cache first
+        const cacheKey = address.trim().toLowerCase();
+        const cachedResult = this.geocodeCache.get(cacheKey);
+
+        if (cachedResult && this.isCacheValid(cachedResult.timestamp)) {
+            logger.debug(`Cache hit for address: ${address}`);
+            return cachedResult.data;
+        }
+
         try {
-            logger.info(`Google Maps q: ${address}`);
+            logger.debug(`Google Maps q: ${address}`);
             const { data } = await axios.get(
                 "https://maps.googleapis.com/maps/api/geocode/json",
                 {
@@ -32,13 +66,21 @@ class Location {
                 return null;
             }
 
-            return data.results[0];
+            const result = data.results[0] || null;
+
+            // Cache the result
+            this.geocodeCache.set(cacheKey, {
+                data: result,
+                timestamp: moment()
+            });
+
+            return result;
         } catch (err) {
             logger.error("Error while fetching info from Google Maps");
             if (axios.isAxiosError(err)) {
                 logger.error(err.response?.data || err.response || err);
             } else {
-                logger.error(err as any);
+                logger.error(err);
             }
             return null;
         }
@@ -48,8 +90,17 @@ class Location {
         lat: number,
         lon: number
     ): Promise<QthData | null> {
+        // Create cache key from coordinates (with fixed precision to handle small variations)
+        const cacheKey = `${lat.toFixed(6)},${lon.toFixed(6)}`;
+        const cachedResult = this.reverseGeocodeCache.get(cacheKey);
+
+        if (cachedResult && this.isCacheValid(cachedResult.timestamp)) {
+            logger.debug(`Cache hit for coordinates: ${lat}, ${lon}`);
+            return cachedResult.data;
+        }
+
         try {
-            logger.info(`Google Maps lat: ${lat}, lon: ${lon}`);
+            logger.debug(`Google Maps lat: ${lat}, lon: ${lon}`);
             const { data } = await axios.get(
                 "https://maps.googleapis.com/maps/api/geocode/json",
                 {
@@ -70,16 +121,50 @@ class Location {
                 return null;
             }
 
-            return data.results[0];
+            const result = data.results[0] || null;
+
+            // Cache the result
+            this.reverseGeocodeCache.set(cacheKey, {
+                data: result,
+                timestamp: moment()
+            });
+
+            return result;
         } catch (err) {
             logger.error("Error while fetching info from Google Maps");
             if (axios.isAxiosError(err)) {
                 logger.error(err.response?.data || err.response || err);
             } else {
-                logger.error(err as any);
+                logger.error(err);
             }
             return null;
         }
+    }
+
+    // Method to clear the cache
+    public clearCache(): void {
+        this.geocodeCache.clear();
+        this.reverseGeocodeCache.clear();
+        logger.debug("Location cache cleared");
+    }
+
+    // Method to remove expired entries (can be called periodically)
+    public cleanupExpiredCache(): void {
+        // Clean geocode cache
+        for (const [key, entry] of this.geocodeCache.entries()) {
+            if (!this.isCacheValid(entry.timestamp)) {
+                this.geocodeCache.delete(key);
+            }
+        }
+
+        // Clean reverse geocode cache
+        for (const [key, entry] of this.reverseGeocodeCache.entries()) {
+            if (!this.isCacheValid(entry.timestamp)) {
+                this.reverseGeocodeCache.delete(key);
+            }
+        }
+
+        logger.debug("Expired location cache entries removed");
     }
 
     public calculateQth(lat: number, lon: number): string | null {
@@ -166,13 +251,13 @@ class Location {
     public parseData(geocoded: QthData): ParsedData {
         const city =
             geocoded.address_components.find(
-                e =>
+                (e) =>
                     e.types.includes("administrative_area_level_3") ||
                     e.types.includes("locality")
             )?.long_name || geocoded.address_components[0]?.long_name;
         const province =
             geocoded.address_components.find(
-                e =>
+                (e) =>
                     e.types.includes("administrative_area_level_2") ||
                     e.types.includes("administrative_area_level_1")
             )?.short_name ||
@@ -180,7 +265,7 @@ class Location {
             geocoded.address_components[0]?.short_name;
 
         const country =
-            geocoded.address_components.find(e => e.types.includes("country"))
+            geocoded.address_components.find((e) => e.types.includes("country"))
                 ?.long_name ||
             geocoded.address_components[2]?.long_name ||
             geocoded.address_components[1]?.long_name;

@@ -21,7 +21,12 @@ import ReactGoogleAutocomplete from "react-google-autocomplete";
 import { Helmet } from "react-helmet";
 import { FaExclamationTriangle, FaKey, FaPlusCircle } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
-import { createSearchParams, useNavigate, useSearchParams } from "react-router";
+import {
+  createSearchParams,
+  Link,
+  useNavigate,
+  useSearchParams
+} from "react-router";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -324,13 +329,14 @@ const AdminManager = () => {
         setShowModal={setShowModal}
         eventEditing={eventEditing}
         setEventEditing={setEventEditing}
-        setAlertFromParent={setAlert} // Passing setAlert to child as setAlertFromParent
+        setAlertFromParent={setAlert}
       />
 
       <Modal
         position="center"
         size="7xl"
         show={joinRequestsModal}
+        dismissible
         onClose={() => setJoinRequestsModal(null)}
       >
         <Modal.Header>Richiesta di partecipazione</Modal.Header>
@@ -445,13 +451,11 @@ const AdminManager = () => {
                     <Label
                       htmlFor="user-email"
                       value={`Email ${
-                        typeof userEditing?.isVerified !== "boolean" ? (
-                          <Spinner />
-                        ) : userEditing?.isVerified ? (
-                          "(✅ verificata)"
-                        ) : (
-                          "(❌ non verificata, clicca su 'Applica modifiche' per forzare la verifica)"
-                        )
+                        typeof userEditing?.isVerified !== "boolean"
+                          ? "(caricamento...)"
+                          : userEditing?.isVerified
+                          ? "(✅ verificata)"
+                          : "(❌ non verificata, clicca su 'Applica modifiche' per forzare la verifica)"
                       }`}
                     />
                   </div>
@@ -592,10 +596,10 @@ const AdminManager = () => {
             </Badge>
           </Typography>
 
-          <Accordion>
+          <Accordion collapseAll>
             <Accordion.Panel>
               <Accordion.Title>
-                Utenti ({users ? users.length : <Spinner />})
+                Utenti ({users ? users.length : <Spinner size="sm" />})
               </Accordion.Title>
               <Accordion.Content>
                 <UsersTable
@@ -608,7 +612,9 @@ const AdminManager = () => {
             </Accordion.Panel>
 
             <Accordion.Panel>
-              <Accordion.Title>Post ({posts?.length || "-"})</Accordion.Title>
+              <Accordion.Title>
+                Post ({posts ? posts.length : <Spinner size="sm" />})
+              </Accordion.Title>
               <Accordion.Content>
                 <PostsTable
                   deletePost={deletePost}
@@ -623,7 +629,9 @@ const AdminManager = () => {
             </Accordion.Panel>
 
             <Accordion.Panel>
-              <Accordion.Title>Eventi</Accordion.Title>
+              <Accordion.Title>
+                Eventi ({events ? events.length : <Spinner size="sm" />})
+              </Accordion.Title>
 
               <Accordion.Content>
                 <div className="flex items-center gap-2 mb-4">
@@ -730,7 +738,9 @@ const AdminManager = () => {
             </Accordion.Panel>
 
             <Accordion.Panel>
-              <Accordion.Title>Blog</Accordion.Title>
+              <Accordion.Title>
+                Blog ({blogPosts ? blogPosts.length : <Spinner size="sm" />})
+              </Accordion.Title>
 
               <Accordion.Content>
                 {blogPosts ? (
@@ -762,7 +772,8 @@ const AdminManager = () => {
                     <div className="w-full flex justify-center my-3 py-1 border-y border-gray-200">
                       <Button
                         className="flex h-full my-auto text-md flex-col justify-center items-center"
-                        onClick={() => navigate("/blog/editor")}
+                        as={Link}
+                        to="/blog/editor"
                       >
                         <FaPlusCircle className="inline-block mt-[3px] mr-1" />
                         Nuovo post

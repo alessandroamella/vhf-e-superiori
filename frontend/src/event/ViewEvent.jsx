@@ -44,7 +44,7 @@ const ViewEvent = () => {
 
   useEffect(() => {
     if (!events) return;
-    const _event = events.find(e => e._id === id);
+    const _event = events.find((e) => e._id === id);
     setEvent(_event);
     console.log({ _event, events });
     setDisabled(false);
@@ -133,7 +133,7 @@ const ViewEvent = () => {
                   required
                   disabled={disabled}
                   value={antenna}
-                  onChange={e => setAntenna(e.target.value)}
+                  onChange={(e) => setAntenna(e.target.value)}
                   helperText="Informazioni sull'antenna utilizzata per questo evento"
                 />
               </div>
@@ -147,7 +147,7 @@ const ViewEvent = () => {
                   Dichiaro di aver preso visione e di accettare
                   incondizionatamente il{" "}
                   <a
-                    href="/Regolamento_FLASH_MOB_2023_01_23.pdf"
+                    href="/docs/Regolamento_FLASH_MOB_2023_01_23.pdf"
                     target="_blank"
                     className="underline"
                   >

@@ -1,3 +1,4 @@
+import { Typography } from "@material-tailwind/react";
 import axios from "axios";
 import Compressor from "compressorjs";
 import {
@@ -22,6 +23,7 @@ import { Link } from "react-router";
 import { EventsContext, UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import ViewJoinRequest from "./ViewJoinRequest";
 
 const CreateEditEventModal = ({
   showModal,
@@ -94,7 +96,7 @@ const CreateEditEventModal = ({
     if (!showModal) {
       resetForm();
     } else if (eventEditing) {
-      const e = events && events.find(e => e._id === eventEditing);
+      const e = events && events.find((e) => e._id === eventEditing);
       if (e) {
         populateForm(e);
       }
@@ -104,7 +106,7 @@ const CreateEditEventModal = ({
 
   const { events } = useContext(EventsContext);
 
-  const populateForm = useCallback(e => {
+  const populateForm = useCallback((e) => {
     setName(e.name);
     setBand(e.band);
     setDate(formatInTimeZone(e.date, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"));
@@ -192,7 +194,7 @@ const CreateEditEventModal = ({
     }
   }
 
-  const uploadEventPic = async uploadedPic => {
+  const uploadEventPic = async (uploadedPic) => {
     const formData = new FormData();
     formData.append("content", uploadedPic);
 
@@ -214,7 +216,7 @@ const CreateEditEventModal = ({
     }
   };
 
-  const compressPic = f => {
+  const compressPic = (f) => {
     return new Promise((resolve, reject) => {
       new Compressor(f, {
         quality: 0.6,
@@ -231,7 +233,7 @@ const CreateEditEventModal = ({
     });
   };
 
-  const handlePictureChange = async event => {
+  const handlePictureChange = async (event) => {
     const { files } = event.target;
     if (!files || files.length <= 0) return;
     else if (files.length > 1) {
@@ -279,7 +281,7 @@ const CreateEditEventModal = ({
   };
 
   // don't have to compress eqsl
-  const handleEqslChange = async event => {
+  const handleEqslChange = async (event) => {
     const { files } = event.target;
     if (!files || files.length <= 0) return;
     else if (files.length > 1) {
@@ -372,7 +374,7 @@ const CreateEditEventModal = ({
     const offsetFrom = parseInt(window.prompt("Inserisci offset DA CHI"));
 
     if (
-      [offsetCallsign, offsetData, offsetFrom].some(e => isNaN(parseInt(e)))
+      [offsetCallsign, offsetData, offsetFrom].some((e) => isNaN(parseInt(e)))
     ) {
       window.alert(
         "Non hai inserito tutti i campi, l'offset non è stato modificato"
@@ -422,6 +424,33 @@ const CreateEditEventModal = ({
       setCopiedError(true);
     }
   }
+
+  const [joinRequests, setJoinRequests] = useState(null);
+
+  const fetchJoinRequests = useCallback(async (eventId) => {
+    setJoinRequests(null);
+    try {
+      const { data } = await axios.get(
+        "/api/joinrequest/eventadmin/" + eventId
+      );
+      console.log("joinRequests", data);
+
+      setJoinRequests(data);
+    } catch (err) {
+      console.log(err.response.data);
+      setAlert({
+        color: "failure",
+        msg: getErrorStr(err?.response?.data?.err)
+      });
+      setJoinRequests(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (eventEditing) {
+      fetchJoinRequests(eventEditing);
+    }
+  }, [eventEditing, fetchJoinRequests]);
 
   return (
     <Modal
@@ -492,7 +521,7 @@ const CreateEditEventModal = ({
                     required={true}
                     className="w-full"
                     value={logoUrl}
-                    onChange={e => setLogoUrl(e.target.value)}
+                    onChange={(e) => setLogoUrl(e.target.value)}
                     disabled={disabled}
                   />
 
@@ -541,7 +570,7 @@ const CreateEditEventModal = ({
                       required={true}
                       className="w-full"
                       value={eqslUrl}
-                      onChange={e => setEqslUrl(e.target.value)}
+                      onChange={(e) => setEqslUrl(e.target.value)}
                       disabled={disabled}
                     />
 
@@ -665,7 +694,7 @@ const CreateEditEventModal = ({
                 placeholder="11^ edizione contest 144MHz..."
                 required={true}
                 value={name}
-                onChange={e => setName(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
                 disabled={disabled}
               />
             </div>
@@ -679,7 +708,7 @@ const CreateEditEventModal = ({
                 placeholder="VHF"
                 required={true}
                 value={band}
-                onChange={e => setBand(e.target.value)}
+                onChange={(e) => setBand(e.target.value)}
                 disabled={disabled}
               />
             </div>
@@ -693,7 +722,7 @@ const CreateEditEventModal = ({
                   type="datetime-local"
                   required={true}
                   value={date}
-                  onChange={e => setDate(e.target.value)}
+                  onChange={(e) => setDate(e.target.value)}
                   disabled={disabled}
                 />
               </div>
@@ -709,7 +738,7 @@ const CreateEditEventModal = ({
                   type="datetime-local"
                   required={true}
                   value={joinStart}
-                  onChange={e => setJoinStart(e.target.value)}
+                  onChange={(e) => setJoinStart(e.target.value)}
                   disabled={disabled}
                 />
               </div>
@@ -725,11 +754,34 @@ const CreateEditEventModal = ({
                   type="datetime-local"
                   required={true}
                   value={joinDeadline}
-                  onChange={e => setJoinDeadline(e.target.value)}
+                  onChange={(e) => setJoinDeadline(e.target.value)}
                   disabled={disabled}
                 />
               </div>
             </div>
+
+            {eventEditing && (
+              <div className="min-h-[60vh] overflow-auto">
+                <Typography variant="h4" className="pb-2 dark:text-white">
+                  Richieste di partecipazione
+                </Typography>
+                {joinRequests === null ? (
+                  <Spinner />
+                ) : joinRequests === false ? (
+                  <p className="dark:text-gray-300">Errore nel caricamento</p>
+                ) : joinRequests.length > 0 ? (
+                  <ViewJoinRequest
+                    disabled={disabled}
+                    joinRequests={joinRequests}
+                    setAlert={setAlert}
+                    setDisabled={setDisabled}
+                    setJoinRequests={setJoinRequests}
+                  />
+                ) : (
+                  <p className="dark:text-gray-300">Ancora nessuna richiesta</p>
+                )}
+              </div>
+            )}
           </div>
         </Modal.Body>
         <Modal.Footer>

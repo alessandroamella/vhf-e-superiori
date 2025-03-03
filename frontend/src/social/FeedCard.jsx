@@ -40,7 +40,7 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
     pp &&
     (typeof pp === "string"
       ? pp
-      : pp.find(p => p.callsign === post?.fromUser?.callsign)?.url);
+      : pp.find((p) => p.callsign === post?.fromUser?.callsign)?.url);
 
   const [deleteDisabled, setDeleteDisabled] = useState(false);
 
@@ -67,8 +67,8 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
         color: "success",
         msg: "Post eliminato con successo"
       });
-      setUser({ ...user, posts: user.posts.filter(_p => _p._id !== p._id) });
-      setPosts(posts.filter(_p => _p._id !== p._id));
+      setUser({ ...user, posts: user.posts.filter((_p) => _p._id !== p._id) });
+      setPosts(posts.filter((_p) => _p._id !== p._id));
     } catch (err) {
       console.log("error in post delete", err);
       setAlert({
@@ -129,7 +129,7 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
             (user.callsign === post.fromUser?.callsign || user.isAdmin) && (
               <Button
                 color="failure"
-                onClick={e => deletePost(e, post)}
+                onClick={(e) => deletePost(e, post)}
                 disabled={deleteDisabled}
               >
                 <FaTrash className="p-0" />
@@ -158,7 +158,7 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
           {post?.pictures?.map((picture, index) => (
             <SwiperSlide key={index}>
               <LazyLoadImage
-                src={picture || "/no-image.png"}
+                src={picture || "/images/no-image.png"}
                 className="h-64 object-cover w-full"
                 alt="Feed card"
               />
