@@ -170,7 +170,13 @@ router.get(
                 // 2 points if QSO to a station, 1 point if not
                 points: data.qsos.reduce(
                     (acc, qso) =>
-                        acc + (stationCallsigns.has(qso.callsign) ? 2 : 1),
+                        acc +
+                        // if by station or to station is event station, 2 points
+                        ([qso.callsign, callsign].some((e) =>
+                            stationCallsigns.has(e)
+                        )
+                            ? 2
+                            : 1),
                     0
                 )
             });

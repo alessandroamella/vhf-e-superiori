@@ -170,7 +170,7 @@ const Login = () => {
               minLength={1}
               maxLength={10}
               value={callsign}
-              onChange={e => setCallsign(e.target.value.toUpperCase())}
+              onChange={(e) => setCallsign(e.target.value.toUpperCase())}
               disabled={disabled}
               ref={loginInput}
               autoComplete="callsign"
@@ -189,13 +189,13 @@ const Login = () => {
               label="Password"
               autoComplete="current-password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               disabled={disabled}
               maxLength={100}
               required
             />
             <div className="my-4" />
-            <Button type="submit" disabled={disabled}>
+            <Button color="blue" type="submit" disabled={disabled}>
               Login
             </Button>
           </form>
@@ -225,7 +225,7 @@ const Login = () => {
                   autoComplete="email"
                   label="Email"
                   value={email}
-                  onChange={e => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   disabled={disabled}
                   required
                 />

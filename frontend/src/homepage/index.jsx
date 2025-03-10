@@ -259,6 +259,11 @@ const Homepage = () => {
     fetchAdmins();
   }, []);
 
+  const cardEvent = useMemo(
+    () => stationEventToShow || eqslEventToShow,
+    [eqslEventToShow, stationEventToShow]
+  );
+
   return (
     <>
       <Helmet>
@@ -662,75 +667,39 @@ const Homepage = () => {
                       </Accordion.Content>
                     </Accordion.Panel>
                   </Accordion>
-                  {stationEventToShow &&
-                    Object.keys(stationEventToShow).length > 0 && (
-                      <div className="mt-4">
-                        {/* aggiungi link a /qsomanager/:idevento */}
-                        <Card className="text-center">
+                  {cardEvent && Object.keys(cardEvent).length > 0 && (
+                    <div className="mt-4">
+                      {/* aggiungi link a /qsomanager/:idevento */}
+                      <Card className="text-center">
+                        {stationEventToShow && (
                           <p className="text-gray-600 dark:text-gray-200">
                             Sei stato accettato come stazione attivatrice per:
                           </p>
+                        )}
 
-                          {stationEventToShow.logoUrl && (
-                            <Link
-                              to={"/qsomanager/" + stationEventToShow._id}
-                              className="underline decoration-dotted hover:text-black transition-colors"
-                            >
-                              <LazyLoadImage
-                                src={
-                                  stationEventToShow.eqslUrl ||
-                                  stationEventToShow.logoUrl
-                                }
-                                alt={`Stazione attivatrice per ${stationEventToShow.name}`}
-                                className={`w-full mx-auto mb-2 object-contain max-h-48 transition-all duration-300 drop-shadow hover:drop-shadow-xl`}
-                              />
-                            </Link>
-                          )}
-                          <h2 className="text-2xl font-bold">
-                            {stationEventToShow.name}
-                          </h2>
-
+                        {cardEvent.logoUrl && (
                           <Link
-                            to={"/qsomanager/" + stationEventToShow._id}
+                            to={"/qsomanager/" + cardEvent._id}
                             className="underline decoration-dotted hover:text-black transition-colors"
                           >
-                            <Button className="text-lg mt-4">Invia EQSL</Button>
+                            <LazyLoadImage
+                              src={cardEvent.eqslUrl || cardEvent.logoUrl}
+                              alt={`Stazione attivatrice per ${cardEvent.name}`}
+                              className={`w-full mx-auto mb-2 object-contain max-h-48 transition-all duration-300 drop-shadow hover:drop-shadow-xl`}
+                            />
                           </Link>
-                        </Card>
-                      </div>
-                    )}
+                        )}
+                        <h2 className="text-2xl font-bold">{cardEvent.name}</h2>
 
-                  {eqslEventToShow &&
-                    Object.keys(eqslEventToShow).length > 0 && (
-                      <div className="mt-4">
-                        <Card className="text-center">
-                          {eqslEventToShow.logoUrl && (
-                            <Link
-                              to={"/qsomanager/" + eqslEventToShow._id}
-                              className="underline decoration-dotted hover:text-black transition-colors"
-                            >
-                              <LazyLoadImage
-                                src={
-                                  eqslEventToShow.eqslUrl ||
-                                  eqslEventToShow.logoUrl
-                                }
-                                alt={`Invia EQSL per ${eqslEventToShow.name}`}
-                                className={`w-full mx-auto mb-2 object-contain max-h-48 transition-all duration-300 drop-shadow hover:drop-shadow-xl`}
-                              />
-                            </Link>
-                          )}
-                          <h2 className="text-2xl font-bold">
-                            {eqslEventToShow.name}
-                          </h2>
-                          <Link
-                            to={"/qsomanager/" + eqslEventToShow._id}
-                            className="underline decoration-dotted hover:text-black transition-colors"
-                          >
-                            <Button className="text-lg mt-4">Invia EQSL</Button>
-                          </Link>
-                        </Card>
-                      </div>
-                    )}
+                        <Link
+                          to={"/qsomanager/" + cardEvent._id}
+                          className="underline decoration-dotted hover:text-black transition-colors"
+                        >
+                          <Button className="text-lg mt-4">Invia EQSL</Button>
+                        </Link>
+                      </Card>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <div className="mt-4 mb-2">

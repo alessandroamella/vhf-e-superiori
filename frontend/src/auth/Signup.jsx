@@ -77,7 +77,7 @@ const Signup = () => {
   }, []);
 
   useEffect(() => {
-    window.addEventListener("beforeunload", event => {
+    window.addEventListener("beforeunload", (event) => {
       const e = event || window.event;
       e.preventDefault();
       if (e) {
@@ -114,11 +114,11 @@ const Signup = () => {
     options: {
       types: ["geocode"]
     },
-    onPlaceSelected: place => {
+    onPlaceSelected: (place) => {
       if (!place) return;
       console.log("place", place);
       const addr = place.formatted_address;
-      let cityIndex = place.address_components.findIndex(c =>
+      let cityIndex = place.address_components.findIndex((c) =>
         c.types.includes("administrative_area_level_3")
       );
       if (cityIndex === -1) {
@@ -432,7 +432,7 @@ const Signup = () => {
                   onBlur={fetchQrz}
                   value={callsign}
                   // replace non alphanumeric characters with empty string
-                  onChange={e => {
+                  onChange={(e) => {
                     setCallsign(
                       e.target.value.toUpperCase().replace(/[^a-zA-Z0-9]/g, "")
                     );
@@ -457,7 +457,7 @@ const Signup = () => {
                   autoComplete="name"
                   label="Nome"
                   value={name}
-                  onChange={e => setName(e.target.value)}
+                  onChange={(e) => setName(e.target.value)}
                   disabled={disabled}
                   ref={inputRef}
                   required
@@ -475,7 +475,7 @@ const Signup = () => {
                   autoComplete="tel"
                   label="Numero di telefono"
                   value={phoneNumber}
-                  onChange={e => setPhoneNumber(e.target.value)}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                   disabled={disabled}
                   required
                 />
@@ -495,7 +495,7 @@ const Signup = () => {
                 autoComplete="address-level2"
                 label="Indirizzo"
                 value={addressInput}
-                onChange={e => setAddressInput(e.target.value)}
+                onChange={(e) => setAddressInput(e.target.value)}
                 onBlur={() => setAddressInput(address)}
                 ref={mapsRef}
                 helperText={
@@ -529,7 +529,7 @@ const Signup = () => {
               autoComplete="email"
               label="Email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               disabled={disabled}
               required
             />
@@ -546,7 +546,7 @@ const Signup = () => {
                   autoComplete="new-password"
                   label="Password"
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   helperText="Minimo 8 caratteri, almeno un numero e una maiuscola"
                   disabled={disabled}
                   maxLength={100}
@@ -564,7 +564,7 @@ const Signup = () => {
                   autoComplete="new-password"
                   label="Password"
                   value={repeatPassword}
-                  onChange={e => setRepeatPassword(e.target.value)}
+                  onChange={(e) => setRepeatPassword(e.target.value)}
                   disabled={disabled}
                   maxLength={100}
                   required
@@ -599,7 +599,7 @@ const Signup = () => {
                   </Alert>
                 ) : (
                   <div className="grid grid-cols-1 gap-2">
-                    {["tos", "privacy"].map(doc => (
+                    {["tos", "privacy"].map((doc) => (
                       <Card key={doc}>
                         <ReactPlaceholder
                           showLoadingAnimation
@@ -626,7 +626,7 @@ const Signup = () => {
               onError={handleReCaptchaError}
             />
             <div className="my-4" />
-            <Button type="submit" disabled={disabled}>
+            <Button color="blue" type="submit" disabled={disabled}>
               Registrati
             </Button>
           </form>
