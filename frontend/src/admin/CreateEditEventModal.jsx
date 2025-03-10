@@ -1,6 +1,8 @@
 import { Typography } from "@material-tailwind/react";
 import axios from "axios";
 import Compressor from "compressorjs";
+import { getYear, parse } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 import {
   Alert,
   Button,
@@ -35,6 +37,20 @@ const CreateEditEventModal = ({
   const { setEvents } = useContext(EventsContext);
   const { user } = useContext(UserContext);
 
+  const transformToISODate = useCallback((dateString) => {
+    // Parse the input date string assuming Rome timezone
+    const romeTimeZone = "Europe/Rome";
+
+    // Parse the input format first
+    const parsedDate = parse(dateString, "yyyy-MM-dd'T'HH:mm", new Date());
+
+    // Convert to UTC considering Rome timezone
+    const utcDate = zonedTimeToUtc(parsedDate, romeTimeZone);
+
+    // Return the ISO string
+    return utcDate.toISOString();
+  }, []);
+
   const [disabled, setDisabled] = useState(false);
   const [alert, setAlert] = useState(null);
 
@@ -44,7 +60,8 @@ const CreateEditEventModal = ({
     new Date().toISOString().slice(0, -14) + "T10:00"
   );
   const [joinStart, setJoinStart] = useState(
-    new Date("2023/01/01").toISOString().slice(0, -14) + "T00:00"
+    new Date(`${getYear(new Date())}/01/01`).toISOString().slice(0, -14) +
+      "T00:00"
   );
   const [joinDeadline, setJoinDeadline] = useState(
     new Date().toISOString().slice(0, -14) + "T10:00"
@@ -142,6 +159,12 @@ const CreateEditEventModal = ({
         offsetData,
         offsetFrom
       };
+
+      ["date", "joinStart", "joinDeadline"].forEach((e) => {
+        if (obj[e]) {
+          obj[e] = transformToISODate(obj[e]);
+        }
+      });
 
       const { data } = !eventEditing
         ? await axios.post("/api/event", obj)
