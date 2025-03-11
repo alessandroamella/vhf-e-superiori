@@ -4,7 +4,8 @@ import {
   addHours,
   differenceInDays,
   isAfter,
-  isBefore
+  isBefore,
+  subHours
 } from "date-fns";
 import { it } from "date-fns/locale";
 import { Accordion, Alert, Card, Spinner, Table } from "flowbite-react";
@@ -161,12 +162,14 @@ const Homepage = () => {
     const now = new Date();
     // show for next 25 days after event has started and 10 days before
     console.log("events to filter (_stationEvent)", events);
-    const _events = [...events].filter(
-      (e) =>
-        isAfter(new Date(e.date), addDays(now, -25)) &&
-        isBefore(new Date(e.date), addDays(now, 25))
-    );
-    // sort from most future to most past
+    const _events = [...events].filter((e) => {
+      const eventDate = new Date(e.date);
+      // within 15 days in future or 12 hours in past
+      return (
+        (isBefore(eventDate, addDays(now, 15)) && isAfter(eventDate, now)) ||
+        (isAfter(eventDate, subHours(now, 12)) && isBefore(eventDate, now))
+      );
+    });
     _events.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     console.log("events possibly to show", _events);
@@ -220,7 +223,7 @@ const Homepage = () => {
       // within 15 days in future or 12 hours in past
       return (
         (isBefore(eventDate, addDays(now, 15)) && isAfter(eventDate, now)) ||
-        (isAfter(eventDate, addHours(now, -12)) && isBefore(eventDate, now))
+        (isAfter(eventDate, subHours(now, 12)) && isBefore(eventDate, now))
       );
     });
     // Sort by date, showing the latest event
@@ -389,10 +392,11 @@ const Homepage = () => {
                     </p>
 
                     <p>
-                      Viene inviata attraverso il sito diplomi radio la eqsl
-                      conferma del contatto da ogni stazione attivatrice e
-                      successivamente Vengono raccolti e pubblicati i dati dei
-                      relativi ai partecipanti e al numero contatti, sia dei
+                      Viene inviata attraverso il sito{" "}
+                      <strong>www.vhfesuperiori.eu</strong> la eqsl conferma del
+                      contatto da ogni stazione attivatrice e successivamente
+                      Vengono raccolti e pubblicati i dati dei relativi ai
+                      partecipanti e al numero contatti, sia dei
                       &quot;cacciatori&quot; che delle stazioni
                       &quot;attivatrici&quot; e attribuito un punteggio pari ad
                       un punto per ogni collegamento avvenuto
@@ -615,6 +619,11 @@ const Homepage = () => {
                           frequenza ai partecipanti tramite la chat.
                         </p>
 
+                        <p>
+                          Possono inviare il log sia i Cacciatori che gli
+                          Attivatori dal sito.
+                        </p>
+
                         <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
                           COME GESTIRE I COLLEGAMENTI
                         </p>
@@ -828,9 +837,9 @@ const Homepage = () => {
                         manifestazioni, con un trend ancora oggi in continua
                         crescita. L&apos;entusiasmo e la passione per questo
                         hobby sta coinvolgendo e divertendo sempre più
-                        appassionati. Ad oggi, 27 febbraio 2023, il gruppo conta
-                        oltre 400 partecipanti da tutta Italia, Spagna,
-                        Svizzera, Francia, Croazia, Malta ecc.
+                        appassionati. Ad oggi, 10 marzo 2025, il gruppo conta
+                        oltre 700 partecipanti da tutta Italia, Spagna,
+                        Svizzera, Francia, Croazia, Malta, Bulgaria, Serbia ecc.
                       </p>
 
                       <p>
