@@ -680,11 +680,12 @@ const Homepage = () => {
                     <div className="mt-4">
                       {/* aggiungi link a /qsomanager/:idevento */}
                       <Card className="text-center">
-                        {stationEventToShow && (
-                          <p className="text-gray-600 dark:text-gray-200">
-                            Sei stato accettato come stazione attivatrice per:
-                          </p>
-                        )}
+                        <p className="text-gray-600 dark:text-gray-200">
+                          {stationEventToShow
+                            ? "Sei stato accettato come stazione attivatrice"
+                            : "Partecipa come cacciatore"}{" "}
+                          per:
+                        </p>
 
                         {cardEvent.logoUrl && (
                           <Link
