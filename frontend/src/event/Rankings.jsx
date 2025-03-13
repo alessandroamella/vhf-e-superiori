@@ -129,7 +129,9 @@ const Rankings = () => {
                               "dd/MM/yyyy HH:mm"
                             )}
                           </Table.Cell>
-                          <Table.Cell>{qso.frequency} MHz</Table.Cell>
+                          <Table.Cell>
+                            {qso.frequency ? `${qso.frequency} MHz` : qso.band}
+                          </Table.Cell>
                           <Table.Cell>{qso.mode}</Table.Cell>
                           <Table.Cell>{qso.locator}</Table.Cell>
                           <Table.Cell>{qso.rst}</Table.Cell>
