@@ -268,7 +268,9 @@ class MapExporter {
                 .jpeg({ quality: 90 })
                 .toBuffer();
 
-            logger.debug(`Map exported to JPG with ${qsos.length} QSO(s)`);
+            logger.info(
+                `Map of user ${callsign} for event ${event.name} exported to JPG with ${qsos.length} QSO(s) as cache key ${cacheKey}`
+            );
 
             // Save the generated image to cache
             try {
