@@ -38,7 +38,8 @@ import {
   FaSave,
   FaTimes,
   FaUndo,
-  FaUser
+  FaUser,
+  FaWhatsapp
 } from "react-icons/fa";
 import { IoIosRadio } from "react-icons/io";
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
@@ -1751,7 +1752,7 @@ const QsoManager = () => {
                           {isLoadingShare ? (
                             <Spinner className="mb-[1px] mr-2" />
                           ) : (
-                            <FaExternalLinkAlt className="mr-2 mt-[2.5px]" />
+                            <FaWhatsapp className="mr-2 scale-125 mt-[4px]" />
                           )}{" "}
                           {isLoadingShare
                             ? "Caricamento..."
