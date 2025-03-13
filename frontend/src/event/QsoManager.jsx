@@ -69,7 +69,7 @@ const QsoManager = () => {
   const setAlert = useCallback(
     (alert) => {
       _setAlert(alert);
-      scrollToAlert();
+      if (alert) scrollToAlert();
     },
     [_setAlert]
   );
