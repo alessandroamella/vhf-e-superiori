@@ -145,6 +145,10 @@ class MapExporter {
         };
     }
 
+    private getZoom(x: number) {
+        return Number(((-3 / 1190) * x + 955 / 119).toFixed(2));
+    }
+
     async exportMapToJpg(
         event: EventDoc,
         callsign: string,
@@ -205,7 +209,8 @@ class MapExporter {
                 farthestPoint1,
                 farthestPoint2
             );
-            const zoom = Math.round(-0.0042 * maxDistance + 10.042);
+
+            const zoom = this.getZoom(maxDistance);
 
             const templatePath = path.join(process.cwd(), "views/map.ejs");
             const templateContent = await readFile(templatePath, "utf-8");
