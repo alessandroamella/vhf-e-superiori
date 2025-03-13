@@ -279,10 +279,13 @@ const QsoManager = () => {
   }, [setAlert]);
 
   // Function to capture the map + overlay
+  const [isLoadingShare, setIsLoadingShare] = useState(false);
   const shareMap = useCallback(async () => {
     console.log("Getting map of event", event);
 
     if (!event) return;
+
+    setIsLoadingShare(true);
 
     try {
       const { data } = await axios.get(`/api/map/export-map/${event._id}`, {
@@ -335,6 +338,8 @@ const QsoManager = () => {
           "Errore nel download della mappa - " +
           getErrorStr(err?.response?.data?.err)
       });
+    } finally {
+      setIsLoadingShare(false);
     }
   }, [event, qsos?.length, setAlert, user?.callsign]);
 
@@ -1738,11 +1743,19 @@ const QsoManager = () => {
                         <Button
                           color="green"
                           size="lg"
-                          className="uppercase font-bold"
+                          className={`uppercase font-bold ${
+                            isLoadingShare ? "animate-pulse" : ""
+                          }`}
                           onClick={shareMap}
                         >
-                          <FaExternalLinkAlt className="mr-2 mt-[2px]" />{" "}
-                          Condividi mappa
+                          {isLoadingShare ? (
+                            <Spinner className="mb-[1px] mr-2" />
+                          ) : (
+                            <FaExternalLinkAlt className="mr-2 mt-[2.5px]" />
+                          )}{" "}
+                          {isLoadingShare
+                            ? "Caricamento..."
+                            : "Condividi mappa"}
                         </Button>
                       )}
                     </div>
