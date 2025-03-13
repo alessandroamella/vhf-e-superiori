@@ -203,31 +203,36 @@ const Rankings = () => {
                     Classifica {tab}
                   </h1>
                   {(i === 1 ? stationRankings : userRankings).length > 0 ? (
-                    <Table striped className="text-2xl">
-                      <Table.Head>
-                        <Table.HeadCell>Posizione</Table.HeadCell>
-                        <Table.HeadCell>Nominativo</Table.HeadCell>
-                        <Table.HeadCell>Punti</Table.HeadCell>
-                      </Table.Head>
-                      <Table.Body>
-                        {(i === 1 ? stationRankings : userRankings).map((r) => (
-                          <Table.Row
-                            key={r.callsign}
-                            onClick={() => setShowRankings(r.callsign)}
-                            className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                          >
-                            <Table.Cell>
-                              {/* show 🥇, 🥈 or 🥉 if r.callsign === rankings[0,1,2].callsign, else i + 1 */}
-                              {["🥇", "🥈", "🥉"][r.position - 1] || r.position}
-                            </Table.Cell>
-                            <Table.Cell className="font-semibold">
-                              {r.callsign}
-                            </Table.Cell>
-                            <Table.Cell>{r.points}</Table.Cell>
-                          </Table.Row>
-                        ))}
-                      </Table.Body>
-                    </Table>
+                    <div className="max-h-[80vh] overflow-y-auto">
+                      <Table striped className="text-2xl">
+                        <Table.Head>
+                          <Table.HeadCell>Posizione</Table.HeadCell>
+                          <Table.HeadCell>Nominativo</Table.HeadCell>
+                          <Table.HeadCell>Punti</Table.HeadCell>
+                        </Table.Head>
+                        <Table.Body>
+                          {(i === 1 ? stationRankings : userRankings).map(
+                            (r) => (
+                              <Table.Row
+                                key={r.callsign}
+                                onClick={() => setShowRankings(r.callsign)}
+                                className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                              >
+                                <Table.Cell>
+                                  {/* show 🥇, 🥈 or 🥉 if r.callsign === rankings[0,1,2].callsign, else i + 1 */}
+                                  {["🥇", "🥈", "🥉"][r.position - 1] ||
+                                    r.position}
+                                </Table.Cell>
+                                <Table.Cell className="font-semibold">
+                                  {r.callsign}
+                                </Table.Cell>
+                                <Table.Cell>{r.points}</Table.Cell>
+                              </Table.Row>
+                            )
+                          )}
+                        </Table.Body>
+                      </Table>
+                    </div>
                   ) : (
                     <Alert color="gray" className="text-center">
                       <FaExclamationTriangle className="inline-block mr-1 mb-1" />
