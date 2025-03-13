@@ -146,7 +146,7 @@ class MapExporter {
     }
 
     private getZoom(x: number) {
-        return Number(((-3 / 1190) * x + 955 / 119).toFixed(2));
+        return 0.5 + Number(((-3 / 1190) * x + 955 / 119).toFixed(2));
     }
 
     async exportMapToJpg(
