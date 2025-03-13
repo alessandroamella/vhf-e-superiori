@@ -240,7 +240,7 @@ const QsoManager = () => {
   const [lon, setLon] = useState(null);
 
   const canShare = useMemo(() => {
-    return navigator.canShare?.();
+    return !!navigator.canShare;
   }, []);
 
   useEffect(() => {
