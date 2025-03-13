@@ -1727,7 +1727,7 @@ const QsoManager = () => {
 
                 {qsos && (
                   <div>
-                    <div className="flex flex-col md:flex-row md:justify-between my-4">
+                    <div className="flex flex-col md:flex-row gap-2 md:justify-between my-4">
                       <Typography
                         variant="h3"
                         className="dark:text-white font-medium gap-2 flex items-center"
@@ -1739,7 +1739,7 @@ const QsoManager = () => {
                           color="green"
                           size="lg"
                           className="uppercase font-bold"
-                          onClick={() => shareMap}
+                          onClick={shareMap}
                         >
                           <FaExternalLinkAlt className="mr-2 mt-[2px]" />{" "}
                           Condividi mappa
