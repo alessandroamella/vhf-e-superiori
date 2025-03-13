@@ -197,22 +197,15 @@ class MapExporter {
 
             const center = this.geographicalCenter(coords);
 
+            const [farthestPoint1, farthestPoint2] =
+                this.findFarthestPoints(coords);
+
             // zoom is based on the distance between the two farthest points
-            const zoom = Math.max(
-                10,
-                Math.min(
-                    18,
-                    Math.floor(
-                        8 -
-                            Math.log2(
-                                this.haversineDistance(
-                                    { lat: center.lat, lon: center.lon },
-                                    this.findFarthestPoints(coords)[0]
-                                )
-                            )
-                    )
-                )
+            const maxDistance = this.haversineDistance(
+                farthestPoint1,
+                farthestPoint2
             );
+            const zoom = Math.round(-0.0042 * maxDistance + 10.042);
 
             const templatePath = path.join(process.cwd(), "views/map.ejs");
             const templateContent = await readFile(templatePath, "utf-8");

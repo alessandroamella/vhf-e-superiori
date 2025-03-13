@@ -33,10 +33,14 @@ const Rankings = () => {
   useEffect(() => {
     async function getData() {
       try {
-        const { data } = await axios.get(`/api/rankings/${id}`);
+        const { data } = await axios.get(
+          id ? `/api/rankings/${id}` : "/api/rankings"
+        );
         console.log("event and rankings:", data);
         const { event, rankings } = data;
-        setEvent(event);
+        if (event) {
+          setEvent(event);
+        }
         setStationRankings(rankings.stationRankings);
         setUserRankings(rankings.userRankings);
       } catch (err) {
@@ -53,22 +57,26 @@ const Rankings = () => {
 
   const navigate = useNavigate();
 
+  const year = new Date().getFullYear();
+
   const socialTitle = event && `Classifiche ${event.name} - VHF e superiori`;
-  const socialBody =
-    event &&
-    `Classifiche dell'evento ${event.name} - ${formatInTimeZone(
-      new Date(event.date),
-      "Europe/Rome",
-      "dd MMMM yyyy",
-      { locale: it }
-    )} - VHF e superiori`;
+  const socialBody = event
+    ? `Classifiche dell'evento ${event.name} - ${formatInTimeZone(
+        new Date(event.date),
+        "Europe/Rome",
+        "dd MMMM yyyy",
+        { locale: it }
+      )} - VHF e superiori`
+    : `Classifiche dell'anno ${year} - VHF e superiori`;
 
   const [showRankings, setShowRankings] = useState(null);
 
   return (
     <>
       <Helmet>
-        <title>{event?.name || "Evento"} - Classifiche - VHF e superiori</title>
+        <title>
+          {event ? event.name : `Anno ${year}`} - Classifiche - VHF e superiori
+        </title>
       </Helmet>
       <Modal
         position="center"
@@ -85,12 +93,12 @@ const Rankings = () => {
               userRankings &&
               [...stationRankings, ...userRankings]
                 .filter(
-                  r =>
+                  (r) =>
                     r.callsign === showRankings ||
                     (r.fromStationCallsignOverride ||
                       r.fromStation?.callsign) === showRankings
                 )
-                .map(r => (
+                .map((r) => (
                   <Table striped key={r.callsign}>
                     <Table.Head>
                       <Table.HeadCell>Attivatore</Table.HeadCell>
@@ -102,7 +110,7 @@ const Rankings = () => {
                       <Table.HeadCell>RST</Table.HeadCell>
                     </Table.Head>
                     <Table.Body>
-                      {r.qsos.map(qso => (
+                      {r.qsos.map((qso) => (
                         <Table.Row
                           key={qso._id}
                           onClick={() => navigate(`/qso/${qso._id}`)}
@@ -152,7 +160,7 @@ const Rankings = () => {
               className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() =>
-                event !== null ? setAlert(null) : navigate("/")
+                stationRankings || userRankings ? setAlert(null) : navigate("/")
               }
             >
               <span>{alert.msg}</span>
@@ -164,22 +172,27 @@ const Rankings = () => {
               showLoadingAnimation
               type="text"
               rows={3}
-              ready={!!event && !!stationRankings && !!userRankings}
+              ready={!!stationRankings && !!userRankings}
             >
               <Spinner />
             </ReactPlaceholder>
           )}
 
           {/* visualizza classifiche */}
-          {event !== null && (
+          {stationRankings && userRankings && (
             <div className="w-full flex flex-col gap-4">
               <h1 className="text-3xl md:text-4xl">
-                Classifiche di <span className="font-bold">{event.name}</span>
-                {" - "}
-                {formatInTimeZone(
-                  new Date(event.date),
-                  "Europe/Rome",
-                  "dd/MM/yyyy"
+                Classifiche {event ? "di" : "dell'anno"}{" "}
+                <span className="font-bold">{event ? event.name : year}</span>
+                {event && (
+                  <>
+                    {" - "}
+                    {formatInTimeZone(
+                      new Date(event.date),
+                      "Europe/Rome",
+                      "dd/MM/yyyy"
+                    )}
+                  </>
                 )}
               </h1>
 
@@ -197,7 +210,7 @@ const Rankings = () => {
                         <Table.HeadCell>Punti</Table.HeadCell>
                       </Table.Head>
                       <Table.Body>
-                        {(i === 1 ? stationRankings : userRankings).map(r => (
+                        {(i === 1 ? stationRankings : userRankings).map((r) => (
                           <Table.Row
                             key={r.callsign}
                             onClick={() => setShowRankings(r.callsign)}

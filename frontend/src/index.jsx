@@ -62,6 +62,7 @@ const AppRoutes = () => {
           <Route path="/social/:id" element={<ViewPost />} />
           <Route path="/eventmanager" element={<AdminManager />} />
           <Route path="/qsomanager/:id" element={<QsoManager />} />
+          <Route path="/rankings" element={<Rankings />} />
           <Route path="/rankings/:id" element={<Rankings />} />
           <Route path="/eqsl/:id" element={<EqslRedirect />} />
           <Route path="/qso/:id" element={<Qso />} />
