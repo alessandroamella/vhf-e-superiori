@@ -146,7 +146,8 @@ class MapExporter {
     }
 
     private getZoom(x: number) {
-        return 0.5 + Number(((-3 / 1190) * x + 955 / 119).toFixed(2));
+        const y = -0.00294 * x + 8.529;
+        return 0.5 + Number(y.toFixed(2));
     }
 
     async exportMapToJpg(
