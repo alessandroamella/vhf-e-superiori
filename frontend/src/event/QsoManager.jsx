@@ -281,31 +281,20 @@ const QsoManager = () => {
 
   // Function to capture the map + overlay
   const [isLoadingShare, setIsLoadingShare] = useState(false);
+  const [mustClickAgain, setMustClickAgain] = useState(false);
+
   const shareMap = useCallback(async () => {
     console.log("Getting map of event", event);
 
     if (!event) return;
 
     setIsLoadingShare(true);
+    setMustClickAgain(false);
 
     try {
       const { data } = await axios.get(`/api/map/export-map/${event._id}`, {
         responseType: "blob"
       });
-
-      // download the file
-      // const url = window.URL.createObjectURL(new Blob([data]));
-      // const link = document.createElement("a");
-      // link.href = url;
-      // link.setAttribute("download", `mappa-${event.name}.jpg`);
-      // document.body.appendChild(link);
-      // link.click();
-      // link.remove();
-
-      // setAlert({
-      //   color: "success",
-      //   msg: "Mappa scaricata con successo"
-      // });
 
       // use share API
       const file = new File(
@@ -322,6 +311,10 @@ const QsoManager = () => {
           color: "failure",
           msg: "Il tuo browser non supporta la condivisione di file"
         });
+        return;
+      }
+      if ("userActivation" in navigator && !navigator.userActivation.isActive) {
+        setMustClickAgain(true);
         return;
       }
       navigator.share({
@@ -1744,6 +1737,7 @@ const QsoManager = () => {
                         <Button
                           color="green"
                           size="lg"
+                          disabled={isLoadingShare}
                           className={`uppercase font-bold ${
                             isLoadingShare ? "animate-pulse" : ""
                           }`}
@@ -1756,6 +1750,8 @@ const QsoManager = () => {
                           )}{" "}
                           {isLoadingShare
                             ? "Caricamento..."
+                            : mustClickAgain
+                            ? "Clicca ancora"
                             : "Condividi mappa"}
                         </Button>
                       )}

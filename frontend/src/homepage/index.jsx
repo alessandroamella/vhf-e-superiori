@@ -556,28 +556,22 @@ const Homepage = () => {
                     <h2 className="font-bold mb-4 text-center text-2xl tracking-tight">
                       SE VUOI ESSERE PROSSIMA STAZIONE ATTIVATRICE:
                     </h2>
-                    {user ? (
-                      <Button
-                        className="text-lg mb-4"
-                        onClick={() => setJoinOpen(true)}
-                      >
-                        CLICCA QUI
-                      </Button>
-                    ) : (
-                      <Button
-                        className="text-xl mb-4"
-                        onClick={() =>
-                          navigate({
-                            pathname: "/login",
-                            search: createSearchParams({
-                              to: "/#eventi"
-                            }).toString()
-                          })
-                        }
-                      >
-                        CLICCA QUI
-                      </Button>
-                    )}
+                    <Button
+                      className="text-lg mb-4"
+                      color="blue"
+                      onClick={() =>
+                        user
+                          ? setJoinOpen(true)
+                          : navigate({
+                              pathname: "/login",
+                              search: createSearchParams({
+                                to: "/#eventi"
+                              }).toString()
+                            })
+                      }
+                    >
+                      CLICCA QUI
+                    </Button>
                     {/* <Alert color="info">
                   <span>
                     <span className="font-medium">Info</span> Il modulo per
