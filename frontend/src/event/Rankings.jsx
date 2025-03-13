@@ -203,7 +203,7 @@ const Rankings = () => {
                     Classifica {tab}
                   </h1>
                   {(i === 1 ? stationRankings : userRankings).length > 0 ? (
-                    <div className="max-h-[80vh] overflow-y-auto">
+                    <div className="max-h-[60vh] md:max-h-[80vh] overflow-y-auto">
                       <Table striped className="text-2xl">
                         <Table.Head>
                           <Table.HeadCell>Posizione</Table.HeadCell>

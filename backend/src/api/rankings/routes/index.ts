@@ -271,11 +271,37 @@ router.get("/", async (req, res) => {
         select: "callsign"
     });
 
-    const map = new Map<string, { qsos: QsoDoc[] }>();
+    // Get all JoinRequests for the current solar year to define stations
+    const stationsOfYear = await JoinRequest.find({
+        createdAt: {
+            // Assuming JoinRequest createdAt is within the event year, or adjust to forEvent.date if event date is reliably within the year
+            $gte: startOfYear,
+            $lte: endOfYear
+        },
+        isApproved: true
+    }).populate({
+        path: "fromUser",
+        select: "callsign"
+    });
+
+    const stationCallsignsOfYear = new Set<string>(
+        stationsOfYear
+            .filter((e) => isDocument(e.fromUser))
+            .map((e) => (e.fromUser as unknown as UserDoc).callsign)
+    );
+
+    const map = new Map<string, { qsos: QsoDoc[]; isStation: boolean }>();
     for (const qso of qsos) {
+        const qsoFromStationCallsign = isDocument(qso.fromStation)
+            ? qso.fromStation.callsign
+            : null;
+        const fromCallsign =
+            qso.fromStationCallsignOverride || qsoFromStationCallsign;
+
         if (!map.has(qso.callsign)) {
             map.set(qso.callsign, {
-                qsos: []
+                qsos: [],
+                isStation: stationCallsignsOfYear.has(qso.callsign) // Determine if the callsign is a station for the year
             });
         }
         map.get(qso.callsign)!.qsos.push(qso);
@@ -287,24 +313,38 @@ router.get("/", async (req, res) => {
             continue;
         }
 
-        const fromCallsign =
-            qso.fromStationCallsignOverride || qso.fromStation.callsign;
-
-        if (!map.has(fromCallsign)) {
-            map.set(fromCallsign, {
-                qsos: []
-            });
+        if (fromCallsign) {
+            if (!map.has(fromCallsign)) {
+                map.set(fromCallsign, {
+                    qsos: [],
+                    isStation: stationCallsignsOfYear.has(fromCallsign!) // Determine if fromCallsign is a station for the year
+                });
+            }
+            map.get(fromCallsign)!.qsos.push(qso);
+        } else {
+            logger.error(`No fromCallsign for QSO ${qso._id}`);
         }
-        map.get(fromCallsign)!.qsos.push(qso);
     }
 
-    const _rankings: Omit<Ranking, "position">[] = [];
+    const _rankings: (Omit<Ranking, "position"> & { isStation: boolean })[] =
+        [];
     for (const [callsign, data] of map) {
         _rankings.push({
             callsign,
             qsos: data.qsos,
-            // 1 point per QSO
-            points: data.qsos.length
+            isStation: data.isStation,
+            // 2 points if QSO to a station, 1 point if not
+            points: data.qsos.reduce(
+                (acc, qso) =>
+                    acc +
+                    // if by station or to station is event station, 2 points
+                    ([qso.callsign, callsign].some(
+                        (e) => data.isStation || stationCallsignsOfYear.has(e) // Check if either callsign or QSO's callsign is a station
+                    )
+                        ? 2
+                        : 1),
+                0
+            )
         });
     }
 
@@ -312,18 +352,26 @@ router.get("/", async (req, res) => {
 
     logger.debug(`Current solar year has ${_rankings.length} rankings`);
 
-    const userRankings = _rankings.map((ranking, index) => {
-        const rest = ranking;
-        logger.debug(
-            `Ranking for user ${ranking.callsign} has ${ranking.qsos.length} QSOs and ${ranking.points} points`
-        );
-        return {
-            ...rest,
-            position: index + 1
-        };
-    });
+    const [stationRankings, userRankings] = [true, false].map((b) =>
+        _rankings
+            .filter((e) => e.isStation === b)
+            .map((ranking, index) => {
+                const { isStation, ...rest } = ranking;
+                logger.debug(
+                    `Ranking for ${isStation ? "station" : "hunter"} ${
+                        ranking.callsign
+                    } has ${ranking.qsos.length} QSOs and ${
+                        ranking.points
+                    } points`
+                );
+                return {
+                    ...rest,
+                    position: index + 1
+                };
+            })
+    );
 
-    res.json({ event: null, rankings: { stationRankings: [], userRankings } });
+    res.json({ event: null, rankings: { stationRankings, userRankings } });
 });
 
 export default router;
