@@ -1,4 +1,4 @@
-import { QsoDoc } from "../../qso/models";
+import type { QsoDoc } from "../../qso/models";
 
 /**
  * @swagger

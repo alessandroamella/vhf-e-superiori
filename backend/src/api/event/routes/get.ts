@@ -1,13 +1,13 @@
 import { Request, Response, Router } from "express";
-import EventModel from "../models";
-import { createError, validate } from "../../helpers";
-import { logger } from "../../../shared";
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { param } from "express-validator";
-import JoinRequest, { JoinRequestClass } from "../../joinRequest/models";
-import { UserDoc } from "../../auth/models";
-import { Errors } from "../../errors";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { FilterQuery } from "mongoose";
+import { logger } from "../../../shared";
+import type { UserDoc } from "../../auth/models";
+import { Errors } from "../../errors";
+import { createError, validate } from "../../helpers";
+import JoinRequest, { JoinRequestClass } from "../../joinRequest/models";
+import EventModel from "../models";
 
 const router = Router();
 

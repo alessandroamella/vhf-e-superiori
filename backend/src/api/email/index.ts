@@ -1,18 +1,18 @@
+import { readFile, unlink } from "fs/promises";
+import { getDistance } from "geolib";
+import moment from "moment-timezone";
 import nodemailer from "nodemailer";
 import Mail from "nodemailer/lib/mailer";
-import { UserDoc } from "../auth/models";
-import { EventDoc } from "../event/models";
-import { JoinRequestDoc } from "../joinRequest/models";
-import { envs, logger } from "../../shared";
-import { CommentDoc } from "../comment/models";
-import { BasePostDoc } from "../post/models";
-import { qrz } from "../qrz";
-import { QsoDoc } from "../qso/models";
-import EqslPic from "../eqsl/eqsl";
-import { readFile, unlink } from "fs/promises";
 import path from "path";
-import moment from "moment-timezone";
-import { getDistance } from "geolib";
+import { envs, logger } from "../../shared";
+import type { UserDoc } from "../auth/models";
+import type { CommentDoc } from "../comment/models";
+import EqslPic from "../eqsl/eqsl";
+import type { EventDoc } from "../event/models";
+import type { JoinRequestDoc } from "../joinRequest/models";
+import type { BasePostDoc } from "../post/models";
+import { qrz } from "../qrz";
+import type { QsoDoc } from "../qso/models";
 
 moment.locale("it");
 
@@ -21,7 +21,7 @@ export class EmailService {
 
     private static adminEmails = Array.from(
         Array(parseInt(envs.TOT_ADMIN_EMAILS)).keys()
-    ).map(i => process.env[`ADMIN_EMAIL_${i}`] as string);
+    ).map((i) => process.env[`ADMIN_EMAIL_${i}`] as string);
 
     private static async loadMailFromFile(
         name: string,
@@ -70,7 +70,7 @@ export class EmailService {
                 logger.error("EmailService.transporter null in sendMail");
                 return reject("EmailService.transporter null");
             }
-            EmailService.transporter.sendMail(message, err => {
+            EmailService.transporter.sendMail(message, (err) => {
                 if (err) {
                     logger.error("Error while sending email");
                     logger.error(err);

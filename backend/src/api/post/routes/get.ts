@@ -3,7 +3,7 @@ import { Router } from "express";
 import { param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND } from "http-status";
 import { logger } from "../../../shared/logger";
-import { UserDoc } from "../../auth/models";
+import type { UserDoc } from "../../auth/models";
 import { Comment } from "../../comment/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";

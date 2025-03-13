@@ -1,5 +1,5 @@
 import moment from "moment";
-import { UserDoc } from "../auth/models";
+import type { UserDoc } from "../auth/models";
 
 // used to filter events. user isAdmin => any date, else within 7 days
 export const getEventDate = ({ isAdmin }: Pick<UserDoc, "isAdmin">) => {

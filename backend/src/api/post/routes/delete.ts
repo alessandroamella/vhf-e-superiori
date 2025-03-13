@@ -1,19 +1,19 @@
+import { isDocument } from "@typegoose/typegoose";
 import { Request, Response, Router } from "express";
-import { createError, validate } from "../../helpers";
-import { logger } from "../../../shared";
+import { param } from "express-validator";
 import {
     BAD_REQUEST,
     INTERNAL_SERVER_ERROR,
     OK,
     UNAUTHORIZED
 } from "http-status";
-import { param } from "express-validator";
-import { UserDoc } from "../../auth/models";
-import { isDocument } from "@typegoose/typegoose";
-import { Errors } from "../../errors";
+import { logger } from "../../../shared";
+import type { UserDoc } from "../../auth/models";
 import { s3Client } from "../../aws";
-import { BasePost } from "../models";
 import { Comment } from "../../comment/models";
+import { Errors } from "../../errors";
+import { createError, validate } from "../../helpers";
+import { BasePost } from "../models";
 
 const router = Router();
 
@@ -100,7 +100,7 @@ router.delete(
                 await comment.deleteOne();
             }
 
-            const filePaths = [...post.pictures, ...post.videos].map(url => {
+            const filePaths = [...post.pictures, ...post.videos].map((url) => {
                 const parts = url.split("/");
                 return parts.slice(-2).join("/");
             });

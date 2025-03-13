@@ -7,10 +7,10 @@ import path from "path";
 import sharp from "sharp";
 import { v4 as uuidv4 } from "uuid";
 import { envs, logger } from "../../shared";
-import { UserDoc } from "../auth/models";
+import type { UserDoc } from "../auth/models";
 import { s3Client } from "../aws";
-import { EventDoc } from "../event/models";
-import { QsoDoc } from "../qso/models";
+import type { EventDoc } from "../event/models";
+import type { QsoDoc } from "../qso/models";
 
 class EqslPic {
     private href: string | null = null;
@@ -159,21 +159,21 @@ class EqslPic {
             args
         );
         await new Promise<void>((resolve, reject) => {
-            proc.on("error", err => {
+            proc.on("error", (err) => {
                 logger.error("ImageMagick error:");
                 logger.error(err);
                 reject(err);
             });
-            proc.stdout.on("data", data => {
+            proc.stdout.on("data", (data) => {
                 logger.info("ImageMagick stdout:");
                 logger.info(data.toString());
             });
-            proc.stderr.on("data", data => {
+            proc.stderr.on("data", (data) => {
                 logger.error("ImageMagick stderr:");
                 logger.error(data.toString());
                 reject(data);
             });
-            proc.on("close", code => {
+            proc.on("close", (code) => {
                 if (code === 0) {
                     resolve();
                 } else {

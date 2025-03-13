@@ -1,11 +1,11 @@
 import { Request, Response, Router } from "express";
-import { createError, validate } from "../../helpers";
-import { logger } from "../../../shared";
-import { INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { param } from "express-validator";
-import { Comment } from "../models";
-import { UserDoc } from "../../auth/models";
+import { INTERNAL_SERVER_ERROR, OK } from "http-status";
+import { logger } from "../../../shared";
+import type { UserDoc } from "../../auth/models";
 import { Errors } from "../../errors";
+import { createError, validate } from "../../helpers";
+import { Comment } from "../models";
 
 const router = Router();
 

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>QSO Map Export</title>
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+            crossorigin=""
+        />
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            #map {
+                width: 1280px;
+                height: 720px;
+            }
+
+            /* Event name on top left */
+            .event-container {
+                position: absolute;
+                left: 16px;
+                top: 16px;
+                z-index: 1000;
+            }
+
+            .event-box {
+                background: rgba(255, 255, 255, 0.75);
+                padding: 8px 16px;
+                border-radius: 8px;
+                border-left: 4px solid #ef4444;
+            }
+
+            .event-name {
+                margin: 0;
+                color: #222;
+                font-family: "Inter", sans-serif;
+                font-weight: bold;
+                font-size: 1.25rem;
+            }
+
+            .event-date {
+                margin: 0;
+                color: #222;
+                font-family: "Inter", sans-serif;
+                font-weight: 300;
+                font-size: 1rem;
+            }
+
+            /* User profile at bottom */
+            .user-container {
+                position: absolute;
+                left: 16px;
+                bottom: 16px;
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                background: rgba(255, 255, 255, 0.75);
+                padding: 8px;
+                border-radius: 8px;
+            }
+
+            .profile-pic {
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                border: 3px solid #ef4444;
+                object-fit: cover;
+                margin-right: 12px;
+            }
+
+            .background-box {
+                position: absolute;
+                z-index: 0;
+                top: 14px;
+                bottom: 14px;
+                left: 16px;
+                right: -2px;
+                border-radius: 12px;
+                background: rgba(255, 255, 255, 0.75);
+            }
+
+            .callsign {
+                color: #222;
+                font-family: "Inter", sans-serif;
+                font-weight: bold;
+                font-size: 1.25rem;
+                margin: 0;
+                text-transform: uppercase;
+                border-bottom: 4px solid #ef4444;
+                padding-bottom: 2px;
+            }
+
+            /* Website branding */
+            .website-container {
+                position: absolute;
+                right: 16px;
+                bottom: 16px;
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                padding: 8px 12px;
+                border-radius: 8px;
+            }
+
+            .logo {
+                width: 48px;
+                height: 48px;
+                z-index: 50;
+                margin-right: 8px;
+            }
+
+            .website-text {
+                z-index: 50;
+                color: #ef4444;
+                font-family: "Inter", sans-serif;
+                font-weight: bold;
+                margin: 0;
+                font-size: 1.7rem;
+                letter-spacing: -0.025em;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+
+        <!-- Event name box (top left) -->
+        <div class="event-container">
+            <div class="event-box">
+                <p class="event-name"><%= eventName %></p>
+                <p class="event-date"><%= eventDate %></p>
+            </div>
+        </div>
+
+        <!-- User profile (bottom left) -->
+        <div class="user-container">
+            <% if (profilePic) { %>
+            <img
+                class="profile-pic"
+                src="<%= profilePic %>"
+                alt="User Profile"
+            />
+            <% } %>
+            <p class="callsign">IZ5PUO</p>
+        </div>
+
+        <!-- Website branding (bottom right) -->
+        <div class="website-container">
+            <img class="logo" src="<%= image %>" alt="vhfesuperiori" />
+            <p class="website-text">vhfesuperiori.eu</p>
+            <div class="background-box"></div>
+        </div>
+
+        <script
+            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""
+        ></script>
+
+        <script>
+            var qsos = <%- JSON.stringify(qsos) %>;
+
+            const center = <%- JSON.stringify(center) %>;
+            const zoom = <%- zoom %>;
+
+            var map = L.map("map", { zoomControl: false }).setView(
+                [center.lat, center.lon],
+                zoom
+            );
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution:
+                    '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            qsos.forEach(function (qso) {
+                if (
+                    qso.fromStationLat &&
+                    qso.fromStationLon &&
+                    qso.toStationLat &&
+                    qso.toStationLon
+                ) {
+                    // Polyline
+                    L.polyline(
+                        [
+                            [qso.fromStationLat, qso.fromStationLon],
+                            [qso.toStationLat, qso.toStationLon]
+                        ],
+                        { color: "#ef4444", weight: 3, opacity: 0.7 }
+                    ).addTo(map);
+
+                    // From Station Marker
+                    L.marker([qso.fromStationLat, qso.fromStationLon])
+                        .bindPopup(
+                            "<b>" +
+                                (qso.fromStationCallsignOverride ||
+                                    qso.fromStation.callsign) +
+                                "</b><br>Locator: " +
+                                qso.fromLocator
+                        )
+                        .addTo(map);
+
+                    // To Station Marker
+                    L.marker([qso.toStationLat, qso.toStationLon])
+                        .bindPopup(
+                            "<b>" +
+                                qso.callsign +
+                                "</b><br>Locator: " +
+                                qso.toLocator
+                        )
+                        .addTo(map);
+                }
+            });
+        </script>
+    </body>
+</html>

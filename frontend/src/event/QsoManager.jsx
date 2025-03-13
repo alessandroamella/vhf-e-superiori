@@ -17,8 +17,14 @@ import {
   TextInput,
   Tooltip
 } from "flowbite-react";
-import html2canvas from "html2canvas-pro";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import { useCookies } from "react-cookie";
 import { Helmet } from "react-helmet";
 import {
@@ -48,7 +54,6 @@ import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import MapWatermark from "../shared/MapWatermark";
 import StationMapMarker from "../shared/StationMapMarker";
-import { wait } from "../shared/wait";
 
 const QsoManager = () => {
   const { user } = useContext(UserContext);
@@ -59,7 +64,15 @@ const QsoManager = () => {
   };
 
   const [disabled, setDisabled] = useState(true);
-  const [alert, setAlert] = useState(null);
+  const [alert, _setAlert] = useState(null);
+
+  const setAlert = useCallback(
+    (alert) => {
+      _setAlert(alert);
+      scrollToAlert();
+    },
+    [_setAlert]
+  );
 
   const [fromStation, setFromStation] = useState(null);
   const [users, setUsers] = useState(false);
@@ -94,13 +107,11 @@ const QsoManager = () => {
           msg: getErrorStr(err?.response?.data?.err)
         });
 
-        scrollToAlert();
-
         setUsers(null);
       }
     }
     if (user?.isAdmin && !users) getUsers();
-  }, [event, user, users]);
+  }, [event, setAlert, user, users]);
 
   const getQsos = useCallback(async () => {
     try {
@@ -120,11 +131,9 @@ const QsoManager = () => {
         msg: getErrorStr(err?.response?.data?.err)
       });
 
-      scrollToAlert();
-
       setQsos(null);
     }
-  }, [id, user]);
+  }, [id, setAlert, user]);
 
   const [callsignOverride, setCallsignOverride] = useState(null);
   useEffect(() => {
@@ -145,8 +154,6 @@ const QsoManager = () => {
           msg: getErrorStr(err?.response?.data?.err)
         });
 
-        scrollToAlert();
-
         setEvent(null);
       }
     }
@@ -163,8 +170,6 @@ const QsoManager = () => {
         color: "failure",
         msg: "Devi prima effettuare il login"
       });
-
-      scrollToAlert();
 
       return;
     } else if (user && event) {
@@ -195,8 +200,6 @@ const QsoManager = () => {
       //     msg: "Non sei una stazione attivatrice per questo evento"
       //   });
 
-      //   scrollToAlert();
-
       //   setHasPermission(false);
       //   return;
       // }
@@ -206,7 +209,6 @@ const QsoManager = () => {
         msg: "Evento non trovato"
       });
 
-      scrollToAlert();
       return;
     } else if (qsos === null) {
       setAlert({
@@ -214,7 +216,6 @@ const QsoManager = () => {
         msg: "Errore nel caricamento dei QSO"
       });
 
-      scrollToAlert();
       return;
     }
 
@@ -222,7 +223,7 @@ const QsoManager = () => {
       setDisabled(false);
       setHasPermission(true);
     }
-  }, [event, qsos, user]);
+  }, [event, qsos, setAlert, user]);
 
   const [cookies, setCookie] = useCookies(["qsoManagerCache"]);
 
@@ -237,6 +238,10 @@ const QsoManager = () => {
   const [province, setProvince] = useState(null);
   const [lat, setLat] = useState(null);
   const [lon, setLon] = useState(null);
+
+  const canShare = useMemo(() => {
+    return navigator.canShare?.();
+  }, []);
 
   useEffect(() => {
     if (isManuallySettingLocator || !formattedAddress) {
@@ -269,48 +274,69 @@ const QsoManager = () => {
           color: "failure",
           msg: "Errore nella geolocalizzazione"
         });
-
-        scrollToAlert();
       }
     );
-  }, []);
-
-  const mapRef = useRef(null);
-
-  const [zoomControl, setZoomControl] = useState(true);
+  }, [setAlert]);
 
   // Function to capture the map + overlay
-  const captureMap = useCallback(async () => {
-    console.log("Capturing map", mapRef.current, "user", user, "event", event);
+  const shareMap = useCallback(async () => {
+    console.log("Getting map of event", event);
 
-    if (!mapRef.current || !user || !event) return;
+    if (!event) return;
 
-    setZoomControl(false);
+    try {
+      const { data } = await axios.get(`/api/map/export-map/${event._id}`, {
+        responseType: "blob"
+      });
 
-    await wait(300);
+      // download the file
+      // const url = window.URL.createObjectURL(new Blob([data]));
+      // const link = document.createElement("a");
+      // link.href = url;
+      // link.setAttribute("download", `mappa-${event.name}.jpg`);
+      // document.body.appendChild(link);
+      // link.click();
+      // link.remove();
 
-    const canvas = await html2canvas(mapRef.current, {
-      useCORS: true, // Ensures external tiles can be captured
-      allowTaint: true
-    });
+      // setAlert({
+      //   color: "success",
+      //   msg: "Mappa scaricata con successo"
+      // });
 
-    const imgData = canvas.toDataURL("image/png");
-
-    // Create a link to download the image
-    const link = document.createElement("a");
-    link.href = imgData;
-    link.download = `mappa-${event.name.replace(
-      /\W/g,
-      "_"
-    )}-${user.callsign.replace(/\W/g, "_")}-${formatInTimeZone(
-      new Date(),
-      "UTC",
-      "yyyy-MM-dd_HH-mm-ss"
-    )}-screenshot.png`;
-    link.click();
-
-    setZoomControl(true);
-  }, [event, user]);
+      // use share API
+      const file = new File(
+        [data],
+        `mappa-${user?.callsign || "collegamenti"}-${event.name
+          .replace(/[^a-zA-Z0-9]/g, "")
+          .toLowerCase()}.jpg`,
+        {
+          type: "image/jpeg"
+        }
+      );
+      if (!navigator.canShare?.({ files: [file] })) {
+        setAlert({
+          color: "failure",
+          msg: "Il tuo browser non supporta la condivisione di file"
+        });
+        return;
+      }
+      navigator.share({
+        title: `Mappa collegamenti di ${user?.callsign} per ${event.name}`,
+        text: `Ho fatto ${qsos?.length || "-"} collegamenti all'evento ${
+          event.name
+        }! Partecipa anche tu al Radio Flash Mob su www.vhfesuperiori.eu`,
+        files: [file]
+      });
+    } catch (err) {
+      console.log("Error while capturing map", err);
+      setAlert({
+        color: "failure",
+        msg:
+          "Errore nel download della mappa - " +
+          getErrorStr(err?.response?.data?.err)
+      });
+    }
+  }, [event, qsos?.length, setAlert, user?.callsign]);
 
   useEffect(() => {
     if (!user || formattedAddress) return;
@@ -445,7 +471,6 @@ const QsoManager = () => {
           msg: "Non puoi creare un QSO con te stesso"
         });
         setDisabled(false);
-        scrollToAlert();
         return;
       }
 
@@ -525,6 +550,7 @@ const QsoManager = () => {
       lon,
       province,
       qsos,
+      setAlert,
       user
     ]
   );
@@ -634,11 +660,9 @@ const QsoManager = () => {
         });
       } finally {
         setDisabled(false);
-
-        scrollToAlert();
       }
     },
-    [id]
+    [id, setAlert]
   );
 
   const [isImportingAdif, setIsImportingAdif] = useState(false);
@@ -701,14 +725,23 @@ const QsoManager = () => {
           msg: getErrorStr(err?.response?.data?.err)
         });
         setDisabled(false);
-
-        scrollToAlert();
       } finally {
         setShowModal(false);
         setIsImportingAdif(false);
       }
     },
-    [adifChecked, adifFile, adifQsos, city, getQsos, id, lat, lon, province]
+    [
+      adifChecked,
+      adifFile,
+      adifQsos,
+      city,
+      getQsos,
+      id,
+      lat,
+      lon,
+      province,
+      setAlert
+    ]
   );
 
   function resetAdif() {
@@ -763,12 +796,10 @@ const QsoManager = () => {
         color: "failure",
         msg: getErrorStr(err?.response?.data?.err)
       });
-
-      scrollToAlert();
     } finally {
       setDisabled(false);
     }
-  }, [selectedQsos, qsos]);
+  }, [selectedQsos, qsos, setAlert]);
 
   const exportAdif = useCallback(async () => {
     if (selectedQsos.length === 0) {
@@ -785,7 +816,7 @@ const QsoManager = () => {
       color: "success",
       msg: `Esportati ${selectedQsos.length} QSO`
     });
-  }, [id, selectedQsos]);
+  }, [id, selectedQsos, setAlert]);
 
   const navigate = useNavigate();
 
@@ -817,15 +848,13 @@ const QsoManager = () => {
           color: "failure",
           msg: getErrorStr(err?.response?.data?.err)
         });
-
-        scrollToAlert();
       } finally {
         setTimeout(() => {
           eqslSending.delete(q._id);
         }, 3000);
       }
     },
-    [eqslSending, qsos]
+    [eqslSending, qsos, setAlert]
   );
 
   const [allPredataInserted, setAllPredataInserted] = useState(false);
@@ -1698,71 +1727,76 @@ const QsoManager = () => {
 
                 {qsos && (
                   <div>
-                    <Typography
-                      variant="h3"
-                      className="dark:text-white font-medium gap-2 my-4 flex items-center"
-                    >
-                      Mappa QSO di <strong>{user?.callsign}</strong>-{" "}
-                      {event?.name}
-                    </Typography>
+                    <div className="flex flex-col md:flex-row md:justify-between my-4">
+                      <Typography
+                        variant="h3"
+                        className="dark:text-white font-medium gap-2 flex items-center"
+                      >
+                        Mappa QSO di <strong>{user?.callsign}</strong>
+                      </Typography>
+                      {canShare && (
+                        <Button
+                          color="green"
+                          size="lg"
+                          className="uppercase font-bold"
+                          onClick={() => shareMap}
+                        >
+                          <FaExternalLinkAlt className="mr-2 mt-[2px]" />{" "}
+                          Condividi mappa
+                        </Button>
+                      )}
+                    </div>
 
                     {/* center in Perugia */}
-                    <div ref={mapRef}>
-                      <MapContainer
-                        zoomControl={zoomControl}
-                        center={[43.110717, 12.390828]}
-                        zoom={5}
-                      >
-                        <TileLayer
-                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        />
+                    <MapContainer center={[43.110717, 12.390828]} zoom={5}>
+                      <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      />
 
-                        {qsos
-                          .filter(
-                            (q) =>
-                              q.fromStationLat &&
-                              q.fromStationLon &&
-                              q.toStationLat &&
-                              q.toStationLon
-                          )
-                          .map((q) => (
-                            <>
-                              <Polyline
-                                positions={[
-                                  [q.fromStationLat, q.fromStationLon],
-                                  [q.toStationLat, q.toStationLon]
-                                ]}
-                                color="blue"
-                                weight={2} // make a bit thinner
-                              />
+                      {qsos
+                        .filter(
+                          (q) =>
+                            q.fromStationLat &&
+                            q.fromStationLon &&
+                            q.toStationLat &&
+                            q.toStationLon
+                        )
+                        .map((q) => (
+                          <>
+                            <Polyline
+                              positions={[
+                                [q.fromStationLat, q.fromStationLon],
+                                [q.toStationLat, q.toStationLon]
+                              ]}
+                              color="blue"
+                              weight={2} // make a bit thinner
+                            />
 
-                              <StationMapMarker
-                                callsign={
-                                  q.fromStationCallsignOverride ||
-                                  q.fromStation.callsign
-                                }
-                                lat={q.fromStationLat}
-                                lon={q.fromStationLon}
-                                locator={q.fromLocator}
-                                iconRescaleFactor={0.5}
-                              />
-                              <StationMapMarker
-                                callsign={q.callsign}
-                                lat={q.toStationLat}
-                                lon={q.toStationLon}
-                                locator={q.toLocator}
-                                iconRescaleFactor={0.5}
-                              />
-                            </>
-                          ))}
+                            <StationMapMarker
+                              callsign={
+                                q.fromStationCallsignOverride ||
+                                q.fromStation.callsign
+                              }
+                              lat={q.fromStationLat}
+                              lon={q.fromStationLon}
+                              locator={q.fromLocator}
+                              iconRescaleFactor={0.5}
+                            />
+                            <StationMapMarker
+                              callsign={q.callsign}
+                              lat={q.toStationLat}
+                              lon={q.toStationLon}
+                              locator={q.toLocator}
+                              iconRescaleFactor={0.5}
+                            />
+                          </>
+                        ))}
 
-                        <MapWatermark hideWhite={!zoomControl} />
-                      </MapContainer>
-                    </div>
+                      <MapWatermark />
+                    </MapContainer>
                   </div>
                 )}
-                <Button onClick={captureMap}>Condividi</Button>
               </div>
             </>
           )}

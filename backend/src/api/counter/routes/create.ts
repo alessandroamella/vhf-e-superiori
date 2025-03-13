@@ -2,7 +2,7 @@ import { Router } from "express";
 import { body } from "express-validator";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
-import { UserDoc } from "../../auth/models";
+import type { UserDoc } from "../../auth/models";
 import { createError, validate } from "../../helpers";
 import CounterView from "../models";
 

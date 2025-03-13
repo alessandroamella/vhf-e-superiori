@@ -1,15 +1,15 @@
 import { Request, Response, Router } from "express";
+import fileUpload from "express-fileupload";
+import { query } from "express-validator";
+import { unlink } from "fs/promises";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from "http-status";
+import path from "path";
 import sharp from "sharp";
 import { logger } from "../../../shared";
-import fileUpload from "express-fileupload";
+import type { UserDoc } from "../../auth/models";
+import { s3Client } from "../../aws";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
-import { UserDoc } from "../../auth/models";
-import { s3Client } from "../../aws";
-import { unlink } from "fs/promises";
-import path from "path";
-import { query } from "express-validator";
 
 const router = Router();
 

@@ -1,22 +1,23 @@
 import { Router } from "express";
 
-import authRoutes from "../auth/routes";
-import eventRoutes from "../event/routes";
-import joinRequestRoutes from "../joinRequest/routes";
-import qrzRoutes from "../qrz/routes";
 import adifRoutes from "../adif/routes";
-import counterRoutes from "../counter/routes";
-import postRoutes from "../post/routes";
-import commentRoutes from "../comment/routes";
-import qsoRoutes from "../qso/routes";
-import eqslRoutes from "../eqsl/routes";
-import documentRoutes from "../document/routes";
-import rankingsRoutes from "../rankings/routes";
-import beaconRoutes from "../beacon/routes";
-import locationRoutes from "../location/routes";
+import authRoutes from "../auth/routes";
 import autocompleteRoutes from "../autocomplete/routes";
 import backupRoutes from "../backup/routes";
+import beaconRoutes from "../beacon/routes";
 import blogRoutes from "../blog/routes";
+import commentRoutes from "../comment/routes";
+import counterRoutes from "../counter/routes";
+import documentRoutes from "../document/routes";
+import eqslRoutes from "../eqsl/routes";
+import eventRoutes from "../event/routes";
+import joinRequestRoutes from "../joinRequest/routes";
+import locationRoutes from "../location/routes";
+import mapRoutes from "../map/routes";
+import postRoutes from "../post/routes";
+import qrzRoutes from "../qrz/routes";
+import qsoRoutes from "../qso/routes";
+import rankingsRoutes from "../rankings/routes";
 import notFound from "./notFound";
 
 import errorHandler from "../middlewares/errorHandler";
@@ -24,17 +25,17 @@ import populateUser from "../middlewares/populateUser";
 
 import "../jobs"; // cron jobs
 
-import morgan from "morgan";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
-import { logger, LoggerStream } from "../../shared/logger";
-import { envs } from "../../shared/envs";
-import { createError } from "../helpers";
-import { Errors } from "../errors";
 import { BAD_REQUEST, REQUEST_ENTITY_TOO_LARGE } from "http-status";
+import morgan from "morgan";
 import { join } from "path";
 import { cwd } from "process";
+import { envs } from "../../shared/envs";
+import { logger, LoggerStream } from "../../shared/logger";
+import { Errors } from "../errors";
+import { createError } from "../helpers";
 
 const router = Router();
 
@@ -110,6 +111,7 @@ router.use("/location", locationRoutes);
 router.use("/autocomplete", autocompleteRoutes);
 router.use("/blog", blogRoutes);
 router.use("/backup", backupRoutes);
+router.use("/map", mapRoutes);
 
 router.use(errorHandler);
 router.use(notFound);

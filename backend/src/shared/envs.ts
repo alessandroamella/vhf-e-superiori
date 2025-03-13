@@ -1,6 +1,6 @@
-import { str, cleanEnv } from "envalid";
-import { logger } from "./logger";
+import { cleanEnv, str } from "envalid";
 import { Errors } from "../api/errors";
+import { logger } from "./logger";
 
 export const envs = cleanEnv(
     process.env,
@@ -24,9 +24,11 @@ export const envs = cleanEnv(
         BASE_TEMP_DIR: str(),
         FILE_UPLOAD_TMP_FOLDER: str(),
         QSL_CARD_TMP_FOLDER: str(),
+        MAPS_TMP_FOLDER: str(),
         MONGODUMP_FOLDER: str(),
         GOOGLE_MAPS_API_KEY: str(),
-        AWS_REGION: str()
+        AWS_REGION: str(),
+        CHROME_PATH: str()
     },
     {
         reporter: ({ errors }) => {

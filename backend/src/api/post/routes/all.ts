@@ -3,7 +3,7 @@ import { query } from "express-validator";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { FilterQuery, isValidObjectId } from "mongoose";
 import { logger } from "../../../shared/logger";
-import { UserDoc } from "../../auth/models";
+import type { UserDoc } from "../../auth/models";
 import { Comment } from "../../comment/models";
 import { createError, validate } from "../../helpers";
 import { qrz } from "../../qrz";

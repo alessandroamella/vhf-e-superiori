@@ -3,9 +3,9 @@ import axios from "axios";
 import { NextFunction, Request, Response } from "express";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { envs, logger } from "../../shared";
+import type { UserDoc } from "../auth/models";
 import { Errors } from "../errors";
 import { createError } from "../helpers";
-import { UserDoc } from "../auth/models";
 
 /**
  * Expects "token" as a valid body (string) param

@@ -1,11 +1,11 @@
-import { CronJob } from "cron";
-import { logger } from "../../shared";
-import { Qso, QsoDoc } from "../qso/models";
 import { isDocument } from "@typegoose/typegoose";
-import EqslPic from "../eqsl/eqsl";
-import { EventDoc } from "../event/models";
+import { CronJob } from "cron";
 import { unlink } from "fs/promises";
+import { logger } from "../../shared";
+import EqslPic from "../eqsl/eqsl";
+import type { EventDoc } from "../event/models";
 import { qrz } from "../qrz";
+import { Qso, QsoDoc } from "../qso/models";
 
 const LIMIT_PER_DAY = 180;
 const CRON_SCHEDULE = "00 13 * * *";
@@ -71,7 +71,7 @@ async function sendEqslEmail(): Promise<void> {
 
         if (
             qsos.some(
-                qso => !isDocument(qso.fromStation) || !isDocument(qso.event)
+                (qso) => !isDocument(qso.fromStation) || !isDocument(qso.event)
             )
         ) {
             throw new Error("Some QSOs have unpopulated fromStation or event");
