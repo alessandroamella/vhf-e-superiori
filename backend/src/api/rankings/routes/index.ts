@@ -2,7 +2,6 @@ import { isDocument } from "@typegoose/typegoose";
 import { Router } from "express";
 import { param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
-import moment from "moment";
 import { logger } from "../../../shared";
 import type { UserDoc } from "../../auth/models";
 import { Errors } from "../../errors";
@@ -13,88 +12,6 @@ import { Qso, QsoDoc } from "../../qso/models";
 import { Ranking } from "../schemas";
 
 const router = Router();
-
-/**
- * Helper function to calculate rankings from QSOs and station callsigns
- */
-async function calculateRankings(
-    qsos: QsoDoc[],
-    stationCallsigns: Set<string>
-): Promise<{ stationRankings: Ranking[]; userRankings: Ranking[] }> {
-    const map = new Map<string, { qsos: QsoDoc[]; isStation: boolean }>();
-    for (const qso of qsos) {
-        if (!map.has(qso.callsign)) {
-            map.set(qso.callsign, {
-                qsos: [],
-                isStation: stationCallsigns.has(qso.callsign)
-            });
-        }
-        map.get(qso.callsign)!.qsos.push(qso);
-
-        if (isDocument(qso.fromStation)) {
-            // only process fromStation if it's a document, handle cases where it might be null/undefined gracefully
-            const fromCallsign =
-                qso.fromStationCallsignOverride || qso.fromStation.callsign;
-
-            if (!map.has(fromCallsign)) {
-                map.set(fromCallsign, {
-                    qsos: [],
-                    isStation: stationCallsigns.has(fromCallsign)
-                });
-            }
-            map.get(fromCallsign)!.qsos.push(qso);
-        } else if (qso.fromStation) {
-            logger.error(
-                `QSO.fromStation ${qso.fromStation} is not a document for QSO ${qso._id}`
-            );
-        }
-    }
-
-    const _rankings: (Omit<Ranking, "position"> & {
-        isStation: boolean;
-    })[] = [];
-    for (const [callsign, data] of map) {
-        _rankings.push({
-            callsign,
-            qsos: data.qsos,
-            isStation: data.isStation,
-            // 2 points if QSO to a station, 1 point if not
-            points: data.qsos.reduce(
-                (acc, qso) =>
-                    acc +
-                    // if by station or to station is event station, 2 points
-                    ([qso.callsign, callsign].some((e) =>
-                        stationCallsigns.has(e)
-                    )
-                        ? 2
-                        : 1),
-                0
-            )
-        });
-    }
-
-    _rankings.sort((a, b) => b.points - a.points);
-
-    const [stationRankings, userRankings] = [true, false].map((b) =>
-        _rankings
-            .filter((e) => e.isStation === b)
-            .map((ranking, index) => {
-                const { isStation, ...rest } = ranking;
-                logger.debug(
-                    `Ranking for ${isStation ? "station" : "hunter"} ${
-                        ranking.callsign
-                    } has ${ranking.qsos.length} QSOs and ${
-                        ranking.points
-                    } points`
-                );
-                return {
-                    ...rest,
-                    position: index + 1
-                };
-            })
-    );
-    return { stationRankings, userRankings };
-}
 
 /**
  * @openapi
@@ -173,7 +90,20 @@ router.get(
             return res.status(INTERNAL_SERVER_ERROR).json(createError());
         }
 
-        // Get stations for the event
+        // Get rankings
+        const qsos = await Qso.find(
+            { event: event._id },
+            {
+                emailSent: 0,
+                event: 0,
+                updatedAt: 0,
+                __v: 0
+            }
+        ).populate({
+            path: "fromStation",
+            select: "callsign"
+        });
+
         const stations = await JoinRequest.find({
             forEvent: event._id,
             isApproved: true
@@ -188,34 +118,89 @@ router.get(
                 .map((e) => (e.fromUser as unknown as UserDoc).callsign)
         );
 
-        // Get QSOs for the event
-        const qsos = await Qso.find(
-            { event: event._id },
-            {
-                emailSent: 0,
-                event: 0,
-                updatedAt: 0,
-                __v: 0
-            }
-        ).populate({
-            path: "fromStation",
-            select: "callsign"
-        });
-
-        // also add eventually overriden callsigns - moved inside calculateRankings for better encapsulation
-        const allStationCallsigns = new Set(stationCallsigns);
+        // also add eventually overriden callsigns
         for (const { fromStationCallsignOverride } of qsos.filter(
             (e) =>
                 isDocument(e.fromStation) &&
                 e.fromStationCallsignOverride &&
                 stationCallsigns.has(e.fromStation.callsign)
         )) {
-            allStationCallsigns.add(fromStationCallsignOverride!);
+            stationCallsigns.add(fromStationCallsignOverride!);
         }
 
-        const { stationRankings, userRankings } = await calculateRankings(
-            qsos,
-            allStationCallsigns
+        const map = new Map<string, { qsos: QsoDoc[]; isStation: boolean }>();
+        for (const qso of qsos) {
+            if (!map.has(qso.callsign)) {
+                map.set(qso.callsign, {
+                    qsos: [],
+                    isStation: stationCallsigns.has(qso.callsign)
+                });
+            }
+            map.get(qso.callsign)!.qsos.push(qso);
+
+            if (!isDocument(qso.fromStation)) {
+                logger.error(
+                    `QSO.fromStation ${qso.fromStation} is not a document for QSO ${qso._id} in event ${event._id}`
+                );
+                continue;
+            }
+
+            const fromCallsign =
+                qso.fromStationCallsignOverride || qso.fromStation.callsign;
+
+            if (!map.has(fromCallsign)) {
+                map.set(fromCallsign, {
+                    qsos: [],
+                    isStation: stationCallsigns.has(fromCallsign)
+                });
+            }
+            map.get(fromCallsign)!.qsos.push(qso);
+        }
+
+        const _rankings: (Omit<Ranking, "position"> & {
+            isStation: boolean;
+        })[] = [];
+        for (const [callsign, data] of map) {
+            _rankings.push({
+                callsign,
+                qsos: data.qsos,
+                isStation: data.isStation,
+                // 2 points if QSO to a station, 1 point if not
+                points: data.qsos.reduce(
+                    (acc, qso) =>
+                        acc +
+                        // if by station or to station is event station, 2 points
+                        ([qso.callsign, callsign].some((e) =>
+                            stationCallsigns.has(e)
+                        )
+                            ? 2
+                            : 1),
+                    0
+                )
+            });
+        }
+
+        _rankings.sort((a, b) => b.points - a.points);
+
+        logger.debug(`Event ${event._id} has ${_rankings.length} rankings`);
+
+        const [stationRankings, userRankings] = [true, false].map((b) =>
+            _rankings
+                .filter((e) => e.isStation === b)
+                .map((ranking, index) => {
+                    const { isStation, ...rest } = ranking;
+                    logger.debug(
+                        `Ranking for ${isStation ? "station" : "hunter"} ${
+                            ranking.callsign
+                        } has ${ranking.qsos.length} QSOs and ${
+                            ranking.points
+                        } points`
+                    );
+                    return {
+                        ...rest,
+                        position: index + 1
+                    };
+                })
         );
 
         res.json({ event, rankings: { stationRankings, userRankings } });
@@ -226,16 +211,19 @@ router.get(
  * @openapi
  * /api/rankings:
  *  get:
- *    summary: Gets rankings for all QSOs in the current solar year
+ *    summary: Gets rankings for the current solar year
  *    tags:
  *      - rankings
  *    responses:
  *      '200':
- *        description: Rankings for the current solar year
+ *        description: Rankings of the current solar year
  *        content:
  *          application/json:
  *            type: object
  *            properties:
+ *              event:
+ *                  type: 'null'
+ *                  description: Event is null for yearly rankings
  *              rankings:
  *                  type: object
  *                  properties:
@@ -248,6 +236,7 @@ router.get(
  *                      items:
  *                        $ref: '#/components/schemas/Ranking'
  *              required:
+ *                - event
  *                - rankings
  *      '500':
  *        description: Server error
@@ -259,13 +248,14 @@ router.get(
 router.get("/", async (req, res) => {
     logger.debug("Getting rankings for current solar year");
 
-    const startOfYear = moment().startOf("year").toDate();
-    const endOfYear = moment().endOf("year").toDate();
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1); // January 1st of current year
+    const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999); // December 31st of current year
 
     // Get all QSOs for the current solar year
     const qsos = await Qso.find(
         {
-            qsoDate: {
+            date: {
                 $gte: startOfYear,
                 $lte: endOfYear
             }
@@ -281,42 +271,59 @@ router.get("/", async (req, res) => {
         select: "callsign"
     });
 
-    // For general rankings, stations are considered any user who participated in ANY event in the current year.
-    const participatingEventIds = new Set(
-        qsos.map((qso) => qso.event?.toString()).filter(Boolean)
-    ); // get unique event IDs from QSOs
+    const map = new Map<string, { qsos: QsoDoc[] }>();
+    for (const qso of qsos) {
+        if (!map.has(qso.callsign)) {
+            map.set(qso.callsign, {
+                qsos: []
+            });
+        }
+        map.get(qso.callsign)!.qsos.push(qso);
 
-    const stations = await JoinRequest.find({
-        forEvent: { $in: Array.from(participatingEventIds) },
-        isApproved: true
-    }).populate({
-        path: "fromUser",
-        select: "callsign"
-    });
+        if (!isDocument(qso.fromStation)) {
+            logger.error(
+                `QSO.fromStation ${qso.fromStation} is not a document for QSO ${qso._id}`
+            );
+            continue;
+        }
 
-    const stationCallsigns = new Set<string>(
-        stations
-            .filter((e) => isDocument(e.fromUser))
-            .map((e) => (e.fromUser as unknown as UserDoc).callsign)
-    );
+        const fromCallsign =
+            qso.fromStationCallsignOverride || qso.fromStation.callsign;
 
-    // also add eventually overriden callsigns
-    const allStationCallsigns = new Set(stationCallsigns);
-    for (const { fromStationCallsignOverride } of qsos.filter(
-        (e) =>
-            isDocument(e.fromStation) &&
-            e.fromStationCallsignOverride &&
-            stationCallsigns.has(e.fromStation.callsign)
-    )) {
-        allStationCallsigns.add(fromStationCallsignOverride!);
+        if (!map.has(fromCallsign)) {
+            map.set(fromCallsign, {
+                qsos: []
+            });
+        }
+        map.get(fromCallsign)!.qsos.push(qso);
     }
 
-    const { stationRankings, userRankings } = await calculateRankings(
-        qsos,
-        allStationCallsigns
-    );
+    const _rankings: Omit<Ranking, "position">[] = [];
+    for (const [callsign, data] of map) {
+        _rankings.push({
+            callsign,
+            qsos: data.qsos,
+            // 1 point per QSO
+            points: data.qsos.length
+        });
+    }
 
-    res.json({ rankings: { stationRankings, userRankings } });
+    _rankings.sort((a, b) => b.points - a.points);
+
+    logger.debug(`Current solar year has ${_rankings.length} rankings`);
+
+    const userRankings = _rankings.map((ranking, index) => {
+        const rest = ranking;
+        logger.debug(
+            `Ranking for user ${ranking.callsign} has ${ranking.qsos.length} QSOs and ${ranking.points} points`
+        );
+        return {
+            ...rest,
+            position: index + 1
+        };
+    });
+
+    res.json({ event: null, rankings: { stationRankings: [], userRankings } });
 });
 
 export default router;
