@@ -1,12 +1,4 @@
 @tailwind base;
-@layer base {
-    ol,
-    ul {
-        list-style: initial;
-        margin: revert;
-        padding: revert;
-    }
-}
 @tailwind components;
 @tailwind utilities;
 

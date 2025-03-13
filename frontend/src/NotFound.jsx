@@ -20,7 +20,6 @@ const NotFoundPage = () => {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button
-            color="blue"
             as={Link}
             to={-1}
             className="inline-flex items-center justify-center"
@@ -33,6 +32,7 @@ const NotFoundPage = () => {
             color="gray"
             as={Link}
             to="/"
+            outline
             className="inline-flex items-center dark:text-white justify-center"
           >
             <HiHome className="mr-2 h-5 w-5" />

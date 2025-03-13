@@ -79,7 +79,7 @@ const BlogPostViewer = () => {
       <div className="mx-auto px-4 w-full md:w-5/6 pt-8 pb-2">
         <div className="md:-ml-4 md:-mt-4 flex justify-between">
           <Link to={-1}>
-            <Button color="info">
+            <Button color="gray" outline>
               <FaBackward />
             </Button>
           </Link>

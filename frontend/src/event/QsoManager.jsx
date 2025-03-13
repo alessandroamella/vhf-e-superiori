@@ -17,10 +17,12 @@ import {
   TextInput,
   Tooltip
 } from "flowbite-react";
+import html2canvas from "html2canvas-pro";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Helmet } from "react-helmet";
 import {
+  FaBook,
   FaCheck,
   FaEnvelope,
   FaExternalLinkAlt,
@@ -32,6 +34,7 @@ import {
   FaUndo,
   FaUser
 } from "react-icons/fa";
+import { IoIosRadio } from "react-icons/io";
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
 import {
   Link,
@@ -45,9 +48,15 @@ import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import MapWatermark from "../shared/MapWatermark";
 import StationMapMarker from "../shared/StationMapMarker";
+import { wait } from "../shared/wait";
 
 const QsoManager = () => {
   const { user } = useContext(UserContext);
+
+  const alertContainerRef = useRef(null);
+  const scrollToAlert = () => {
+    alertContainerRef.current?.scrollIntoView();
+  };
 
   const [disabled, setDisabled] = useState(true);
   const [alert, setAlert] = useState(null);
@@ -75,7 +84,9 @@ const QsoManager = () => {
         });
         console.log("users", data);
         setUsers(data);
-        setFromStation(data.find(e => e.callsign === user.callsign) || data[0]);
+        setFromStation(
+          data.find((e) => e.callsign === user.callsign) || data[0]
+        );
       } catch (err) {
         console.log("Errore nel caricamento degli utenti", err);
         setAlert({
@@ -83,10 +94,7 @@ const QsoManager = () => {
           msg: getErrorStr(err?.response?.data?.err)
         });
 
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
+        scrollToAlert();
 
         setUsers(null);
       }
@@ -112,10 +120,7 @@ const QsoManager = () => {
         msg: getErrorStr(err?.response?.data?.err)
       });
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+      scrollToAlert();
 
       setQsos(null);
     }
@@ -140,10 +145,7 @@ const QsoManager = () => {
           msg: getErrorStr(err?.response?.data?.err)
         });
 
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
+        scrollToAlert();
 
         setEvent(null);
       }
@@ -162,10 +164,7 @@ const QsoManager = () => {
         msg: "Devi prima effettuare il login"
       });
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+      scrollToAlert();
 
       return;
     } else if (user && event) {
@@ -178,8 +177,8 @@ const QsoManager = () => {
         !!user,
         Array.isArray(event.joinRequests) &&
           event.joinRequests
-            ?.filter(e => e.isApproved)
-            ?.map(e => e.fromUser.callsign)
+            ?.filter((e) => e.isApproved)
+            ?.map((e) => e.fromUser.callsign)
             ?.includes(user.callsign),
         event.joinRequests
       );
@@ -196,10 +195,7 @@ const QsoManager = () => {
       //     msg: "Non sei una stazione attivatrice per questo evento"
       //   });
 
-      //   window.scrollTo({
-      //     top: 0,
-      //     behavior: "smooth"
-      //   });
+      //   scrollToAlert();
 
       //   setHasPermission(false);
       //   return;
@@ -210,10 +206,7 @@ const QsoManager = () => {
         msg: "Evento non trovato"
       });
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+      scrollToAlert();
       return;
     } else if (qsos === null) {
       setAlert({
@@ -221,10 +214,7 @@ const QsoManager = () => {
         msg: "Errore nel caricamento dei QSO"
       });
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+      scrollToAlert();
       return;
     }
 
@@ -262,7 +252,7 @@ const QsoManager = () => {
 
   const geolocalize = useCallback(() => {
     navigator.geolocation.getCurrentPosition(
-      async position => {
+      async (position) => {
         console.log("Geolocalizzato", position);
 
         setFormattedAddress(null);
@@ -273,20 +263,54 @@ const QsoManager = () => {
         console.log("fetched locator in geolocalize", data);
         setLocator(data.locator);
       },
-      err => {
+      (err) => {
         console.log("Errore nella geolocalizzazione", err);
         setAlert({
           color: "failure",
           msg: "Errore nella geolocalizzazione"
         });
 
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
+        scrollToAlert();
       }
     );
   }, []);
+
+  const mapRef = useRef(null);
+
+  const [zoomControl, setZoomControl] = useState(true);
+
+  // Function to capture the map + overlay
+  const captureMap = useCallback(async () => {
+    console.log("Capturing map", mapRef.current, "user", user, "event", event);
+
+    if (!mapRef.current || !user || !event) return;
+
+    setZoomControl(false);
+
+    await wait(300);
+
+    const canvas = await html2canvas(mapRef.current, {
+      useCORS: true, // Ensures external tiles can be captured
+      allowTaint: true
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+
+    // Create a link to download the image
+    const link = document.createElement("a");
+    link.href = imgData;
+    link.download = `mappa-${event.name.replace(
+      /\W/g,
+      "_"
+    )}-${user.callsign.replace(/\W/g, "_")}-${formatInTimeZone(
+      new Date(),
+      "UTC",
+      "yyyy-MM-dd_HH-mm-ss"
+    )}-screenshot.png`;
+    link.click();
+
+    setZoomControl(true);
+  }, [event, user]);
 
   useEffect(() => {
     if (!user || formattedAddress) return;
@@ -389,7 +413,7 @@ const QsoManager = () => {
   const callsignRef = useRef(null);
 
   useEffect(() => {
-    window.addEventListener("beforeunload", event => {
+    window.addEventListener("beforeunload", (event) => {
       const e = event || window.event;
       e.preventDefault();
       if (e) {
@@ -411,73 +435,99 @@ const QsoManager = () => {
     });
   }, [callsign, locator, setCookie]);
 
-  async function createQso(e) {
-    e.preventDefault();
+  const createQso = useCallback(
+    async (e) => {
+      e?.preventDefault();
 
-    setDisabled(true);
-
-    console.log("create qso for callsign", callsign);
-
-    try {
-      const obj = {
-        // fromStation,
-        callsign,
-        fromStationCallsignOverride: callsignOverride,
-        event: id,
-        band: event.band,
-        mode: "SSB/CW",
-        qsoDate: new Date().toISOString(),
-        locator,
-        rst: 59,
-        fromStationCity: city,
-        fromStationProvince: province,
-        fromStationLat: lat,
-        fromStationLon: lon
-        // emailSent,
-        // emailSentDate,
-        // notes,
-        // email,
-        // imageHref
-      };
-      if (user.isAdmin && fromStation) {
-        console.log("fromStation changed", fromStation);
-        obj.fromStation = fromStation._id;
-      } else {
-        console.log("fromStation unchanged", user);
+      if (callsign === user?.callsign) {
+        setAlert({
+          color: "failure",
+          msg: "Non puoi creare un QSO con te stesso"
+        });
+        setDisabled(false);
+        scrollToAlert();
+        return;
       }
 
-      const { data } = await axios.post("/api/qso", obj);
-      console.log("QSO", data);
+      setDisabled(true);
 
-      // setAlert({
-      //   color: "success",
-      //   msg: "QSO creato con successo"
-      // });
+      console.log("create qso for callsign", callsign);
 
-      setHighlighted(data._id);
-      setTimeout(() => setHighlighted(null), 2500);
+      try {
+        const obj = {
+          // fromStation,
+          callsign,
+          fromStationCallsignOverride: callsignOverride,
+          event: id,
+          band: event.band,
+          mode: "SSB/CW",
+          qsoDate: new Date().toISOString(),
+          locator,
+          rst: 59,
+          fromStationCity: city,
+          fromStationProvince: province,
+          fromStationLat: lat,
+          fromStationLon: lon
+          // emailSent,
+          // emailSentDate,
+          // notes,
+          // email,
+          // imageHref
+        };
+        if (user.isAdmin && fromStation) {
+          console.log("fromStation changed", fromStation);
+          obj.fromStation = fromStation._id;
+        } else {
+          console.log("fromStation unchanged", user);
+        }
 
-      setQsos([data, ...qsos]);
-      setCallsign("");
-      // resetDate();
+        const { data } = await axios.post("/api/qso", obj);
+        console.log("QSO", data);
 
-      setTimeout(() => {
-        callsignRef?.current?.focus();
-      }, 100);
-    } catch (err) {
-      console.log(err.response?.data?.err || err);
-      window.alert(
-        "ERRORE crea QSO: " + getErrorStr(err?.response?.data?.err || err)
-      );
+        // setAlert({
+        //   color: "success",
+        //   msg: "QSO creato con successo"
+        // });
 
-      // setAlert({
-      //     color: "failure",
-      //     msg: getErrorStr(err?.response?.data?.err)
-      // });
-      // setUser(null);
-    }
-    setDisabled(false);
-  }
+        setHighlighted(data._id);
+        setTimeout(() => setHighlighted(null), 2500);
+
+        setQsos([data, ...qsos]);
+        setCallsign("");
+        // resetDate();
+
+        setTimeout(() => {
+          callsignRef?.current?.focus();
+        }, 100);
+      } catch (err) {
+        console.log(err.response?.data?.err || err);
+        window.alert(
+          "ERRORE crea QSO: " + getErrorStr(err?.response?.data?.err || err)
+        );
+
+        // setAlert({
+        //     color: "failure",
+        //     msg: getErrorStr(err?.response?.data?.err)
+        // });
+        // setUser(null);
+      }
+      setDisabled(false);
+    },
+    [
+      callsign,
+      callsignOverride,
+      city,
+      event.band,
+      fromStation,
+      id,
+      lat,
+      locator,
+      lon,
+      province,
+      qsos,
+      user
+    ]
+  );
 
   const [autocomplete, setAutocomplete] = useState(null);
 
@@ -493,6 +543,10 @@ const QsoManager = () => {
         "too shirt for autocomplete, callsign length",
         callsign.length
       );
+      setAutocomplete(null);
+      return;
+    } else if (callsign === user.callsign) {
+      console.log("callsign is user, aborting");
       setAutocomplete(null);
       return;
     }
@@ -544,116 +598,118 @@ const QsoManager = () => {
     });
   }
 
-  async function importAdif(_adifFile) {
-    if (!_adifFile) return;
+  const importAdif = useCallback(
+    async (_adifFile) => {
+      if (!_adifFile) return;
 
-    setAdifFile(_adifFile);
+      setAdifFile(_adifFile);
 
-    setHasFile(true);
-    setDisabled(true);
-    console.log("import adif", _adifFile);
-    const formData = new FormData();
-    formData.append("adif", _adifFile);
-    formData.append("event", id);
-    try {
-      const { data } = await axios.post("/api/adif/import", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      });
-      console.log("imported", { data });
+      setHasFile(true);
+      setDisabled(true);
+      console.log("import adif", _adifFile);
+      const formData = new FormData();
+      formData.append("adif", _adifFile);
+      formData.append("event", id);
+      try {
+        const { data } = await axios.post("/api/adif/import", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        });
+        console.log("imported", { data });
 
-      setAdifQsos(data);
-      setAdifChecked(
-        data.reduce((acc, q, i) => {
-          acc[getAdifKey(q, i)] = true;
-          return acc;
-        }, {})
-      );
-      setShowModal(true);
-    } catch (err) {
-      console.log(err?.response?.data || err);
-      setAlert({
-        color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
-      });
-    } finally {
-      setDisabled(false);
+        setAdifQsos(data);
+        setAdifChecked(
+          data.reduce((acc, q, i) => {
+            acc[getAdifKey(q, i)] = true;
+            return acc;
+          }, {})
+        );
+        setShowModal(true);
+      } catch (err) {
+        console.log(err?.response?.data || err);
+        setAlert({
+          color: "failure",
+          msg: getErrorStr(err?.response?.data?.err)
+        });
+      } finally {
+        setDisabled(false);
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    }
-  }
+        scrollToAlert();
+      }
+    },
+    [id]
+  );
 
   const [isImportingAdif, setIsImportingAdif] = useState(false);
 
-  async function importAdifSubmit(e) {
-    e.preventDefault();
+  const importAdifSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
 
-    if (!window.confirm("Vuoi importare i QSO selezionati?")) {
-      return;
-    }
+      if (!window.confirm("Vuoi importare i QSO selezionati?")) {
+        return;
+      }
 
-    console.log("import adif submit", adifQsos);
+      console.log("import adif submit", adifQsos);
 
-    setIsImportingAdif(true);
+      setIsImportingAdif(true);
 
-    // send ADIF again, this time with checked QSOs and parameter save=true
-    setDisabled(true);
-    const formData = new FormData();
-    formData.append("adif", adifFile);
-    formData.append("event", id);
-    formData.append("fromStationCity", city);
-    formData.append("fromStationProvince", province);
-    formData.append("fromStationLat", lat);
-    formData.append("fromStationLon", lon);
-    formData.append(
-      "exclude",
-      JSON.stringify(
-        adifQsos.map((q, i) => getAdifKey(q, i)).filter(k => !adifChecked[k])
-      )
-    );
-    formData.append("save", true);
-    try {
-      const { data } = await axios.post("/api/adif/import", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      });
-      console.log("imported", { data });
+      // send ADIF again, this time with checked QSOs and parameter save=true
+      setDisabled(true);
+      const formData = new FormData();
+      formData.append("adif", adifFile);
+      formData.append("event", id);
+      formData.append("fromStationCity", city);
+      formData.append("fromStationProvince", province);
+      formData.append("fromStationLat", lat);
+      formData.append("fromStationLon", lon);
+      formData.append(
+        "exclude",
+        JSON.stringify(
+          adifQsos
+            .map((q, i) => getAdifKey(q, i))
+            .filter((k) => !adifChecked[k])
+        )
+      );
+      formData.append("save", true);
+      try {
+        const { data } = await axios.post("/api/adif/import", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        });
+        console.log("imported", { data });
 
-      setAdifQsos(null);
-      setAdifChecked({});
-      resetAdif();
+        setAdifQsos(null);
+        setAdifChecked({});
+        resetAdif();
 
-      await getQsos();
+        await getQsos();
 
-      setTimeout(() => {
+        setTimeout(() => {
+          setAlert({
+            color: "success",
+            msg: data.length + " QSO importati con successo"
+          });
+          setDisabled(false);
+        }, 690);
+      } catch (err) {
+        console.log(err?.response?.data || err);
         setAlert({
-          color: "success",
-          msg: data.length + " QSO importati con successo"
+          color: "failure",
+          msg: getErrorStr(err?.response?.data?.err)
         });
         setDisabled(false);
-      }, 690);
-    } catch (err) {
-      console.log(err?.response?.data || err);
-      setAlert({
-        color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
-      });
-      setDisabled(false);
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    } finally {
-      setShowModal(false);
-      setIsImportingAdif(false);
-    }
-  }
+        scrollToAlert();
+      } finally {
+        setShowModal(false);
+        setIsImportingAdif(false);
+      }
+    },
+    [adifChecked, adifFile, adifQsos, city, getQsos, id, lat, lon, province]
+  );
 
   function resetAdif() {
     if (adifInputRef.current) {
@@ -668,13 +724,13 @@ const QsoManager = () => {
     if (checked) {
       setSelectedQsos([...selectedQsos, qso._id]);
     } else {
-      setSelectedQsos(selectedQsos.filter(q => q !== qso._id));
+      setSelectedQsos(selectedQsos.filter((q) => q !== qso._id));
     }
   }
 
   const [deleteQsoAnimation, setDeleteQsoAnimation] = useState(false);
 
-  async function deleteSelected() {
+  const deleteSelected = useCallback(async () => {
     if (
       !window.confirm(
         `Vuoi ELIMINARE i QSO selezionati (${selectedQsos.length})?\n⚠️⚠️ L'operazione è irrevocabile!`
@@ -691,7 +747,7 @@ const QsoManager = () => {
         deleted.push(qso);
       }
       console.log("deleted", deleted);
-      setQsos(qsos.filter(q => !deleted.includes(q._id)));
+      setQsos(qsos.filter((q) => !deleted.includes(q._id)));
       setSelectedQsos([]);
 
       setAlert({
@@ -708,16 +764,13 @@ const QsoManager = () => {
         msg: getErrorStr(err?.response?.data?.err)
       });
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+      scrollToAlert();
     } finally {
       setDisabled(false);
     }
-  }
+  }, [selectedQsos, qsos]);
 
-  async function exportAdif() {
+  const exportAdif = useCallback(async () => {
     if (selectedQsos.length === 0) {
       window.alert("Seleziona almeno un QSO");
       return;
@@ -732,48 +785,48 @@ const QsoManager = () => {
       color: "success",
       msg: `Esportati ${selectedQsos.length} QSO`
     });
-  }
+  }, [id, selectedQsos]);
 
   const navigate = useNavigate();
 
-  async function forceSendEqsl(q) {
-    eqslSending.set(q._id, "sending");
+  const forceSendEqsl = useCallback(
+    async (q) => {
+      eqslSending.set(q._id, "sending");
 
-    console.log("forceSendEqsl for qso", q._id, q);
+      console.log("forceSendEqsl for qso", q._id, q);
 
-    try {
-      const { data } = await axios.get("/api/eqsl/forcesend/" + q._id);
-      console.log("OK forceSendEqsl for qso", q._id, data);
-      setQsos(
-        qsos.map(qso =>
-          qso._id === q._id
-            ? { ...qso, imageHref: data?.href, emailSent: true }
-            : qso
-        )
-      );
-      eqslSending.set(q._id, "ok");
-      // setAlert({
-      //   color: "success",
-      //   msg: "eQSL inviata con successo"
-      // });
-    } catch (err) {
-      eqslSending.set(q._id, "failed");
-      console.log(err?.response?.data || err);
-      setAlert({
-        color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
-      });
+      try {
+        const { data } = await axios.get("/api/eqsl/forcesend/" + q._id);
+        console.log("OK forceSendEqsl for qso", q._id, data);
+        setQsos(
+          qsos.map((qso) =>
+            qso._id === q._id
+              ? { ...qso, imageHref: data?.href, emailSent: true }
+              : qso
+          )
+        );
+        eqslSending.set(q._id, "ok");
+        // setAlert({
+        //   color: "success",
+        //   msg: "eQSL inviata con successo"
+        // });
+      } catch (err) {
+        eqslSending.set(q._id, "failed");
+        console.log(err?.response?.data || err);
+        setAlert({
+          color: "failure",
+          msg: getErrorStr(err?.response?.data?.err)
+        });
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    } finally {
-      setTimeout(() => {
-        eqslSending.delete(q._id);
-      }, 3000);
-    }
-  }
+        scrollToAlert();
+      } finally {
+        setTimeout(() => {
+          eqslSending.delete(q._id);
+        }, 3000);
+      }
+    },
+    [eqslSending, qsos]
+  );
 
   const [allPredataInserted, setAllPredataInserted] = useState(false);
 
@@ -893,53 +946,55 @@ const QsoManager = () => {
                   </Button>
                 </Button.Group>
 
-                <Table>
-                  <Table.Head>
-                    <Table.HeadCell>Nominativo</Table.HeadCell>
-                    <Table.HeadCell>Data UTC</Table.HeadCell>
-                    <Table.HeadCell>Banda</Table.HeadCell>
-                    <Table.HeadCell>Modo</Table.HeadCell>
-                    <Table.HeadCell>Locatore</Table.HeadCell>
-                    <Table.HeadCell>RST</Table.HeadCell>
-                  </Table.Head>
-                  <Table.Body>
-                    {adifQsos.map((q, i) => (
-                      <Table.Row
-                        key={q._id}
-                        className={`transition-colors duration-300 ${
-                          adifChecked[getAdifKey(q, i)]
-                            ? "bg-green-100"
-                            : "bg-red-100 line-through"
-                        }`}
-                      >
-                        <Table.Cell className="flex gap-2 items-center">
-                          <Checkbox
-                            value={q._id}
-                            checked={adifChecked[getAdifKey(q, i)]}
-                            onChange={e => {
-                              setAdifChecked({
-                                ...adifChecked,
-                                [getAdifKey(q, i)]: e.target.checked
-                              });
-                            }}
-                          />{" "}
-                          {q.callsign}
-                        </Table.Cell>
-                        <Table.Cell>
-                          {formatInTimeZone(
-                            q.qsoDate,
-                            "UTC",
-                            "yyyy-MM-dd HH:mm"
-                          )}
-                        </Table.Cell>
-                        <Table.Cell>{q.band || q.frequency}</Table.Cell>
-                        <Table.Cell>{q.mode}</Table.Cell>
-                        <Table.Cell>{q.locator}</Table.Cell>
-                        <Table.Cell>{q.rst}</Table.Cell>
-                      </Table.Row>
-                    ))}
-                  </Table.Body>
-                </Table>
+                <div className="w-full">
+                  <Table>
+                    <Table.Head>
+                      <Table.HeadCell>Nominativo</Table.HeadCell>
+                      <Table.HeadCell>Data UTC</Table.HeadCell>
+                      <Table.HeadCell>Banda</Table.HeadCell>
+                      <Table.HeadCell>Modo</Table.HeadCell>
+                      <Table.HeadCell>Locatore</Table.HeadCell>
+                      <Table.HeadCell>RST</Table.HeadCell>
+                    </Table.Head>
+                    <Table.Body>
+                      {adifQsos.map((q, i) => (
+                        <Table.Row
+                          key={q._id}
+                          className={`transition-colors duration-300 ${
+                            adifChecked[getAdifKey(q, i)]
+                              ? "bg-green-100 dark:bg-green-800"
+                              : "bg-red-100 dark:bg-red-800 line-through"
+                          }`}
+                        >
+                          <Table.Cell className="flex gap-2 items-center">
+                            <Checkbox
+                              value={q._id}
+                              checked={adifChecked[getAdifKey(q, i)]}
+                              onChange={(e) => {
+                                setAdifChecked({
+                                  ...adifChecked,
+                                  [getAdifKey(q, i)]: e.target.checked
+                                });
+                              }}
+                            />{" "}
+                            {q.callsign}
+                          </Table.Cell>
+                          <Table.Cell>
+                            {formatInTimeZone(
+                              q.qsoDate,
+                              "UTC",
+                              "yyyy-MM-dd HH:mm"
+                            )}
+                          </Table.Cell>
+                          <Table.Cell>{q.band || q.frequency}</Table.Cell>
+                          <Table.Cell>{q.mode}</Table.Cell>
+                          <Table.Cell>{q.locator}</Table.Cell>
+                          <Table.Cell>{q.rst}</Table.Cell>
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </Table>
+                </div>
               </div>
             ) : (
               <Spinner className="dark:text-white dark:fill-white" />
@@ -981,11 +1036,14 @@ const QsoManager = () => {
         </form>
       </Modal>
 
-      <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900">
-        <div className="mx-auto px-4 w-full md:w-5/6 pt-12">
+      <div className="w-full h-full pb-4 dark:text-white bg-white dark:bg-gray-900">
+        <div
+          ref={alertContainerRef}
+          className="mx-auto px-4 w-full md:w-5/6 pt-12"
+        >
           {alert && (
             <Alert
-              className="mb-6 dark:border dark:border-white dark:text-black"
+              className="mb-6 dark:border dark:text-black"
               color={alert.color}
               onDismiss={() => (hasPermission ? setAlert(null) : navigate("/"))}
             >
@@ -1016,18 +1074,29 @@ const QsoManager = () => {
                   <Spinner className="dark:text-white dark:fill-white" />
                 ) : null}
 
-                <div className="my-12">
-                  <div
-                    id="create-qso-container"
-                    className="bg-gray-50 dark:bg-gray-700 sticky -top-16 z-50 -mx-4 md:-mx-12 lg:-mx-18 rounded-xl px-4"
-                  >
-                    <div className="flex flex-col md:flex-row justify-center md:justify-between gap-4 items-center">
+                <Card id="create-qso-container" className="my-12">
+                  <div>
+                    <div className="flex flex-col md:flex-row justify-center md:justify-between gap-2 md:gap-4 mb-8 items-center">
                       <Typography
                         variant="h2"
-                        className="my-2 flex items-center dark:text-white"
+                        className="flex items-center dark:text-white"
                       >
+                        <IoIosRadio className="opacity-65 scale-75 inline-block" />
                         Crea QSO
                       </Typography>
+
+                      {page === 1 && (
+                        <div className="flex justify-end">
+                          <Button
+                            onClick={() => setIsManuallySettingLocator(true)}
+                            color="yellow"
+                            size="sm"
+                            disabled={disabled}
+                          >
+                            Modifica locatore anche per portatili /P
+                          </Button>
+                        </div>
+                      )}
                     </div>
                     {user ? (
                       <div>
@@ -1048,11 +1117,10 @@ const QsoManager = () => {
                                         label={fromStation.callsign}
                                         disabled={disabled}
                                         id="fromStation"
-                                        className="w-full"
                                         required
                                         color="light"
                                       >
-                                        {users.map(u => (
+                                        {users.map((u) => (
                                           <Dropdown.Item
                                             key={u._id}
                                             onClick={() => setFromStation(u)}
@@ -1093,7 +1161,7 @@ const QsoManager = () => {
                                             : "warning"
                                         }
                                         value={callsignOverride}
-                                        onChange={e =>
+                                        onChange={(e) =>
                                           setCallsignOverride(
                                             e.target.value.toUpperCase()
                                           )
@@ -1131,7 +1199,7 @@ const QsoManager = () => {
                                           maxLength={6}
                                           placeholder="Locatore..."
                                           value={locator}
-                                          onChange={e => {
+                                          onChange={(e) => {
                                             setLocator(e.target.value);
                                             setCookie(
                                               "locator",
@@ -1180,7 +1248,7 @@ const QsoManager = () => {
                                     placeholder="Inserisci nominativo"
                                     value={callsign}
                                     className="uppercase font-semibold text-2xl input-large text-black"
-                                    onChange={e => {
+                                    onChange={(e) => {
                                       const val = e.target.value.toUpperCase();
                                       setCallsign(val);
                                       setCookie("callsign", val, {
@@ -1198,7 +1266,10 @@ const QsoManager = () => {
                                       ref={autocompleteRef}
                                       className="absolute opacity bottom-20 md:top-20 -left-3 md:left-0 bg-white min-w-[20rem] md:min-w-[28rem] max-w-[50vw] md:max-w-[80vw] dark:bg-gray-800 shadow-lg rounded-lg z-10"
                                     >
-                                      <Card>
+                                      <Card
+                                        onClick={createQso}
+                                        className="z-40 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-75"
+                                      >
                                         {/* justify-between */}
                                         <div className="flex justify-center items-center gap-2 md:gap-4">
                                           <div className="hidden md:block">
@@ -1210,7 +1281,7 @@ const QsoManager = () => {
                                           </div>
                                           <div className="flex flex-col items-center min-w-[10rem]">
                                             <span className="font-semibold text-lg flex items-center gap-1">
-                                              <span className="text-gray-500">
+                                              <span className="text-gray-500 dark:text-gray-400">
                                                 <Avatar
                                                   className="block md:hidden mb-1 mr-1 md:mb-0"
                                                   img={autocomplete.pictureUrl}
@@ -1219,7 +1290,9 @@ const QsoManager = () => {
                                                 />
                                                 <FaUser className="hidden md:block" />
                                               </span>{" "}
-                                              {autocomplete.callsign}
+                                              <span className="dark:text-white">
+                                                {autocomplete.callsign}
+                                              </span>
                                             </span>
                                             {autocomplete.name && (
                                               // break word if too long
@@ -1315,19 +1388,11 @@ const QsoManager = () => {
                     )}
                   </div>
 
-                  {page === 1 && (
-                    <div className="mt-8 flex justify-end">
-                      <Button
-                        onClick={() => setIsManuallySettingLocator(true)}
-                        disabled={disabled}
-                      >
-                        Modifica locatore anche per portatili /P
-                      </Button>
-                    </div>
-                  )}
+                  <hr />
 
                   <div className="mt-12 flex flex-col md:flex-row md:justify-between">
                     <Typography variant="h2" className="dark:text-white mb-2">
+                      <FaBook className="opacity-65 scale-75 inline-block" />
                       QSO registrati
                     </Typography>
                     <div>
@@ -1344,7 +1409,7 @@ const QsoManager = () => {
                           }
                           accept=".adi"
                           className="h-fit"
-                          onChange={e => importAdif(e.target.files[0])}
+                          onChange={(e) => importAdif(e.target.files[0])}
                           ref={adifInputRef}
                         />
                         <Button
@@ -1372,7 +1437,7 @@ const QsoManager = () => {
                                   qsos.length === 0
                                 }
                                 onClick={() => {
-                                  setSelectedQsos(qsos.map(q => q._id));
+                                  setSelectedQsos(qsos.map((q) => q._id));
                                 }}
                               >
                                 Seleziona tutti
@@ -1408,7 +1473,7 @@ const QsoManager = () => {
                                   disabled ||
                                   selectedQsos.length === 0 ||
                                   selectedQsos.some(
-                                    e => eqslSending.get(e) === "sending"
+                                    (e) => eqslSending.get(e) === "sending"
                                   )
                                 }
                                 onClick={deleteSelected}
@@ -1419,15 +1484,15 @@ const QsoManager = () => {
                                     size="sm"
                                   />
                                 ) : selectedQsos.some(
-                                    e => eqslSending.get(e) === "sending"
+                                    (e) => eqslSending.get(e) === "sending"
                                   ) ? (
                                   <Tooltip
                                     content={`Attendi che la eQSL per ${
                                       qsos.find(
-                                        q =>
+                                        (q) =>
                                           q._id ===
                                           selectedQsos.find(
-                                            e =>
+                                            (e) =>
                                               eqslSending.get(e) === "sending"
                                           )
                                       )?.callsign
@@ -1445,7 +1510,7 @@ const QsoManager = () => {
                             </Button.Group>
                           </div>
 
-                          <div className="shadow-lg md:-mx-14 xl:mx-0">
+                          <div className="shadow-lg overflow-y-auto md:-mx-6 lg:-mx-14 xl:mx-0">
                             <Table>
                               <Table.Head>
                                 <Table.HeadCell>
@@ -1467,12 +1532,21 @@ const QsoManager = () => {
                               <Table.Body>
                                 {qsos?.map((q, i) => (
                                   <Table.Row
+                                    onClick={() => {
+                                      setSelectedQsos(
+                                        selectedQsos.includes(q._id)
+                                          ? selectedQsos.filter(
+                                              (e) => e !== q._id
+                                            )
+                                          : [...selectedQsos, q._id]
+                                      );
+                                    }}
                                     key={q._id}
-                                    className={`transition-colors duration-200 ${
+                                    className={`cursor-pointer transition-colors duration-200 ${
                                       highlighted === q._id
-                                        ? "bg-green-200 hover:bg-green-300"
+                                        ? "bg-green-200 hover:bg-green-300 dark:bg-green-900 dark:hover:bg-green-800"
                                         : selectedQsos.includes(q._id)
-                                        ? "bg-yellow-200 hover:bg-yellow-200"
+                                        ? "bg-yellow-200 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800"
                                         : i % 2 === 0
                                         ? "hover:bg-gray-200 dark:hover:bg-gray-600"
                                         : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -1480,18 +1554,14 @@ const QsoManager = () => {
                                   >
                                     <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                       <div className="flex items-center gap-2">
-                                        <Tooltip content={"Id: " + q._id}>
-                                          <Checkbox
-                                            value={q._id}
-                                            disabled={disabled}
-                                            checked={selectedQsos.includes(
-                                              q._id
-                                            )}
-                                            onChange={e =>
-                                              selectQso(q, e.target.checked)
-                                            }
-                                          />
-                                        </Tooltip>
+                                        <Checkbox
+                                          value={q._id}
+                                          disabled={disabled}
+                                          checked={selectedQsos.includes(q._id)}
+                                          onChange={(e) =>
+                                            selectQso(q, e.target.checked)
+                                          }
+                                        />
                                       </div>
                                     </Table.Cell>
                                     {user?.isAdmin && (
@@ -1624,69 +1694,75 @@ const QsoManager = () => {
                       </p>
                     )}
                   </div>
-                </div>
+                </Card>
 
                 {qsos && (
                   <div>
                     <Typography
-                      variant="h2"
-                      className="dark:text-white my-4 flex items-center"
+                      variant="h3"
+                      className="dark:text-white font-medium gap-2 my-4 flex items-center"
                     >
-                      Mappa QSO
+                      Mappa QSO di <strong>{user?.callsign}</strong>-{" "}
+                      {event?.name}
                     </Typography>
 
-                    <MapContainer
-                      center={[44.646331832036864, 10.925526003071043]}
-                      zoom={5}
-                    >
-                      <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                      />
+                    {/* center in Perugia */}
+                    <div ref={mapRef}>
+                      <MapContainer
+                        zoomControl={zoomControl}
+                        center={[43.110717, 12.390828]}
+                        zoom={5}
+                      >
+                        <TileLayer
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        />
 
-                      {qsos
-                        .filter(
-                          q =>
-                            q.fromStationLat &&
-                            q.fromStationLon &&
-                            q.toStationLat &&
-                            q.toStationLon
-                        )
-                        .map(q => (
-                          <>
-                            <Polyline
-                              positions={[
-                                [q.fromStationLat, q.fromStationLon],
-                                [q.toStationLat, q.toStationLon]
-                              ]}
-                              color="blue"
-                              weight={2} // make a bit thinner
-                            />
+                        {qsos
+                          .filter(
+                            (q) =>
+                              q.fromStationLat &&
+                              q.fromStationLon &&
+                              q.toStationLat &&
+                              q.toStationLon
+                          )
+                          .map((q) => (
+                            <>
+                              <Polyline
+                                positions={[
+                                  [q.fromStationLat, q.fromStationLon],
+                                  [q.toStationLat, q.toStationLon]
+                                ]}
+                                color="blue"
+                                weight={2} // make a bit thinner
+                              />
 
-                            <StationMapMarker
-                              callsign={
-                                q.fromStationCallsignOverride ||
-                                q.fromStation.callsign
-                              }
-                              lat={q.fromStationLat}
-                              lon={q.fromStationLon}
-                              locator={q.fromLocator}
-                              iconRescaleFactor={0.5}
-                            />
-                            <StationMapMarker
-                              callsign={q.callsign}
-                              lat={q.toStationLat}
-                              lon={q.toStationLon}
-                              locator={q.toLocator}
-                              iconRescaleFactor={0.5}
-                            />
-                          </>
-                        ))}
+                              <StationMapMarker
+                                callsign={
+                                  q.fromStationCallsignOverride ||
+                                  q.fromStation.callsign
+                                }
+                                lat={q.fromStationLat}
+                                lon={q.fromStationLon}
+                                locator={q.fromLocator}
+                                iconRescaleFactor={0.5}
+                              />
+                              <StationMapMarker
+                                callsign={q.callsign}
+                                lat={q.toStationLat}
+                                lon={q.toStationLon}
+                                locator={q.toLocator}
+                                iconRescaleFactor={0.5}
+                              />
+                            </>
+                          ))}
 
-                      <MapWatermark />
-                    </MapContainer>
+                        <MapWatermark hideWhite={!zoomControl} />
+                      </MapContainer>
+                    </div>
                   </div>
                 )}
+                <Button onClick={captureMap}>Condividi</Button>
               </div>
             </>
           )}

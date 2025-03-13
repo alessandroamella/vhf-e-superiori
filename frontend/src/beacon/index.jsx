@@ -26,9 +26,11 @@ const BeaconHomepage = () => {
         console.log("beacons", data);
 
         const bands = new Set();
-        data.forEach(beacon => {
-          bands.add(beacon.properties?.frequency?.toFixed(0));
-        });
+        data
+          .filter((beacon) => beacon.properties?.frequency)
+          .forEach((beacon) => {
+            bands.add(Math.floor(beacon.properties?.frequency));
+          });
         setBands(Array.from(bands).sort((a, b) => a - b));
       } catch (err) {
         console.log("Errore nel caricamento dei beacon", err);
@@ -84,13 +86,13 @@ const BeaconHomepage = () => {
                           })
                     }
                   >
-                    <FaPlus className="inline mr-2" />
+                    <FaPlus className="inline mr-2 mt-[2.5px]" />
                     Aggiungi beacon
                   </Button>
                 </div>
               </ReactPlaceholder>
             }
-            {bands.map(band => (
+            {bands.map((band) => (
               <div key={band} className="mt-4">
                 <ReactPlaceholder
                   showLoadingAnimation
@@ -132,10 +134,15 @@ const BeaconHomepage = () => {
                       <Table.Body>
                         {beacons
                           ?.filter(
-                            beacon =>
-                              beacon.properties?.frequency?.toFixed(0) === band
+                            (beacon) =>
+                              beacon.properties?.frequency &&
+                              Math.floor(beacon.properties?.frequency) === band
                           )
-                          ?.map(beacon => (
+                          ?.sort(
+                            (a, b) =>
+                              a.properties?.frequency - b.properties?.frequency
+                          )
+                          ?.map((beacon) => (
                             <Table.Row
                               className="cursor-pointer transition-all hover:bg-gray-100"
                               key={beacon._id}

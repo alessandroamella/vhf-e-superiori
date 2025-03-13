@@ -23,7 +23,7 @@ import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import MapWatermark from "../shared/MapWatermark";
 
-const MyMarker = ({
+const CustomMarker = ({
   showPos,
   setShowPos,
   lat,
@@ -299,13 +299,13 @@ const BeaconEditor = () => {
 
   function geolocalize() {
     navigator.geolocation.getCurrentPosition(
-      position => {
+      (position) => {
         setLat(position.coords.latitude);
         setLon(position.coords.longitude);
         setIsPositionSet(true);
         setLocator("");
       },
-      err => {
+      (err) => {
         console.log("Errore nella geolocalizzazione", err);
         setAlert({
           color: "failure",
@@ -367,7 +367,9 @@ const BeaconEditor = () => {
                       minLength={1}
                       maxLength={10}
                       value={callsign}
-                      onChange={e => setCallsign(e.target.value.toUpperCase())}
+                      onChange={(e) =>
+                        setCallsign(e.target.value.toUpperCase())
+                      }
                       disabled={disabled}
                       autoComplete="callsign"
                       autoFocus
@@ -388,7 +390,7 @@ const BeaconEditor = () => {
                     placeholder="Beacon"
                     required
                     value={name}
-                    onChange={e => setName(e.target.value)}
+                    onChange={(e) => setName(e.target.value)}
                     disabled={disabled}
                   />
                 </div>
@@ -403,7 +405,7 @@ const BeaconEditor = () => {
                     placeholder="144.000"
                     required
                     value={frequency}
-                    onChange={e => setFrequency(e.target.value)}
+                    onChange={(e) => setFrequency(e.target.value)}
                     disabled={disabled}
                   />
                 </div>
@@ -418,7 +420,7 @@ const BeaconEditor = () => {
                     placeholder="Roma"
                     required
                     value={qthStr}
-                    onChange={e => setQthStr(e.target.value)}
+                    onChange={(e) => setQthStr(e.target.value)}
                     disabled={disabled}
                   />
                 </div>
@@ -433,7 +435,7 @@ const BeaconEditor = () => {
                     placeholder="JN61"
                     required
                     value={locator}
-                    onChange={e => setLocator(e.target.value)}
+                    onChange={(e) => setLocator(e.target.value)}
                     disabled={disabled}
                     onFocus={() => setIsLocatorFocused(true)}
                     onBlur={() => setIsLocatorFocused(false)}
@@ -453,7 +455,7 @@ const BeaconEditor = () => {
                     placeholder="100"
                     required
                     value={hamsl}
-                    onChange={e => setHamsl(e.target.value)}
+                    onChange={(e) => setHamsl(e.target.value)}
                     disabled={disabled}
                   />
                 </div>
@@ -468,7 +470,7 @@ const BeaconEditor = () => {
                     placeholder="Yagi"
                     required
                     value={antenna}
-                    onChange={e => setAntenna(e.target.value)}
+                    onChange={(e) => setAntenna(e.target.value)}
                     disabled={disabled}
                   />
                 </div>
@@ -483,7 +485,7 @@ const BeaconEditor = () => {
                     placeholder="CW"
                     required
                     value={mode}
-                    onChange={e => setMode(e.target.value)}
+                    onChange={(e) => setMode(e.target.value)}
                     disabled={disabled}
                   />
                 </div>
@@ -498,7 +500,7 @@ const BeaconEditor = () => {
                     placeholder="0"
                     required
                     value={qtf}
-                    onChange={e => setQtf(e.target.value)}
+                    onChange={(e) => setQtf(e.target.value)}
                     disabled={disabled}
                   />
                 </div>
@@ -513,7 +515,7 @@ const BeaconEditor = () => {
                     placeholder="5"
                     required
                     value={power}
-                    onChange={e => setPower(e.target.value)}
+                    onChange={(e) => setPower(e.target.value)}
                     disabled={disabled}
                   />
                 </div>
@@ -542,7 +544,7 @@ const BeaconEditor = () => {
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     />
-                    <MyMarker
+                    <CustomMarker
                       lat={lat}
                       lon={lon}
                       showPos={isPositionSet}
@@ -592,7 +594,7 @@ const BeaconEditor = () => {
   );
 };
 
-MyMarker.propTypes = {
+CustomMarker.propTypes = {
   showPos: PropTypes.bool,
   setShowPos: PropTypes.func,
   lat: PropTypes.number,
@@ -603,6 +605,6 @@ MyMarker.propTypes = {
   updateFn: PropTypes.func
 };
 
-MyMarker.displayName = "MyMarker";
+CustomMarker.displayName = "CustomMarker";
 
 export default BeaconEditor;

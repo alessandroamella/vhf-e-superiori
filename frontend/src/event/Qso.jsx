@@ -34,7 +34,7 @@ function ChangeView({ center, markers }) {
 
   let markerBounds = latLngBounds([]);
   if (markers.length && markers.length > 0) {
-    markers.forEach(marker => {
+    markers.forEach((marker) => {
       markerBounds.extend([marker.lat, marker.lon]);
     });
     map.fitBounds(markerBounds);
@@ -97,7 +97,7 @@ const Qso = () => {
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           <div className="mb-4 md:-ml-4 md:-mt-4">
             <Link to={-1}>
-              <Button color="info">
+              <Button color="gray" outline>
                 <FaBackward />
               </Button>
             </Link>

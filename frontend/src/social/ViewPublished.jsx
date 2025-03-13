@@ -362,7 +362,7 @@ const ViewPublished = () => {
             {/* <p>Dovrà essere approvato prima di essere visibile pubblicamente</p> */}
           </Alert>
         )}
-        <Button className="mb-4" as={Link} to="..">
+        <Button color="gray" outline className="mb-4 w-fit" as={Link} to="..">
           <FaBackward />
         </Button>
 
@@ -486,7 +486,7 @@ const ViewPublished = () => {
                           )?.event?.name || "Tutti i miei QSO"
                         }
                         id="filterByEvent"
-                        className="w-full z-50"
+                        className="rounded z-50"
                         required
                         color="light"
                       >
@@ -611,7 +611,7 @@ const ViewPublished = () => {
                           )}
                         </p>
                         <Button onClick={() => setEventToFilter(null)}>
-                          <FaArrowLeft className="inline mr-1" />
+                          <FaArrowLeft className="inline mr-2 mt-[3px]" />
                           Torna alla mappa senza filtro
                         </Button>
                       </div>

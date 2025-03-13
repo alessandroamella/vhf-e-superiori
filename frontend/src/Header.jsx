@@ -18,14 +18,14 @@ const LinkButton = ({ to, children, keepCurrent }) => {
   }
 
   return (
-    <Link
+    <Button
+      as={Link}
       to={{ pathname: to, search: searchParams.toString() }}
-      className="w-full"
+      color={isActive ? "purple" : "info"}
+      className="uppercase w-full"
     >
-      <Button color={isActive ? "purple" : "info"} className="uppercase w-full">
-        {children}
-      </Button>
-    </Link>
+      {children}
+    </Button>
   );
 };
 
@@ -148,15 +148,7 @@ const Header = () => {
             Entra con il tuo nominativo
           </LinkButton>
         )}
-        {user === false ? (
-          <Spinner />
-        ) : user ? (
-          <LinkButton to={`/u/${user.callsign}`}>Le mie mappe</LinkButton>
-        ) : (
-          <LinkButton to="/signup" keepCurrent>
-            Registrati
-          </LinkButton>
-        )}
+        <LinkButton to="/rankings">Classifiche</LinkButton>
       </div>
     </header>
   );

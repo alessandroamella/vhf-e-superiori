@@ -44,7 +44,7 @@ const NewPost = () => {
   const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
-    window.addEventListener("beforeunload", e => {
+    window.addEventListener("beforeunload", (e) => {
       e?.preventDefault();
       if (e) {
         e.returnValue = ""; // Legacy method for cross browser support
@@ -92,7 +92,7 @@ const NewPost = () => {
 
   const [uploadPercent, setUploadPercent] = useState(0);
 
-  const onSubmit = async data => {
+  const onSubmit = async (data) => {
     console.log(data);
 
     if (
@@ -125,7 +125,7 @@ const NewPost = () => {
         headers: {
           "Content-Type": "multipart/form-data"
         },
-        onUploadProgress: e => {
+        onUploadProgress: (e) => {
           const percent = (e.loaded / e.total) * 100;
           console.log("uploading...", percent);
           setUploadPercent(percent);
@@ -174,14 +174,14 @@ const NewPost = () => {
   const postDescription = watchedDescription;
   const postPictures = useMemo(
     () =>
-      [...Array(pictures.length).keys()].map(e =>
+      [...Array(pictures.length).keys()].map((e) =>
         window.URL.createObjectURL(pictures[e])
       ),
     [pictures]
   );
   const postVideos = useMemo(
     () =>
-      [...Array(videos.length).keys()].map(e =>
+      [...Array(videos.length).keys()].map((e) =>
         window.URL.createObjectURL(videos[e])
       ),
     [videos]
@@ -206,7 +206,12 @@ const NewPost = () => {
         <title>Nuovo post - VHF e superiori</title>
       </Helmet>
       <div className="px-4 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
-        <Button onClick={navigateBack} disabled={isSubmitting} color="light">
+        <Button
+          onClick={navigateBack}
+          disabled={isSubmitting}
+          color="gray"
+          outline
+        >
           <FaBackward />
         </Button>
         {alert && (

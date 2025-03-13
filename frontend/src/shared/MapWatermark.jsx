@@ -1,16 +1,28 @@
-const MapWatermark = () => {
+import PropTypes from "prop-types";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+
+const MapWatermark = ({ hideWhite }) => {
   return (
-    <div className="absolute right-8 bottom-8 z-50 flex items-center gap-1">
-      <img
-        className="w-16 h-16 drop-shadow"
-        src="/logo512.png"
-        alt="vhfesuperiori"
-      />
-      <p className="text-red-500 drop-shadow-md font-bold tracking-tight text-2xl">
-        vhfesuperiori.eu
-      </p>
+    <div className="absolute right-6 md:right-8 bottom-8 z-[1000]">
+      <div className="relative flex items-center gap-1">
+        <LazyLoadImage
+          className="w-12 z-50 aspect-square drop-shadow-md"
+          src="/logo-min.png"
+          alt="vhfesuperiori"
+        />
+        <p className="z-50 text-red-500 drop-shadow-md font-bold tracking-tighter text-2xl">
+          vhfesuperiori.eu
+        </p>
+        {!hideWhite && (
+          <div className="absolute z-0 top-2 bottom-2 left-6 -right-2 rounded-xl bg-white/75" />
+        )}
+      </div>
     </div>
   );
+};
+
+MapWatermark.propTypes = {
+  hideWhite: PropTypes.bool.isRequired
 };
 
 export default MapWatermark;

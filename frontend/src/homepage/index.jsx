@@ -5,7 +5,7 @@ import {
   differenceInDays,
   isAfter,
   isBefore,
-  subHours
+  subDays
 } from "date-fns";
 import { it } from "date-fns/locale";
 import { Accordion, Alert, Card, Spinner, Table } from "flowbite-react";
@@ -160,14 +160,13 @@ const Homepage = () => {
   const _stationEvent = useCallback(async () => {
     if (!events || !user) return null;
     const now = new Date();
-    // show for next 25 days after event has started and 10 days before
+    // show for next 10 days after event has started and 10 days before
     console.log("events to filter (_stationEvent)", events);
     const _events = [...events].filter((e) => {
       const eventDate = new Date(e.date);
-      // within 15 days in future or 12 hours in past
       return (
-        (isBefore(eventDate, addDays(now, 15)) && isAfter(eventDate, now)) ||
-        (isAfter(eventDate, subHours(now, 12)) && isBefore(eventDate, now))
+        isAfter(now, subDays(eventDate, 10)) &&
+        isBefore(now, addDays(eventDate, 10))
       );
     });
     _events.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -201,11 +200,15 @@ const Homepage = () => {
     const now = new Date();
     // show for 2 hours after event has started and 20 days before
     console.log("events to filter (_rankingsEvent)", events);
-    const _events = [...events].filter(
-      (e) =>
-        isAfter(now, addHours(new Date(e.date), 2)) &&
-        isBefore(new Date(e.date), addDays(now, 20))
-    );
+    const _events = [...events].filter((e) => {
+      const eventDate = new Date(e.date);
+      return (
+        // show rankings 2 hours after event has started
+        // and up to 20 days later
+        isAfter(now, addHours(eventDate, 2)) &&
+        isBefore(now, addDays(eventDate, 20))
+      );
+    });
     _events.sort(
       (a, b) =>
         differenceInDays(now, new Date(b.date)) -
@@ -220,10 +223,10 @@ const Homepage = () => {
     console.log("events to filter (_eqslEvent)", events);
     const _events = [...events].filter((e) => {
       const eventDate = new Date(e.date);
-      // within 15 days in future or 12 hours in past
+      // show for next 10 days after event has started and 1 day
       return (
-        (isBefore(eventDate, addDays(now, 15)) && isAfter(eventDate, now)) ||
-        (isAfter(eventDate, subHours(now, 12)) && isBefore(eventDate, now))
+        isAfter(now, subDays(eventDate, 1)) &&
+        isBefore(now, addDays(eventDate, 10))
       );
     });
     // Sort by date, showing the latest event
@@ -398,8 +401,16 @@ const Homepage = () => {
                       Vengono raccolti e pubblicati i dati dei relativi ai
                       partecipanti e al numero contatti, sia dei
                       &quot;cacciatori&quot; che delle stazioni
-                      &quot;attivatrici&quot; e attribuito un punteggio pari ad
-                      un punto per ogni collegamento avvenuto
+                      &quot;attivatrici&quot; e attribuito un punteggio pari a:
+                      <ul className="list-disc">
+                        <li>
+                          Per gli Attivatori 2 punti per ogni collegamento.
+                        </li>
+                        <li>
+                          Per i Cacciatori 2 punti se collegano un Attivatore e
+                          1 punto per gli altri collegamenti.
+                        </li>
+                      </ul>
                     </p>
 
                     <p>
@@ -620,8 +631,8 @@ const Homepage = () => {
                         </p>
 
                         <p>
-                          Possono inviare il log sia i Cacciatori che gli
-                          Attivatori dal sito.
+                          Possono inviare il log e le eQSL sia i Cacciatori che
+                          gli Attivatori del sito.
                         </p>
 
                         <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
@@ -705,7 +716,9 @@ const Homepage = () => {
                           to={"/qsomanager/" + cardEvent._id}
                           className="underline decoration-dotted hover:text-black transition-colors"
                         >
-                          <Button className="text-lg mt-4">Invia EQSL</Button>
+                          <Button color="blue" className="text-lg mt-4">
+                            Invia EQSL
+                          </Button>
                         </Link>
                       </Card>
                     </div>

@@ -67,7 +67,7 @@ const ViewPost = () => {
         color: "success",
         msg: "Post eliminato con successo"
       });
-      setUser({ ...user, posts: user.posts.filter(_p => _p._id !== p._id) });
+      setUser({ ...user, posts: user.posts.filter((_p) => _p._id !== p._id) });
       navigate("/social");
     } catch (err) {
       console.log("error in post delete", err);
@@ -88,7 +88,7 @@ const ViewPost = () => {
       <div className="px-4 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
         <div className="flex justify-between items-center">
           <Link to={-1}>
-            <Button color="light">
+            <Button color="gray" outline>
               <FaBackward />
             </Button>
           </Link>

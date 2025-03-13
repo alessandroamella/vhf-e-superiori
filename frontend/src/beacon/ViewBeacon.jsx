@@ -103,7 +103,7 @@ const ViewBeacon = () => {
 
     try {
       await axios.delete(`/api/beacon/property/${_id}`);
-      setProperties(_properties.filter(p => p._id !== _id));
+      setProperties(_properties.filter((p) => p._id !== _id));
       setPropIndex(0);
     } catch (err) {
       setAlert({
@@ -148,7 +148,7 @@ const ViewBeacon = () => {
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           <div className="mb-4 md:-ml-4 md:-mt-4">
             <Link to={"/beacon"}>
-              <Button color="info">
+              <Button color="gray" outline>
                 <FaBackward />
               </Button>
             </Link>
@@ -204,7 +204,7 @@ const ViewBeacon = () => {
                       <Pagination
                         currentPage={propIndex + 1}
                         totalPages={_properties.length}
-                        onPageChange={p => setPropIndex(p - 1)}
+                        onPageChange={(p) => setPropIndex(p - 1)}
                       />
                     </div>
                   )}
@@ -256,32 +256,26 @@ const ViewBeacon = () => {
                       color={properties.verifiedBy ? "success" : "warning"}
                     >
                       <div className="flex flex-col md:flex-row md:justify-around">
-                        <Tooltip
-                          content={
-                            properties.verifiedBy
-                              ? `Modifiche verificate da ${
-                                  properties.verifiedBy.callsign
-                                } il ${formatInTimeZone(
-                                  new Date(properties.verifyDate),
-                                  "Europe/Rome",
-                                  "dd/MM/yyyy 'alle' HH:mm"
-                                )}`
-                              : "Queste modifiche non sono ancora state verificate"
-                          }
-                        >
+                        <div>
                           {properties.verifiedBy ? (
                             <span>✅ </span>
                           ) : (
                             <FaInfoCircle className="inline mr-2 mb-[2px]" />
                           )}
                           Modifiche da{" "}
-                          <strong>{properties.editAuthor.callsign}</strong> il{" "}
+                          <Link
+                            className="font-bold"
+                            to={`/u/${properties.editAuthor.callsign}`}
+                          >
+                            {properties.editAuthor.callsign}
+                          </Link>{" "}
+                          il{" "}
                           {formatInTimeZone(
                             new Date(properties.editDate),
                             "Europe/Rome",
                             "dd/MM/yyyy 'alle' HH:mm"
                           )}
-                        </Tooltip>
+                        </div>
                       </div>
                     </Alert>
                     {user?.isAdmin && (
@@ -335,8 +329,14 @@ const ViewBeacon = () => {
                         icon={icon}
                       >
                         <Popup>
-                          Posizione del beacon: {properties.lat.toFixed(6)},{" "}
-                          {properties.lon.toFixed(6)}
+                          <p className="m-0 p-0">
+                            Posizione del beacon{" "}
+                            <strong>{beacon.callsign}</strong>:<br />
+                            <span className="text-center">
+                              {properties.lat.toFixed(6)},{" "}
+                              {properties.lon.toFixed(6)}
+                            </span>
+                          </p>
                         </Popup>
                       </Marker>
 

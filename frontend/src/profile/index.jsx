@@ -222,8 +222,8 @@ const Profile = () => {
         color: "success",
         msg: "Partecipazione annullata con successo"
       });
-      setJoinRequests(jArr =>
-        jArr.filter(j => j._id !== deleteJoinRequest._id)
+      setJoinRequests((jArr) =>
+        jArr.filter((j) => j._id !== deleteJoinRequest._id)
       );
       setDeleteJoinRequest(null);
     } catch (err) {
@@ -246,7 +246,7 @@ const Profile = () => {
         color: "success",
         msg: "Post eliminato con successo"
       });
-      setUser({ ...user, posts: user.posts.filter(_p => _p._id !== p._id) });
+      setUser({ ...user, posts: user.posts.filter((_p) => _p._id !== p._id) });
       setDeleteJoinRequest(null);
     } catch (err) {
       console.log("error in post delete", err);
@@ -283,11 +283,11 @@ const Profile = () => {
       try {
         const { data } = await axios.get("/api/joinrequest");
         const j = data
-          .map(_j => ({
+          .map((_j) => ({
             ..._j,
-            event: events.find(e => e._id === _j.forEvent)
+            event: events.find((e) => e._id === _j.forEvent)
           }))
-          .filter(_j => _j.event);
+          .filter((_j) => _j.event);
         setJoinRequests(j);
         setDeleteJoinRequestDisabled(false);
       } catch (err) {
@@ -347,7 +347,7 @@ const Profile = () => {
                   required
                   disabled={!user || changePwBtnDisabled}
                   value={oldPw}
-                  onChange={e => setOldPw(e.target.value)}
+                  onChange={(e) => setOldPw(e.target.value)}
                 />
               </div>
               <div>
@@ -362,7 +362,7 @@ const Profile = () => {
                   required
                   disabled={!user || changePwBtnDisabled}
                   value={newPw}
-                  onChange={e => setNewPw(e.target.value)}
+                  onChange={(e) => setNewPw(e.target.value)}
                   helperText="Minimo 8 caratteri, almeno un numero e una maiuscola"
                 />
               </div>
@@ -381,7 +381,7 @@ const Profile = () => {
                   required
                   disabled={!user || changePwBtnDisabled}
                   value={newPwConfirm}
-                  onChange={e => setNewPwConfirm(e.target.value)}
+                  onChange={(e) => setNewPwConfirm(e.target.value)}
                   helperText="Riscrivi la nuova password per confermare"
                 />
               </div>
@@ -485,6 +485,13 @@ const Profile = () => {
           </Alert>
         )}
 
+        <div className="w-full flex my-4 uppercase justify-center">
+          <Button as={Link} to={`/u/${user.callsign}`} size="lg">
+            <FaExternalLinkAlt className="inline mr-2 mt-[2px]" />
+            Le mie mappe
+          </Button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 h-full">
           <div>
             {user ? (
@@ -536,7 +543,7 @@ const Profile = () => {
                         placeholder="Alessandro Amella"
                         required
                         value={name}
-                        onChange={e => setName(e.target.value)}
+                        onChange={(e) => setName(e.target.value)}
                         disabled={!user}
                         autoFocus={!forceEditCity}
                       />
@@ -563,7 +570,7 @@ const Profile = () => {
                         placeholder="alexlife@tiscali.it"
                         required
                         value={email}
-                        onChange={e => setEmail(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value)}
                         helperText="Indirizzo email dove ricevere comunicazioni, notifiche ed eQSL"
                         disabled={!user}
                       />
@@ -597,7 +604,7 @@ const Profile = () => {
                         autoComplete="tel"
                         required
                         value={phoneNumber}
-                        onChange={e => setPhoneNumber(e.target.value)}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
                         disabled={!user}
                         helperText="Inserisci il tuo numero di telefono, compreso di prefisso internazionale"
                       />
@@ -624,11 +631,12 @@ const Profile = () => {
                         options={{
                           types: ["geocode"]
                         }}
-                        onPlaceSelected={place => {
+                        onPlaceSelected={(place) => {
                           console.log("place", place);
                           const addr = place.formatted_address;
                           let cityIndex = place.address_components.findIndex(
-                            c => c.types.includes("administrative_area_level_3")
+                            (c) =>
+                              c.types.includes("administrative_area_level_3")
                           );
                           if (cityIndex === -1) {
                             cityIndex = 1;
@@ -653,7 +661,7 @@ const Profile = () => {
                         placeholder="Modena"
                         autoComplete="address-level4"
                         value={addressInput}
-                        onChange={e => setAddressInput(e.target.value)}
+                        onChange={(e) => setAddressInput(e.target.value)}
                         onBlur={() => setAddressInput(address)}
                         disabled={!user}
                         helperText="Inserisci l'indirizzo di stazione (la via)"
@@ -735,7 +743,7 @@ const Profile = () => {
                     eliminare il tuo account, per favore contatta un
                     amministratore.
                   </p>
-                  <ul className="mt-1">
+                  <ul className="list-disc mt-1">
                     <li>
                       <strong>Alessandro IZ5RNF:</strong>
                       <a
@@ -772,7 +780,7 @@ const Profile = () => {
 
               {joinRequests && events ? (
                 joinRequests?.length > 0 ? (
-                  joinRequests.map(j => (
+                  joinRequests.map((j) => (
                     <Card key={j._id} className="mb-2">
                       <h6 className="text-xl font-bold tracking-tight text-gray-900 hover:underline">
                         <Link to={"/event/" + j.event._id}>{j.event.name}</Link>
@@ -845,7 +853,7 @@ const Profile = () => {
               {user?.posts ? (
                 user?.posts?.length > 0 ? (
                   <ListGroup className="p-0">
-                    {user?.posts?.map(p => (
+                    {user?.posts?.map((p) => (
                       <ListGroup.Item key={p._id}>
                         <div className="flex items-center gap-1 w-full">
                           <Link
@@ -911,7 +919,7 @@ const Profile = () => {
                           <Table.HeadCell>Locatore</Table.HeadCell>
                         </Table.Head>
                         <Table.Body>
-                          {user?.qsos?.map(qso => (
+                          {user?.qsos?.map((qso) => (
                             <Table.Row
                               key={qso._id}
                               onClick={() => navigate(`/qso/${qso._id}`)}
