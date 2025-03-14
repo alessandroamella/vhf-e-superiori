@@ -67,47 +67,51 @@ const ShareMapBtn = ({ event, qsos, user, setAlert }) => {
   }, [event, qsos?.length, setAlert, user?.callsign]);
 
   return (
-    <div className="relative">
-      <div className="absolute text-2xl font-bold tracking-tight left-4 right-4 text-center -top-9 text-black bg-yellow-200 animate-pulse">
-        ↓ Novità ↓
+    event &&
+    user &&
+    !!qsos?.length && (
+      <div className="relative">
+        <div className="absolute text-2xl font-bold tracking-tight left-4 right-4 text-center -top-9 text-black bg-yellow-200 animate-pulse">
+          ↓ Novità ↓
+        </div>
+        <Button
+          color="green"
+          size="lg"
+          disabled={isLoadingShare}
+          className={`uppercase font-bold ${
+            isLoadingShare ? "animate-pulse" : ""
+          }`}
+          onClick={shareMap}
+        >
+          {isLoadingShare ? (
+            <Spinner className="mb-[1px] mr-2" />
+          ) : canShare ? (
+            <FaWhatsapp className="mr-2 scale-125 mt-[4px]" />
+          ) : (
+            <FaShareAlt className="mr-2 mt-[4px]" />
+          )}{" "}
+          {isLoadingShare
+            ? "Caricamento..."
+            : mustClickAgain
+            ? "Clicca di nuovo"
+            : "Condividi mappa"}
+        </Button>
       </div>
-      <Button
-        color="green"
-        size="lg"
-        disabled={isLoadingShare}
-        className={`uppercase font-bold ${
-          isLoadingShare ? "animate-pulse" : ""
-        }`}
-        onClick={shareMap}
-      >
-        {isLoadingShare ? (
-          <Spinner className="mb-[1px] mr-2" />
-        ) : canShare ? (
-          <FaWhatsapp className="mr-2 scale-125 mt-[4px]" />
-        ) : (
-          <FaShareAlt className="mr-2 mt-[4px]" />
-        )}{" "}
-        {isLoadingShare
-          ? "Caricamento..."
-          : mustClickAgain
-          ? "Clicca di nuovo"
-          : "Condividi mappa"}
-      </Button>
-    </div>
+    )
   );
 };
 
 // PropTypes definition
 ShareMapBtn.propTypes = {
   event: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired
+    _id: PropTypes.string,
+    name: PropTypes.string
   }),
   qsos: PropTypes.array,
   user: PropTypes.shape({
     callsign: PropTypes.string
   }),
-  setAlert: PropTypes.func.isRequired
+  setAlert: PropTypes.func
 };
 
 export default ShareMapBtn;

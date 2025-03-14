@@ -1664,14 +1664,12 @@ const QsoManager = () => {
                       >
                         Mappa QSO di <strong>{user?.callsign}</strong>
                       </Typography>
-                      {event && user && qsos?.length && (
-                        <ShareMapBtn
-                          event={event}
-                          qsos={qsos}
-                          user={user}
-                          setAlert={setAlert}
-                        />
-                      )}
+                      <ShareMapBtn
+                        event={event}
+                        qsos={qsos}
+                        user={user}
+                        setAlert={setAlert}
+                      />
                     </div>
 
                     {/* center in Perugia */}

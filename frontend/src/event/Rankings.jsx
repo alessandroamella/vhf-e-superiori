@@ -235,16 +235,14 @@ const Rankings = () => {
                 )}
               </h1>
 
-              {event && user && qsos?.length && (
-                <div className="w-fit mt-8 mx-auto -mb-4">
-                  <ShareMapBtn
-                    event={event}
-                    user={user}
-                    setAlert={setAlert}
-                    qsos={qsos}
-                  />
-                </div>
-              )}
+              <div className="w-fit mt-8 mx-auto -mb-4">
+                <ShareMapBtn
+                  event={event}
+                  user={user}
+                  setAlert={setAlert}
+                  qsos={qsos}
+                />
+              </div>
 
               {/* <Tabs.Group> */}
               {["Cacciatori", "Attivatori"].map((tab, i) => (
