@@ -28,9 +28,7 @@ router.get(
                 `Exporting map of ${curUser.callsign} for event ${req.params.event}`
             );
             const event = await Event.findOne({
-                _id: req.params.event,
-                // admin can see all events
-                user: curUser.isAdmin ? undefined : curUser._id
+                _id: req.params.event
             });
             if (!event) {
                 logger.warn(`Event not found for ${curUser.callsign}`);
@@ -42,8 +40,7 @@ router.get(
             // Fetch QSOs data
             const qsos = await Qso.find({
                 event: req.params.event,
-                // admin can see all QSOs
-                user: curUser.isAdmin ? undefined : curUser._id
+                user: curUser._id
             });
 
             if (qsos.length === 0) {
