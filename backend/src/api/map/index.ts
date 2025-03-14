@@ -133,18 +133,6 @@ class MapExporter {
         return outermostPoints;
     }
 
-    private geographicalCenter(point1: Coordinate, point2: Coordinate) {
-        return {
-            lat: (point1.lat + point2.lat) / 2,
-            lon: (point1.lon + point2.lon) / 2
-        };
-    }
-
-    private getZoom(x: number) {
-        const y = -0.00294 * x + 8.529;
-        return 0.5 + Math.floor(y);
-    }
-
     async exportMapToJpg(
         event: EventDoc,
         callsign: string,
@@ -195,33 +183,9 @@ class MapExporter {
                 }))
             ].filter((coord) => coord.lat && coord.lon);
 
-            const [farthestPoint1, farthestPoint2] =
-                this.findFarthestPoints(coords);
+            const points = this.findFarthestPoints(coords);
 
-            const center = this.geographicalCenter(
-                farthestPoint1,
-                farthestPoint2
-            );
-
-            // zoom is based on the distance between the two farthest points
-            const maxDistance = this.haversineDistance(
-                farthestPoint1,
-                farthestPoint2
-            );
-
-            logger.debug(
-                `Farthest points: ${JSON.stringify(
-                    { farthestPoint1, farthestPoint2 },
-                    null,
-                    2
-                )}, center: ${JSON.stringify(
-                    center,
-                    null,
-                    2
-                )}, maxDistance: ${maxDistance}km`
-            );
-
-            const zoom = this.getZoom(maxDistance);
+            logger.debug(`Farthest points: ${JSON.stringify(points, null, 2)}`);
 
             const templatePath = path.join(process.cwd(), "views/map.ejs");
             const templateContent = await readFile(templatePath, "utf-8");
@@ -232,9 +196,10 @@ class MapExporter {
                 eventDate,
                 callsign,
                 profilePic,
-                center,
-                zoom
+                points
             });
+
+            // writeFileSync(path.join(process.cwd(), "map.html"), renderedHtml);
 
             logger.debug(
                 `Exporting map to JPG with: ${JSON.stringify(
@@ -243,8 +208,8 @@ class MapExporter {
                         callsign,
                         "qsos (length)": qsos.length,
                         profilePic,
-                        center,
-                        zoom
+                        points,
+                        cacheKey
                     },
                     null,
                     2
@@ -258,8 +223,8 @@ class MapExporter {
             const page = await browser.newPage();
             await page.setContent(renderedHtml);
             await page.setViewport({
-                width: 1280,
-                height: 720
+                width: 1080,
+                height: 1080
             });
 
             await page.waitForNetworkIdle(); // Wait for map to be rendered
