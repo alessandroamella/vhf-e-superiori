@@ -11,11 +11,6 @@ import type { EventDoc } from "../event/models";
 import type { QsoDoc } from "../qso/models";
 import { wait } from "../utils/wait";
 
-type Coordinate = {
-    lat: number;
-    lon: number;
-};
-
 class MapExporter {
     private cache: Buffer | null = null;
     private lastFetched: moment.Moment | null = null;
@@ -99,40 +94,6 @@ class MapExporter {
         return path.join(envs.BASE_TEMP_DIR, envs.MAPS_TMP_FOLDER, filename);
     }
 
-    private haversineDistance(coord1: Coordinate, coord2: Coordinate) {
-        const R = 6371; // Radius of the Earth in km
-        const toRad = (deg: number) => deg * (Math.PI / 180);
-
-        const dLat = toRad(coord2.lat - coord1.lat);
-        const dLon = toRad(coord2.lon - coord1.lon);
-
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(toRad(coord1.lat)) *
-                Math.cos(toRad(coord2.lat)) *
-                Math.sin(dLon / 2) *
-                Math.sin(dLon / 2);
-
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-    }
-
-    private findFarthestPoints(coords: Coordinate[]) {
-        let maxDist = 0;
-        let outermostPoints = [coords[0], coords[1]];
-
-        for (let i = 0; i < coords.length; i++) {
-            for (let j = i + 1; j < coords.length; j++) {
-                const dist = this.haversineDistance(coords[i], coords[j]);
-                if (dist > maxDist) {
-                    maxDist = dist;
-                    outermostPoints = [coords[i], coords[j]];
-                }
-            }
-        }
-        return outermostPoints;
-    }
-
     async exportMapToJpg(
         event: EventDoc,
         callsign: string,
@@ -172,20 +133,12 @@ class MapExporter {
                 "base64"
             )}`;
 
-            const coords = [
-                ...qsos.map((qso) => ({
-                    lat: qso.toStationLat!,
-                    lon: qso.toStationLon!
-                })),
-                ...qsos.map((qso) => ({
-                    lat: qso.fromStationLat!,
-                    lon: qso.fromStationLon!
-                }))
-            ].filter((coord) => coord.lat && coord.lon);
+            const points = [
+                ...qsos.map((qso) => [qso.toStationLat!, qso.toStationLon!]),
+                ...qsos.map((qso) => [qso.fromStationLat!, qso.fromStationLon!])
+            ].filter(([lat, lon]) => lat && lon);
 
-            const points = this.findFarthestPoints(coords);
-
-            logger.debug(`Farthest points: ${JSON.stringify(points, null, 2)}`);
+            logger.debug(`Points: ${JSON.stringify(points, null, 2)}`);
 
             const templatePath = path.join(process.cwd(), "views/map.ejs");
             const templateContent = await readFile(templatePath, "utf-8");

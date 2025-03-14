@@ -161,14 +161,13 @@
         ></script>
 
         <script>
-            var qsos = <%- JSON.stringify(qsos) %>;
+            const qsos = <%- JSON.stringify(qsos) %>;
+            const points = <%- JSON.stringify(points) %>;
 
-            const [point1, point2] = <%- JSON.stringify(points) %>;
-
-            var map = L.map("map", { zoomControl: false }).fitBounds([
-                [point1.lat, point1.lon],
-                [point2.lat, point2.lon]
-            ]);
+            const map = L.map("map", { zoomControl: false }).fitBounds(points, {
+                animate: false,
+                padding: [16, 16]
+            });
 
             L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
                 attribution:
