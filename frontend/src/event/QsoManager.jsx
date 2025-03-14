@@ -1729,35 +1729,40 @@ const QsoManager = () => {
 
                 {qsos && (
                   <div>
-                    <div className="flex flex-col md:flex-row gap-2 md:justify-between my-4">
+                    <div className="flex flex-col md:flex-row gap-12 justify-center items-center md:gap-2 md:justify-between my-4">
                       <Typography
                         variant="h3"
                         className="dark:text-white font-medium gap-2 flex items-center"
                       >
                         Mappa QSO di <strong>{user?.callsign}</strong>
                       </Typography>
-                      {canShare && (
-                        <Button
-                          color="green"
-                          size="lg"
-                          disabled={isLoadingShare}
-                          className={`uppercase font-bold ${
-                            isLoadingShare ? "animate-pulse" : ""
-                          }`}
-                          onClick={shareMap}
-                        >
-                          {isLoadingShare ? (
-                            <Spinner className="mb-[1px] mr-2" />
-                          ) : (
-                            <FaWhatsapp className="mr-2 scale-125 mt-[4px]" />
-                          )}{" "}
-                          {isLoadingShare
-                            ? "Caricamento..."
-                            : mustClickAgain
-                            ? "Clicca ancora"
-                            : "Condividi mappa"}
-                        </Button>
-                      )}
+                      <div className="relative">
+                        <div className="absolute text-2xl font-bold tracking-tight left-4 right-4 text-center -top-9 text-black bg-yellow-200 animate-pulse">
+                          ↓ Novità ↓
+                        </div>
+                        {canShare && (
+                          <Button
+                            color="green"
+                            size="lg"
+                            disabled={isLoadingShare}
+                            className={`uppercase font-bold ${
+                              isLoadingShare ? "animate-pulse" : ""
+                            }`}
+                            onClick={shareMap}
+                          >
+                            {isLoadingShare ? (
+                              <Spinner className="mb-[1px] mr-2" />
+                            ) : (
+                              <FaWhatsapp className="mr-2 scale-125 mt-[4px]" />
+                            )}{" "}
+                            {isLoadingShare
+                              ? "Caricamento..."
+                              : mustClickAgain
+                              ? "Clicca di nuovo"
+                              : "Condividi mappa"}
+                          </Button>
+                        )}
+                      </div>
                     </div>
 
                     {/* center in Perugia */}
