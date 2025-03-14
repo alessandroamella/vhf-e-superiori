@@ -39,8 +39,12 @@ router.get(
 
             // Fetch QSOs data
             const qsos = await Qso.find({
-                event: req.params.event,
-                user: curUser._id
+                event: event._id,
+                $or: [
+                    { callsign: curUser.callsign },
+                    { fromStationCallsignOverride: curUser.callsign },
+                    { "fromStation.callsign": curUser.callsign }
+                ]
             });
 
             if (qsos.length === 0) {
