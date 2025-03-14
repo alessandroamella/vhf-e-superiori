@@ -8,6 +8,7 @@ import ReactPlaceholder from "react-placeholder";
 import { Link, createSearchParams, useNavigate } from "react-router";
 import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
+import { inRange } from "../shared/inRange";
 
 const BeaconHomepage = () => {
   const [alert, setAlert] = useState(null);
@@ -29,7 +30,12 @@ const BeaconHomepage = () => {
         data
           .filter((beacon) => beacon.properties?.frequency)
           .forEach((beacon) => {
-            bands.add(Math.floor(beacon.properties?.frequency));
+            let band = Math.floor(beacon.properties.frequency);
+            if (band === 1297) {
+              // doesnt exist
+              band = 1296;
+            }
+            bands.add(band);
           });
         setBands(Array.from(bands).sort((a, b) => a - b));
       } catch (err) {
@@ -136,7 +142,11 @@ const BeaconHomepage = () => {
                           ?.filter(
                             (beacon) =>
                               beacon.properties?.frequency &&
-                              Math.floor(beacon.properties?.frequency) === band
+                              inRange(
+                                Math.floor(beacon.properties.frequency),
+                                band - 1,
+                                band + 1
+                              )
                           )
                           ?.sort(
                             (a, b) =>
