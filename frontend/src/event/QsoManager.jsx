@@ -241,7 +241,7 @@ const QsoManager = () => {
   const [lon, setLon] = useState(null);
 
   const canShare = useMemo(() => {
-    return !!navigator.canShare;
+    return import.meta.env.DEV || !!navigator.canShare;
   }, []);
 
   useEffect(() => {
@@ -306,24 +306,27 @@ const QsoManager = () => {
           type: "image/jpeg"
         }
       );
-      if (!navigator.canShare?.({ files: [file] })) {
-        setAlert({
-          color: "failure",
-          msg: "Il tuo browser non supporta la condivisione di file"
-        });
-        return;
-      }
       if ("userActivation" in navigator && !navigator.userActivation.isActive) {
         setMustClickAgain(true);
         return;
       }
-      navigator.share({
-        title: `Mappa collegamenti di ${user?.callsign} per ${event.name}`,
-        text: `Ho fatto ${qsos?.length || "-"} collegamenti all'evento ${
-          event.name
-        }! Partecipa anche tu al Radio Flash Mob su www.vhfesuperiori.eu`,
-        files: [file]
-      });
+      if (navigator.canShare?.({ files: [file] })) {
+        navigator.share({
+          title: `Mappa collegamenti di ${user?.callsign} per ${event.name}`,
+          text: `Ho fatto ${qsos?.length || "-"} collegamenti all'evento ${
+            event.name
+          }! Partecipa anche tu al Radio Flash Mob su www.vhfesuperiori.eu`,
+          files: [file]
+        });
+      } else {
+        // instead, download the file
+        const url = window.URL.createObjectURL(file);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.name;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
     } catch (err) {
       console.log("Error while capturing map", err);
       setAlert({

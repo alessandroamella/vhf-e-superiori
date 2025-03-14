@@ -133,12 +133,7 @@ class MapExporter {
         return outermostPoints;
     }
 
-    private geographicalCenter(coords: Coordinate[]) {
-        if (coords.length < 2)
-            throw new Error("At least two coordinates are required");
-
-        const [point1, point2] = this.findFarthestPoints(coords);
-
+    private geographicalCenter(point1: Coordinate, point2: Coordinate) {
         return {
             lat: (point1.lat + point2.lat) / 2,
             lon: (point1.lon + point2.lon) / 2
@@ -147,7 +142,7 @@ class MapExporter {
 
     private getZoom(x: number) {
         const y = -0.00294 * x + 8.529;
-        return 0.5 + Number(y.toFixed(2));
+        return 0.5 + Math.floor(y);
     }
 
     async exportMapToJpg(
@@ -200,15 +195,30 @@ class MapExporter {
                 }))
             ].filter((coord) => coord.lat && coord.lon);
 
-            const center = this.geographicalCenter(coords);
-
             const [farthestPoint1, farthestPoint2] =
                 this.findFarthestPoints(coords);
+
+            const center = this.geographicalCenter(
+                farthestPoint1,
+                farthestPoint2
+            );
 
             // zoom is based on the distance between the two farthest points
             const maxDistance = this.haversineDistance(
                 farthestPoint1,
                 farthestPoint2
+            );
+
+            logger.debug(
+                `Farthest points: ${JSON.stringify(
+                    { farthestPoint1, farthestPoint2 },
+                    null,
+                    2
+                )}, center: ${JSON.stringify(
+                    center,
+                    null,
+                    2
+                )}, maxDistance: ${maxDistance}km`
             );
 
             const zoom = this.getZoom(maxDistance);
