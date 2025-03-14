@@ -133,7 +133,7 @@ const Header = () => {
           </Button>
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 justify-items-center">
+      <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-2 justify-items-center">
         <LinkButton to="/social">Foto / video</LinkButton>
         <LinkButton to="/beacon">Beacon</LinkButton>
         {user === false ? (

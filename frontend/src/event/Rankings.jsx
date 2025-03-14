@@ -1,11 +1,11 @@
 import axios from "axios";
 import { it } from "date-fns/locale";
 import { Alert, Button, Modal, Spinner, Table, Tabs } from "flowbite-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { FaExclamationTriangle } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import {
   EmailIcon,
   EmailShareButton,
@@ -18,8 +18,10 @@ import {
   WhatsappIcon,
   WhatsappShareButton
 } from "react-share";
+import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import ShareMapBtn from "./ShareMapBtn";
 
 const Rankings = () => {
   const { id } = useParams();
@@ -59,7 +61,7 @@ const Rankings = () => {
 
   const year = new Date().getFullYear();
 
-  const socialTitle = event && `Classifiche ${event.name} - VHF e superiori`;
+  const socialTitle = `Classifiche ${event?.name || year} - VHF e superiori`;
   const socialBody = event
     ? `Classifiche dell'evento ${event.name} - ${formatInTimeZone(
         new Date(event.date),
@@ -70,6 +72,41 @@ const Rankings = () => {
     : `Classifiche dell'anno ${year} - VHF e superiori`;
 
   const [showRankings, setShowRankings] = useState(null);
+
+  const { user } = useContext(UserContext);
+
+  const [qsos, setQsos] = useState(null);
+
+  useEffect(() => {
+    async function getQsos() {
+      if (!event || !user) return;
+      try {
+        const { data } = await axios.get("/api/qso", {
+          params: {
+            event: event._id,
+            callsignAnywhere: user.callsign
+          }
+        });
+        console.log("QSOs", data);
+        data.sort((b, a) => new Date(a.qsoDate) - new Date(b.qsoDate));
+        setQsos(data);
+      } catch (err) {
+        console.log("Errore nel caricamento dei QSO", err);
+        setAlert({
+          color: "failure",
+          msg: getErrorStr(err?.response?.data?.err)
+        });
+
+        setQsos(null);
+      }
+    }
+    getQsos();
+  }, [event, id, setAlert, user]);
+
+  const { pathname } = useLocation();
+  const curUrl = useMemo(() => {
+    return `${window.location.origin}${pathname}`;
+  }, [pathname]);
 
   return (
     <>
@@ -198,6 +235,17 @@ const Rankings = () => {
                 )}
               </h1>
 
+              {event && user && qsos?.length && (
+                <div className="w-fit mt-8 mx-auto -mb-4">
+                  <ShareMapBtn
+                    event={event}
+                    user={user}
+                    setAlert={setAlert}
+                    qsos={qsos}
+                  />
+                </div>
+              )}
+
               {/* <Tabs.Group> */}
               {["Cacciatori", "Attivatori"].map((tab, i) => (
                 <Tabs.Item title={tab} key={i}>
@@ -250,30 +298,30 @@ const Rankings = () => {
           {/* visualizza immagine QSO */}
           {event !== null && (
             <div className="flex justify-end items-center mt-4 gap-1">
-              {event && event.logoUrl && (
+              {socialTitle && socialBody && (
                 <>
                   <FacebookShareButton
-                    url={event.logoUrl}
+                    url={curUrl}
                     quote={socialTitle}
                     hashtag="#vhfesuperiori"
                   >
                     <FacebookIcon size={32} round />
                   </FacebookShareButton>
                   <TwitterShareButton
-                    url={event.logoUrl}
+                    url={curUrl}
                     title={socialTitle}
                     hashtags={["vhfesuperiori"]}
                   >
                     <TwitterIcon size={32} round />
                   </TwitterShareButton>
-                  <WhatsappShareButton url={event.logoUrl} title={socialTitle}>
+                  <WhatsappShareButton url={curUrl} title={socialTitle}>
                     <WhatsappIcon size={32} round />
                   </WhatsappShareButton>
-                  <TelegramShareButton url={event.logoUrl} title={socialTitle}>
+                  <TelegramShareButton url={curUrl} title={socialTitle}>
                     <TelegramIcon size={32} round />
                   </TelegramShareButton>
                   <EmailShareButton
-                    url={event.logoUrl}
+                    url={curUrl}
                     subject={socialTitle}
                     body={socialBody}
                   >

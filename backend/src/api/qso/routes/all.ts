@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { logger } from "../../../shared/logger";
 import { query } from "express-validator";
-import { createError, validate } from "../../helpers";
-import { Qso } from "../models";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { FilterQuery } from "mongoose";
-import { QsoClass } from "../models/Qso";
+import { logger } from "../../../shared/logger";
+import { createError, validate } from "../../helpers";
 import { location } from "../../location";
+import { Qso } from "../models";
+import { QsoClass } from "../models/Qso";
 
 const router = Router();
 
@@ -79,6 +79,7 @@ router.get(
     query("event").optional().isMongoId(),
     query("fromStation").optional().isMongoId(),
     query("callsign").optional().isString(),
+    query("callsignAnywhere").optional().isString(),
     validate,
     async (req, res) => {
         try {
@@ -90,17 +91,26 @@ router.get(
             if (req.query.fromStation)
                 query.fromStation = req.query.fromStation;
             if (req.query.callsign) query.callsign = req.query.callsign;
+            if (req.query.callsignAnywhere) {
+                query.$or = [
+                    { callsign: req.query.callsignAnywhere },
+                    { fromStationCallsignOverride: req.query.callsignAnywhere },
+                    { "fromStation.callsign": req.query.callsignAnywhere }
+                ];
+            }
 
             const qsoQuery = Qso.find(query);
             if (limit) qsoQuery.limit(limit);
             if (skip) qsoQuery.skip(skip);
+
+            logger.debug(`QSOs all query: ${JSON.stringify(query)}`);
 
             const qsos = await qsoQuery
                 .sort({ qsoDate: -1 })
                 .populate({ path: "fromStation", select: "callsign" })
                 .lean();
             res.json(
-                qsos.map(e => ({
+                qsos.map((e) => ({
                     ...e,
                     toLocator:
                         e.toStationLat && e.toStationLon

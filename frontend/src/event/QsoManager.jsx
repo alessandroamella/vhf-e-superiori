@@ -17,14 +17,7 @@ import {
   TextInput,
   Tooltip
 } from "flowbite-react";
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Helmet } from "react-helmet";
 import {
@@ -38,8 +31,7 @@ import {
   FaSave,
   FaTimes,
   FaUndo,
-  FaUser,
-  FaWhatsapp
+  FaUser
 } from "react-icons/fa";
 import { IoIosRadio } from "react-icons/io";
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
@@ -55,6 +47,7 @@ import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import MapWatermark from "../shared/MapWatermark";
 import StationMapMarker from "../shared/StationMapMarker";
+import ShareMapBtn from "./ShareMapBtn";
 
 const QsoManager = () => {
   const { user } = useContext(UserContext);
@@ -240,10 +233,6 @@ const QsoManager = () => {
   const [lat, setLat] = useState(null);
   const [lon, setLon] = useState(null);
 
-  const canShare = useMemo(() => {
-    return import.meta.env.DEV || !!navigator.canShare;
-  }, []);
-
   useEffect(() => {
     if (isManuallySettingLocator || !formattedAddress) {
       setPage(0);
@@ -278,67 +267,6 @@ const QsoManager = () => {
       }
     );
   }, [setAlert]);
-
-  // Function to capture the map + overlay
-  const [isLoadingShare, setIsLoadingShare] = useState(false);
-  const [mustClickAgain, setMustClickAgain] = useState(false);
-
-  const shareMap = useCallback(async () => {
-    console.log("Getting map of event", event);
-
-    if (!event) return;
-
-    setIsLoadingShare(true);
-    setMustClickAgain(false);
-
-    try {
-      const { data } = await axios.get(`/api/map/export-map/${event._id}`, {
-        responseType: "blob"
-      });
-
-      // use share API
-      const file = new File(
-        [data],
-        `mappa-${user?.callsign || "collegamenti"}-${event.name
-          .replace(/[^a-zA-Z0-9]/g, "")
-          .toLowerCase()}.jpg`,
-        {
-          type: "image/jpeg"
-        }
-      );
-      if ("userActivation" in navigator && !navigator.userActivation.isActive) {
-        setMustClickAgain(true);
-        return;
-      }
-      if (navigator.canShare?.({ files: [file] })) {
-        navigator.share({
-          title: `Mappa collegamenti di ${user?.callsign} per ${event.name}`,
-          text: `Ho fatto ${qsos?.length || "-"} collegamenti all'evento ${
-            event.name
-          }! Partecipa anche tu al Radio Flash Mob su www.vhfesuperiori.eu`,
-          files: [file]
-        });
-      } else {
-        // instead, download the file
-        const url = window.URL.createObjectURL(file);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = file.name;
-        a.click();
-        window.URL.revokeObjectURL(url);
-      }
-    } catch (err) {
-      console.log("Error while capturing map", err);
-      setAlert({
-        color: "failure",
-        msg:
-          "Errore nel download della mappa - " +
-          getErrorStr(err?.response?.data?.err)
-      });
-    } finally {
-      setIsLoadingShare(false);
-    }
-  }, [event, qsos?.length, setAlert, user?.callsign]);
 
   useEffect(() => {
     if (!user || formattedAddress) return;
@@ -1736,32 +1664,13 @@ const QsoManager = () => {
                       >
                         Mappa QSO di <strong>{user?.callsign}</strong>
                       </Typography>
-                      {canShare && qsos && qsos.length > 0 && (
-                        <div className="relative">
-                          <div className="absolute text-2xl font-bold tracking-tight left-4 right-4 text-center -top-9 text-black bg-yellow-200 animate-pulse">
-                            ↓ Novità ↓
-                          </div>
-                          <Button
-                            color="green"
-                            size="lg"
-                            disabled={isLoadingShare}
-                            className={`uppercase font-bold ${
-                              isLoadingShare ? "animate-pulse" : ""
-                            }`}
-                            onClick={shareMap}
-                          >
-                            {isLoadingShare ? (
-                              <Spinner className="mb-[1px] mr-2" />
-                            ) : (
-                              <FaWhatsapp className="mr-2 scale-125 mt-[4px]" />
-                            )}{" "}
-                            {isLoadingShare
-                              ? "Caricamento..."
-                              : mustClickAgain
-                              ? "Clicca di nuovo"
-                              : "Condividi mappa"}
-                          </Button>
-                        </div>
+                      {event && user && qsos?.length && (
+                        <ShareMapBtn
+                          event={event}
+                          qsos={qsos}
+                          user={user}
+                          setAlert={setAlert}
+                        />
                       )}
                     </div>
 
