@@ -687,13 +687,20 @@ const CreateEditEventModal = ({
                     </span>
                   </Button>
                 </div>
-                <div className="flex items-center gap-2 mt-4">
+                <div className="flex items-center flex-col md:flex-row justify-center gap-2 md:gap-6 mt-4">
                   <Link
                     to={"/qsomanager/" + eventEditing}
                     className="flex items-center gap-2 hover:text-red-600 transition-colors"
                   >
                     <FaExternalLinkAlt />
                     <span>Apri QSO Manager</span>
+                  </Link>
+                  <Link
+                    to={"/rankings/" + eventEditing}
+                    className="flex items-center gap-2 hover:text-red-600 transition-colors"
+                  >
+                    <FaExternalLinkAlt />
+                    <span>Apri Classifiche</span>
                   </Link>
                 </div>
                 <hr className="mt-2" />
