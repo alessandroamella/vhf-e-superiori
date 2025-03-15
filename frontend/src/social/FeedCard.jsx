@@ -8,7 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 // import "swiper/css/navigation";
 // import "swiper/css/scrollbar";
 import axios from "axios";
-import { Avatar, Badge, Button, Spinner } from "flowbite-react";
+import { Avatar, Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
 import { FaTrash } from "react-icons/fa";
 import { UserContext } from "../App";
@@ -112,8 +112,6 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
               <CallsignLoading user={post?.fromUser} />
             </p>
           </ReactPlaceholder>
-          {post?.fromUser?.isDev && <Badge color="purple">Dev 👨‍💻</Badge>}
-          {post?.fromUser?.isAdmin && <Badge color="pink">Admin 🛡️</Badge>}
         </div>
 
         {/* Time Ago */}

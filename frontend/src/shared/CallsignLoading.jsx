@@ -1,6 +1,6 @@
 import { Badge } from "flowbite-react";
-import ReactPlaceholder from "react-placeholder";
 import PropTypes from "prop-types";
+import ReactPlaceholder from "react-placeholder";
 
 const CallsignLoading = ({ user, className, prefix, suffix }) => {
   return (
@@ -12,8 +12,16 @@ const CallsignLoading = ({ user, className, prefix, suffix }) => {
       >
         {prefix}
         <span className={`${className || ""}`}>{user?.callsign}</span>
-        {user?.isDev && <Badge color="purple">Dev 👨‍💻</Badge>}
-        {user?.isAdmin && <Badge color="pink">Admin 🛡️</Badge>}
+        {user?.isDev && (
+          <Badge color="purple" className="normal-case min-w-fit">
+            Dev 👨‍💻
+          </Badge>
+        )}
+        {user?.isAdmin && (
+          <Badge color="pink" className="normal-case min-w-fit">
+            Admin 🛡️
+          </Badge>
+        )}
         {suffix}
       </ReactPlaceholder>
     </div>

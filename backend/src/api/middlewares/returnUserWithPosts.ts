@@ -1,16 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "http-status";
+import moment from "moment";
 import { logger } from "../../shared";
 import { User, UserDoc } from "../auth/models";
 import { Errors } from "../errors";
 import { createError } from "../helpers";
+import { location } from "../location";
 import { BasePost } from "../post/models";
-import moment from "moment";
 import { BasePostClass } from "../post/models/BasePost";
+import { qrz } from "../qrz";
 import { Qso } from "../qso/models";
 import { QsoClass } from "../qso/models/Qso";
-import { qrz } from "../qrz";
-import { location } from "../location";
 
 async function returnUserWithPosts(
     req: Request,
@@ -88,14 +88,14 @@ async function returnUserWithPosts(
             })
             .populate({
                 path: "fromStation",
-                select: "callsign"
+                select: "callsign isDev isAdmin"
             })
             .sort({ createdAt: -1 })
             .sort({ "event.date": -1 })
             .lean();
 
         const qsos = await Promise.all(
-            _qsos.map(async e => ({
+            _qsos.map(async (e) => ({
                 ...e,
                 fromLocator:
                     e.fromStationLat && e.fromStationLon

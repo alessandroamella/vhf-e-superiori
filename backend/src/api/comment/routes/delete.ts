@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { param } from "express-validator";
-import { INTERNAL_SERVER_ERROR, OK } from "http-status";
+import { INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared";
 import type { UserDoc } from "../../auth/models";
 import { Errors } from "../../errors";
@@ -50,7 +50,10 @@ router.delete(
         try {
             const comment = await Comment.findOne({
                 _id: req.params._id
-            }).populate({ path: "fromUser", select: "callsign" });
+            }).populate({
+                path: "fromUser",
+                select: "callsign name isDev isAdmin"
+            });
 
             if (!comment) {
                 logger.error("Comment not found");
@@ -68,11 +71,29 @@ router.delete(
                     .json(createError(Errors.COMMENT_NOT_OWNED));
             }
 
+            // delete replies
+            const replies = await Comment.deleteMany({
+                _id: { $in: comment.replies }
+            });
+
+            // find if this comment was a reply to another comment
+            const parentComment = await Comment.findOne({
+                replies: comment._id
+            });
+            if (parentComment?.replies) {
+                parentComment.replies = parentComment.replies.filter(
+                    (reply) => reply.toString() !== comment._id.toString()
+                );
+                await parentComment.save();
+            }
+
             await comment.deleteOne();
 
-            logger.info(`Comment ${comment._id} deleted successfully`);
+            logger.info(
+                `Comment ${comment._id} deleted successfully, deleted ${replies.deletedCount} replies`
+            );
 
-            res.sendStatus(OK);
+            res.json({ parentComment: parentComment?._id || null });
         } catch (err) {
             logger.error("Error while deleting comment");
             logger.error(err);

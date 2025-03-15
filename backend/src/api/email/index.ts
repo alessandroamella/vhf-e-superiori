@@ -179,7 +179,8 @@ export class EmailService {
                     .format("dddd D MMMM YYYY"),
                 "{ORA}": moment(event.date).tz("Europe/Rome").format("HH:mm"),
                 "{PATHIMMAGINE}":
-                    event.logoUrl || "https://www.vhfesuperiori.eu/logo512.png",
+                    event.logoUrl ||
+                    "https://vhfesuperiori.s3.eu-central-1.amazonaws.com/logo/logo192.png",
                 "{BANDA}": event.band,
                 "{EVENTID}": event._id.toString()
             }
@@ -258,7 +259,7 @@ export class EmailService {
                 "{COMMENTID}": comment._id.toString(),
                 "{PP_COMMENTO}":
                     scraped?.pictureUrl ||
-                    "https://www.vhfesuperiori.eu/logo192.png"
+                    "https://vhfesuperiori.s3.eu-central-1.amazonaws.com/logo/logo192.png"
             })
         };
 

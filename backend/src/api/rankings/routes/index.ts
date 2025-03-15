@@ -216,7 +216,7 @@ router.get(
             }
         ).populate({
             path: "fromStation",
-            select: "callsign"
+            select: "callsign isDev isAdmin"
         });
 
         const stations = await JoinRequest.find({
@@ -224,7 +224,7 @@ router.get(
             isApproved: true
         }).populate({
             path: "fromUser",
-            select: "callsign"
+            select: "callsign isDev isAdmin"
         });
 
         const { stationRankings, userRankings } = await calculateRankings(
@@ -336,7 +336,7 @@ router.get("/", async (req, res) => {
             }
         ).populate({
             path: "fromStation",
-            select: "callsign"
+            select: "callsign isDev isAdmin"
         });
 
         const stations = await JoinRequest.find({
@@ -344,7 +344,7 @@ router.get("/", async (req, res) => {
             isApproved: true
         }).populate({
             path: "fromUser",
-            select: "callsign"
+            select: "callsign isDev isAdmin"
         });
 
         const eventRankingsResult = await calculateRankings(

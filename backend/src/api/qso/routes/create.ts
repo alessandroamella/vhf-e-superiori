@@ -2,12 +2,12 @@ import { Request, Response, Router } from "express";
 import { checkSchema } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared";
-import { createError, validate } from "../../helpers";
-import { Errors } from "../../errors";
-import createSchema from "../schemas/createSchema";
 import { User, UserDoc } from "../../auth/models";
-import { Qso } from "../models";
+import { Errors } from "../../errors";
+import { createError, validate } from "../../helpers";
 import { location } from "../../location";
+import { Qso } from "../models";
+import createSchema from "../schemas/createSchema";
 
 const router = Router();
 
@@ -177,7 +177,7 @@ router.post(
 
             const populated = await qso.populate({
                 path: "fromStation",
-                select: "callsign"
+                select: "callsign isDev isAdmin"
             });
 
             res.json({

@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { logger } from "../../../shared/logger";
 import { param } from "express-validator";
-import { createError, validate } from "../../helpers";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
-import { BlogPost } from "../models";
+import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
+import { createError, validate } from "../../helpers";
+import { BlogPost } from "../models";
 
 const router = Router();
 
@@ -43,7 +43,7 @@ router.get("/:_id", param("_id").isMongoId(), validate, async (req, res) => {
             _id: req.params._id
         }).populate({
             path: "fromUser",
-            select: "callsign"
+            select: "callsign isDev isAdmin"
         });
         if (!blogPost) {
             return res

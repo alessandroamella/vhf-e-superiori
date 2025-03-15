@@ -1,4 +1,11 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -6,70 +13,66 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 
 import { it } from "date-fns/locale";
-import {
-  LazyLoadImage,
-  trackWindowScroll
-} from "react-lazy-load-image-component";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlaceholder from "react-placeholder/lib";
 
-import { Button } from "@material-tailwind/react";
 import axios from "axios";
-import { Alert, Card, Spinner, Textarea } from "flowbite-react";
 import PropTypes from "prop-types";
-import { FaTrash } from "react-icons/fa";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import CallsignLoading from "../shared/CallsignLoading";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import CommentsSection from "./CommentSection";
 import Description from "./Description";
 import MediaSwiper from "./MediaSwiper";
 
-/**
- * @typedef {import('./NewPost').PostType} PostType
- * @typedef {import('./FeedCard').BasePost} BasePost
- *
- * @typedef {object} Props
- * @property {PostType} type - The type of the post
- * @property {BasePost} post - The post content
- * @property {string} pic - The user profile picture
- * @property {number} scrollPosition - The scroll position
- * @property {boolean} hideComments - Whether to hide comments or not
- *
- * @param {Props} props
- */
-const ViewPostContent = React.memo(
-  ({ post, pic, scrollPosition, hideComments }) => {
-    const postPictures = useMemo(() => post?.pictures || [], [post?.pictures]);
-    const postVideos = useMemo(() => post?.videos || [], [post?.videos]);
+const ViewPostContent = React.memo(({ postExtended, hideComments }) => {
+  const { post, pics } = useMemo(() => postExtended || {}, [postExtended]);
 
-    const { user } = useContext(UserContext);
+  const postPictures = useMemo(() => post?.pictures || [], [post?.pictures]);
+  const postVideos = useMemo(() => post?.videos || [], [post?.videos]);
 
-    const navigate = useNavigate();
+  const { user } = useContext(UserContext);
 
-    const [content, setContent] = useState("");
-    const [disabled, setDisabled] = useState(false);
-    const [alert, setAlert] = useState(null);
+  const [content, setContent] = useState("");
+  const [disabled, setDisabled] = useState(false);
+  const [alert, setAlert] = useState(null);
 
-    const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState([]);
 
-    useEffect(() => {
-      if (!Array.isArray(post?.comments)) return;
-      console.log("setting comments for post", post);
-      const _comments = [...post.comments];
-      _comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      setComments(_comments);
-    }, [post]);
+  useEffect(() => {
+    if (!Array.isArray(post?.comments)) return;
+    const _comments = [...post.comments];
+    _comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    setComments(_comments);
+    console.log("setting comments for post", post, _comments);
+  }, [post]);
 
-    async function sendComment(e) {
-      e.preventDefault();
+  const commentContainerRef = useRef(null);
+
+  const [highlightedComment, setHighlightedComment] = useState(null);
+  const [replyTo, setReplyTo] = useState(null);
+
+  const sendComment = useCallback(
+    async (e) => {
+      e?.preventDefault();
       setDisabled(true);
       try {
-        const { data } = await axios.post("/api/comment", {
+        const payload = {
           content,
-          forPost: post._id
-        });
-        const _comments = [...comments, data];
+          forPost: post._id,
+          ...(replyTo && { parentComment: replyTo })
+        };
+        console.log("sending comment with payload", payload);
+        const { data } = await axios.post("/api/comment", payload);
+        const _comments = data.parentComment
+          ? comments.map((c) =>
+              c._id === data.parentComment
+                ? { ...c, replies: [...c.replies, data] }
+                : c
+            )
+          : [...comments, data];
         _comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setComments(_comments);
         setAlert({
@@ -77,6 +80,29 @@ const ViewPostContent = React.memo(
           msg: "Commento inviato con successo!"
         });
         console.log("comment", data);
+        commentContainerRef.current?.scrollIntoView({
+          behavior: "smooth"
+        });
+        document.querySelector(".comments-card").scrollTop = 0;
+        setTimeout(() => {
+          document.querySelector(`#comment-${data._id}`)?.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+        }, 100);
+
+        setContent("");
+        setReplyTo(null);
+
+        let times = 0;
+        const interval = setInterval(() => {
+          if (times === 2) {
+            clearInterval(interval);
+          }
+          setHighlightedComment(data._id);
+          setTimeout(() => setHighlightedComment(null), 300);
+          times++;
+        }, 300 * 2);
       } catch (err) {
         setAlert({
           color: "failure",
@@ -86,9 +112,12 @@ const ViewPostContent = React.memo(
         setContent("");
         setDisabled(false);
       }
-    }
+    },
+    [comments, content, post, replyTo]
+  );
 
-    async function deleteComment(e, comment) {
+  const deleteComment = useCallback(
+    async (e, comment) => {
       e.preventDefault();
       if (
         !window.confirm(
@@ -101,12 +130,25 @@ const ViewPostContent = React.memo(
       setDisabled(true);
 
       try {
-        await axios.delete("/api/comment/" + comment._id);
+        const { data } = await axios.delete("/api/comment/" + comment._id);
         setAlert({
           color: "success",
           msg: "Commento eliminato con successo"
         });
-        setComments(comments.filter(_c => _c._id !== comment._id));
+        if (data.parentComment) {
+          setComments(
+            comments.map((c) =>
+              c._id === data.parentComment
+                ? {
+                    ...c,
+                    replies: c.replies.filter((_c) => _c._id !== comment._id)
+                  }
+                : c
+            )
+          );
+        } else {
+          setComments(comments.filter((_c) => _c._id !== comment._id));
+        }
       } catch (err) {
         console.log("error in comment delete", err);
         setAlert({
@@ -116,212 +158,103 @@ const ViewPostContent = React.memo(
       } finally {
         setDisabled(false);
       }
-    }
+    },
+    [comments]
+  );
 
-    return post === false ? null : (
-      <div className="w-full px-4 md:px-0 md:w-4/5 rounded-xl border border-gray-200 dark:border-gray-800 mb-4 overflow-hidden">
-        <ReactPlaceholder
-          showLoadingAnimation
-          type="rect"
-          className="h-96 object-cover w-full"
-          ready={!!post}
-        >
-          <MediaSwiper postPictures={postPictures} postVideos={postVideos} />
-        </ReactPlaceholder>
-        <div className="p-4 flex w-full">
-          <div className="w-full">
-            <div className="mb-8 flex flex-col items-center gap-2 md:flex-row justify-center md:justify-between">
-              <Description description={post?.description} />
-              <div className="px-2 flex flex-col justify-center gap-2">
-                <div className="flex items-center justify-center gap-2">
-                  {pic && (
-                    <LazyLoadImage
-                      loading="lazy"
-                      src={pic}
-                      alt="Avatar"
-                      className="object-cover w-10 h-10 rounded-full"
-                      scrollPosition={scrollPosition}
-                    />
-                  )}
-                  <ReactPlaceholder
-                    showLoadingAnimation
-                    type="text"
-                    rows={1}
-                    ready={!!post?.fromUser?.callsign}
-                  >
-                    <p className="uppercase tracking-tight font-semibold text-lg text-gray-700">
-                      {post?.fromUser?.callsign && (
-                        <Link to={`/u/${post?.fromUser?.callsign}`}>
-                          {post?.fromUser ? (
-                            <CallsignLoading user={post.fromUser} />
-                          ) : (
-                            <span className="text-gray-500 dark:text-gray-300">
-                              Utente non trovato
-                            </span>
-                          )}
-                        </Link>
-                        // <a
-                        //   href={
-                        //     "https://www.qrz.com/db/" + post?.fromUser?.callsign
-                        //   }
-                        //   target="_blank"
-                        //   rel="noopener noreferrer"
-                        // >
-                        //   {post?.fromUser?.callsign}
-                        // </a>
-                      )}
-                    </p>
-                  </ReactPlaceholder>
-                </div>
-                <div className="flex items-center justify-center gap-2">
-                  <ReactPlaceholder
-                    showLoadingAnimation
-                    type="text"
-                    rows={1}
-                    ready={!!post?.createdAt}
-                  >
-                    <span className="min-w-[12rem] text-gray-600 text-center dark:text-gray-400">
-                      {post?.createdAt &&
-                        formatInTimeZone(
-                          post?.createdAt,
-                          "Europe/Rome",
-                          "d MMM yyyy HH:mm",
-                          { locale: it }
+  return (
+    <div className="w-full px-4 md:px-0 md:w-4/5 rounded-xl border border-gray-200 dark:border-gray-800 mb-4 overflow-hidden">
+      <ReactPlaceholder
+        showLoadingAnimation
+        type="rect"
+        className="h-96 object-cover w-full"
+        ready={!!post}
+      >
+        <MediaSwiper postPictures={postPictures} postVideos={postVideos} />
+      </ReactPlaceholder>
+      <div className="p-4 flex w-full">
+        <div className="w-full">
+          <div className="mb-8 flex flex-col items-center gap-2 md:flex-row justify-center md:justify-between">
+            <Description description={post?.description} />
+            <div className="px-2 flex flex-col justify-center gap-2">
+              <div className="flex min-w-fit items-center justify-center gap-2">
+                {post?.fromUser?.callsign && post.fromUser.callsign in pics && (
+                  <LazyLoadImage
+                    loading="lazy"
+                    src={pics[post.fromUser.callsign]}
+                    alt="Avatar"
+                    className="object-cover w-10 h-10 aspect-square rounded-full"
+                  />
+                )}
+                <ReactPlaceholder
+                  showLoadingAnimation
+                  type="text"
+                  rows={1}
+                  ready={!!post?.fromUser?.callsign}
+                >
+                  <div className="min-w-fit uppercase tracking-tight font-semibold text-lg text-gray-700">
+                    {post?.fromUser?.callsign && (
+                      <Link to={`/u/${post?.fromUser?.callsign}`}>
+                        {post?.fromUser ? (
+                          <CallsignLoading user={post.fromUser} />
+                        ) : (
+                          <span className="text-gray-500 dark:text-gray-300">
+                            Utente non trovato
+                          </span>
                         )}
-                    </span>
-                  </ReactPlaceholder>
-                </div>
+                      </Link>
+                    )}
+                  </div>
+                </ReactPlaceholder>
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <ReactPlaceholder
+                  showLoadingAnimation
+                  type="text"
+                  rows={1}
+                  ready={!!post?.createdAt}
+                >
+                  <span className="min-w-[12rem] text-gray-600 text-center dark:text-gray-400">
+                    {post?.createdAt &&
+                      formatInTimeZone(
+                        post?.createdAt,
+                        "Europe/Rome",
+                        "d MMM yyyy HH:mm",
+                        { locale: it }
+                      )}
+                  </span>
+                </ReactPlaceholder>
               </div>
             </div>
           </div>
         </div>
-        {!hideComments && (
-          <div className="p-4 border-t border-gray-100 dark:border-gray-700 flex flex-col w-full">
-            <h2 className="mb-1 text-xl font-semibold text-gray-700 dark:text-gray-300">
-              Commenti
-            </h2>
-            {alert && (
-              <Alert
-                className="mb-6 dark:text-black"
-                color={alert.color}
-                onDismiss={() => setAlert(null)}
-              >
-                <span>{alert.msg}</span>
-              </Alert>
-            )}
-            {user ? (
-              <div className="w-full">
-                <form
-                  onSubmit={sendComment}
-                  className="w-full flex flex-row gap-2 items-center"
-                >
-                  <Textarea
-                    id="comment-content"
-                    name="comment-content"
-                    type="text"
-                    required={true}
-                    className="w-full"
-                    placeholder="Scrivi un commento"
-                    value={content}
-                    maxLength={300}
-                    onChange={e => setContent(e.target.value)}
-                    disabled={disabled}
-                  />
-                  <Button
-                    type="submit"
-                    disabled={disabled || !content}
-                    color="blue"
-                  >
-                    {disabled ? <Spinner /> : <span>Invia</span>}
-                  </Button>
-                </form>
-              </div>
-            ) : (
-              <div className="px-2">
-                <p>Fai il login per commentare</p>
-                <Button color="blue" onClick={() => navigate("/login")}>
-                  Login
-                </Button>
-              </div>
-            )}
-            {Array.isArray(post?.comments) &&
-              comments.map(comment => (
-                <Card
-                  key={comment._id}
-                  className="mt-2"
-                  id={`comment-${comment._id}`}
-                >
-                  <div className="flex flex-col gap-2">
-                    <div className="flex flex-row gap-2 items-center">
-                      {/* <LazyLoadImage
-                    loading="lazy"
-                    src={comment?.fromUser?.profilePic}
-                    alt="Avatar"
-                    className="object-cover w-10 h-10 rounded-full"
-                    scrollPosition={scrollPosition}
-                  /> */}
-                      <div className="flex justify-between w-full">
-                        <div className="flex flex-col">
-                          <Link
-                            to={`/u/${comment?.fromUser?.callsign}`}
-                            className="text-blue-500 hover:text-blue-700 transition-colors dark:text-gray-300 font-semibold"
-                          >
-                            {comment?.fromUser ? (
-                              <CallsignLoading user={comment.fromUser} />
-                            ) : (
-                              <span className="text-gray-500 dark:text-gray-300">
-                                Utente non trovato
-                              </span>
-                            )}
-                          </Link>
-                          <p className="text-gray-600 dark:text-gray-400">
-                            {comment?.content}
-                          </p>
-                        </div>
-                        <div>
-                          {user &&
-                            post &&
-                            (user.callsign === comment.fromUser.allsign ||
-                              user.isAdmin) && (
-                              <Button
-                                size="sm"
-                                color="red"
-                                onClick={e => deleteComment(e, comment)}
-                                disabled={disabled}
-                              >
-                                <FaTrash className="p-0" />
-                              </Button>
-                            )}
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                      {comment?.createdAt &&
-                        formatInTimeZone(
-                          comment?.createdAt,
-                          "Europe/Rome",
-                          "d MMM yyyy HH:mm",
-                          { locale: it }
-                        )}
-                    </p>
-                  </div>
-                </Card>
-              ))}
-          </div>
-        )}
       </div>
-    );
-  }
-);
-
+      {typeof user !== "boolean" && (
+        <CommentsSection
+          alert={alert}
+          comments={comments}
+          content={content}
+          deleteComment={deleteComment}
+          disabled={disabled}
+          hideComments={hideComments}
+          highlightedComment={highlightedComment}
+          postExtended={postExtended}
+          replyTo={replyTo}
+          sendComment={sendComment}
+          setAlert={setAlert}
+          setContent={setContent}
+          setReplyTo={setReplyTo}
+          user={user}
+        />
+      )}
+    </div>
+  );
+});
 ViewPostContent.propTypes = {
-  post: PropTypes.object,
-  pic: PropTypes.string,
-  scrollPosition: PropTypes.number,
+  postExtended: PropTypes.object,
   hideComments: PropTypes.bool
 };
 
 ViewPostContent.displayName = "ViewPostContent";
 
-const TrackedViewPostContent = trackWindowScroll(ViewPostContent);
-export default TrackedViewPostContent;
+export default ViewPostContent;

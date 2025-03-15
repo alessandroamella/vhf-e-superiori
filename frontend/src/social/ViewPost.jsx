@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "../App";
 
 import axios, { isAxiosError } from "axios";
@@ -18,16 +18,14 @@ const ViewPost = () => {
 
   const [alert, setAlert] = useState(null);
 
-  const [post, setPost] = useState(null);
-  const [pic, setPic] = useState(null);
+  const [postExtended, setPostExtended] = useState(null);
 
   useEffect(() => {
     async function loadPost() {
       try {
         const { data } = await axios.get("/api/post/" + id);
         console.log("post", data);
-        setPost(data.post);
-        if (data.pp) setPic(data.pp);
+        setPostExtended({ post: data.post, pics: data.pps || {} });
       } catch (err) {
         console.log(err);
         if (isAxiosError(err) && err.response.status === 404) {
@@ -41,7 +39,7 @@ const ViewPost = () => {
             msg: getErrorStr(err?.response?.data?.err)
           });
         }
-        setPost(false);
+        setPostExtended(null);
         window.scrollTo({
           top: 0,
           behavior: "smooth"
@@ -80,6 +78,8 @@ const ViewPost = () => {
     }
   }
 
+  const post = useMemo(() => postExtended?.post, [postExtended]);
+
   return (
     <>
       <Helmet>
@@ -113,7 +113,7 @@ const ViewPost = () => {
         )}
 
         <div className="mt-2 flex justify-center w-full">
-          <ViewPostContent post={post} pic={pic} />
+          <ViewPostContent postExtended={postExtended} />
         </div>
       </div>
     </>

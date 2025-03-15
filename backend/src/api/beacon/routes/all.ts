@@ -1,7 +1,7 @@
 import { Router } from "express";
+import { INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
 import { createError, validate } from "../../helpers";
-import { INTERNAL_SERVER_ERROR } from "http-status";
 import { Beacon, BeaconDocWithProp, BeaconProperties } from "../models";
 
 const router = Router();
@@ -55,7 +55,7 @@ router.get("/", validate, async (req, res) => {
             )
                 .populate({
                     path: "editAuthor",
-                    select: "callsign"
+                    select: "callsign isDev isAdmin"
                 })
                 .limit(1)
                 .sort({ editDate: -1 });

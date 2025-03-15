@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { logger } from "../../../shared/logger";
 import { param } from "express-validator";
-import { createError, validate } from "../../helpers";
-import { Qso } from "../models";
 import { INTERNAL_SERVER_ERROR } from "http-status";
+import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
+import { createError, validate } from "../../helpers";
 import { location } from "../../location";
+import { Qso } from "../models";
 
 const router = Router();
 
@@ -58,7 +58,10 @@ router.get(
                 createdAt: 0,
                 updatedAt: 0
             })
-                .populate({ path: "fromStation", select: "callsign" })
+                .populate({
+                    path: "fromStation",
+                    select: "callsign isDev isAdmin"
+                })
                 .populate({ path: "event", select: "name date" })
                 .lean();
 

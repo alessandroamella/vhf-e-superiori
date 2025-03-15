@@ -58,7 +58,7 @@ router.get(
             })
                 .populate({
                     path: "fromUser",
-                    select: "callsign"
+                    select: "callsign isDev isAdmin"
                 })
                 .lean();
             res.json({ ...event, joinRequests });

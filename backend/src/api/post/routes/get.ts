@@ -4,7 +4,7 @@ import { param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND } from "http-status";
 import { logger } from "../../../shared/logger";
 import type { UserDoc } from "../../auth/models";
-import { Comment } from "../../comment/models";
+import { Comment, CommentDoc } from "../../comment/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import { qrz } from "../../qrz";
@@ -38,8 +38,8 @@ const router = Router();
  *              properties:
  *                post:
  *                  $ref: '#/components/schemas/Post'
- *                pp:
- *                  type: string
+ *                pps:
+ *                  type: object
  *      '400':
  *        description: Invalid ObjectId
  *        content:
@@ -71,7 +71,7 @@ router.get(
                 hidden: false
             }).populate({
                 path: "fromUser",
-                select: "callsign name"
+                select: "callsign name isDev isAdmin"
             });
             if (post?.isProcessing) {
                 return res
@@ -91,19 +91,62 @@ router.get(
 
             logger.debug("Fetched post " + post?._id);
 
-            const comments = await Comment.find({
-                forPost: post._id
-            }).populate({ path: "fromUser", select: "callsign name" });
+            const replyIds =
+                (await Comment.distinct("replies"))?.filter((id) => id) || [];
 
-            const pp = (
-                await qrz.getInfo(
-                    (post.fromUser as unknown as UserDoc).callsign
-                )
-            )?.pictureUrl;
+            // find only top-level comments, populate replies
+            const comments = await Comment.find({
+                forPost: post._id,
+                _id: { $nin: replyIds }
+            }).populate([
+                {
+                    path: "fromUser",
+                    select: "callsign name isDev isAdmin"
+                },
+                {
+                    path: "replies",
+                    populate: {
+                        path: "fromUser",
+                        select: "callsign name isDev isAdmin"
+                    }
+                }
+            ]);
+
+            const allCallsigns = new Set(
+                [
+                    post.fromUser.callsign,
+                    ...comments.map((c) => (c.fromUser as UserDoc)?.callsign),
+                    ...comments.flatMap((c) =>
+                        c.replies?.map(
+                            (r) =>
+                                (
+                                    (r as unknown as CommentDoc)
+                                        ?.fromUser as unknown as UserDoc
+                                )?.callsign
+                        )
+                    )
+                ].filter(Boolean) as string[]
+            );
+
+            logger.debug(
+                `Fetched ${allCallsigns.size} callsigns: ${[
+                    ...allCallsigns
+                ].join(", ")}`
+            );
+
+            const infos = await Promise.all(
+                [...allCallsigns].map((e) => qrz.getInfo(e))
+            );
+
+            const pps = Object.fromEntries(
+                infos
+                    .filter((e) => e?.pictureUrl)
+                    .map((e) => [e!.callsign, e!.pictureUrl])
+            );
 
             res.json({
                 post: { ...post.toJSON(), comments },
-                pp
+                pps
             });
         } catch (err) {
             logger.error("Error in post get");

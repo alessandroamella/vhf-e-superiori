@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { logger } from "../../../shared/logger";
 import { query } from "express-validator";
-import { createError, validate } from "../../helpers";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { FilterQuery } from "mongoose";
-import { BlogPostClass } from "../models/BlogPost";
+import { logger } from "../../../shared/logger";
+import { createError, validate } from "../../helpers";
 import { BlogPost } from "../models";
+import { BlogPostClass } from "../models/BlogPost";
 
 const router = Router();
 
@@ -90,7 +90,10 @@ router.get(
 
             const blogPosts = await blogPostQuery
                 .sort({ createdAt: -1 })
-                .populate({ path: "fromUser", select: "callsign" })
+                .populate({
+                    path: "fromUser",
+                    select: "callsign isDev isAdmin"
+                })
                 .lean();
 
             res.json(blogPosts);

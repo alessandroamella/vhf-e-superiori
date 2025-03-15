@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { logger } from "../../../shared/logger";
 import { query } from "express-validator";
-import { createError, validate } from "../../helpers";
-import { User } from "../models";
 import { INTERNAL_SERVER_ERROR } from "http-status";
+import { logger } from "../../../shared/logger";
+import { createError, validate } from "../../helpers";
 import JoinRequest from "../../joinRequest/models";
 import { location } from "../../location";
+import { User } from "../models";
 
 const router = Router();
 
@@ -79,19 +79,19 @@ router.get(
             const result = await users.exec();
 
             const joinRequests = await JoinRequest.find({
-                fromUser: { $in: result.map(u => u._id) }
+                fromUser: { $in: result.map((u) => u._id) }
             })
                 .populate({
                     path: "fromUser",
-                    select: "callsign name email phoneNumber"
+                    select: "callsign name email phoneNumber isDev isAdmin"
                 })
                 .populate({ path: "forEvent", select: "name" })
                 .sort({ createdAt: -1 });
 
             return res.json(
-                result.map(u => {
+                result.map((u) => {
                     const _joinRequests = joinRequests.filter(
-                        jr => jr.fromUser._id.toString() === u._id.toString()
+                        (jr) => jr.fromUser._id.toString() === u._id.toString()
                     );
                     return {
                         ...u.toJSON(),

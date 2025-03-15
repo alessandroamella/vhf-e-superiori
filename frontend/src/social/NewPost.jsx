@@ -309,7 +309,7 @@ const NewPost = () => {
               </Typography>
               <div className="flex justify-center">
                 {(pictures.length || videos.length) && isValid ? (
-                  <ViewPostContent post={post} hideComments />
+                  <ViewPostContent postExtended={{ post }} hideComments />
                 ) : (
                   <Alert color="info">
                     <Typography

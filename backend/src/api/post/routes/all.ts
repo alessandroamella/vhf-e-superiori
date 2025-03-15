@@ -40,6 +40,13 @@ const router = Router();
  *          format: ObjectId
  *        description: ObjectId of the user to filter by
  *        required: false
+ *      - in: query
+ *        name: fromDate
+ *        schema:
+ *          type: string
+ *          format: date-time
+ *        description: Date to filter from
+ *        required: false
  *    tags:
  *      - post
  *    responses:
@@ -80,6 +87,7 @@ router.get(
     query("offset").isInt({ min: 0 }).optional(),
     query("fromUser").isMongoId().optional(),
     query("orderBy").isObject().optional(),
+    query("fromDate").isISO8601().optional(),
     validate,
     async (req, res) => {
         try {
@@ -93,11 +101,22 @@ router.get(
             ) {
                 query.fromUser = req.query.fromUser;
             }
+            if (
+                typeof req.query?.fromDate === "string" &&
+                !Number.isNaN(new Date(req.query.fromDate).valueOf())
+            ) {
+                query.createdAt = { $gt: new Date(req.query.fromDate) };
+            }
 
-            const postsQuery = BasePost.find(query).populate({
-                path: "fromUser",
-                select: "callsign name"
-            });
+            logger.debug("Get posts with query:");
+            logger.debug(query);
+
+            const postsQuery = BasePost.find(query).populate([
+                {
+                    path: "fromUser",
+                    select: "callsign name isDev isAdmin"
+                }
+            ]);
 
             if (
                 typeof req.query?.limit === "string" &&
@@ -111,7 +130,7 @@ router.get(
             )
                 postsQuery.skip(parseInt(req.query.offset));
 
-            logger.debug("Order by query:");
+            logger.debug("Order posts by:");
             logger.debug(req.query.orderBy);
 
             const posts = await postsQuery
@@ -122,7 +141,10 @@ router.get(
 
             const comments = await Comment.find({
                 forPost: { $in: posts.map((p) => p._id) }
-            }).populate({ path: "fromUser", select: "callsign name" });
+            }).populate({
+                path: "fromUser",
+                select: "callsign name isDev isAdmin"
+            });
 
             logger.debug("Fetched " + posts.length + " posts");
 

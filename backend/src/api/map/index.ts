@@ -1,4 +1,3 @@
-import axios from "axios";
 import crypto from "crypto";
 import ejs from "ejs";
 import { access, readFile, writeFile } from "fs/promises";
@@ -15,7 +14,6 @@ class MapExporter {
     private cache: Buffer | null = null;
     private lastFetched: moment.Moment | null = null;
     private cacheDuration = moment.duration(1, "day");
-    private imageUrl = "https://www.vhfesuperiori.eu/logo-min.png";
 
     async processImage(imgBuffer: Buffer): Promise<Buffer | null> {
         try {
@@ -54,23 +52,24 @@ class MapExporter {
             return this.cache;
         }
 
-        logger.debug("Fetching new image logo");
+        logger.debug("Fetching new image logo from file");
         try {
-            const response = await axios.get(this.imageUrl, {
-                responseType: "arraybuffer"
-            });
-            const processedImage = await this.processImage(
-                Buffer.from(response.data)
-            );
+            const imagePath = path.join(
+                process.cwd(),
+                "images",
+                "logo-min.png"
+            ); // Path to local image
+            const imageBuffer = await readFile(imagePath);
+            const processedImage = await this.processImage(imageBuffer);
             if (!processedImage) {
-                logger.error("Error processing image logo");
+                logger.error("Error processing image logo from file");
                 return this.cache || Buffer.from("");
             }
             this.cache = processedImage;
             this.lastFetched = moment();
             return this.cache;
         } catch (error) {
-            logger.error("Error fetching image logo");
+            logger.error("Error fetching image logo from file");
             logger.error(error);
             throw error;
         }

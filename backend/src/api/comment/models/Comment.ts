@@ -1,4 +1,5 @@
 import { modelOptions, prop, Ref } from "@typegoose/typegoose";
+import { UserClass } from "../../auth/models";
 
 /**
  * @swagger
@@ -17,6 +18,11 @@ import { modelOptions, prop, Ref } from "@typegoose/typegoose";
  *            type: string
  *            format: objectid
  *            description: ObjectId of the user who made this post
+ *          replies:
+ *            type: array
+ *            items:
+ *              type: string
+ *              description: ObjectId of the parent comment (if any)
  *          forPost:
  *            type: string
  *            format: objectid
@@ -40,11 +46,14 @@ import { modelOptions, prop, Ref } from "@typegoose/typegoose";
     options: { customName: "Comment" }
 })
 export class CommentClass {
-    @prop({ required: true, ref: "User" })
-    public fromUser!: Ref<"User">;
+    @prop({ required: true, ref: UserClass })
+    public fromUser!: Ref<UserClass>;
 
     @prop({ required: true, ref: "Post" })
     public forPost!: Ref<"Post">;
+
+    @prop({ required: false, ref: () => CommentClass, default: [] })
+    public replies?: Ref<CommentClass>[];
 
     @prop({ required: true, minlength: 1, maxlength: 300 })
     public content!: string;

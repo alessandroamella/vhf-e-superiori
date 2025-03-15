@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { ReadyContext, SplashContext } from "../App";
@@ -8,6 +8,7 @@ import FeedCard from "./FeedCard";
 
 import axios from "axios";
 import { Alert, Button, Spinner, TextInput } from "flowbite-react";
+import { uniqBy } from "lodash";
 import { FaPlus, FaUserTag } from "react-icons/fa";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MenuContent from "../sideMenu/MenuContent";
@@ -32,37 +33,70 @@ const Social = () => {
 
   const cursorLimit = 100;
 
-  useEffect(() => {
-    // DEBUG
-    // return setAlert({
-    //   color: "warning",
-    //   msg: "Il servizio è temporaneamente sospeso per manutenzione. Ci scusiamo per il disagio."
-    // });
-
-    async function fetchPosts() {
+  const fetchPosts = useCallback(
+    async (fromDate) => {
       console.log(
-        "fetching posts from " + cursor + " to " + (cursor + cursorLimit)
+        "fetching posts from " + cursor + " to " + (cursor + cursorLimit),
+        " fromDate: ",
+        fromDate
       );
       const { data } = await axios.get("/api/post", {
         params: {
           limit: cursorLimit,
-          offset: cursor
+          offset: cursor,
+          ...(fromDate && { fromDate })
         }
       });
       console.log("new posts", data, "\nall posts", [...posts, ...data.posts]);
-      setPosts([...posts, ...data.posts]);
-      setProfilePictures([...profilePictures, ...data.pp]);
-      console.log("new pps", profilePictures, "\nall pps", [
-        ...profilePictures,
-        ...data.pp
-      ]);
+      if (data.posts.length > 0) {
+        console.log("setting posts");
+        setPosts(
+          uniqBy(
+            fromDate ? [...data.posts, ...posts] : [...posts, ...data.posts]
+          ),
+          "_id"
+        );
+      } else {
+        console.log("no new posts");
+      }
+      if (data.pp.length) {
+        setProfilePictures(
+          uniqBy([...profilePictures, ...data.pp], "callsign")
+        );
+        console.log("new pps", profilePictures, "\nall pps", [
+          ...profilePictures,
+          ...data.pp
+        ]);
+      } else {
+        console.log("no new profile pictures");
+      }
       setHasMore(data.posts.length > 0);
       setPostsLoaded(true);
-    }
+    },
+    [cursor, posts, profilePictures]
+  );
+
+  useEffect(() => {
     fetchPosts();
     // don't listen for orderBy: there will be a useEffect to reset cursor
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cursor]);
+
+  useEffect(() => {
+    if (!posts || posts.length === 0) return;
+    let didFirstFetch = false;
+    const fetchPostsInterval = setInterval(() => {
+      if (!didFirstFetch) {
+        // skip first fetch
+        didFirstFetch = true;
+        return;
+      }
+      fetchPosts(posts[0].createdAt);
+      // every 4 sec
+    }, 4 * 1000);
+
+    return () => clearInterval(fetchPostsInterval);
+  }, [fetchPosts, posts]);
 
   function fetchMorePosts() {
     setCursor(cursor + cursorLimit);

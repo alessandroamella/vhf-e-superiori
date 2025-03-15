@@ -1,9 +1,9 @@
 import { Request, Response, Router } from "express";
-import { createError, validate } from "../../helpers";
-import { logger } from "../../../shared";
-import { INTERNAL_SERVER_ERROR } from "http-status";
-import JoinRequest from "../models";
 import { param } from "express-validator";
+import { INTERNAL_SERVER_ERROR } from "http-status";
+import { logger } from "../../../shared";
+import { createError, validate } from "../../helpers";
+import JoinRequest from "../models";
 
 const router = Router();
 
@@ -55,7 +55,7 @@ router.get(
             })
                 .populate({
                     path: "fromUser",
-                    select: "callsign name email phoneNumber"
+                    select: "callsign name email phoneNumber isDev isAdmin"
                 })
                 .sort({ createdAt: -1 });
             res.json(joinRequests);

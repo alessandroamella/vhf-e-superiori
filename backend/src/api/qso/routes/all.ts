@@ -107,7 +107,10 @@ router.get(
 
             const qsos = await qsoQuery
                 .sort({ qsoDate: -1 })
-                .populate({ path: "fromStation", select: "callsign" })
+                .populate({
+                    path: "fromStation",
+                    select: "callsign isDev isAdmin"
+                })
                 .lean();
             res.json(
                 qsos.map((e) => ({

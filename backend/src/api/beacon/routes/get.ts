@@ -1,9 +1,9 @@
 import { Router } from "express";
+import { param } from "express-validator";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
 import { createError, validate } from "../../helpers";
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { Beacon, BeaconDocWithProps, BeaconProperties } from "../models";
-import { param } from "express-validator";
 
 const router = Router();
 
@@ -55,11 +55,11 @@ router.get("/:id", param("id").isMongoId(), validate, async (req, res) => {
         })
             .populate({
                 path: "editAuthor",
-                select: "callsign"
+                select: "callsign isDev isAdmin"
             })
             .populate({
                 path: "verifiedBy",
-                select: "callsign"
+                select: "callsign isDev isAdmin"
             });
         if (props.length === 0) {
             logger.error(`Beacon ${_beacon._id} has no properties`);

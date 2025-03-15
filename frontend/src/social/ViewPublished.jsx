@@ -67,6 +67,13 @@ const ViewPublished = () => {
   const [isFakeLoading, setIsFakeLoading] = useState(false);
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }, []);
+
+  useEffect(() => {
     if (isFakeLoading) {
       setTimeout(() => {
         setShowMap(true);
@@ -362,7 +369,7 @@ const ViewPublished = () => {
             {/* <p>Dovrà essere approvato prima di essere visibile pubblicamente</p> */}
           </Alert>
         )}
-        <Button color="gray" outline className="mb-4 w-fit" as={Link} to="..">
+        <Button color="gray" outline className="mb-4 w-fit" as={Link} to={-1}>
           <FaBackward />
         </Button>
 

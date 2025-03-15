@@ -1,7 +1,7 @@
 import axios, { isAxiosError } from "axios";
 import { spawn } from "child_process";
 import { existsSync } from "fs";
-import { unlink } from "fs/promises";
+import { readFile, unlink } from "fs/promises";
 import moment from "moment";
 import path from "path";
 import sharp from "sharp";
@@ -15,6 +15,7 @@ import type { QsoDoc } from "../qso/models";
 class EqslPic {
     private href: string | null = null;
     private image: Buffer | null = null;
+    private readonly logoMinUrl = "https://www.vhfesuperiori.eu/logo-min.png";
 
     constructor(href: string | Buffer) {
         if (href instanceof Buffer) {
@@ -39,14 +40,26 @@ class EqslPic {
         } else if (!this.href) {
             throw new Error("No href in fetchImage");
         } else if (this.href === "/logo-min.png") {
-            this.href = "https://www.vhfesuperiori.eu/logo-min.png";
+            this.href = this.logoMinUrl;
         }
 
         try {
-            const response = await axios.get(this.href, {
-                responseType: "arraybuffer"
-            });
-            const minifiedImg = await sharp(response.data)
+            let imageBuffer;
+            if (this.href === this.logoMinUrl) {
+                const response = await axios.get(this.href, {
+                    responseType: "arraybuffer"
+                });
+                imageBuffer = response.data;
+            } else {
+                const imagePath = path.join(
+                    process.cwd(),
+                    "images",
+                    "logo-min.png"
+                );
+                imageBuffer = await readFile(imagePath);
+            }
+
+            const minifiedImg = await sharp(imageBuffer)
                 .toFormat("jpeg")
                 .jpeg({ quality: 90 })
                 .toBuffer();

@@ -1,6 +1,7 @@
 import { modelOptions, pre, prop, Ref, Severity } from "@typegoose/typegoose";
-import { Errors } from "../../errors";
 import { logger } from "../../../shared";
+import { UserClass } from "../../auth/models";
+import { Errors } from "../../errors";
 
 /**
  * @swagger
@@ -71,8 +72,8 @@ import { logger } from "../../../shared";
     options: { allowMixed: Severity.ERROR, customName: "BasePost" }
 })
 export class BasePostClass {
-    @prop({ required: true, ref: "User" })
-    public fromUser!: Ref<"User">;
+    @prop({ required: true, ref: UserClass })
+    public fromUser!: Ref<UserClass>;
 
     @prop({ required: true, minlength: 1, maxlength: 300 })
     public description!: string;

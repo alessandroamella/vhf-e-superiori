@@ -1,14 +1,14 @@
 import { Request, Response, Router } from "express";
 import { checkSchema } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
-import { logger } from "../../../shared";
-import { createError, validate } from "../../helpers";
-import { Errors } from "../../errors";
-import createSchema from "../schemas/createSchema";
+import { envs, logger } from "../../../shared";
 import { User, UserDoc } from "../../auth/models";
-import { BasePost } from "../../post/models";
-import { Comment } from "../models";
 import EmailService from "../../email";
+import { Errors } from "../../errors";
+import { createError, validate } from "../../helpers";
+import { BasePost } from "../../post/models";
+import { Comment, CommentDoc } from "../models";
+import createSchema from "../schemas/createSchema";
 
 const router = Router();
 
@@ -67,7 +67,7 @@ router.post(
                 throw new Error("User not found in post create");
             }
 
-            const { forPost, content } = req.body;
+            const { forPost, content, parentComment } = req.body;
 
             const post = await BasePost.findById(forPost);
             if (!post) {
@@ -76,11 +76,48 @@ router.post(
                     .json(createError(Errors.INVALID_POST));
             }
 
+            const postUser = await User.findById(post.fromUser);
+            if (!postUser) {
+                logger.error("Post user not found in comment create");
+                return res.status(INTERNAL_SERVER_ERROR).json(createError());
+            }
+
+            let parentCommentDoc: CommentDoc | null = null;
+            if (parentComment) {
+                parentCommentDoc = await Comment.findOne({
+                    _id: parentComment,
+                    forPost: post._id
+                });
+                logger.debug("Parent comment found: " + parentCommentDoc);
+                if (!parentCommentDoc) {
+                    return res
+                        .status(BAD_REQUEST)
+                        .json(createError(Errors.COMMENT_NOT_FOUND));
+                }
+
+                // don't allow replying to a comment that is a reply
+                const superParentComment = await Comment.findOne({
+                    replies: parentComment
+                });
+
+                if (superParentComment) {
+                    // find the parent comment
+                    parentCommentDoc = superParentComment;
+                    logger.debug(
+                        "Parent comment is a reply, super parent comment: " +
+                            superParentComment
+                    );
+                }
+            }
+
             const comment = await new Comment({
                 fromUser: user._id,
                 forPost: post._id,
                 content
-            }).populate({ path: "fromUser", select: "callsign name" });
+            }).populate({
+                path: "fromUser",
+                select: "callsign name isDev isAdmin"
+            });
 
             try {
                 await comment.validate();
@@ -92,17 +129,37 @@ router.post(
                     .json(createError(Errors.INVALID_COMMENT));
             }
 
-            // user.posts.push(post._id);
-            // await user.save();
+            if (parentCommentDoc) {
+                if (parentCommentDoc.replies) {
+                    parentCommentDoc.replies.push(comment);
+                } else {
+                    parentCommentDoc.replies = [comment];
+                }
+                await parentCommentDoc.save();
+            }
+
             await comment.save();
 
-            const postUser = await User.findById(post.fromUser);
-            if (!postUser) {
-                throw new Error("Post user not found in comment create");
+            // don't await this
+            if (envs.NODE_ENV === "development") {
+                logger.warn(
+                    `Skipping comment email in development for comment ${comment}`
+                );
+            } else {
+                EmailService.sendCommentMail(postUser, user, post, comment)
+                    .then(() => {
+                        logger.debug("Comment email sent successfully");
+                    })
+                    .catch((err) => {
+                        logger.error("Error while sending comment email");
+                        logger.error(err);
+                    });
             }
-            await EmailService.sendCommentMail(postUser, user, post, comment);
 
-            res.json(comment.toObject());
+            res.json({
+                parentComment: parentCommentDoc?._id || null,
+                ...comment.toObject()
+            });
         } catch (err) {
             logger.error("Error while creating comment");
             logger.error(err);
