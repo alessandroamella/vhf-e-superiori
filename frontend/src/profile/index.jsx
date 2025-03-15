@@ -488,7 +488,7 @@ const Profile = () => {
         <div className="w-full flex my-4 uppercase justify-center">
           <Button as={Link} to={`/u/${user.callsign}`} size="lg">
             <FaExternalLinkAlt className="inline mr-2 mt-[2px]" />
-            Le mie mappe
+            Profilo pubblico e mappe
           </Button>
         </div>
 

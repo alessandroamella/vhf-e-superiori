@@ -140,13 +140,24 @@ router.post(
 
             await comment.save();
 
+            const parentDocAuthor =
+                parentCommentDoc &&
+                (await User.findById(parentCommentDoc?.fromUser));
+
             // don't await this
-            if (envs.NODE_ENV === "development") {
+            const ses = false;
+            if (ses && envs.NODE_ENV === "development") {
                 logger.warn(
                     `Skipping comment email in development for comment ${comment}`
                 );
             } else {
-                EmailService.sendCommentMail(postUser, user, post, comment)
+                EmailService.sendCommentMail(
+                    user,
+                    parentDocAuthor || postUser,
+                    post,
+                    comment,
+                    parentDocAuthor && parentComment
+                )
                     .then(() => {
                         logger.debug("Comment email sent successfully");
                     })

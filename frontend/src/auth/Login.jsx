@@ -13,11 +13,30 @@ const Login = () => {
   const [callsign, setCallsign] = useState("");
   const [password, setPassword] = useState("");
 
+  const loginFormRef = useRef();
+  const emailRef = useRef();
+
   const [alert, setAlert] = useState(null);
   const [disabled, setDisabled] = useState(false);
 
   const [resetPw, setResetPw] = useState(false);
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (resetPw) {
+        emailRef.current?.focus();
+        emailRef.current?.scrollIntoView({
+          behavior: "smooth"
+        });
+      } else {
+        window.scrollTo({
+          top: 200,
+          behavior: "smooth"
+        });
+      }
+    }, 100);
+  }, [resetPw]);
 
   const { user, setUser } = useContext(UserContext);
 
@@ -32,8 +51,7 @@ const Login = () => {
       token = captchaRef.current.getValue();
     } catch (err) {
       console.log("captcha error", err);
-      window.scrollTo({
-        top: 0,
+      loginFormRef.current?.scrollIntoView({
         behavior: "smooth"
       });
 
@@ -44,8 +62,7 @@ const Login = () => {
     }
 
     if (!token) {
-      window.scrollTo({
-        top: 0,
+      loginFormRef.current?.scrollIntoView({
         behavior: "smooth"
       });
 
@@ -73,8 +90,7 @@ const Login = () => {
       });
       setDisabled(false);
     } finally {
-      window.scrollTo({
-        top: 0,
+      loginFormRef.current?.scrollIntoView({
         behavior: "smooth"
       });
     }
@@ -130,7 +146,10 @@ const Login = () => {
       </Helmet>
       {user &&
         navigate(searchParams.get("to") || "/profile", { replace: true })}
-      <div className="w-full h-full min-h-[70vh] dark:bg-gray-900 dark:text-white">
+      <div
+        ref={loginFormRef}
+        className="w-full h-full min-h-[70vh] dark:bg-gray-900 dark:text-white"
+      >
         <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">
           <Typography variant="h1" className="dark:text-white mb-2">
             Login
@@ -141,7 +160,7 @@ const Login = () => {
             <Tooltip content="Naviga alla pagina di registrazione">
               <Link
                 to="/signup"
-                className="underline decoration-dotted hover:text-black transition-colors"
+                className="underline decoration-dotted hover:text-black dark:hover:text-red-400 transition-colors"
               >
                 Registrati qui
               </Link>
@@ -205,7 +224,7 @@ const Login = () => {
               Ti sei scordato la password?{" "}
               <Link
                 to="#"
-                className="underline decoration-dotted text-center hover:text-black transition-colors"
+                className="underline decoration-dotted text-center hover:text-black dark:hover:text-red-400 transition-colors"
                 onClick={() => setResetPw(true)}
               >
                 Clicca qui
@@ -214,6 +233,10 @@ const Login = () => {
             </small>
 
             <div className={`${resetPw ? "block" : "hidden"} mt-4`}>
+              <hr className="my-8" />
+              <Typography variant="h2" className="dark:text-white">
+                Reimposta la password
+              </Typography>
               <form action="#" method="post" onSubmit={sendResetPw}>
                 <div className="mb-2 block">
                   <Label htmlFor="email" value="Email" />
@@ -224,17 +247,30 @@ const Login = () => {
                   id="email"
                   autoComplete="email"
                   label="Email"
+                  ref={emailRef}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={disabled}
                   required
+                  autoFocus
                 />
                 <div className="my-4" />
                 <ReCAPTCHA sitekey={recaptchaSiteKey} ref={captchaRef} />
                 <div className="my-4" />
-                <Button type="submit" disabled={disabled}>
-                  Invia richiesta
-                </Button>
+                <div className="flex justify-center gap-4">
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    className="dark:text-gray-200 dark:border-gray-200"
+                    disabled={disabled}
+                    onClick={() => setResetPw(false)}
+                  >
+                    Annulla
+                  </Button>
+                  <Button type="submit" color="yellow" disabled={disabled}>
+                    Invia richiesta
+                  </Button>
+                </div>
               </form>
             </div>
           </div>

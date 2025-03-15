@@ -415,8 +415,7 @@
                                                                         line-height: 140%;
                                                                         text-align: left;
                                                                         word-wrap: break-word;
-                                                                        font-family: verdana,
-                                                                            geneva;
+                                                                        font-family: verdana, geneva, arial, helvetica, sans-serif;
                                                                         font-size: 22px;
                                                                         font-weight: 700;
                                                                     "
@@ -560,8 +559,7 @@
                                                                         line-height: 200%;
                                                                         text-align: left;
                                                                         word-wrap: break-word;
-                                                                        font-family: verdana,
-                                                                            geneva;
+                                                                        font-family: verdana, geneva, arial, helvetica, sans-serif;
                                                                         font-size: 28px;
                                                                         font-weight: 700;
                                                                     "
@@ -569,9 +567,9 @@
                                                                     <span>
                                                                         <span>
                                                                             <span>
-                                                                                {NOMINATIVO_COMMENTO}
+                                                                                <%= NOMINATIVO_COMMENTO %>
                                                                                 su
-                                                                                {POST}
+                                                                                "<%= POST %>"
                                                                             </span>
                                                                         </span>
                                                                     </span>
@@ -703,15 +701,13 @@
                                                                     >
                                                                         Ciao
                                                                         <strong>
-                                                                            {NOMINATIVO}
+                                                                            <%= NOMINATIVO %>
                                                                         </strong>
                                                                         ,
-                                                                        {NOMINATIVO_COMMENTO}
+                                                                        <%= NOMINATIVO_COMMENTO %>
                                                                         ha
-                                                                        commentato
-                                                                        il tuo
-                                                                        post
-                                                                        {POST}:
+                                                                        <%= IS_REPLY.toString() === 'true' ? 'risposto al tuo commento' : 'commentato il tuo post' %>
+                                                                        "<%= POST %>":
                                                                     </p>
                                                                 </div>
                                                             </td>
@@ -844,7 +840,7 @@
                                                                             "
                                                                         >
                                                                             <img
-                                                                                src="{PP_COMMENTO}"
+                                                                                src="<%= PP_COMMENTO %>"
                                                                                 style="
                                                                                     width: 2rem;
                                                                                     height: 2rem;
@@ -857,7 +853,7 @@
                                                                                     font-weight: 600;
                                                                                 "
                                                                             >
-                                                                                {NOMINATIVO_COMMENTO}
+                                                                                <%= NOMINATIVO_COMMENTO %>
                                                                             </span>
                                                                         </div>
                                                                         <div
@@ -865,7 +861,7 @@
                                                                                 margin-bottom: 1rem;
                                                                             "
                                                                         >
-                                                                            {CONTENUTO_COMMENTO}
+                                                                            <%= CONTENUTO_COMMENTO %>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -911,9 +907,9 @@
                                                                     class="v-text-align"
                                                                     align="center"
                                                                 >
-                                                                    <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://www.vhfesuperiori.eu/social/{POSTID}#comment-{COMMENTID}" style="height:37px; v-text-anchor:middle; width:95px;" arcsize="11%"  stroke="f" fillcolor="#3AAEE0"><w:anchorlock/><center style="color:#FFFFFF;"><![endif]-->
+                                                                    <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://www.vhfesuperiori.eu/social/<%= POSTID %>#comment-<%= COMMENTID %>" style="height:37px; v-text-anchor:middle; width:95px;" arcsize="11%"  stroke="f" fillcolor="#3AAEE0"><w:anchorlock/><center style="color:#FFFFFF;"><![endif]-->
                                                                     <a
-                                                                        href="https://www.vhfesuperiori.eu/social/{POSTID}#comment-{COMMENTID}"
+                                                                        href="https://www.vhfesuperiori.eu/social/<%= POSTID %>#comment-<%= COMMENTID %>"
                                                                         target="_blank"
                                                                         class="v-button"
                                                                         style="

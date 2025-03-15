@@ -1,3 +1,4 @@
+import ejs from "ejs";
 import { readFile, unlink } from "fs/promises";
 import { getDistance } from "geolib";
 import moment from "moment-timezone";
@@ -31,10 +32,17 @@ export class EmailService {
             encoding: "utf-8"
         });
         // replace params with their values
-        return Object.entries(params).reduce(
-            (acc, [key, value]) => acc.replace(new RegExp(key, "g"), value),
-            text
-        );
+        if (name.endsWith(".html")) {
+            return Object.entries(params).reduce(
+                (acc, [key, value]) => acc.replace(new RegExp(key, "g"), value),
+                text
+            );
+        } else if (name.endsWith(".ejs")) {
+            return ejs.render(text, params);
+        } else {
+            logger.error(`Invalid email file extension: ${name}`);
+            return text;
+        }
     }
 
     private static _initialize(): Promise<void> {
@@ -96,7 +104,12 @@ export class EmailService {
         };
 
         await EmailService.sendMail(message);
-        logger.info("Verify user mail sent to user " + user.callsign);
+        logger.info(
+            "Verify user mail sent to user " +
+                user.callsign +
+                " at email: " +
+                user.email
+        );
     }
 
     public static async sendNewAdminMail(newAdmin: UserDoc) {
@@ -137,7 +150,12 @@ export class EmailService {
         };
 
         await EmailService.sendMail(message);
-        logger.info("Verify user mail sent to user " + user.callsign);
+        logger.info(
+            "Verify user mail sent to user " +
+                user.callsign +
+                " at email: " +
+                user.email
+        );
     }
 
     public static async sendJoinRequestMail(
@@ -162,7 +180,12 @@ export class EmailService {
         };
 
         await EmailService.sendMail(message);
-        logger.info("Join request mail sent to user " + user.callsign);
+        logger.info(
+            "Join request mail sent to user " +
+                user.callsign +
+                " at email: " +
+                user.email
+        );
     }
 
     public static async sendAcceptJoinRequestMail(
@@ -193,7 +216,12 @@ export class EmailService {
         };
 
         await EmailService.sendMail(message);
-        logger.info("Join request mail sent to user " + user.callsign);
+        logger.info(
+            "Join request mail sent to user " +
+                user.callsign +
+                " at email: " +
+                user.email
+        );
     }
 
     public static async sendAdminJoinRequestMail(
@@ -242,29 +270,41 @@ export class EmailService {
         fromUser: UserDoc,
         forUser: UserDoc,
         post: BasePostDoc,
-        comment: CommentDoc
+        comment: CommentDoc,
+        parentComment?: CommentDoc
     ) {
-        const scraped = await qrz.getInfo(forUser.callsign);
+        const scraped = await qrz.getInfo(fromUser.callsign);
 
         const message: Mail.Options = {
             from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
-            to: fromUser.email,
-            subject: `Nuovo commento da ${fromUser.callsign} al tuo post`,
-            html: await EmailService.loadMailFromFile("comment.html", {
-                "{NOMINATIVO}": fromUser.callsign,
-                "{POSTID}": post._id.toString(),
-                "{POST}": post.description,
-                "{NOMINATIVO_COMMENTO}": fromUser.callsign,
-                "{CONTENUTO_COMMENTO}": comment.content,
-                "{COMMENTID}": comment._id.toString(),
-                "{PP_COMMENTO}":
+            to: forUser.email,
+            subject: parentComment
+                ? `Nuova risposta da ${fromUser.callsign} al tuo commento`
+                : `Nuovo commento da ${fromUser.callsign} al tuo post`,
+            html: await EmailService.loadMailFromFile("comment.ejs", {
+                NOMINATIVO: fromUser.callsign,
+                POSTID: post._id.toString(),
+                POST: post.description,
+                NOMINATIVO_COMMENTO: fromUser.callsign,
+                CONTENUTO_COMMENTO: comment.content,
+                COMMENTID: comment._id.toString(),
+                IS_REPLY: parentComment ? "true" : "false",
+                PP_COMMENTO:
                     scraped?.pictureUrl ||
                     "https://vhfesuperiori.s3.eu-central-1.amazonaws.com/logo/logo192.png"
             })
         };
 
         await EmailService.sendMail(message);
-        logger.info("Comment mail sent to user " + fromUser.callsign);
+        logger.info(
+            "Comment mail sent to user " +
+                fromUser.callsign +
+                " at email: " +
+                forUser.email +
+                (parentComment
+                    ? " as reply of parent comment " + parentComment._id
+                    : "")
+        );
     }
 
     // allega immagine in qso.imageHref
@@ -347,7 +387,7 @@ export class EmailService {
 
         await EmailService.sendMail(message);
         logger.info(
-            "eQSL mail sent to user " + qso.callsign + " at mail " + toEmail
+            "eQSL mail sent to user " + qso.callsign + " at email: " + toEmail
         );
         await unlink(filePath);
     }

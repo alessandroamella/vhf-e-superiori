@@ -93,7 +93,7 @@ const Qso = () => {
       <Helmet>
         <title>{socialTitle || "QSO"} - VHF e superiori</title>
       </Helmet>
-      <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900 -mt-4">
+      <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           <div className="mb-4 md:-ml-4 md:-mt-4">
             <Link to={-1}>

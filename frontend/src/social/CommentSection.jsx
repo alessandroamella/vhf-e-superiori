@@ -1,11 +1,11 @@
 import { Button, Card, Spinner, Textarea } from "@material-tailwind/react";
 import { formatInTimeZone } from "date-fns-tz";
-import { Alert } from "flowbite-react";
+import { Alert, Button as FlowbiteButton } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useMemo, useRef, useState } from "react";
-import { FaTrash } from "react-icons/fa";
+import { FaInfoCircle, FaTrash } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Link, useNavigate } from "react-router";
+import { createSearchParams, Link } from "react-router";
 import CallsignLoading from "../shared/CallsignLoading";
 
 import ReactMarkdown from "react-markdown";
@@ -21,7 +21,8 @@ const Comment = ({
   replyTo,
   setReplyTo,
   setContent,
-  formatInTimeZone
+  formatInTimeZone,
+  onReply
 }) => {
   const { post, pics } = useMemo(() => postExtended || {}, [postExtended]);
 
@@ -30,7 +31,7 @@ const Comment = ({
   const handleReplyClick = () => {
     setReplyTo(comment._id);
     setContent(`@${comment.fromUser.callsign} `);
-    document.getElementById("comment-content").focus();
+    onReply();
   };
 
   const toggleReplies = () => {
@@ -62,7 +63,7 @@ const Comment = ({
             <Link
               to={href}
               {...props}
-              className="text-blue-500 hover:text-blue-700 transition-colors dark:text-white font-semibold"
+              className="text-blue-500 hover:text-blue-700 transition-colors font-semibold dark:text-red-500 dark:hover:text-red-400"
             />
           )
         }}
@@ -73,7 +74,7 @@ const Comment = ({
   }, [comment?.content]);
 
   return (
-    <div key={comment._id} className="mb-4 p-2 md:p-4">
+    <div key={comment._id} className="mb-4 p-4">
       {/* Added mb-4 for spacing between comments */}
       <div
         className={`transition-colors ${
@@ -86,32 +87,33 @@ const Comment = ({
         <div className="flex flex-col gap-2">
           <div className="flex flex-row gap-2 items-center">
             <div className="flex justify-between w-full">
-              <div className="flex flex-col">
-                <Link
-                  to={`/u/${comment?.fromUser?.callsign}`}
-                  className="text-blue-500 hover:text-blue-700 transition-colors dark:text-white font-semibold"
-                >
-                  {pics &&
-                    comment?.fromUser?.callsign &&
-                    comment.fromUser.callsign in pics && (
-                      <LazyLoadImage
-                        loading="lazy"
-                        src={pics[comment.fromUser.callsign]}
-                        alt="Avatar"
-                        className="inline-block object-cover w-10 h-10 aspect-square rounded-full"
-                      />
-                    )}
-
-                  {comment?.fromUser ? (
-                    <CallsignLoading user={comment.fromUser} />
-                  ) : (
-                    <span className="text-gray-500 dark:text-gray-300">
-                      Utente non trovato
-                    </span>
+              <div className="flex flex-col md:flex-row gap-2 items-center">
+                {pics &&
+                  comment?.fromUser?.callsign &&
+                  comment.fromUser.callsign in pics && (
+                    <LazyLoadImage
+                      loading="lazy"
+                      src={pics[comment.fromUser.callsign]}
+                      alt="Avatar"
+                      className="inline-block object-cover w-10 h-10 aspect-square rounded-full"
+                    />
                   )}
-                </Link>
-                <div className="text-gray-800 dark:text-gray-200">
-                  {renderContent}
+                <div className="flex flex-col">
+                  <Link
+                    to={`/u/${comment?.fromUser?.callsign}`}
+                    className="text-blue-500 hover:text-blue-700 transition-colors dark:text-white font-semibold"
+                  >
+                    {comment?.fromUser ? (
+                      <CallsignLoading user={comment.fromUser} />
+                    ) : (
+                      <span className="text-gray-500 dark:text-gray-300">
+                        Utente non trovato
+                      </span>
+                    )}
+                  </Link>
+                  <div className="text-gray-800 dark:text-gray-200">
+                    {renderContent}
+                  </div>
                 </div>
               </div>
               <div>
@@ -134,7 +136,7 @@ const Comment = ({
           <div className="flex flex-row md:justify-between mt-2 gap-2 items-center">
             <button
               size="sm"
-              className="text-blue-500 hover:text-blue-700 transition-colors dark:text-white"
+              className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
               onClick={handleReplyClick}
             >
               Rispondi
@@ -199,6 +201,7 @@ const Comment = ({
                 <div key={reply._id} className="pl-4">
                   {/* Further indentation for each reply */}
                   <Comment
+                    onReply={onReply}
                     comment={reply}
                     user={user}
                     deleteComment={deleteComment}
@@ -248,7 +251,8 @@ Comment.propTypes = {
   replyTo: PropTypes.string,
   setReplyTo: PropTypes.func.isRequired,
   setContent: PropTypes.func.isRequired,
-  formatInTimeZone: PropTypes.func.isRequired
+  formatInTimeZone: PropTypes.func.isRequired,
+  onReply: PropTypes.func
 };
 
 const CommentsSection = ({
@@ -268,7 +272,14 @@ const CommentsSection = ({
   setReplyTo
 }) => {
   const commentContainerRef = useRef(null);
-  const navigate = useNavigate();
+  const commentInputRef = useRef(null);
+
+  function onReply() {
+    commentInputRef.current?.focus();
+    commentInputRef.current?.scrollIntoView({
+      behavior: "smooth"
+    });
+  }
 
   return (
     !hideComments && (
@@ -292,6 +303,7 @@ const CommentsSection = ({
         <Card className="comments-card max-h-[60vh] lg:max-h-[80vh] border-none bg-gray-50 dark:bg-gray-800 -mx-2 md:mx-0 overflow-y-auto">
           {comments?.map((comment) => (
             <Comment
+              onReply={onReply}
               key={comment._id}
               comment={comment}
               user={user}
@@ -310,15 +322,30 @@ const CommentsSection = ({
         {user ? (
           <div className="w-full">
             <hr className="my-2" />
+
+            {replyTo && (
+              <div className="flex gap-4 items-center mb-2">
+                <span className="text-gray-600 dark:text-gray-400">
+                  <FaInfoCircle className="inline-block mr-1 mb-[2px]" />
+                  Stai rispondendo al commento di{" "}
+                  <span className="font-semibold">
+                    {comments.find((c) => c._id === replyTo)?.fromUser.callsign}
+                  </span>
+                </span>
+
+                <Button size="sm" color="red" onClick={() => setReplyTo(null)}>
+                  Annulla
+                </Button>
+              </div>
+            )}
             <form
               onSubmit={sendComment}
               className="w-full flex flex-row gap-2 items-center"
             >
               <Textarea
-                id="comment-content"
-                name="comment-content"
                 type="text"
-                className="w-full"
+                ref={commentInputRef}
+                className="comment-content w-full text-black dark:text-white"
                 placeholder="Scrivi un commento"
                 value={content}
                 maxLength={300}
@@ -341,11 +368,25 @@ const CommentsSection = ({
             </form>
           </div>
         ) : (
-          <div className="px-2">
-            <p>Fai il login per commentare</p>
-            <Button color="blue" onClick={() => navigate("/login")}>
+          <div
+            ref={commentInputRef}
+            className="mt-4 mb-2 flex justify-center gap-2 bg-gray-50 dark:bg-gray-800 px-2 py-3 rounded items-center flex-col"
+          >
+            <p>Fai il login per commentare o rispondere ai commenti</p>
+            <FlowbiteButton
+              as={Link}
+              to={{
+                pathname: "/login",
+                search: createSearchParams({
+                  to: location.pathname
+                }).toString()
+              }}
+              className="w-fit"
+              size="lg"
+              color="blue"
+            >
               Login
-            </Button>
+            </FlowbiteButton>
           </div>
         )}
       </div>

@@ -192,7 +192,7 @@ const Rankings = () => {
         </Modal.Footer>
       </Modal>
 
-      <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900 -mt-4">
+      <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           {alert && (
             <Alert
@@ -235,7 +235,7 @@ const Rankings = () => {
                 )}
               </h1>
 
-              <div className="w-fit mt-8 mx-auto -mb-4">
+              <div className="w-fit mt-8 mx-auto -mb-12">
                 <ShareMapBtn
                   event={event}
                   user={user}
