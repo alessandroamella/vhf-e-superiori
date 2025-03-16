@@ -32,12 +32,15 @@ app.use(
         scriptSrc: [
           "'self'",
           "'unsafe-eval'",
+          "'unsafe-inline'",
           "https://maps.googleapis.com",
           "https://maps.gstatic.com",
           "https://www.googletagmanager.com",
           "https://cdnjs.cloudflare.com",
           "https://www.google.com",
-          "https://www.gstatic.com"
+          "https://www.gstatic.com",
+          "https://www.recaptcha.net",
+          "https://www.google-analytics.com"
         ],
         styleSrc: [
           "'self'",
@@ -53,21 +56,26 @@ app.use(
           "https://*.googleapis.com",
           "https://www.googletagmanager.com",
           "https://*.google-analytics.com",
-          "https://checkip.amazonaws.com"
+          "https://checkip.amazonaws.com",
+          "https://www.google.com",
+          "https://www.gstatic.com",
+          "https://www.recaptcha.net"
         ],
         fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
         objectSrc: ["'none'"],
         frameSrc: [
           "'self'",
           "https://www.google.com",
-          "https://www.paypal.com"
+          "https://www.paypal.com",
+          "https://www.recaptcha.net"
         ],
         formAction: ["'self'", "https://www.paypal.com"],
         workerSrc: ["'self'", "https://cdnjs.cloudflare.com", "blob:"],
         childSrc: [
           "'self'",
           "https://www.google.com",
-          "https://www.paypal.com"
+          "https://www.paypal.com",
+          "https://www.recaptcha.net"
         ],
         mediaSrc: [
           "'self'",
@@ -78,7 +86,6 @@ app.use(
     }
   })
 );
-
 app.use(
   permissionsPolicy({
     features: {
