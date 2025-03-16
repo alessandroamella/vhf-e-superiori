@@ -16,12 +16,7 @@ import {
   FaWhatsapp
 } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import {
-  createSearchParams,
-  Link,
-  useLocation,
-  useNavigate
-} from "react-router";
+import { createSearchParams, Link, useLocation } from "react-router";
 import { JoinOpenContext, SidebarOpenContext, UserContext } from "../App";
 import { getErrorStr } from "../shared";
 
@@ -124,8 +119,6 @@ const MenuContent = ({ isSideBar }) => {
     }
   }, [joinOpen]);
 
-  const navigate = useNavigate();
-
   async function logout() {
     try {
       await axios.post("/api/auth/logout");
@@ -135,6 +128,8 @@ const MenuContent = ({ isSideBar }) => {
       window.alert(getErrorStr(err?.response?.data?.err));
     }
   }
+
+  const { setSidebarOpen } = useContext(SidebarOpenContext);
 
   return (
     <>
@@ -150,7 +145,13 @@ const MenuContent = ({ isSideBar }) => {
       </Link>
 
       {user?.isAdmin && (
-        <Button color="failure" size="lg" as={Link} to="/eventmanager">
+        <Button
+          onClick={() => setSidebarOpen(false)}
+          color="failure"
+          size="lg"
+          as={Link}
+          to="/eventmanager"
+        >
           Area admin
         </Button>
       )}
@@ -220,33 +221,28 @@ const MenuContent = ({ isSideBar }) => {
       >
         <FaWhatsapp /> Gruppo WhatsApp
       </a>
-      {user ? (
-        <Button
-          className="text-lg mb-4"
-          onClick={() => {
-            if (location.pathname !== "/") {
-              navigate("/");
-            }
-            setJoinOpen(true);
-          }}
-        >
-          Partecipa
-        </Button>
-      ) : (
-        <Button
-          className="text-xl mb-4"
-          onClick={() =>
-            navigate({
-              pathname: "/login",
-              search: createSearchParams({
-                to: location.pathname
-              }).toString()
-            })
-          }
-        >
-          Partecipa
-        </Button>
-      )}
+      <Button
+        as={Link}
+        className="text-lg mb-4"
+        onClick={() => {
+          setSidebarOpen(false);
+          setJoinOpen(true);
+        }}
+        to={
+          user
+            ? location.pathname === "/"
+              ? "#"
+              : location.pathname
+            : {
+                pathname: "/login",
+                search: createSearchParams({
+                  to: location.pathname
+                }).toString()
+              }
+        }
+      >
+        Partecipa
+      </Button>
 
       <SectionTitle
         className={`mt-4 ${
