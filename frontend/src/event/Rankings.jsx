@@ -1,6 +1,14 @@
 import axios from "axios";
 import { it } from "date-fns/locale";
-import { Alert, Button, Modal, Spinner, Table, Tabs } from "flowbite-react";
+import {
+  Alert,
+  Button,
+  ListGroup,
+  Modal,
+  Spinner,
+  Table,
+  Tabs
+} from "flowbite-react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { FaExclamationTriangle } from "react-icons/fa";
@@ -23,6 +31,79 @@ import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import ShareMapBtn from "./ShareMapBtn";
 
+const EventList = () => {
+  const [events, setEvents] = useState(null);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [alertEvents, setAlertEvents] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        const { data } = await axios.get("/api/event");
+        console.log("events:", data);
+        setEvents(data);
+      } catch (err) {
+        setAlertEvents({
+          color: "failure",
+          msg: getErrorStr(err?.response?.data?.err)
+        });
+      } finally {
+        setLoadingEvents(false);
+      }
+    }
+    fetchEvents();
+  }, []);
+
+  if (alertEvents) {
+    return (
+      <Alert
+        className="mb-4 dark:text-black"
+        color={alertEvents.color}
+        onDismiss={() => setAlertEvents(null)}
+      >
+        <span>{alertEvents.msg}</span>
+      </Alert>
+    );
+  }
+
+  if (loadingEvents) {
+    return <Spinner />;
+  }
+
+  return (
+    <div className="mb-8">
+      <h2 className="text-2xl font-bold mb-4 dark:text-white">
+        Filtra per Evento
+      </h2>
+      <ListGroup>
+        <ListGroup.Item
+          onClick={() => navigate("/rankings")}
+          className="uppercase font-bold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-700 text-red-500 dark:text-red-400"
+        >
+          <span className="uppercase">
+            Classifiche annuali - anno {new Date().getFullYear()}
+          </span>
+        </ListGroup.Item>
+        {events?.map((event) => (
+          <ListGroup.Item
+            key={event._id}
+            onClick={() => navigate(`/rankings/${event._id}`)}
+            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-700 dark:text-white"
+          >
+            {event.name} -{" "}
+            {formatInTimeZone(
+              new Date(event.date),
+              "Europe/Rome",
+              "dd/MM/yyyy"
+            )}
+          </ListGroup.Item>
+        ))}
+      </ListGroup>
+    </div>
+  );
+};
+
 const Rankings = () => {
   const { id } = useParams();
 
@@ -35,6 +116,8 @@ const Rankings = () => {
   useEffect(() => {
     async function getData() {
       try {
+        setLoading(true);
+
         const { data } = await axios.get(
           id ? `/api/rankings/${id}` : "/api/rankings"
         );
@@ -42,6 +125,8 @@ const Rankings = () => {
         const { event, rankings } = data;
         if (event) {
           setEvent(event);
+        } else {
+          setEvent(null);
         }
         setStationRankings(rankings.stationRankings);
         setUserRankings(rankings.userRankings);
@@ -205,93 +290,89 @@ const Rankings = () => {
               <span>{alert.msg}</span>
             </Alert>
           )}
-
-          {loading && (
-            <ReactPlaceholder
-              showLoadingAnimation
-              type="text"
-              rows={3}
-              ready={!!stationRankings && !!userRankings}
-            >
-              <Spinner />
-            </ReactPlaceholder>
-          )}
-
+          <EventList />
           {/* visualizza classifiche */}
-          {stationRankings && userRankings && (
-            <div className="w-full flex flex-col gap-4">
-              <h1 className="text-3xl md:text-4xl">
-                Classifiche {event ? "di" : "dell'anno"}{" "}
-                <span className="font-bold">{event ? event.name : year}</span>
-                {event && (
-                  <>
-                    {" - "}
-                    {formatInTimeZone(
-                      new Date(event.date),
-                      "Europe/Rome",
-                      "dd/MM/yyyy"
-                    )}
-                  </>
-                )}
-              </h1>
 
-              <div className="w-fit mt-8 mx-auto -mb-12">
-                <ShareMapBtn
-                  event={event}
-                  user={user}
-                  setAlert={setAlert}
-                  qsos={qsos}
-                />
-              </div>
-
-              {/* <Tabs.Group> */}
-              {["Cacciatori", "Attivatori"].map((tab, i) => (
-                <Tabs.Item title={tab} key={i}>
-                  <h1 className="text-4xl md:text-5xl uppercase text-red-500 font-bold text-center mt-8 mb-8 animate-pulse">
-                    Classifica {tab}
-                  </h1>
-                  {(i === 1 ? stationRankings : userRankings).length > 0 ? (
-                    <div className="max-h-[60vh] md:max-h-[80vh] overflow-y-auto">
-                      <Table striped className="text-2xl">
-                        <Table.Head>
-                          <Table.HeadCell>Posizione</Table.HeadCell>
-                          <Table.HeadCell>Nominativo</Table.HeadCell>
-                          <Table.HeadCell>Punti</Table.HeadCell>
-                        </Table.Head>
-                        <Table.Body>
-                          {(i === 1 ? stationRankings : userRankings).map(
-                            (r) => (
-                              <Table.Row
-                                key={r.callsign}
-                                onClick={() => setShowRankings(r.callsign)}
-                                className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                              >
-                                <Table.Cell>
-                                  {/* show 🥇, 🥈 or 🥉 if r.callsign === rankings[0,1,2].callsign, else i + 1 */}
-                                  {["🥇", "🥈", "🥉"][r.position - 1] ||
-                                    r.position}
-                                </Table.Cell>
-                                <Table.Cell className="font-semibold">
-                                  {r.callsign}
-                                </Table.Cell>
-                                <Table.Cell>{r.points}</Table.Cell>
-                              </Table.Row>
-                            )
-                          )}
-                        </Table.Body>
-                      </Table>
-                    </div>
-                  ) : (
-                    <Alert color="gray" className="text-center">
-                      <FaExclamationTriangle className="inline-block mr-1 mb-1" />
-                      Nessun collegamento trovato
-                    </Alert>
+          <ReactPlaceholder
+            showLoadingAnimation
+            type="text"
+            rows={10}
+            ready={!loading}
+          >
+            {stationRankings && userRankings && (
+              <div className="w-full flex flex-col gap-4">
+                <h1 className="text-3xl md:text-4xl">
+                  Classifiche {event ? "di" : "dell'anno"}{" "}
+                  <span className="font-bold">{event ? event.name : year}</span>
+                  {event && (
+                    <>
+                      {" - "}
+                      {formatInTimeZone(
+                        new Date(event.date),
+                        "Europe/Rome",
+                        "dd/MM/yyyy"
+                      )}
+                    </>
                   )}
-                </Tabs.Item>
-              ))}
-              {/* </Tabs.Group> */}
-            </div>
-          )}
+                </h1>
+
+                <div className="w-fit mt-8 mx-auto -mb-4">
+                  <ShareMapBtn
+                    event={event}
+                    user={user}
+                    setAlert={setAlert}
+                    qsos={qsos}
+                  />
+                </div>
+
+                {/* <Tabs.Group> */}
+                {["Cacciatori", "Attivatori"].map((tab, i) => (
+                  <Tabs.Item title={tab} key={i}>
+                    <h1 className="text-4xl md:text-5xl uppercase text-red-500 font-bold text-center mt-8 mb-8 animate-pulse">
+                      Classifica {tab}
+                    </h1>
+                    {(i === 1 ? stationRankings : userRankings).length > 0 ? (
+                      <div className="max-h-[60vh] md:max-h-[80vh] overflow-y-auto">
+                        <Table striped className="text-2xl">
+                          <Table.Head>
+                            <Table.HeadCell>Posizione</Table.HeadCell>
+                            <Table.HeadCell>Nominativo</Table.HeadCell>
+                            <Table.HeadCell>Punti</Table.HeadCell>
+                          </Table.Head>
+                          <Table.Body>
+                            {(i === 1 ? stationRankings : userRankings).map(
+                              (r) => (
+                                <Table.Row
+                                  key={r.callsign}
+                                  onClick={() => setShowRankings(r.callsign)}
+                                  className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                                >
+                                  <Table.Cell>
+                                    {["🥇", "🥈", "🥉"][r.position - 1] ||
+                                      r.position}
+                                  </Table.Cell>
+                                  <Table.Cell className="font-semibold">
+                                    {r.callsign}
+                                  </Table.Cell>
+                                  <Table.Cell>{r.points}</Table.Cell>
+                                </Table.Row>
+                              )
+                            )}
+                          </Table.Body>
+                        </Table>
+                      </div>
+                    ) : (
+                      <Alert color="gray" className="text-center">
+                        <FaExclamationTriangle className="inline-block mr-1 mb-1" />
+                        Nessun collegamento trovato
+                      </Alert>
+                    )}
+                  </Tabs.Item>
+                ))}
+                {/* </Tabs.Group> */}
+              </div>
+            )}
+          </ReactPlaceholder>
 
           {/* visualizza immagine QSO */}
           {event !== null && (

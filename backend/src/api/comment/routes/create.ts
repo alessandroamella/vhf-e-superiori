@@ -144,16 +144,19 @@ router.post(
                 parentCommentDoc &&
                 (await User.findById(parentCommentDoc?.fromUser));
 
+            const forUser = parentDocAuthor || postUser;
+
             // don't await this
-            const ses = false;
-            if (ses && envs.NODE_ENV === "development") {
+            if (envs.NODE_ENV === "development") {
                 logger.warn(
                     `Skipping comment email in development for comment ${comment}`
                 );
+            } else if (user.email === forUser.email) {
+                logger.debug(`Not sending email to self (${user.email})`);
             } else {
                 EmailService.sendCommentMail(
                     user,
-                    parentDocAuthor || postUser,
+                    forUser,
                     post,
                     comment,
                     parentDocAuthor && parentComment

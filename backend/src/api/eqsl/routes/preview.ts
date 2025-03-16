@@ -2,14 +2,14 @@ import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
-import { Errors } from "../../errors";
-import { createError, validate } from "../../helpers";
-import EqslPic from "../eqsl";
 import { User, UserDoc } from "../../auth/models";
+import { Errors } from "../../errors";
+import Event from "../../event/models";
+import { createError, validate } from "../../helpers";
+import isAdmin from "../../middlewares/isAdmin";
 import isLoggedIn from "../../middlewares/isLoggedIn";
 import { Qso } from "../../qso/models";
-import isAdmin from "../../middlewares/isAdmin";
-import Event from "../../event/models";
+import EqslPic from "../eqsl";
 
 const router = Router();
 
@@ -91,15 +91,22 @@ router.post(
                     .json(createError(Errors.INVALID_LOCATION));
             }
 
+            const testEvent = new Event({
+                offsetCallsign: req.body.offsetCallsign,
+                offsetData: req.body.offsetData,
+                offsetFrom: req.body.offsetFrom
+            });
+
             const qso = new Qso({
                 // test data
-                callsign: "IU4QSG",
+                callsign: user.callsign || "IU4QSGs",
                 qsoDate: new Date(),
                 frequency: 123.123,
                 emailSent: false,
                 fromStation: user,
                 mode: "SSB",
-                event: "60b3e3e3e4b0e3e3e4b0e3e3", // test data, it doesn't matter
+                // test data, it doesn't matter
+                event: testEvent._id,
                 fromStationCity: user.city || "Bologna",
                 fromStationProvince: user.province || "BO",
                 fromStationLat: user.lat || 44.4949,
@@ -108,12 +115,6 @@ router.post(
                 band: "23cm"
             });
             const eqslPic = new EqslPic(req.body.href);
-
-            const testEvent = new Event({
-                offsetCallsign: req.body.offsetCallsign,
-                offsetData: req.body.offsetData,
-                offsetFrom: req.body.offsetFrom
-            });
 
             await eqslPic.fetchImage();
             await eqslPic.addQsoInfo(qso, user, null, testEvent);

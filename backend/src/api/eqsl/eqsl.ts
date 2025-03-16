@@ -46,17 +46,19 @@ class EqslPic {
         try {
             let imageBuffer;
             if (this.href === this.logoMinUrl) {
-                const response = await axios.get(this.href, {
-                    responseType: "arraybuffer"
-                });
-                imageBuffer = response.data;
-            } else {
+                logger.debug(`Href is ${this.logoMinUrl}, using local image`);
                 const imagePath = path.join(
                     process.cwd(),
                     "images",
                     "logo-min.png"
                 );
                 imageBuffer = await readFile(imagePath);
+            } else {
+                logger.debug(`Fetching eQSL image from ${this.href}`);
+                const response = await axios.get(this.href, {
+                    responseType: "arraybuffer"
+                });
+                imageBuffer = response.data;
             }
 
             const minifiedImg = await sharp(imageBuffer)

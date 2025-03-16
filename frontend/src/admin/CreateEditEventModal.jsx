@@ -86,6 +86,11 @@ const CreateEditEventModal = ({
   const [copied, setCopied] = useState(false);
   let copyTimeout = null;
 
+  const [isEditingOffset, setIsEditingOffset] = useState(false);
+  const [tempOffsetCallsign, setTempOffsetCallsign] = useState(null);
+  const [tempOffsetData, setTempOffsetData] = useState(null);
+  const [tempOffsetFrom, setTempOffsetFrom] = useState(null);
+
   const resetForm = useCallback(() => {
     setName("");
     setBand("");
@@ -98,6 +103,12 @@ const CreateEditEventModal = ({
     setOffsetCallsign(null);
     setOffsetData(null);
     setOffsetFrom(null);
+
+    setTempOffsetCallsign(null);
+    setTempOffsetData(null);
+    setTempOffsetFrom(null);
+    setIsEditingOffset(false);
+
     resetPicture();
     resetEqsl();
     setAlert(null);
@@ -139,6 +150,10 @@ const CreateEditEventModal = ({
     setOffsetCallsign(e.offsetCallsign);
     setOffsetData(e.offsetData);
     setOffsetFrom(e.offsetFrom);
+
+    setTempOffsetCallsign(e.offsetCallsign);
+    setTempOffsetData(e.offsetData);
+    setTempOffsetFrom(e.offsetFrom);
   }, []);
 
   async function createEvent(e) {
@@ -367,11 +382,15 @@ const CreateEditEventModal = ({
       setDisabled(true);
 
       if (!_offsetCallsign || !_offsetData || !_offsetFrom) {
-        const { offsetCallsign, offsetData, offsetFrom } = editOffset(false);
+        // const { offsetCallsign, offsetData, offsetFrom } = editOffset(false);
 
-        _offsetCallsign = offsetCallsign;
-        _offsetData = offsetData;
-        _offsetFrom = offsetFrom;
+        // _offsetCallsign = offsetCallsign;
+        // _offsetData = offsetData;
+        // _offsetFrom = offsetFrom;
+
+        return window.alert(
+          "Inserisci prima l'offset per poter visualizzare l'anteprima dell'EQSL"
+        );
       }
 
       const res2 = await axios.post("/api/eqsl/preview", {
@@ -389,15 +408,11 @@ const CreateEditEventModal = ({
     }
   }
 
-  const editOffset = (renderExample = true) => {
-    const offsetCallsign = parseInt(
-      window.prompt("Inserisci offset NOMINATIVO")
-    );
-    const offsetData = parseInt(window.prompt("Inserisci offset DATI"));
-    const offsetFrom = parseInt(window.prompt("Inserisci offset DA CHI"));
-
+  const applyOffset = async () => {
     if (
-      [offsetCallsign, offsetData, offsetFrom].some((e) => isNaN(parseInt(e)))
+      [tempOffsetCallsign, tempOffsetData, tempOffsetFrom].some((e) =>
+        isNaN(parseInt(e))
+      )
     ) {
       window.alert(
         "Non hai inserito tutti i campi, l'offset non è stato modificato"
@@ -405,19 +420,24 @@ const CreateEditEventModal = ({
       return;
     }
 
-    setOffsetCallsign(offsetCallsign);
-    setOffsetData(offsetData);
-    setOffsetFrom(offsetFrom);
+    setOffsetCallsign(parseInt(tempOffsetCallsign));
+    setOffsetData(parseInt(tempOffsetData));
+    setOffsetFrom(parseInt(tempOffsetFrom));
+    setIsEditingOffset(false);
 
-    window.alert(
-      `Offset impostato a:\nNominativo: ${offsetCallsign}\nDati: ${offsetData}\nDa: ${offsetFrom}`
+    await renderEqslExample(
+      null,
+      tempOffsetCallsign,
+      tempOffsetData,
+      tempOffsetFrom
     );
+  };
 
-    if (renderExample) {
-      renderEqslExample(null, offsetCallsign, offsetData, offsetFrom);
-    }
-
-    return { offsetCallsign, offsetData, offsetFrom };
+  const cancelOffsetEdit = () => {
+    setTempOffsetCallsign(offsetCallsign);
+    setTempOffsetData(offsetData);
+    setTempOffsetFrom(offsetFrom);
+    setIsEditingOffset(false);
   };
 
   function resetPicture() {
@@ -632,24 +652,87 @@ const CreateEditEventModal = ({
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="mt-2 flex justify-center items-center gap-2">
-                    <Button
-                      disabled={disabled}
-                      onClick={editOffset}
-                      color="light"
-                      size="sm"
-                    >
-                      Modifica offset ({offsetCallsign || "x"},{" "}
-                      {offsetData || "x"}, {offsetFrom || "x"})
-                    </Button>
-                    <Button
-                      onClick={() => renderEqslExample()}
-                      color="dark"
-                      size="sm"
-                      disabled={!eqslUrl || disabled}
-                    >
-                      Ricomputa esempio eQSL
-                    </Button>
+                    {!isEditingOffset ? (
+                      <Button
+                        disabled={disabled}
+                        onClick={() => {
+                          setIsEditingOffset(true);
+                        }}
+                        color="light"
+                        size="sm"
+                      >
+                        Modifica offset ({offsetCallsign || "x"},{" "}
+                        {offsetData || "x"}, {offsetFrom || "x"})
+                      </Button>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Button
+                          disabled={disabled}
+                          onClick={applyOffset}
+                          color="green"
+                          size="sm"
+                        >
+                          Applica Offset
+                        </Button>
+                        <Button
+                          disabled={disabled}
+                          onClick={cancelOffsetEdit}
+                          color="red"
+                          size="sm"
+                        >
+                          Annulla
+                        </Button>
+                      </div>
+                    )}
                   </div>
+                  {isEditingOffset && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
+                      <div>
+                        <Label
+                          htmlFor="offset-callsign"
+                          value="Offset Nominativo"
+                        />
+                        <TextInput
+                          id="offset-callsign"
+                          type="number"
+                          value={tempOffsetCallsign || ""}
+                          onChange={(e) =>
+                            setTempOffsetCallsign(e.target.value)
+                          }
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="offset-data" value="Offset Dati" />
+                        <TextInput
+                          id="offset-data"
+                          type="number"
+                          value={tempOffsetData || ""}
+                          onChange={(e) => setTempOffsetData(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="offset-from" value="Offset Da Chi" />
+                        <TextInput
+                          id="offset-from"
+                          type="number"
+                          value={tempOffsetFrom || ""}
+                          onChange={(e) => setTempOffsetFrom(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {!isEditingOffset && (
+                    <div className="mt-2 flex justify-center items-center gap-2">
+                      <Button
+                        onClick={applyOffset}
+                        color="dark"
+                        size="sm"
+                        disabled={!eqslUrl || disabled}
+                      >
+                        Ricomputa esempio eQSL
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

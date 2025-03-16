@@ -41,6 +41,9 @@ importers:
       axios:
         specifier: ^1.8.1
         version: 1.8.1
+      classnames:
+        specifier: ^2.5.1
+        version: 2.5.1
       compressorjs:
         specifier: ^1.2.1
         version: 1.2.1
@@ -167,6 +170,12 @@ importers:
       react-simple-wysiwyg:
         specifier: ^2.2.5
         version: 2.2.5(react@18.3.1)
+      react-virtualized-auto-sizer:
+        specifier: ^1.0.25
+        version: 1.0.25(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-window:
+        specifier: ^1.8.11
+        version: 1.8.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-world-flags:
         specifier: ^1.6.0
         version: 1.6.0(react@18.3.1)
@@ -3591,6 +3600,19 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  react-virtualized-auto-sizer@1.0.25:
+    resolution: {integrity: sha512-YHsksEGDfsHbHuaBVDYwJmcktblcHGafz4ZVuYPQYuSHMUGjpwmUCrAOcvMSGMwwk1eFWj1M/1GwYpNPuyhaBg==}
+    peerDependencies:
+      react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  react-window@1.8.11:
+    resolution: {integrity: sha512-+SRbUVT2scadgFSWx+R1P754xHPEqvcfSfVX10QYg6POOz+WNgkN48pS+BtZNIMGiL1HYrSEiCkwsMS15QogEQ==}
+    engines: {node: '>8.0.0'}
+    peerDependencies:
+      react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   react-world-flags@1.6.0:
     resolution: {integrity: sha512-eutSeAy5YKoVh14js/JUCSlA6EBk1n4k+bDaV+NkNB50VhnG+f4QDTpYycnTUTsZ5cqw/saPmk0Z4Fa0VVZ1Iw==}
@@ -8215,6 +8237,18 @@ snapshots:
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 19.0.10
+
+  react-virtualized-auto-sizer@1.0.25(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
+  react-window@1.8.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.26.9
+      memoize-one: 5.2.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   react-world-flags@1.6.0(react@18.3.1):
     dependencies:
