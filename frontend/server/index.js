@@ -36,7 +36,9 @@ app.use(
           "https://maps.gstatic.com",
           "https://www.googletagmanager.com",
           "https://cdnjs.cloudflare.com",
-          "https://www.google.com"
+          "https://www.google.com",
+          "https://www.gstatic.com",
+          "https://www.paypal.com"
         ],
         styleSrc: [
           "'self'",
@@ -45,14 +47,15 @@ app.use(
           "https://maps.googleapis.com",
           "https://maps.gstatic.com"
         ],
-        imgSrc: ["*", "data:", "blob:"],
+        imgSrc: ["*", "data:", "blob:", "https://www.paypal.com"],
         connectSrc: [
           "'self'",
           "https://maps.googleapis.com",
           "https://*.googleapis.com",
           "https://www.googletagmanager.com",
           "https://*.google-analytics.com",
-          "https://checkip.amazonaws.com"
+          "https://checkip.amazonaws.com",
+          "https://www.paypal.com"
         ],
         fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
         objectSrc: ["'none'"],
