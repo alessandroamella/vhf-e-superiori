@@ -37,8 +37,7 @@ app.use(
           "https://www.googletagmanager.com",
           "https://cdnjs.cloudflare.com",
           "https://www.google.com",
-          "https://www.gstatic.com",
-          "https://www.paypal.com"
+          "https://www.gstatic.com"
         ],
         styleSrc: [
           "'self'",
@@ -47,23 +46,29 @@ app.use(
           "https://maps.googleapis.com",
           "https://maps.gstatic.com"
         ],
-        imgSrc: ["*", "data:", "blob:", "https://www.paypal.com"],
+        imgSrc: ["*", "data:", "blob:"],
         connectSrc: [
           "'self'",
           "https://maps.googleapis.com",
           "https://*.googleapis.com",
           "https://www.googletagmanager.com",
           "https://*.google-analytics.com",
-          "https://checkip.amazonaws.com",
-          "https://www.paypal.com"
+          "https://checkip.amazonaws.com"
         ],
         fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
         objectSrc: ["'none'"],
-        frameAncestors: ["'none'"],
-        baseUri: ["'self'"],
+        frameSrc: [
+          "'self'",
+          "https://www.google.com",
+          "https://www.paypal.com"
+        ],
         formAction: ["'self'", "https://www.paypal.com"],
         workerSrc: ["'self'", "https://cdnjs.cloudflare.com", "blob:"],
-        childSrc: ["'self'"],
+        childSrc: [
+          "'self'",
+          "https://www.google.com",
+          "https://www.paypal.com"
+        ],
         mediaSrc: [
           "'self'",
           "https://vhfesuperiori.s3.eu-central-1.amazonaws.com",
