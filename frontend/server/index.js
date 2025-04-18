@@ -80,7 +80,8 @@ app.use(
         mediaSrc: [
           "'self'",
           "https://vhfesuperiori.s3.eu-central-1.amazonaws.com",
-          "https://vhfesuperiori.s3.amazonaws.com"
+          "https://vhfesuperiori.s3.amazonaws.com",
+          "blob:"
         ]
       }
     }
