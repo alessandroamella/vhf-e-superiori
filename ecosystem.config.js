@@ -2,8 +2,8 @@ module.exports = {
   apps: [
     {
       name: "vhf-backend",
-      script: "pnpm",
-      args: "start:backend",
+      script: "npm",
+      args: "run start:backend",
       cwd: "./",
       instances: 1,
       autorestart: true,
@@ -15,8 +15,8 @@ module.exports = {
     },
     {
       name: "vhf-frontend",
-      script: "pnpm",
-      args: "start:frontend-server",
+      script: "npm",
+      args: "run start:frontend-server",
       cwd: "./",
       instances: 1,
       autorestart: true,
