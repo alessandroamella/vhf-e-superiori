@@ -4,7 +4,7 @@ module.exports = {
       name: "vhf-backend",
       script: "pnpm",
       args: "start:backend",
-      cwd: "./backend",
+      cwd: "./",
       instances: 1,
       autorestart: true,
       watch: false,
@@ -14,10 +14,10 @@ module.exports = {
       }
     },
     {
-      name: "vhf-frontend-server",
+      name: "vhf-frontend",
       script: "pnpm",
       args: "start:frontend-server",
-      cwd: "./frontend/server",
+      cwd: "./",
       instances: 1,
       autorestart: true,
       watch: false,
