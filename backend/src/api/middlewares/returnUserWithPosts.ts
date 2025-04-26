@@ -18,28 +18,34 @@ async function returnUserWithPosts(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _next: NextFunction,
     callsign?: string,
-    __id?: string
+    _id?: string
 ) {
-    const _id = __id || (req?.user as unknown as UserDoc | undefined)?._id;
-
     // const callsign = undefined;
     // const _id = undefined;
     logger.debug("returnUserWithPosts middleware");
-    if (!_id && !callsign) {
-        logger.error(
+    if (!req.user && !_id && !callsign) {
+        throw new Error(
             "No req.user in returnUserWithPosts middleware and no _id or callsign provided"
         );
-        return res.status(BAD_REQUEST).json(createError(Errors.USER_NOT_FOUND));
     }
-    logger.debug(`Finding user by callsign: ${callsign} or _id: ${_id}`);
+    logger.debug(
+        `Finding user by callsign: ${callsign} or req.user._id: ${
+            (req.user as unknown as UserDoc)._id
+        } or _id: ${_id}`
+    );
     try {
-        const user = await User.findOne(callsign ? { callsign } : { _id }, {
-            password: 0,
-            joinRequests: 0,
-            verificationCode: 0,
-            passwordResetCode: 0,
-            __v: 0
-        }).lean();
+        const user = await User.findOne(
+            callsign
+                ? { callsign }
+                : { _id: _id || (req.user as unknown as UserDoc)._id },
+            {
+                password: 0,
+                joinRequests: 0,
+                verificationCode: 0,
+                passwordResetCode: 0,
+                __v: 0
+            }
+        ).lean();
         if (!user) {
             logger.debug("User not found in user view");
             if (callsign) {
