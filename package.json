@@ -6,12 +6,15 @@
         "dev": "pnpm run --parallel dev",
         "dev:frontend": "pnpm --filter @vhf-e-superiori/frontend dev",
         "dev:backend": "pnpm --filter @vhf-e-superiori/backend dev",
+        "dev:frontend-server": "pnpm --filter @vhf-e-superiori/frontend-server dev",
         "build": "pnpm run --filter=* build",
         "build:frontend": "pnpm --filter @vhf-e-superiori/frontend build",
         "build:backend": "pnpm --filter @vhf-e-superiori/backend build",
         "lint": "pnpm run --parallel lint",
         "clean": "pnpm run --parallel clean",
-        "start:backend": "pnpm --filter @vhf-e-superiori/backend start"
+        "start:backend": "pnpm --filter @vhf-e-superiori/backend start",
+        "start:frontend-server": "pnpm --filter @vhf-e-superiori/frontend-server start",
+        "serve-frontend": "pnpm build:frontend && pnpm start:frontend-server"
     },
     "engines": {
         "node": ">=16.0.0",
