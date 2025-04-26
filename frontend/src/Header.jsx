@@ -6,6 +6,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link, useLocation } from "react-router";
 import { UserContext } from "./App";
 import Flags from "./Flags";
+import { useTranslation } from "react-i18next";
 
 const LinkButton = ({ to, children, keepCurrent }) => {
   const location = useLocation();
@@ -41,6 +42,8 @@ const Header = () => {
   const isHome = location.pathname === "/";
 
   const [darkMode, setDarkMode] = useState(false); // State for dark mode
+
+  const { t } = useTranslation(); 
 
   useEffect(() => {
     // On mount, check localStorage for dark mode preference
@@ -134,21 +137,21 @@ const Header = () => {
         </div>
       </div>
       <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-2 justify-items-center">
-        <LinkButton to="/social">Foto / video</LinkButton>
-        <LinkButton to="/beacon">Beacon</LinkButton>
+        <LinkButton to="/social">{t("photoVideo")}</LinkButton>
+        <LinkButton to="/beacon">{t("beacon")}</LinkButton>
         {user === false ? (
           <Spinner />
         ) : user ? (
           <LinkButton to="/profile">
-            Profilo di{" "}
+            {t("profileOf")}{" "}
             <span className="font-semibold ml-1">{user.callsign}</span>
           </LinkButton>
         ) : (
           <LinkButton to="/login" keepCurrent>
-            Entra con il tuo nominativo
+            {t("enterWithCallsign")}
           </LinkButton>
         )}
-        <LinkButton to="/rankings">Classifiche</LinkButton>
+        <LinkButton to="/rankings">{t("scoreboards")}</LinkButton>
       </div>
     </header>
   );

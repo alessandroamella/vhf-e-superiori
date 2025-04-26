@@ -20,6 +20,7 @@ import { UserContext } from "../App";
 import { mapsApiKey } from "../constants/mapsApiKey";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
 import { getErrorStr } from "../shared";
+import { useTranslation } from "react-i18next";
 
 const useFocus = () => {
   const htmlElRef = useRef(null);
@@ -50,6 +51,7 @@ OpenExternally.propTypes = {
 
 const Signup = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["signupcache"]);
+  const { t } = useTranslation(); 
 
   const [avatar, setAvatar] = useState(null);
 
@@ -209,7 +211,7 @@ const Signup = () => {
           top: 0,
           behavior: "smooth"
         });
-        return setAlert("Verifica di non essere un robot");
+        return setAlert(t("verifyNotRobot"));
       }
     } catch (err) {
       return handleReCaptchaError(err);
@@ -220,7 +222,7 @@ const Signup = () => {
         top: 0,
         behavior: "smooth"
       });
-      return setAlert("Le password non corrispondono");
+      return setAlert(t("passwordsNotMatching"));
     }
 
     setDisabled(true);
@@ -363,7 +365,7 @@ const Signup = () => {
       }
     } else {
       setAlert(
-        "Errore nel caricamento del ReCAPTCHA, per favore ricarica la pagina"
+        t('recaptchaError')
       );
     }
     setTimeout(() => {
@@ -376,24 +378,24 @@ const Signup = () => {
   return (
     <>
       <Helmet>
-        <title>Registrazione - VHF e superiori</title>
+        <title>{t('signupVhf')}</title>
       </Helmet>
       {user &&
         navigate(searchParams.get("to") || "/profile", { replace: true })}
       <div className="w-full h-full dark:bg-gray-900 dark:text-white">
         <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">
           <Typography variant="h1" className="dark:text-white mb-2">
-            Registrazione
+            {t('signupTitle')}
           </Typography>
 
           <Typography variant="small" className="mb-6 flex">
-            <span className="mr-1">Hai già un account? </span>
-            <Tooltip content="Naviga alla pagina di login">
+            <span className="mr-1">{t('accountAlready')}</span>
+            <Tooltip content={t('goToLogin')}>
               <Link
                 to="/login"
                 className="underline decoration-dotted hover:text-black transition-colors"
               >
-                Fai il login qui
+                {t('loginHere')}
               </Link>
             </Tooltip>
           </Typography>
@@ -418,7 +420,7 @@ const Signup = () => {
                 <div className="mb-2 block">
                   <Label
                     htmlFor="callsign"
-                    value="Nominativo (senza prefissi o suffissi)"
+                    value={t('callsignNoPreSuf')}
                   />
                 </div>
                 <TextInput
@@ -448,7 +450,7 @@ const Signup = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="name" value="Nome pubblico" />
+                  <Label htmlFor="name" value={t('publicName')} />
                 </div>
                 <TextInput
                   type="text"
@@ -466,7 +468,7 @@ const Signup = () => {
               <div>
                 {/* DEBUG in traduzione estera, specifica di inserire il prefisso */}
                 <div className="mb-2 block">
-                  <Label htmlFor="phoneNumber" value="Numero di telefono" />
+                  <Label htmlFor="phoneNumber" value={t('phoneNumber')} />
                 </div>
                 <TextInput
                   type="tel"
@@ -486,7 +488,7 @@ const Signup = () => {
             <div className="mb-2">
               <Label
                 htmlFor="addressInput"
-                value="Indirizzo completo stazione"
+                value={t('fullStationAddress')}
               />
               <TextInput
                 type="text"
@@ -511,7 +513,7 @@ const Signup = () => {
               <div className="ml-2 md:ml-4 mb-4 flex items-center gap-2">
                 <span className="text-gray-600 dark:text-gray-300">
                   <FaArrowAltCircleRight className="inline mr-1" />
-                  Locatore:{" "}
+                  {t('locator')}:{" "}
                   <span className="dark:text-gray-200 font-bold">
                     {locator}
                   </span>
@@ -520,7 +522,7 @@ const Signup = () => {
             )}
 
             <div className="mb-2 block">
-              <Label htmlFor="email" value="Email" />
+              <Label htmlFor="email" value={t('email')} />
             </div>
             <TextInput
               type="email"
@@ -537,7 +539,7 @@ const Signup = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="password" value="Password" />
+                  <Label htmlFor="password" value={t('password')} />
                 </div>
                 <TextInput
                   type="password"
@@ -555,7 +557,7 @@ const Signup = () => {
               </div>
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="password-2" value="Ripeti password" />
+                  <Label htmlFor="password-2" value={t('repeatPassword')} />
                 </div>
                 <TextInput
                   type="password"
@@ -574,19 +576,19 @@ const Signup = () => {
             <hr className="my-4" />
             {/* TOS */}
             <div className="mb-2">
-              Registrandoti accetti i{" "}
+              {t('bySigningUp')}{" "}
               <button
                 onClick={toggleTosPrivacy}
                 className="inline outline-none hover:text-blue-600 font-semibold underline decoration-dashed transition-colors bg-transparent border-none text-sm"
               >
-                Termini e Condizioni
+                {t('termsAndConditions')} 
               </button>{" "}
-              e la{" "}
+              {t('andThe')} {" "}
               <button
                 onClick={toggleTosPrivacy}
                 className="inline outline-none hover:text-blue-600 font-semibold underline decoration-dashed transition-colors bg-transparent border-none text-sm"
               >
-                Privacy Policy (in inglese)
+                {t('privacyPolicyEn')} 
               </button>
             </div>
             {tosPrivacyShown && (
@@ -627,7 +629,7 @@ const Signup = () => {
             />
             <div className="my-4" />
             <Button color="blue" type="submit" disabled={disabled}>
-              Registrati
+              {t('signUp')} 
             </Button>
           </form>
         </div>

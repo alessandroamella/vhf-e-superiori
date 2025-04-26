@@ -3,16 +3,18 @@ import { useContext } from "react";
 import { FaCircle } from "react-icons/fa";
 import { Link } from "react-router";
 import { ReadyContext, ViewsContext } from "./App";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
   const { ready } = useContext(ReadyContext);
   const { views } = useContext(ViewsContext);
+  const { t } = useTranslation(); 
 
   return (
     ready && (
       <div className="bg-lightGray-normal dark:bg-gray-700 dark:text-white p-4 flex items-center flex-col md:flex-row justify-center">
         <span className="text-center">
-          Sito sviluppato da Alessandro Amella{" "}
+          {t("websiteBy")}{" "}
           <a
             href="https://www.bitrey.dev"
             target="_blank"
@@ -30,7 +32,7 @@ const Footer = () => {
             to="/document/tos"
             className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
           >
-            Termini e Condizioni
+            {t("termsAndConditions")}
           </Link>
         </span>
 
@@ -41,20 +43,20 @@ const Footer = () => {
             to="/document/privacy"
             className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
           >
-            Privacy Policy
+            {t("privacyPolicy")}
           </Link>
         </span>
 
         <FaCircle className="hidden md:block scale-[.25] text-gray-700 dark:text-gray-300 mx-2" />
 
         <span className="text-center">
-          Contatore accessi:{" "}
+           {t("accessCounter")}:{" "}
           {views ? (
             <strong>{views}</strong>
           ) : views === false ? (
             <Spinner />
           ) : (
-            <span>errore nel caricamento💀💀</span>
+            <span>{t("loadingError")}💀💀</span>
           )}
         </span>
         {/* <FaCircle className="hidden md:block scale-[.25] text-gray-700 mx-2" />

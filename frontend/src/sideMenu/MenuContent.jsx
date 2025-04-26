@@ -19,6 +19,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { createSearchParams, Link, useLocation } from "react-router";
 import { JoinOpenContext, SidebarOpenContext, UserContext } from "../App";
 import { getErrorStr } from "../shared";
+import { useTranslation } from "react-i18next";
 
 const SectionHref = ({ href, wip, children }) => {
   const { setSidebarOpen } = useContext(SidebarOpenContext);
@@ -110,6 +111,7 @@ const MenuContent = ({ isSideBar }) => {
   const { user, setUser } = useContext(UserContext);
   const { joinOpen, setJoinOpen } = useContext(JoinOpenContext);
   const [, setMenuOpen] = useState(false);
+  const { t } = useTranslation(); 
 
   const location = useLocation();
 
@@ -140,7 +142,7 @@ const MenuContent = ({ isSideBar }) => {
             isSideBar ? "text-gray-800 dark:text-white" : "text-white"
           }`}
         >
-          vhfesuperiori
+          {t("vhf")}
         </h3>
       </Link>
 
@@ -152,22 +154,22 @@ const MenuContent = ({ isSideBar }) => {
           as={Link}
           to="/eventmanager"
         >
-          Area admin
+          {t("adminArea")}
         </Button>
       )}
 
       <SectionTitle
         className={isSideBar ? "text-gray-700 mb-1 dark:text-white" : ""}
       >
-        Account
+        {t("account")}
       </SectionTitle>
       {user === null ? (
         <>
           <SectionLink to="/login" redirectBack>
-            <FaSignInAlt /> <span>Entra col nominativo</span>
+            <FaSignInAlt /> <span>{t("enterCallSign")}</span>
           </SectionLink>
           <SectionLink to="/signup" redirectBack>
-            <FaUserPlus /> <span>Registrati</span>
+            <FaUserPlus /> <span>{t("signUp")}</span>
           </SectionLink>
         </>
       ) : user ? (
@@ -175,11 +177,11 @@ const MenuContent = ({ isSideBar }) => {
           <SectionLink to="/profile">
             <FaUserAlt />{" "}
             <span>
-              Account di <strong>{user.callsign}</strong>
+             {t("accountOf")} <strong>{user.callsign}</strong>
             </span>
           </SectionLink>
           <SectionLink onClick={logout}>
-            <FaSignOutAlt /> <span>Esci</span>
+            <FaSignOutAlt /> <span>{t("logout")}</span>
           </SectionLink>
         </>
       ) : (
@@ -187,17 +189,17 @@ const MenuContent = ({ isSideBar }) => {
       )}
       <SectionTitle className="mt-4">{/* DEBUG */}</SectionTitle>
       <SectionHref href="#chisiamo">
-        <FaUsers /> Chi siamo
+        <FaUsers /> {t("whoAreWe")}
       </SectionHref>
       <SectionHref href="#amministratori">
         <FaUserShield />
-        Amministratori
+         {t("admins")}
       </SectionHref>
       <SectionHref href="#eventi">
-        <FaCalendar /> Eventi
+        <FaCalendar />{t("events")}
       </SectionHref>
       <SectionHref href="#calendario">
-        <FaCalendarWeek /> Calendario eventi
+        <FaCalendarWeek />{t("eventCalendar")}
       </SectionHref>
 
       <SectionTitle
@@ -205,13 +207,13 @@ const MenuContent = ({ isSideBar }) => {
           isSideBar ? "text-gray-700 mb-1 dark:text-white" : ""
         }`}
       >
-        Flash mob
+        {t("flashMob")}
       </SectionTitle>
       <SectionHref href="#storiaflashmob">
-        <FaArchive /> Storia del flash mob
+        <FaArchive />{t("flashMobHistory")}
       </SectionHref>
       <SectionHref href="#istruzioniflashmob">
-        <FaListOl /> Istruzioni
+        <FaListOl />{t("menuInstructions")}
       </SectionHref>
       <a
         href="https://chat.whatsapp.com/FJ6HissbZwE47OWmpes7Pr"
@@ -219,7 +221,7 @@ const MenuContent = ({ isSideBar }) => {
         rel="noopener noreferrer"
         className="flex items-center gap-2 mb-2"
       >
-        <FaWhatsapp /> Gruppo WhatsApp
+        <FaWhatsapp />{t("whatsappGroup")}
       </a>
       <Button
         as={Link}
@@ -241,7 +243,7 @@ const MenuContent = ({ isSideBar }) => {
               }
         }
       >
-        Partecipa
+        {t("participate")}
       </Button>
 
       <SectionTitle
@@ -249,15 +251,15 @@ const MenuContent = ({ isSideBar }) => {
           isSideBar ? "text-gray-700 mb-1 dark:text-white" : ""
         }`}
       >
-        La mia area
+        {t("myArea")}
       </SectionTitle>
 
       <SectionLink to="/social" className="text-xl font-semibold">
-        Foto / video
+        {t("photoVideo")}
       </SectionLink>
 
       <Button className="text-xl mb-4" color="purple" as={Link} to="/beacon">
-        Beacon
+        {t("beacon")}
       </Button>
     </>
   );

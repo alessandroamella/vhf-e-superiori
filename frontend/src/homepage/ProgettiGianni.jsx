@@ -9,8 +9,10 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Swiper, SwiperSlide } from "swiper/react";
 import LazyPDFViewer from "../PdfViewer";
+import { useTranslation } from "react-i18next";
 
 const ProgettiGianni = () => {
+  const { t } = useTranslation(); 
   SwiperCore.use([Navigation, Pagination]);
   const documents = [
     "10wi4gbz",
@@ -38,7 +40,7 @@ const ProgettiGianni = () => {
         </Link>
 
         <h2 className="text-lg font-semibold dark:text-gray-200 mb-4">
-          Progetti di Gianni (I4GBZ)
+           {t('giannisProjects')}
         </h2>
         <Swiper
           navigation

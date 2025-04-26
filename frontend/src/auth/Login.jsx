@@ -8,10 +8,12 @@ import { Link, useNavigate, useSearchParams } from "react-router";
 import { UserContext } from "../App";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
 import { getErrorStr } from "../shared";
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
   const [callsign, setCallsign] = useState("");
   const [password, setPassword] = useState("");
+  const { t } = useTranslation();
 
   const loginFormRef = useRef();
   const emailRef = useRef();
@@ -57,7 +59,7 @@ const Login = () => {
 
       return setAlert({
         color: "failure",
-        msg: "Errore nel caricamento del ReCAPTCHA, per favore ricarica la pagina"
+        msg: t("recaptchaError")
       });
     }
 
@@ -68,7 +70,7 @@ const Login = () => {
 
       return setAlert({
         color: "failure",
-        msg: "Verifica di non essere un robot"
+        msg: t("notARobot")
       });
     }
 
@@ -80,7 +82,7 @@ const Login = () => {
       });
       setAlert({
         color: "success",
-        msg: "Se l'indirizzo email fornito è associato a un account registrato, riceverai a breve un'email per reimpostare la password. Controlla la tua casella di posta!"
+        msg: t("resetPasswordEmail")
       });
     } catch (err) {
       console.log("pw send reset error", err);
@@ -130,7 +132,7 @@ const Login = () => {
     if (hasAlert) {
       setAlert({
         color: "success",
-        msg: "Password modificata con successo. Effettua il login"
+        msg: t("resetPasswordSuccess")
       });
       searchParams.delete("alert");
       setSearchParams(searchParams);
@@ -142,7 +144,7 @@ const Login = () => {
   return (
     <>
       <Helmet>
-        <title>Login - VHF e superiori</title>
+        <title>{t("loginVhf")}</title>
       </Helmet>
       {user &&
         navigate(searchParams.get("to") || "/profile", { replace: true })}
@@ -152,17 +154,17 @@ const Login = () => {
       >
         <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">
           <Typography variant="h1" className="dark:text-white mb-2">
-            Login
+            {t("login")}
           </Typography>
 
           <Typography variant="small" className="mb-6 flex">
-            <span className="mr-1">Non hai un account? </span>
+            <span className="mr-1">{t("noAccountYet")}</span>
             <Tooltip content="Naviga alla pagina di registrazione">
               <Link
                 to="/signup"
                 className="underline decoration-dotted hover:text-black dark:hover:text-red-400 transition-colors"
               >
-                Registrati qui
+                {t("registerHere")}
               </Link>
             </Tooltip>
           </Typography>
@@ -215,19 +217,19 @@ const Login = () => {
             />
             <div className="my-4" />
             <Button color="blue" type="submit" disabled={disabled}>
-              Login
+              {t("login")}
             </Button>
           </form>
 
           <div className="mt-4">
             <small>
-              Ti sei scordato la password?{" "}
+              {t("forgotPassword")}{" "}
               <Link
                 to="#"
                 className="underline decoration-dotted text-center hover:text-black dark:hover:text-red-400 transition-colors"
                 onClick={() => setResetPw(true)}
               >
-                Clicca qui
+                {t("clickHereLowercase")}
               </Link>
               .
             </small>
@@ -235,7 +237,7 @@ const Login = () => {
             <div className={`${resetPw ? "block" : "hidden"} mt-4`}>
               <hr className="my-8" />
               <Typography variant="h2" className="dark:text-white">
-                Reimposta la password
+                {t("resetPassword")}
               </Typography>
               <form action="#" method="post" onSubmit={sendResetPw}>
                 <div className="mb-2 block">
@@ -265,10 +267,10 @@ const Login = () => {
                     disabled={disabled}
                     onClick={() => setResetPw(false)}
                   >
-                    Annulla
+                    {t("cancel")}
                   </Button>
                   <Button type="submit" color="yellow" disabled={disabled}>
-                    Invia richiesta
+                    {t("sendRequest")}
                   </Button>
                 </div>
               </form>
