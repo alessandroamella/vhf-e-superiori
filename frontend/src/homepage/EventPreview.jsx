@@ -48,7 +48,7 @@ const EventPreview = ({ event, ...props }) => {
         )}
 
         <div className="mt-5 md:ml-2 hover:animate-pulse focus:animate-ping">
-          <Button>Visualizza</Button>
+          <Button>{t('view')}</Button>
         </div>
         {/* <h3 className="font-medium tracking-tight text-xl uppercase">
         </h3> */}

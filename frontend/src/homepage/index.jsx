@@ -37,12 +37,15 @@ import "react-round-carousel/src/index.css";
 import Flags from "../Flags";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import { useTranslation } from "react-i18next";
+import { Trans } from "react-i18next";
 
 const Homepage = () => {
   const { user } = useContext(UserContext);
   const { events } = useContext(EventsContext);
   const { splashPlayed, setSplashPlayed } = useContext(SplashContext);
   const { ready } = useContext(ReadyContext);
+  const { t } = useTranslation(); 
 
   const [alert, setAlert] = useState(null);
 
@@ -270,10 +273,12 @@ const Homepage = () => {
     [eqslEventToShow, stationEventToShow]
   );
 
+  const scoringItems = t('scoring', { returnObjects: true });
+
   return (
     <>
       <Helmet>
-        <title>VHF e Superiori - Flash Mob Radioamatoriale</title>
+        <title> {t("mainTitle")}</title>
       </Helmet>
       {!splashPlayed && <Splash ready={ready} />}
 
@@ -318,52 +323,47 @@ const Homepage = () => {
                     className="text-gray-600 dark:text-gray-100 mb-8 mt-4 md:pr-4 text-justify"
                   >
                     <p>
-                      Nasce da un&apos;idea di <strong>IU4JJJ</strong> Pietro
-                      Cerrone membro della chat VHF e superiori che la propone a{" "}
-                      <strong>IZ5RNF</strong> Alessandro Ronca creatore del
-                      gruppo.
+                      <Trans i18nKey="bornFrom" components={{ 1: <strong />, 3: <strong /> }} />
                     </p>
 
                     <p>
-                      Accolta l&apos;idea viene creato un gruppo di lavoro con
-                      la collaborazione di{" "}
-                      <a
-                        href="https://www.qrz.com/db/IC8TEM"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
-                      >
-                        <strong>IC8TEM</strong> Costantino Cerrotta
-                      </a>{" "}
-                      (
-                      <a
-                        href="https://www.ft8activity.it/author/ic8tem/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
-                      >
-                        FT8ACTIVITY
-                      </a>
-                      ).
+                    <Trans
+                      i18nKey="workGroup"
+                      components={[
+                        'ACC', // placeholder 0 (non usato, serve solo per occupare la posizione)
+                        <a
+                          key="link1"
+                          href="https://www.qrz.com/db/IC8TEM"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
+                        >{/* Figlio di <1>…</1> */}
+                          <strong />
+                        </a>,
+                        'ACC2', // placeholder 2 (non usato)
+                        <a
+                          key="link3"
+                          href="https://www.ft8activity.it/author/ic8tem/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
+                        >
+                          <strong />
+                        </a>,
+                      ]}
+                    />
                     </p>
 
                     <p>
-                      Il gruppo dopo aver delineato modalità e tempi, giunge a
-                      pianificare il primo evento che viene pubblicizzato su
-                      varie piattaforme social come prova del funzionamento
-                      ,organizzazione e gestione.
+                      {t("firstEvent")}
                     </p>
 
                     <p>
-                      Ispirandosi proprio al &quot;flash mob&quot; che si
-                      prefigge lo scopo di far incontrare più persone possibile
-                      per poco tempo usando mail e social ,da qui il nome.
+                     {t("inspiration")}
                     </p>
 
                     <p>
-                      Con soddisfazione si raccolgono attorno alle prime due
-                      stazioni molti appassionati radioamatori e il debutto è un
-                      successo.
+                     {t("satisfaction")}
                     </p>
 
                     <div className="py-6 flex w-full mt-4 md:mt-0 justify-center items-center">
@@ -376,63 +376,47 @@ const Homepage = () => {
                           />
                         </Zoom>
                         <figcaption className="text-center">
-                          Locandina del primo flash mob
+                          {t("firstPoster")}
                         </figcaption>
                       </figure>
                     </div>
 
                     <p>
-                      Le stazioni dette &quot;attivatrici&quot; chiamate così
-                      per l&apos;occasione ricevono molte richieste di contatto
-                      da tutta Italia.
+                     {t("activators")}
                     </p>
 
                     <p>
-                      Il numero dei partecipanti supera le aspettative e la
-                      struttura di gestione creata supera il test: viene quindi
-                      deciso di continuare con questa esperienza e di
-                      organizzare i successivi eventi.
+                     {t("participants")}
                     </p>
 
                     <p>
-                      Viene inviata attraverso il sito{" "}
-                      <strong>www.vhfesuperiori.eu</strong> la eqsl conferma del
-                      contatto da ogni stazione attivatrice e successivamente
-                      Vengono raccolti e pubblicati i dati dei relativi ai
-                      partecipanti e al numero contatti, sia dei
-                      &quot;cacciatori&quot; che delle stazioni
-                      &quot;attivatrici&quot; e attribuito un punteggio pari a:
-                      <ul className="list-disc">
-                        <li>
-                          Per gli Attivatori 2 punti per ogni collegamento.
-                        </li>
-                        <li>
-                          Per i Cacciatori 2 punti se collegano un Attivatore e
-                          1 punto per gli altri collegamenti.
-                        </li>
-                      </ul>
+                      <Trans i18nKey="processDescription" />
                     </p>
 
+                    <ul className="list-disc list-inside">
+                      {scoringItems.map((text, idx) => (
+                        <li key={idx}>{text}</li>
+                      ))}
+                    </ul>
+
                     <p>
-                      L&apos;evento non è una gara ma ha lo scopo di aumentare
-                      il numero di stazioni operanti sulle bande VHF e superiori
-                      con uno spirito partecipativo e non competitivo.
+                     {t("event")}
                     </p>
                   </div>
 
                   <Accordion id="calendario" alwaysOpen flush className="mt-8">
                     <Accordion.Panel>
                       <Accordion.Title className="pt-1 pb-1">
-                        Calendario
+                        {t("calendar")}
                       </Accordion.Title>
                       <Accordion.Content className="px-0 py-0 pt-1 scale-90">
                         <Table>
                           <Table.Head>
                             <Table.HeadCell className="pr-2">
-                              Edizione
+                              {t("edition")}
                             </Table.HeadCell>
-                            <Table.HeadCell>Banda</Table.HeadCell>
-                            <Table.HeadCell>Data</Table.HeadCell>
+                            <Table.HeadCell>{t("band")}</Table.HeadCell>
+                            <Table.HeadCell>{t("date")}</Table.HeadCell>
                           </Table.Head>
                           <Table.Body className="text-xl">
                             {!events ? (
@@ -492,7 +476,7 @@ const Homepage = () => {
                     <div className="mt-4">
                       <Card className="text-center">
                         <h2 className="text-2xl font-bold">
-                          🏆 Classifica {rankingsEventToShow.name}
+                          🏆 {t("scoreboard")} {rankingsEventToShow.name}
                         </h2>
                         <Link
                           to={"/rankings/" + rankingsEventToShow._id}
@@ -500,7 +484,7 @@ const Homepage = () => {
                         >
                           <Button className="text-md mt-4">
                             <FaExternalLinkAlt className="inline mr-1 mb-1" />{" "}
-                            Visualizza classifica
+                            {t("visualizeScoreboard")}
                           </Button>
                         </Link>
                       </Card>
@@ -554,7 +538,7 @@ const Homepage = () => {
 
                   <div className="md:-mt-12 flex flex-col items-center justify-center">
                     <h2 className="font-bold mb-4 text-center text-2xl tracking-tight">
-                      SE VUOI ESSERE PROSSIMA STAZIONE ATTIVATRICE:
+                      {t("ifNextStation")}
                     </h2>
                     <Button
                       className="text-lg mb-4"
@@ -570,7 +554,7 @@ const Homepage = () => {
                             })
                       }
                     >
-                      CLICCA QUI
+                      {t("clickHere")}
                     </Button>
                     {/* <Alert color="info">
                   <span>
@@ -589,7 +573,7 @@ const Homepage = () => {
                   >
                     <Accordion.Panel>
                       <Accordion.Title>
-                        Istruzioni per partecipare
+                       {t("instructions")}
                       </Accordion.Title>
                       <Accordion.Content className="text-gray-600 dark:text-gray-100">
                         <a
@@ -599,84 +583,60 @@ const Homepage = () => {
                         >
                           <Button className="mx-auto flex items-center mb-4 text-lg bg-[#2BB741]">
                             <FaWhatsapp />{" "}
-                            <span className="ml-1">Chatta su WhatsApp</span>
+                            <span className="ml-1">{t("chat")}</span>
                           </Button>
                         </a>
                         <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
-                          COSA È IL RADIO FLASH MOB
+                          {t("whatIsRFM")}
                         </p>
                         <p>
-                          L&apos;intento di questo evento è quello di
-                          incentivare l&apos;utilizzo delle frequenze VHF 144MHz
-                          e UHF 432/1200MHz e superiori nei modi fonia e CW.
+                          {t("intent")}
                         </p>
 
                         <p>
-                          Per l&apos;occasione le stazioni che si sono rese
-                          disponibili vengono denominate &quot;ATTIVATRICI&quot;
-                          e viene assegnata loro una frequenza consigliata,
-                          quindi indicativa e modificabile a discrezione
-                          dell&apos;operatore da utilizzare nel corso delle due
-                          ore della manifestazione. La manistazione si terrà
-                          l&apos;ultima domenica di ogni mese. Nel caso che la
-                          frequenza indicata nella locandina sia modificata
-                          dall&apos;operatore è pregato di comunicare la nuova
-                          frequenza ai partecipanti tramite la chat.
+                          {t("stations")}
                         </p>
 
                         <p>
-                          Possono inviare il log e le eQSL sia i Cacciatori che
-                          gli Attivatori del sito.
+                         {t("eqsl")}
                         </p>
 
                         <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
-                          COME GESTIRE I COLLEGAMENTI
+                          {t("howToConnectionsTitle")}
                         </p>
 
                         <p>
-                          Le stazioni che attuano il contatto si scambiano
-                          nominativo, rapporto e locatore e a conferma del
-                          collegamento verrà inviata QSL elettronica concepita
-                          per l&apos;occasione.
+                         {t("howToConnections")}
                         </p>
 
                         <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
-                          RACCOMANDAZIONI
+                          {t("bestPractices")}
                         </p>
 
                         <p>
-                          Si consiglia l&apos;uso della Chat per organizzare
-                          sked specialmente per i collegamenti a lunga distanza
-                          e quindi più difficili.
+                          {t("bestPracticesChat")}
                         </p>
 
                         <p>
-                          Si invitano i partecipanti al radio flash mob di
-                          SEGUIRE I{" "}
-                          <a
-                            href="https://chat.whatsapp.com/FJ6HissbZwE47OWmpes7Pr"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
-                          >
-                            MESSAGGI DELLA CHAT vhfesuperiori
-                          </a>{" "}
-                          per non perdere richieste di stazioni che stanno
-                          cercando di effettuare il collegamento e non ci
-                          riescano. Lo strumento della richiesta via messaggio
-                          sul gruppo risulta essere contributo essenziale al
-                          fine di completare il collegamento.
+                        <Trans
+                          i18nKey="followChat"
+                          components={{
+                            1: (
+                              <a
+                                href="https://chat.whatsapp.com/FJ6HissbZwE47OWmpes7Pr"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
+                              />
+                            )
+                          }}
+                        />
                         </p>
 
-                        <p>GRAZIE A TUTTI DELLA PARTECIPAZIONE.</p>
+                        <p>{t("thankYouForParticipating")}</p>
 
                         <p className="italic uppercase mt-2">
-                          LA FREQUENZA ASSEGNATA È DI RIFERIMENTO MA NEI MOMENTI
-                          OPPORTUNI, SI PUÒ EFFETTUARE UNO SPOSTAMENTO ALLO
-                          SCOPO DI COLLEGARE ALTRA STAZIONE ATTIVATRICE
-                          INTERESSATA, PER FARE RITORNO A CONTATTO AVVENUTO
-                          SULLA FREQUENZA PROPRIA PER ESSERE DISPONIBILE AD
-                          ALTRE RICHIESTE DI COLLEGAMENTO.
+                          {t("assignedFrequency")}
                         </p>
                       </Accordion.Content>
                     </Accordion.Panel>
@@ -687,9 +647,9 @@ const Homepage = () => {
                       <Card className="text-center">
                         <p className="text-gray-600 dark:text-gray-200">
                           {stationEventToShow
-                            ? "Sei stato accettato come stazione attivatrice"
-                            : "Partecipa come cacciatore"}{" "}
-                          per:
+                            ? t('acceptedActivator')
+                            : t('participateHunter')}{" "}
+                          {t("for")}:
                         </p>
 
                         {cardEvent.logoUrl && (
@@ -711,7 +671,7 @@ const Homepage = () => {
                           className="underline decoration-dotted hover:text-black transition-colors"
                         >
                           <Button color="blue" className="text-lg mt-4">
-                            Invia EQSL
+                            {t("sendEQSL")}
                           </Button>
                         </Link>
                       </Card>
@@ -725,7 +685,7 @@ const Homepage = () => {
                         id="amministratori"
                         className="font-bold text-center text-3xl tracking-tight dark:w-full dark:bg-gray-700 dark:px-8 dark:pt-4 pb-2 mb-2"
                       >
-                        Amministratori
+                        {t("admins")}
                       </h2>
 
                       <div className="mx-auto dark:pb-2 dark:px-4">
@@ -752,121 +712,53 @@ const Homepage = () => {
                     {/* storia flash mob */}
                     <div className="text-justify text-gray-600 dark:text-gray-200">
                       <h3 className="text-center md:text-left text-3xl mb-2 font-bold text-red-600 tracking-tight uppercase">
-                        LA CHAT VHFESUPERIORI
+                        {t("chatVhf")}
                       </h3>
 
                       <p>
-                        Fondata il 28 gennaio 2018 da Alessandro Ronca{" "}
-                        <strong>IZ5RNF</strong>, la chat vhfesuperiori ha lo
-                        scopo di essere un contenitore velocemente accessibile
-                        dove riunire tutti i radioamatori attivi sulle bande da
-                        144mhz a salire, per sapere in tempo reale chi fosse
-                        disponibile in radio in un preciso momento e verso quale
-                        direzione chiamare.
+                      <Trans
+                        i18nKey="founding"
+                        components={{ 1: <strong /> }}
+                      />
                       </p>
 
                       <p>
-                        Per poter creare un gruppo, WhatsApp necessita di un
-                        numero minimo di due persone. Così, Alessandro Ronca
-                        spiega a <strong>IZ5IOQ</strong> Giacomo Matteucci,
-                        amico di vecchia data, cosa ha in mente di fare e chiede
-                        se lui condivide gli intenti e se acconsente a creare il
-                        gruppo con lui. Accordato da Giacomo l&apos;impegno, può
-                        nascere la chat.
+                      <Trans
+                        i18nKey="foundingChat"
+                        components={{ 1: <strong /> }}
+                      />
                       </p>
 
                       <p>
-                        Il primo vantaggio offerto dall&apos;utilizzo del gruppo
-                        è quello di poter orientare correttamente le antenne in
-                        direzione del corrispondente, evitando così di fare
-                        chiamate in direzioni dove non ci fossero stazioni
-                        operanti e senza quindi ricevere risposta alle chiamate.
+                        {t("antennas")}
                       </p>
 
                       <p>
-                        Negli ultimi anni c&apos;è stato un tracollo
-                        nell&apos;utilizzo di queste bande, fino a creare un
-                        vero e proprio tam tam negativo che diceva che non
-                        c&apos;erano più operatori su queste frequenze, definite
-                        ormai “morte”. Seguendo il progetto iniziale di formare
-                        un gruppo più numeroso possibile nei primi due anni,
-                        Alessandro invita nella neonata chat tutti gli operatori
-                        di stazione che collega durante la sua attività
-                        radiantistica in SSB 144MHz e 432MHz. Alcuni accettavano
-                        l&apos;invito e altri rifiutavano.
+                        {t("latestYears")}
                       </p>
 
                       <p>
-                        Il primo risultato che si era prefissato era quello di
-                        “interrompere” il tam tam che da tempo si sentiva
-                        ripetere: “In VHF SSB non c&apos;è più nessuno,
-                        figuriamoci sulle bande superiori”. Lentamente gli amici
-                        collegati in radio che accettavano di essere inseriti
-                        passarono da 3 a 5 a 20 a 30 a 50, ma molte zone del
-                        paese rimanevano purtroppo ancora scoperte. Fu per lui
-                        un risultato memorabile il superamento della soglia dei
-                        100 partecipanti dopo un lavoro portato avanti
-                        ininterrottamente per due anni di contatti radio, inviti
-                        e inserimenti. Così la chat inizia a essere utile e i
-                        messaggi iniziano a essere sempre più numerosi grazie al
-                        contributo di molti appassionati presenti nel gruppo.
+                        {t("nobodyOnVhf")}
                       </p>
 
                       <p>
-                        Fiero del risultato e del fatto che il gruppo iniziasse
-                        ad essere utilizzato per i fini per i quali era nato,
-                        continuò, come fa ancora oggi, ad invitare operatori nel
-                        gruppo vhfesuperiori contattando i potenziali membri
-                        personalmente uno ad uno. Giunto vicino alla soglia dei
-                        200 iscritti, la gestione della chat richiedeva sempre
-                        più tempo, diventando un impegno difficile e
-                        impegnativo.
+                        {t("results")}
                       </p>
 
                       <p>
-                        Decide così di nominare degli amministratori che fossero
-                        di supporto e sviluppo, seguendo il concetto di
-                        “copertura” territoriale, competenza, disponibilità e
-                        condivisione degli intenti del gruppo. Gli
-                        amministratori sono diventati in breve tempo
-                        indispensabili e riferimenti zonali per le stazioni di
-                        nuovo ingresso e per quelle che già facevano parte della
-                        chat. La divisione che fu fatta è quella che rimane ad
-                        oggi, e cioè in zone: nord, centro, centro-sud e sud.
-                        Entrano nel gruppo nuovi amici che iniziano la loro
-                        attività e altri che riprendono dopo periodi di pausa, e
-                        altri che sempre sono stati operativi.
+                        {t("adminsNominated")}
                       </p>
 
                       <p>
-                        Nel tempo si è visto un incremento esponenziale del
-                        numero delle stazioni operative e del numero dei
-                        collegamenti, sia quotidianamente che in occasione di
-                        manifestazioni, con un trend ancora oggi in continua
-                        crescita. L&apos;entusiasmo e la passione per questo
-                        hobby sta coinvolgendo e divertendo sempre più
-                        appassionati. Ad oggi, 10 marzo 2025, il gruppo conta
-                        oltre 700 partecipanti da tutta Italia, Spagna,
-                        Svizzera, Francia, Croazia, Malta, Bulgaria, Serbia ecc.
+                        {t("stationsIncreasing")}
                       </p>
 
                       <p>
-                        Questa grande partecipazione ha portato alla creazione
-                        di questo sito, con lo scopo di diffondere questo
-                        entusiasmo e passione per queste bande e modi anche
-                        oltre i confini italiani, in tutta Europa. In questa
-                        sede, intendo ringraziare personalmente e singolarmente
-                        tutti, nessuno escluso, per aver accettato di far parte
-                        di questo progetto e di aver condiviso questa idea. Ogni
-                        singolo operatore, con il suo contributo e passione, sta
-                        portando sempre più radioamatori ad operare sulle VHF e
-                        superiori.
+                        {t("websiteCreation")}
                       </p>
 
                       <p className="font-semibold text-lg">
-                        UN GRAZIE SENTITO DEL VOSTRO CONTRIBUTO, SENZA IL QUALE
-                        NON SAREBBE STATO POSSIBILE PORTARE COSÌ TANTE PERSONE A
-                        DIVERTIRSI IN RADIO INSIEME.
+                        {t("thankYouForContributing")}
                       </p>
 
                       <p className="font-semibold text-xl text-black dark:text-white">

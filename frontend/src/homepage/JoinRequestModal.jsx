@@ -18,10 +18,13 @@ import { Link } from "react-router";
 import { EventsContext, UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import { useTranslation } from "react-i18next";
+import { Trans } from "react-i18next";
 
 const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
   const { user } = useContext(UserContext);
   const { events } = useContext(EventsContext);
+  const { t } = useTranslation(); 
 
   const [joinableEvents, setJoinableEvents] = useState(null);
   useEffect(() => {
@@ -129,7 +132,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
     >
       <form onSubmit={sendJoinRequest}>
         <Modal.Header>
-          Richiesta di partecipazione{" "}
+          {t('participationRequest')}{" "}
           <span className="underline">{!disabled && event?.name}</span>
         </Modal.Header>
         <Modal.Body>
@@ -163,7 +166,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                   <span className="inline">
                     <FaInfo className="inline" />
                   </span>{" "}
-                  Non ci sono eventi a cui puoi fare richiesta al momento.
+                  {t('noEventsToJoin')}
                 </span>
               </Alert>
             ) : (
@@ -175,24 +178,17 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                 <span className="inline">
                   <FaInfo className="inline" />
                 </span>{" "}
-                Hai fatto richiesta di partecipare a{" "}
-                <strong>{event.name}</strong> come stazione attivatrice. Puoi
-                visualizzare le richieste di partecipazione dalla pagina del{" "}
-                <Link
-                  to="/profile"
-                  className="underline decoration-dotted hover:text-black transition-colors"
-                >
-                  tuo profilo
-                </Link>
-                .
+                <Trans
+                  i18nKey="requestParticipation"
+                  values={{ eventName: event.name }}
+                  components={{ Link: <Link to="/profile" className="underline decoration-dotted hover:text-black transition-colors" /> }}
+                />
               </span>
             </Alert>
           ) : isAfter(new Date(), new Date(event.joinDeadline)) ? (
             <Alert color="warning" className="mb-4">
               <span>
-                <span className="font-medium">Attenzione</span> Il periodo per
-                fare richiesta di stazione attivatrice per questo evento è
-                scaduto il{" "}
+                <span className="font-medium">{t('attention')}</span> {t('requestTimeExpired')}{" "}
                 {formatInTimeZone(
                   new Date(event.joinDeadline),
                   "Europe/Rome",
@@ -207,9 +203,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
           ) : isBefore(new Date(), new Date(event.joinStart)) ? (
             <Alert color="warning" className="mb-4">
               <span>
-                <span className="font-medium">Attenzione</span> Il periodo per
-                fare richiesta di stazione attivatrice per questo evento inizia
-                il{" "}
+                <span className="font-medium">{t('attention')}</span> {t('requestTimeStart')}{" "}
                 {formatInTimeZone(
                   new Date(event.joinStart),
                   "Europe/Rome",
@@ -226,15 +220,14 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
               {joinError && (
                 <Alert color="failure" className="mb-4">
                   <span>
-                    <span className="font-medium">Errore</span> {joinError}
+                    <span className="font-medium">{t('Error')}</span> {joinError}
                   </span>
                 </Alert>
               )}
 
               <div className="flex flex-col gap-4">
                 <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                  Usa il seguente form per fare richiesta di partecipazione
-                  all&apos;evento
+                  {t('formEvent')}
                 </p>
 
                 <div>
@@ -260,14 +253,14 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                     required
                   />
                   <Label htmlFor="accept-tos">
-                    Dichiaro di aver preso visione e di accettare
-                    incondizionatamente il{" "}
+                    {t('viewRulesDeclaration')}
+                    {" "}
                     <a
                       href="/docs/Regolamento_FLASH_MOB_2023_01_23.pdf"
                       target="_blank"
                       className="underline"
                     >
-                      regolamento
+                      {t('rules')}
                     </a>
                   </Label>
                 </div>
@@ -283,13 +276,13 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
               disabled={disabled && !closable && !noEventsToJoin}
               onClick={() => setOpen(false)}
             >
-              Chiudi
+              {t('close')}
             </Button>
             <Button type="submit" disabled={disabled}>
               {isSending ? (
                 <Spinner />
               ) : (
-                <span>Invia richiesta come {user?.callsign}</span>
+                <span>{t('sendRequestAs')} {user?.callsign}</span>
               )}
             </Button>
           </div>
