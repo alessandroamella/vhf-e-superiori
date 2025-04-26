@@ -2,6 +2,7 @@ import axios from "axios";
 import { Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   FaArchive,
   FaCalendar,
@@ -18,8 +19,8 @@ import {
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { createSearchParams, Link, useLocation } from "react-router";
 import { JoinOpenContext, SidebarOpenContext, UserContext } from "../App";
+import MobileLanguageSelector from "../MobileLanguageSelector";
 import { getErrorStr } from "../shared";
-import { useTranslation } from "react-i18next";
 
 const SectionHref = ({ href, wip, children }) => {
   const { setSidebarOpen } = useContext(SidebarOpenContext);
@@ -111,7 +112,7 @@ const MenuContent = ({ isSideBar }) => {
   const { user, setUser } = useContext(UserContext);
   const { joinOpen, setJoinOpen } = useContext(JoinOpenContext);
   const [, setMenuOpen] = useState(false);
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   const location = useLocation();
 
@@ -135,7 +136,7 @@ const MenuContent = ({ isSideBar }) => {
 
   return (
     <>
-      <Link to="/" className="flex items-center gap-2 mb-2">
+      <Link to="/" className="flex items-center gap-2 mb-4">
         <LazyLoadImage className="w-14" src="/logo-min.png" alt="Logo" />
         <h3
           className={`font-bold text-xl ${
@@ -145,6 +146,8 @@ const MenuContent = ({ isSideBar }) => {
           {t("vhf")}
         </h3>
       </Link>
+
+      <MobileLanguageSelector className="mb-4" />
 
       {user?.isAdmin && (
         <Button
@@ -177,7 +180,7 @@ const MenuContent = ({ isSideBar }) => {
           <SectionLink to="/profile">
             <FaUserAlt />{" "}
             <span>
-             {t("accountOf")} <strong>{user.callsign}</strong>
+              {t("accountOf")} <strong>{user.callsign}</strong>
             </span>
           </SectionLink>
           <SectionLink onClick={logout}>
@@ -193,13 +196,15 @@ const MenuContent = ({ isSideBar }) => {
       </SectionHref>
       <SectionHref href="#amministratori">
         <FaUserShield />
-         {t("admins")}
+        {t("admins")}
       </SectionHref>
       <SectionHref href="#eventi">
-        <FaCalendar />{t("events")}
+        <FaCalendar />
+        {t("events")}
       </SectionHref>
       <SectionHref href="#calendario">
-        <FaCalendarWeek />{t("eventCalendar")}
+        <FaCalendarWeek />
+        {t("eventCalendar")}
       </SectionHref>
 
       <SectionTitle
@@ -210,10 +215,12 @@ const MenuContent = ({ isSideBar }) => {
         {t("flashMob")}
       </SectionTitle>
       <SectionHref href="#storiaflashmob">
-        <FaArchive />{t("flashMobHistory")}
+        <FaArchive />
+        {t("flashMobHistory")}
       </SectionHref>
       <SectionHref href="#istruzioniflashmob">
-        <FaListOl />{t("menuInstructions")}
+        <FaListOl />
+        {t("menuInstructions")}
       </SectionHref>
       <a
         href="https://chat.whatsapp.com/FJ6HissbZwE47OWmpes7Pr"
@@ -221,7 +228,8 @@ const MenuContent = ({ isSideBar }) => {
         rel="noopener noreferrer"
         className="flex items-center gap-2 mb-2"
       >
-        <FaWhatsapp />{t("whatsappGroup")}
+        <FaWhatsapp />
+        {t("whatsappGroup")}
       </a>
       <Button
         as={Link}

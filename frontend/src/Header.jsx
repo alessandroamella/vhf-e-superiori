@@ -1,12 +1,12 @@
 import { Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { HiMoon, HiSun } from "react-icons/hi"; // Import icons
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link, useLocation } from "react-router";
 import { UserContext } from "./App";
 import Flags from "./Flags";
-import { useTranslation } from "react-i18next";
 
 const LinkButton = ({ to, children, keepCurrent }) => {
   const location = useLocation();
@@ -43,7 +43,7 @@ const Header = () => {
 
   const [darkMode, setDarkMode] = useState(false); // State for dark mode
 
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   useEffect(() => {
     // On mount, check localStorage for dark mode preference
@@ -89,7 +89,7 @@ const Header = () => {
             www.vhfesuperiori.eu
           </h1>
         </Link>
-        <div className="hidden md:block">
+        <div className="md:flex hidden">
           <Flags />
         </div>
         <div className="mx-auto md:ml-auto md:mr-16 lg:mr-20 scale-125 flex items-center gap-4">
