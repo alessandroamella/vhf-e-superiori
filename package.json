@@ -1,0 +1,32 @@
+{
+    "name": "vhf-e-superiori",
+    "private": true,
+    "version": "1.0.0",
+    "scripts": {
+        "dev": "pnpm run --parallel dev",
+        "dev:frontend": "pnpm --filter @vhf-e-superiori/frontend dev",
+        "dev:backend": "pnpm --filter @vhf-e-superiori/backend dev",
+        "build": "pnpm run --filter=* build",
+        "build:frontend": "pnpm --filter @vhf-e-superiori/frontend build",
+        "build:backend": "pnpm --filter @vhf-e-superiori/backend build",
+        "lint": "pnpm run --parallel lint",
+        "clean": "pnpm run --parallel clean",
+        "start:backend": "pnpm --filter @vhf-e-superiori/backend start"
+    },
+    "engines": {
+        "node": ">=16.0.0",
+        "pnpm": ">=7.0.0"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "@parcel/watcher",
+            "@scarf/scarf",
+            "aws-sdk",
+            "bcrypt",
+            "canvas",
+            "es5-ext",
+            "esbuild",
+            "sharp"
+        ]
+    }
+}
