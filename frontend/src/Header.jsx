@@ -6,6 +6,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link, useLocation } from "react-router";
 import { UserContext } from "./App";
 import Flags from "./Flags";
+import AirscoutBtn from "./homepage/AirscoutBtn";
 
 const LinkButton = ({ to, children, keepCurrent }) => {
   const location = useLocation();
@@ -89,18 +90,7 @@ const Header = () => {
         </div>
         <div className="mx-auto md:ml-auto md:mr-16 lg:mr-20 scale-125 flex items-center gap-4">
           {/* AirScout Italia button */}
-          <Button
-            as="a"
-            href="https://forms.gle/3NctoQ7Sy8ksbBQR7"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mb-2 bg-[#fe8f44] hover:bg-[#fb7c2b] dark:bg-[#fe8f44] dark:hover:bg-[#fb7c2b] text-black font-bold uppercase min-w-[120px]"
-          >
-            <div className="flex flex-col items-center justify-center leading-tight">
-              <span className="tracking-wide">AirScout</span>
-              <span className="tracking-widest">Italia</span>
-            </div>
-          </Button>
+          <AirscoutBtn />
 
           <form
             action="https://www.paypal.com/donate"
