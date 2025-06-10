@@ -12,10 +12,11 @@ import {
   FaSignOutAlt,
   FaUserAlt,
   FaUserPlus,
-  FaUsers,
   FaUserShield,
+  FaUsers,
   FaWhatsapp
 } from "react-icons/fa";
+import { HiMoon, HiSun } from "react-icons/hi";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { createSearchParams, Link, useLocation } from "react-router";
 import { JoinOpenContext, SidebarOpenContext, UserContext } from "../App";
@@ -113,8 +114,29 @@ const MenuContent = ({ isSideBar }) => {
   const { joinOpen, setJoinOpen } = useContext(JoinOpenContext);
   const [, setMenuOpen] = useState(false);
   const { t } = useTranslation();
+  const [darkMode, setDarkMode] = useState(false);
 
   const location = useLocation();
+
+  useEffect(() => {
+    // On mount, check localStorage for dark mode preference
+    const storedDarkMode = localStorage.getItem("darkMode");
+    if (storedDarkMode === "true") {
+      setDarkMode(true);
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
+  useEffect(() => {
+    // Update localStorage and html class when darkMode changes
+    if (darkMode) {
+      localStorage.setItem("darkMode", "true");
+      document.documentElement.classList.add("dark");
+    } else {
+      localStorage.setItem("darkMode", "false");
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
 
   useEffect(() => {
     if (joinOpen) {
@@ -148,6 +170,17 @@ const MenuContent = ({ isSideBar }) => {
       </Link>
 
       <MobileLanguageSelector className="mb-4" />
+
+      {/* Dark mode toggle button */}
+      <Button
+        onClick={() => setDarkMode(!darkMode)}
+        color="light"
+        size="sm"
+        className="mb-4 dark:bg-gray-700 dark:hover:bg-gray-600"
+        title={darkMode ? t("enableLightMode") : t("enableDarkMode")}
+      >
+        {darkMode ? <HiSun className="w-4" /> : <HiMoon className="w-4" />}
+      </Button>
 
       {user?.isAdmin && (
         <Button

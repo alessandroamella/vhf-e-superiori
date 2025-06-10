@@ -171,5 +171,7 @@
     "dataSuccessfullyModified": "Dati modificati con successo",
     "verifyEmail": "Verifica il nuovo indirizzo email cliccando sul link nell'email che hai ricevuto",
     "partecipationSuccessfullyCanceled": "Partecipazione annullata con successo",
-    "postSuccessfullyDeleted": "Post eliminato con successo"
+    "postSuccessfullyDeleted": "Post eliminato con successo",
+    "enableLightMode": "Abilita modalità chiara",
+    "enableDarkMode": "Abilita modalità scura"
 }

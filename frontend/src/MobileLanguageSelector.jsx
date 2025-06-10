@@ -30,6 +30,7 @@ const MobileLanguageSelector = ({ className }) => {
       <div className="flex flex-wrap gap-2">
         {languages.map((language) => (
           <button
+            type="button"
             key={language.code}
             onClick={() => handleLanguageChange(language.code)}
             className={`flex items-center gap-1 px-2 py-1 rounded-md transition-colors ${

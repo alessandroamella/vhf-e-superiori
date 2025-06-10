@@ -1,7 +1,7 @@
 {
     "firstPoster": "First flash mob poster",
-    "mainTitle": "VHF and Above - Amateur Radio Flash Mob",
-    "bornFrom": "Born from an idea by <1>IU4JJJ</1> Pietro Cerrone, a member of the VHF and Above chat, who proposed it to <3>IZ5RNF</3> Alessandro Ronca, the group's creator.",
+    "mainTitle": "VHF e Superiori - Amateur Radio Flash Mob",
+    "bornFrom": "Born from an idea by <1>IU4JJJ</1> Pietro Cerrone, a member of the VHF e Superiori chat, who proposed it to <3>IZ5RNF</3> Alessandro Ronca, the group's creator.",
     "workGroup": "The idea was welcomed and a working group was created with the collaboration of <1><0>IC8TEM</0> Costantino Cerrotta</1> (<3>FT8ACTIVITY</3>).",
     "firstEvent": "After outlining the methods and timeline, the group planned the first event, which was promoted on various social platforms as a test of functionality, organization, and management.",
     "inspiration": "Inspired by the very concept of a \"flash mob,\" which aims to bring together as many people as possible for a short time using email and social media—hence the name.",
@@ -171,5 +171,7 @@
     "dataSuccessfullyModified": "Data successfully updated",
     "verifyEmail": "Verify your new email address by clicking the link in the email you received",
     "partecipationSuccessfullyCanceled": "Participation successfully canceled",
-    "postSuccessfullyDeleted": "Post successfully deleted"
+    "postSuccessfullyDeleted": "Post successfully deleted",
+    "enableLightMode": "Enable light mode",
+    "enableDarkMode": "Enable dark mode"
 }
