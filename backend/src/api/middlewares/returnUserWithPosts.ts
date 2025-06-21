@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "http-status";
-import moment from "moment";
 import { logger } from "../../shared";
 import { User, UserDoc } from "../auth/models";
 import { Errors } from "../errors";
@@ -70,7 +69,9 @@ async function returnUserWithPosts(
                 isProcessing: 0,
                 __v: 0
             }
-        ).lean();
+        )
+            .sort({ createdAt: -1 })
+            .lean();
 
         const _qsos = await Qso.find(
             {
@@ -133,12 +134,6 @@ async function returnUserWithPosts(
                     location.calculateQth(user.lat, user.lon)) ||
                 undefined
         };
-
-        // timestamps are present
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        _user.posts.sort((a: any, b: any) => {
-            return moment(b.createdAt).diff(moment(a.createdAt));
-        });
 
         // logger.debug("User view");
         // logger.debug(JSON.stringify(_user));

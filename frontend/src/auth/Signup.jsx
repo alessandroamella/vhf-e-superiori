@@ -7,6 +7,7 @@ import { useCookies } from "react-cookie";
 import { usePlacesWidget } from "react-google-autocomplete";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import { FaArrowAltCircleRight, FaExternalLinkAlt } from "react-icons/fa";
 import Markdown from "react-markdown";
 import ReactPlaceholder from "react-placeholder";
@@ -20,7 +21,6 @@ import { UserContext } from "../App";
 import { mapsApiKey } from "../constants/mapsApiKey";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
 import { getErrorStr } from "../shared";
-import { useTranslation } from "react-i18next";
 
 const useFocus = () => {
   const htmlElRef = useRef(null);
@@ -51,7 +51,7 @@ OpenExternally.propTypes = {
 
 const Signup = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["signupcache"]);
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   const [avatar, setAvatar] = useState(null);
 
@@ -120,6 +120,10 @@ const Signup = () => {
       if (!place) return;
       console.log("place", place);
       const addr = place.formatted_address;
+      if (!addr) {
+        console.log("no address found in place:", place);
+        return;
+      }
       let cityIndex = place.address_components.findIndex((c) =>
         c.types.includes("administrative_area_level_3")
       );
@@ -364,9 +368,7 @@ const Signup = () => {
         }
       }
     } else {
-      setAlert(
-        t('recaptchaError')
-      );
+      setAlert(t("recaptchaError"));
     }
     setTimeout(() => {
       alertRef.current?.scrollIntoView({
@@ -378,24 +380,24 @@ const Signup = () => {
   return (
     <>
       <Helmet>
-        <title>{t('signupVhf')}</title>
+        <title>{t("signupVhf")}</title>
       </Helmet>
       {user &&
         navigate(searchParams.get("to") || "/profile", { replace: true })}
       <div className="w-full h-full dark:bg-gray-900 dark:text-white">
         <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">
           <Typography variant="h1" className="dark:text-white mb-2">
-            {t('signupTitle')}
+            {t("signupTitle")}
           </Typography>
 
           <Typography variant="small" className="mb-6 flex">
-            <span className="mr-1">{t('accountAlready')}</span>
-            <Tooltip content={t('goToLogin')}>
+            <span className="mr-1">{t("accountAlready")}</span>
+            <Tooltip content={t("goToLogin")}>
               <Link
                 to="/login"
                 className="underline decoration-dotted hover:text-black transition-colors"
               >
-                {t('loginHere')}
+                {t("loginHere")}
               </Link>
             </Tooltip>
           </Typography>
@@ -418,17 +420,14 @@ const Signup = () => {
               )}
               <div className="w-full">
                 <div className="mb-2 block">
-                  <Label
-                    htmlFor="callsign"
-                    value={t('callsignNoPreSuf')}
-                  />
+                  <Label htmlFor="username" value={t("callsignNoPreSuf")} />
                 </div>
                 <TextInput
                   type="text"
-                  name="callsign"
-                  id="callsign"
+                  name="username"
+                  id="username"
                   label="Nominativo"
-                  autoComplete="callsign"
+                  autoComplete="username"
                   minLength={1}
                   maxLength={10}
                   onBlur={fetchQrz}
@@ -450,7 +449,7 @@ const Signup = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="name" value={t('publicName')} />
+                  <Label htmlFor="name" value={t("publicName")} />
                 </div>
                 <TextInput
                   type="text"
@@ -468,7 +467,7 @@ const Signup = () => {
               <div>
                 {/* DEBUG in traduzione estera, specifica di inserire il prefisso */}
                 <div className="mb-2 block">
-                  <Label htmlFor="phoneNumber" value={t('phoneNumber')} />
+                  <Label htmlFor="phoneNumber" value={t("phoneNumber")} />
                 </div>
                 <TextInput
                   type="tel"
@@ -486,10 +485,7 @@ const Signup = () => {
             <div className="my-4" />
 
             <div className="mb-2">
-              <Label
-                htmlFor="addressInput"
-                value={t('fullStationAddress')}
-              />
+              <Label htmlFor="addressInput" value={t("fullStationAddress")} />
               <TextInput
                 type="text"
                 name="addressInput"
@@ -513,7 +509,7 @@ const Signup = () => {
               <div className="ml-2 md:ml-4 mb-4 flex items-center gap-2">
                 <span className="text-gray-600 dark:text-gray-300">
                   <FaArrowAltCircleRight className="inline mr-1" />
-                  {t('locator')}:{" "}
+                  {t("locator")}:{" "}
                   <span className="dark:text-gray-200 font-bold">
                     {locator}
                   </span>
@@ -522,7 +518,7 @@ const Signup = () => {
             )}
 
             <div className="mb-2 block">
-              <Label htmlFor="email" value={t('email')} />
+              <Label htmlFor="email" value={t("email")} />
             </div>
             <TextInput
               type="email"
@@ -539,7 +535,7 @@ const Signup = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="password" value={t('password')} />
+                  <Label htmlFor="password" value={t("password")} />
                 </div>
                 <TextInput
                   type="password"
@@ -557,7 +553,7 @@ const Signup = () => {
               </div>
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="password-2" value={t('repeatPassword')} />
+                  <Label htmlFor="password-2" value={t("repeatPassword")} />
                 </div>
                 <TextInput
                   type="password"
@@ -576,19 +572,19 @@ const Signup = () => {
             <hr className="my-4" />
             {/* TOS */}
             <div className="mb-2">
-              {t('bySigningUp')}{" "}
+              {t("bySigningUp")}{" "}
               <button
                 onClick={toggleTosPrivacy}
                 className="inline outline-none hover:text-blue-600 font-semibold underline decoration-dashed transition-colors bg-transparent border-none text-sm"
               >
-                {t('termsAndConditions')} 
+                {t("termsAndConditions")}
               </button>{" "}
-              {t('andThe')} {" "}
+              {t("andThe")}{" "}
               <button
                 onClick={toggleTosPrivacy}
                 className="inline outline-none hover:text-blue-600 font-semibold underline decoration-dashed transition-colors bg-transparent border-none text-sm"
               >
-                {t('privacyPolicyEn')} 
+                {t("privacyPolicyEn")}
               </button>
             </div>
             {tosPrivacyShown && (
@@ -629,7 +625,7 @@ const Signup = () => {
             />
             <div className="my-4" />
             <Button color="blue" type="submit" disabled={disabled}>
-              {t('signUp')} 
+              {t("signUp")}
             </Button>
           </form>
         </div>

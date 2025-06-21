@@ -1,10 +1,13 @@
 import { Button, Typography } from "@material-tailwind/react";
 import { it } from "date-fns/locale";
+import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
-import PropTypes from "prop-types";
 
 const EventPreview = ({ event, ...props }) => {
+  const { t } = useTranslation();
+
   return (
     <div
       {...props}
@@ -48,7 +51,7 @@ const EventPreview = ({ event, ...props }) => {
         )}
 
         <div className="mt-5 md:ml-2 hover:animate-pulse focus:animate-ping">
-          <Button>{t('view')}</Button>
+          <Button>{t("view")}</Button>
         </div>
         {/* <h3 className="font-medium tracking-tight text-xl uppercase">
         </h3> */}

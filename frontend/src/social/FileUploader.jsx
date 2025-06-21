@@ -1,10 +1,10 @@
+import heic2any from "heic2any";
+import PropTypes from "prop-types";
 import { useDropzone } from "react-dropzone";
 import { FaTrash } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlayer from "react-player";
-import heic2any from "heic2any";
 import { v4 as uuidv4 } from "uuid";
-import PropTypes from "prop-types";
 
 const FileUploader = ({
   files,
@@ -18,18 +18,18 @@ const FileUploader = ({
    * @param {File[]} acceptedFiles
    * @param {File[]} rejectedFiles
    */
-  const handleDrop = async acceptedFiles => {
-    const currentPhotos = files.filter(file =>
+  const handleDrop = async (acceptedFiles) => {
+    const currentPhotos = files.filter((file) =>
       file.type.startsWith("image")
     ).length;
-    const currentVideos = files.filter(file =>
+    const currentVideos = files.filter((file) =>
       file.type.startsWith("video")
     ).length;
 
     let newPhotos = 0;
     let newVideos = 0;
 
-    const filteredFiles = acceptedFiles.filter(file => {
+    const filteredFiles = acceptedFiles.filter((file) => {
       if (file.type.startsWith("image")) {
         newPhotos++;
         return currentPhotos + newPhotos <= maxPhotos;
@@ -42,13 +42,13 @@ const FileUploader = ({
 
     // check if any heic file
     const heicFiles = filteredFiles.filter(
-      file =>
+      (file) =>
         file.type === "image/heic" ||
         file.name.endsWith(".heic") ||
         file.name.endsWith(".heif")
     );
     const notHeicFiles = filteredFiles.filter(
-      file =>
+      (file) =>
         file.type !== "image/heic" &&
         !file.name.endsWith(".heic") &&
         !file.name.endsWith(".heif")
@@ -66,32 +66,31 @@ const FileUploader = ({
       Array.isArray(convertedFile)
         ? heic.push(...convertedFile)
         : heic.push(convertedFile);
-      heic.forEach(f => (f.name = uuidv4() + ".jpg"));
+      heic.forEach((f) => (f.name = uuidv4() + ".jpg"));
       convertedFiles.push(...heic);
     }
 
-    setFiles(prevFiles => [...prevFiles, ...notHeicFiles, ...convertedFiles]);
+    setFiles((prevFiles) => [...prevFiles, ...notHeicFiles, ...convertedFiles]);
   };
 
   const handleDelete = (e, index) => {
     e.stopPropagation(); // Fermare la propagazione del click
-    setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: [
-      "image/jpeg",
-      "image/png",
-      "image/webp",
-      "image/gif",
-      "image/heic",
-      ".heic",
-      ".heif",
-      "video/mp4",
-      "video/quicktime",
-      "video/x-msvideo",
-      "video/x-ms-wmv"
-    ],
+    accept: {
+      "image/jpeg": [".jpg", ".jpeg"],
+      "image/png": [".png"],
+      "image/webp": [".webp"],
+      "image/gif": [".gif"],
+      "image/heic": [".heic"],
+      "image/heif": [".heif"],
+      "video/mp4": [".mp4"],
+      "video/quicktime": [".mov"],
+      "video/x-msvideo": [".avi"],
+      "video/x-ms-wmv": [".wmv"]
+    },
     onDrop: handleDrop
   });
 
@@ -118,7 +117,7 @@ const FileUploader = ({
                   src={URL.createObjectURL(file)}
                   alt="Immagine"
                   className="w-full h-auto max-h-64 object-contain rounded"
-                  onClick={e => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
                 />
               ) : (
                 <ReactPlayer
@@ -127,13 +126,13 @@ const FileUploader = ({
                   height={128}
                   width={384}
                   url={URL.createObjectURL(file)}
-                  onClick={e => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
                 />
               )}
 
               <button
                 type="button"
-                onClick={e => handleDelete(e, i)}
+                onClick={(e) => handleDelete(e, i)}
                 className="absolute top-2 right-2 bg-white bg-opacity-75 rounded-full p-1"
               >
                 <FaTrash className="text-red-500" />

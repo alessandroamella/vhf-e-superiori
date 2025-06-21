@@ -178,14 +178,16 @@ const ViewPostContent = React.memo(({ postExtended, hideComments }) => {
             <Description description={post?.description} />
             <div className="px-2 flex flex-col justify-center gap-2">
               <div className="flex min-w-fit items-center justify-center gap-2">
-                {post?.fromUser?.callsign && post.fromUser.callsign in pics && (
-                  <LazyLoadImage
-                    loading="lazy"
-                    src={pics[post.fromUser.callsign]}
-                    alt="Avatar"
-                    className="object-cover w-10 h-10 aspect-square rounded-full"
-                  />
-                )}
+                {post?.fromUser?.callsign &&
+                  pics &&
+                  post.fromUser.callsign in pics && (
+                    <LazyLoadImage
+                      loading="lazy"
+                      src={pics[post.fromUser.callsign]}
+                      alt="Avatar"
+                      className="object-cover w-10 h-10 aspect-square rounded-full"
+                    />
+                  )}
                 <ReactPlaceholder
                   showLoadingAnimation
                   type="text"

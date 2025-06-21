@@ -130,8 +130,10 @@ router.get(
             )
                 postsQuery.skip(parseInt(req.query.offset));
 
-            logger.debug("Order posts by:");
-            logger.debug(req.query.orderBy);
+            if (req.query.orderBy) {
+                logger.debug("Order posts by:");
+                logger.debug(req.query.orderBy);
+            }
 
             const posts = await postsQuery
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any

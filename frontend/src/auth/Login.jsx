@@ -4,11 +4,11 @@ import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { UserContext } from "../App";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
 import { getErrorStr } from "../shared";
-import { useTranslation } from "react-i18next";
 
 const Login = () => {
   const [callsign, setCallsign] = useState("");
@@ -137,7 +137,7 @@ const Login = () => {
       searchParams.delete("alert");
       setSearchParams(searchParams);
     }
-  }, [hasAlert, searchParams, setSearchParams]);
+  }, [hasAlert, searchParams, setSearchParams, t]);
 
   const loginInput = useRef(null);
 
@@ -181,12 +181,12 @@ const Login = () => {
 
           <form action="#" method="post" onSubmit={login}>
             <div className="mb-2 block">
-              <Label htmlFor="callsign" value="Nominativo" />
+              <Label htmlFor="username" value="Nominativo" />
             </div>
             <TextInput
               type="text"
-              id="callsign"
-              name="callsign"
+              id="username"
+              name="username"
               label="Nominativo"
               minLength={1}
               maxLength={10}
@@ -194,7 +194,7 @@ const Login = () => {
               onChange={(e) => setCallsign(e.target.value.toUpperCase())}
               disabled={disabled}
               ref={loginInput}
-              autoComplete="callsign"
+              autoComplete="username"
               autoFocus
               required
             />

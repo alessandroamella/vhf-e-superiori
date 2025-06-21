@@ -357,12 +357,12 @@ const BeaconEditor = () => {
                 <div className="mb-4">
                   <div>
                     <div className="mb-2 block">
-                      <Label htmlFor="callsign" value="Nominativo" />
+                      <Label htmlFor="username" value="Nominativo" />
                     </div>
                     <TextInput
                       type="text"
-                      id="callsign"
-                      name="callsign"
+                      id="username"
+                      name="username"
                       label="Nominativo"
                       minLength={1}
                       maxLength={10}
@@ -371,7 +371,7 @@ const BeaconEditor = () => {
                         setCallsign(e.target.value.toUpperCase())
                       }
                       disabled={disabled}
-                      autoComplete="callsign"
+                      autoComplete="username"
                       autoFocus
                       required
                     />
