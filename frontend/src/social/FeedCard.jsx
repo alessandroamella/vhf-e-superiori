@@ -44,7 +44,8 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
   const [deleteDisabled, setDeleteDisabled] = useState(false);
 
   async function deletePost(e, p) {
-    e.stopPropagation(); // Fermare la propagazione del click
+    e.preventDefault(); // Prevent default link behavior
+    e.stopPropagation(); // Stop event bubbling
 
     if (
       !window.confirm(
