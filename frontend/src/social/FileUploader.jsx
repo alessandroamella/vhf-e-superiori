@@ -78,45 +78,63 @@ const FileUploader = ({
     let newPhotos = 0;
     let newVideos = 0;
 
-    // Check file sizes first (100MB limit)
-    const maxFileSize = 100 * 1024 * 1024; // 100MB in bytes
-    const oversizedFiles = acceptedFiles.filter(
-      (file) => file.size > maxFileSize
+    // Calculate current total size of existing files
+    const currentTotalSize = files.reduce(
+      (total, file) => total + file.size,
+      0
     );
+    const maxTotalSize = 99.5 * 1024 * 1024; // 99.5MB in bytes
 
-    if (oversizedFiles.length > 0) {
-      const fileNames = oversizedFiles.map((f) => f.name).join(", ");
+    // Filter files by count limits first
+    const countFilteredFiles = acceptedFiles.filter((file) => {
+      if (file.type.startsWith("image")) {
+        newPhotos++;
+        return currentPhotos + newPhotos <= maxPhotos;
+      } else if (file.type.startsWith("video")) {
+        newVideos++;
+        return currentVideos + newVideos <= maxVideos;
+      }
+      return false;
+    });
+
+    // Then filter by total size limit
+    const sizeFilteredFiles = [];
+    const rejectedFiles = [];
+    let runningTotalSize = currentTotalSize;
+
+    for (const file of countFilteredFiles) {
+      if (runningTotalSize + file.size <= maxTotalSize) {
+        sizeFilteredFiles.push(file);
+        runningTotalSize += file.size;
+      } else {
+        rejectedFiles.push(file);
+      }
+    }
+
+    // Show toast if files were rejected due to size limit
+    if (rejectedFiles.length > 0) {
+      const rejectedNames = rejectedFiles.map((f) => f.name).join(", ");
+      const remainingSpace = Math.max(0, maxTotalSize - currentTotalSize);
+      const remainingSpaceMB = (remainingSpace / (1024 * 1024)).toFixed(1);
+
       setToast({
         type: "error",
-        message: `I seguenti file superano il limite di 100MB: ${fileNames}`,
-        files: oversizedFiles.length
+        message: `I seguenti file superano il limite totale di 99.5MB: ${rejectedNames}. Spazio rimanente: ${remainingSpaceMB}MB`,
+        files: rejectedFiles.length
       });
 
       // Auto-dismiss after 5 seconds
       setTimeout(() => setToast(null), 5000);
     }
 
-    const filteredFiles = acceptedFiles
-      .filter((file) => file.size <= maxFileSize) // Filter out oversized files
-      .filter((file) => {
-        if (file.type.startsWith("image")) {
-          newPhotos++;
-          return currentPhotos + newPhotos <= maxPhotos;
-        } else if (file.type.startsWith("video")) {
-          newVideos++;
-          return currentVideos + newVideos <= maxVideos;
-        }
-        return false;
-      });
-
     // check if any heic file
-    const heicFiles = filteredFiles.filter(
+    const heicFiles = sizeFilteredFiles.filter(
       (file) =>
         file.type === "image/heic" ||
         file.name.endsWith(".heic") ||
         file.name.endsWith(".heif")
     );
-    const notHeicFiles = filteredFiles.filter(
+    const notHeicFiles = sizeFilteredFiles.filter(
       (file) =>
         file.type !== "image/heic" &&
         !file.name.endsWith(".heic") &&
@@ -163,6 +181,11 @@ const FileUploader = ({
     onDrop: handleDrop
   });
 
+  // Calculate current total size for display
+  const currentTotalSize = files.reduce((total, file) => total + file.size, 0);
+  const currentTotalSizeMB = (currentTotalSize / (1024 * 1024)).toFixed(1);
+  const maxTotalSizeMB = 99.5;
+
   return (
     <div className="p-4">
       {/* Toast for file size errors */}
@@ -174,7 +197,7 @@ const FileUploader = ({
             </div>
             <div className="ml-3 text-sm font-normal">
               <div className="font-semibold text-gray-900 dark:text-white">
-                File troppo grandi ({toast.files} file)
+                Limite totale superato ({toast.files} file rifiutati)
               </div>
               <div className="text-gray-500 dark:text-gray-300 text-xs mt-1">
                 {toast.message}
@@ -196,6 +219,13 @@ const FileUploader = ({
           <p className="text-center text-gray-500">
             Trascina qui i tuoi file o clicca per selezionarli.
           </p>
+        )}
+
+        {/* Display current total size */}
+        {files.length > 0 && (
+          <div className="text-sm text-gray-600 mb-2 text-center">
+            Dimensione totale: {currentTotalSizeMB}MB / {maxTotalSizeMB}MB
+          </div>
         )}
 
         <div className="grid grid-cols-3 gap-4">
