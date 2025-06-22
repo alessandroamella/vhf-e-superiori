@@ -1,17 +1,17 @@
 import { Request, Response, Router } from "express";
-import { checkSchema } from "express-validator";
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
-import { s3Client as s3 } from "../../aws";
-import { BasePost } from "../models";
-import { logger } from "../../../shared";
-import { createError, validate } from "../../helpers";
-import { Errors } from "../../errors";
-import createSchema from "../schemas/createSchema";
-import { User, UserDoc } from "../../auth/models";
 import fileUpload from "express-fileupload";
-import VideoCompressor from "../../compressor";
-import sharp from "sharp";
+import { checkSchema } from "express-validator";
 import { stat, unlink } from "fs/promises";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
+import sharp from "sharp";
+import { logger } from "../../../shared";
+import { User, UserDoc } from "../../auth/models";
+import { s3Client as s3 } from "../../aws";
+import VideoCompressor from "../../compressor";
+import { Errors } from "../../errors";
+import { createError, validate } from "../../helpers";
+import { BasePost } from "../models";
+import createSchema from "../schemas/createSchema";
 
 const router = Router();
 
@@ -112,11 +112,11 @@ router.post(
                 }
             }
 
-            if (picTempPaths.length > 5) {
+            if (picTempPaths.length > 10) {
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.INVALID_PICS_NUM));
-            } else if (vidTempPaths.length > 2) {
+            } else if (vidTempPaths.length > 5) {
                 return res
                     .status(BAD_REQUEST)
                     .json(createError(Errors.INVALID_VIDS_NUM));
@@ -126,8 +126,7 @@ router.post(
                     .json(createError(Errors.NO_CONTENT));
             }
 
-            logger.debug("fromUser");
-            logger.debug(user);
+            logger.debug(`Creating post fromUser: ${JSON.stringify(user)}`);
             const post = new BasePost({
                 fromUser: user._id,
                 description,
