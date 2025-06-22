@@ -26,7 +26,6 @@ const FileUploaderMemo = React.memo(
     return (
       <FileUploader
         disabled={disabled}
-        // color={!pictures.length && "failure"}
         setFiles={setFiles}
         files={files}
         maxPhotos={maxPhotos}
@@ -37,8 +36,8 @@ const FileUploaderMemo = React.memo(
 );
 
 const NewPost = () => {
-  const maxPhotos = 5;
-  const maxVideos = 2;
+  const maxPhotos = 10;
+  const maxVideos = 5;
   const { t } = useTranslation();
 
   const { user } = useContext(UserContext);

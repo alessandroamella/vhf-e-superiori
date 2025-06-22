@@ -50,7 +50,7 @@ router.use(populateUser);
 
 router.use(
     fileUpload({
-        limits: { fileSize: 300 * 1024 * 1024 },
+        limits: { fileSize: 100 * 1024 * 1024 },
         abortOnLimit: true,
         // useTempFiles: false,
         tempFileDir: join(
