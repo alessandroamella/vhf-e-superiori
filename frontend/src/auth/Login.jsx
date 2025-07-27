@@ -181,7 +181,7 @@ const Login = () => {
 
           <form action="#" method="post" onSubmit={login}>
             <div className="mb-2 block">
-              <Label htmlFor="callsign" value="Nominativo" />
+              <Label htmlFor="callsign" value={t('callsign')} />
             </div>
             <TextInput
               type="text"

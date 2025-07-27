@@ -43,10 +43,12 @@ import { mapsApiKey } from "../constants/mapsApiKey";
 import { getErrorStr } from "../shared";
 import CallsignLoading from "../shared/CallsignLoading";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import { useTranslation } from "react-i18next";
 
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);
   const { events } = useContext(EventsContext);
+  const { t } = useTranslation(); 
 
   const [locator, setLocator] = useState(null);
 
@@ -128,7 +130,7 @@ const Profile = () => {
     e.preventDefault();
 
     if (newPw !== newPwConfirm) {
-      setPwError("Le password non coincidono");
+      setPwError(t('passwordsNotMatching'));
       return;
     }
 
@@ -143,7 +145,7 @@ const Profile = () => {
       setNewPw("");
       setAlert({
         color: "success",
-        msg: "Password modificata con successo"
+        msg: t('resetPasswordSuccessSimple')
       });
 
       window.scrollTo({
@@ -165,7 +167,7 @@ const Profile = () => {
 
     if (!user) {
       console.error("user not found in changeData");
-      window.alert("Errore: utente non trovato");
+      window.alert(t('errorUserNotFound'));
       return;
     }
 
@@ -185,11 +187,11 @@ const Profile = () => {
       const { data } = await axios.put("/api/auth/" + user._id, obj);
       console.log("data", data);
       if (data.email === user.email) {
-        setAlert({ color: "success", msg: "Dati modificati con successo" });
+        setAlert({ color: "success", msg: t('dataSuccessfullyModified') });
       } else {
         setAlert({
           color: "success",
-          msg: "Verifica il nuovo indirizzo email cliccando sul link nell'email che hai ricevuto"
+          msg: t('verifyEmail')
         });
       }
       setUser(data);
@@ -220,7 +222,7 @@ const Profile = () => {
       await axios.delete("/api/joinrequest/" + deleteJoinRequest._id);
       setAlert({
         color: "success",
-        msg: "Partecipazione annullata con successo"
+        msg: t('partecipationSuccessfullyCanceled')
       });
       setJoinRequests((jArr) =>
         jArr.filter((j) => j._id !== deleteJoinRequest._id)
@@ -244,7 +246,7 @@ const Profile = () => {
       await axios.delete("/api/post/" + p._id);
       setAlert({
         color: "success",
-        msg: "Post eliminato con successo"
+        msg: t('postSuccessfullyDeleted')
       });
       setUser({ ...user, posts: user.posts.filter((_p) => _p._id !== p._id) });
       setDeleteJoinRequest(null);
