@@ -3,19 +3,23 @@ import { join } from "path";
 import { cwd } from "process";
 import { envs, logger } from "../../shared";
 
-// create temp dirs in process cwd called "videoOutput" and "uploads"
+// create temp dirs based on BASE_TEMP_DIR for all env vars ending with '_folder' or '_dir'
 export function createTempDirs() {
-    const {
-        BASE_TEMP_DIR,
-        FILE_UPLOAD_TMP_FOLDER,
-        QSL_CARD_TMP_FOLDER,
-        MAPS_TMP_FOLDER
-    } = envs;
-    const tempDirs = [
-        FILE_UPLOAD_TMP_FOLDER,
-        QSL_CARD_TMP_FOLDER,
-        MAPS_TMP_FOLDER
-    ];
+    const { BASE_TEMP_DIR } = envs;
+
+    // Find all environment variables that end with '_folder' or '_dir'
+    const dirEnvs = Object.entries(envs).filter(
+        ([key, value]) =>
+            (key.toLowerCase().endsWith("_folder") ||
+                key.toLowerCase().endsWith("_dir")) &&
+            key !== "BASE_TEMP_DIR" && // Exclude BASE_TEMP_DIR as it's handled separately
+            typeof value === "string" &&
+            value.length > 0
+    );
+
+    const tempDirs = dirEnvs
+        .map(([, value]) => value)
+        .filter((value) => typeof value === "string");
 
     for (const dir of [
         BASE_TEMP_DIR,
@@ -25,6 +29,8 @@ export function createTempDirs() {
         if (!existsSync(tempDir)) {
             logger.info("Creating temp dir: " + tempDir);
             mkdirSync(tempDir, { recursive: true });
+        } else {
+            logger.debug("Temp dir already exists: " + tempDir);
         }
     }
 

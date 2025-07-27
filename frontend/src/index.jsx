@@ -46,8 +46,7 @@ import BlogPostViewer from "./blog/View";
 import Layout from "./Layout";
 import NotFoundPage from "./NotFound";
 
-import { useTranslation } from 'react-i18next'; // per le traduzioni
-import './i18n/i18n';
+import "./i18n/i18n";
 
 const AppRoutes = () => {
   return (
@@ -99,8 +98,6 @@ export const App = () => {
   const [joinOpen, setJoinOpen] = useState(false);
   const [views, setViews] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const { t } = useTranslation();
 
   useEffect(() => {
     if (window.location.pathname === "/") {

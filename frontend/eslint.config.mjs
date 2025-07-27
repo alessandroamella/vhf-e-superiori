@@ -6,7 +6,7 @@ import globals from "globals";
 
 export default [
     {
-        ignores: ["dist", "src/setupProxy.js", "postcss.config.js"]
+        ignores: ["dist", "src/setupProxy.js", "postcss.config.js", "server"]
     },
     {
         files: ["**/*.{js,jsx}"],

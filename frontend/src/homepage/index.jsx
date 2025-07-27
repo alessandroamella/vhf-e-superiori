@@ -31,21 +31,20 @@ import JoinRequestModal from "./JoinRequestModal";
 
 import axios from "axios";
 import { Helmet } from "react-helmet";
+import { Trans, useTranslation } from "react-i18next";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlaceholder from "react-placeholder";
 import "react-round-carousel/src/index.css";
 import Flags from "../Flags";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
-import { useTranslation } from "react-i18next";
-import { Trans } from "react-i18next";
 
 const Homepage = () => {
   const { user } = useContext(UserContext);
   const { events } = useContext(EventsContext);
   const { splashPlayed, setSplashPlayed } = useContext(SplashContext);
   const { ready } = useContext(ReadyContext);
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   const [alert, setAlert] = useState(null);
 
@@ -97,7 +96,7 @@ const Homepage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!events) return;
+    if (!Array.isArray(events)) return;
     const now = new Date();
     console.log("filtering events", events);
     const _events = [...events].filter((e) => isAfter(new Date(e.date), now));
@@ -122,7 +121,7 @@ const Homepage = () => {
   }, [events]);
 
   const posters = useMemo(() => {
-    if (!events) return null;
+    if (!Array.isArray(events)) return null;
     const _inverted = [...events];
     _inverted.sort((a, b) => new Date(b.date) - new Date(a.date));
     console.log("filtering _inverted", _inverted);
@@ -161,7 +160,7 @@ const Homepage = () => {
   }, []);
 
   const _stationEvent = useCallback(async () => {
-    if (!events || !user) return null;
+    if (!Array.isArray(events) || !user) return null;
     const now = new Date();
     // show for next 10 days after event has started and 10 days before
     console.log("events to filter (_stationEvent)", events);
@@ -199,7 +198,7 @@ const Homepage = () => {
   }, [events, user]);
 
   const _rankingsEvent = useCallback(async () => {
-    if (!events) return null;
+    if (!Array.isArray(events)) return null;
     const now = new Date();
     // show for 2 hours after event has started and 20 days before
     console.log("events to filter (_rankingsEvent)", events);
@@ -221,7 +220,7 @@ const Homepage = () => {
   }, [events]);
 
   const _eqslEvent = useCallback(async () => {
-    if (!events) return null;
+    if (!Array.isArray(events)) return null;
     const now = new Date();
     console.log("events to filter (_eqslEvent)", events);
     const _events = [...events].filter((e) => {
@@ -273,7 +272,7 @@ const Homepage = () => {
     [eqslEventToShow, stationEventToShow]
   );
 
-  const scoringItems = t('scoring', { returnObjects: true });
+  const scoringItems = t("scoring", { returnObjects: true });
 
   return (
     <>
@@ -323,48 +322,46 @@ const Homepage = () => {
                     className="text-gray-600 dark:text-gray-100 mb-8 mt-4 md:pr-4 text-justify"
                   >
                     <p>
-                      <Trans i18nKey="bornFrom" components={{ 1: <strong />, 3: <strong /> }} />
+                      <Trans
+                        i18nKey="bornFrom"
+                        components={{ 1: <strong />, 3: <strong /> }}
+                      />
                     </p>
 
                     <p>
-                    <Trans
-                      i18nKey="workGroup"
-                      components={[
-                        'ACC', // placeholder 0 (non usato, serve solo per occupare la posizione)
-                        <a
-                          key="link1"
-                          href="https://www.qrz.com/db/IC8TEM"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
-                        >{/* Figlio di <1>…</1> */}
-                          <strong />
-                        </a>,
-                        'ACC2', // placeholder 2 (non usato)
-                        <a
-                          key="link3"
-                          href="https://www.ft8activity.it/author/ic8tem/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
-                        >
-                          <strong />
-                        </a>,
-                      ]}
-                    />
+                      <Trans
+                        i18nKey="workGroup"
+                        components={[
+                          "ACC", // placeholder 0 (non usato, serve solo per occupare la posizione)
+                          <a
+                            key="link1"
+                            href="https://www.qrz.com/db/IC8TEM"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
+                          >
+                            {/* Figlio di <1>…</1> */}
+                            <strong />
+                          </a>,
+                          "ACC2", // placeholder 2 (non usato)
+                          <a
+                            key="link3"
+                            href="https://www.ft8activity.it/author/ic8tem/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
+                          >
+                            <strong />
+                          </a>
+                        ]}
+                      />
                     </p>
 
-                    <p>
-                      {t("firstEvent")}
-                    </p>
+                    <p>{t("firstEvent")}</p>
 
-                    <p>
-                     {t("inspiration")}
-                    </p>
+                    <p>{t("inspiration")}</p>
 
-                    <p>
-                     {t("satisfaction")}
-                    </p>
+                    <p>{t("satisfaction")}</p>
 
                     <div className="py-6 flex w-full mt-4 md:mt-0 justify-center items-center">
                       <figure>
@@ -381,13 +378,9 @@ const Homepage = () => {
                       </figure>
                     </div>
 
-                    <p>
-                     {t("activators")}
-                    </p>
+                    <p>{t("activators")}</p>
 
-                    <p>
-                     {t("participants")}
-                    </p>
+                    <p>{t("participants")}</p>
 
                     <p>
                       <Trans i18nKey="processDescription" />
@@ -399,9 +392,7 @@ const Homepage = () => {
                       ))}
                     </ul>
 
-                    <p>
-                     {t("event")}
-                    </p>
+                    <p>{t("event")}</p>
                   </div>
 
                   <Accordion id="calendario" alwaysOpen flush className="mt-8">
@@ -419,7 +410,7 @@ const Homepage = () => {
                             <Table.HeadCell>{t("date")}</Table.HeadCell>
                           </Table.Head>
                           <Table.Body className="text-xl">
-                            {!events ? (
+                            {!Array.isArray(events) ? (
                               <Spinner />
                             ) : (
                               events
@@ -572,9 +563,7 @@ const Homepage = () => {
                     className="mt-8"
                   >
                     <Accordion.Panel>
-                      <Accordion.Title>
-                       {t("instructions")}
-                      </Accordion.Title>
+                      <Accordion.Title>{t("instructions")}</Accordion.Title>
                       <Accordion.Content className="text-gray-600 dark:text-gray-100">
                         <a
                           href="https://chat.whatsapp.com/FJ6HissbZwE47OWmpes7Pr"
@@ -589,48 +578,38 @@ const Homepage = () => {
                         <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
                           {t("whatIsRFM")}
                         </p>
-                        <p>
-                          {t("intent")}
-                        </p>
+                        <p>{t("intent")}</p>
 
-                        <p>
-                          {t("stations")}
-                        </p>
+                        <p>{t("stations")}</p>
 
-                        <p>
-                         {t("eqsl")}
-                        </p>
+                        <p>{t("eqsl")}</p>
 
                         <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
                           {t("howToConnectionsTitle")}
                         </p>
 
-                        <p>
-                         {t("howToConnections")}
-                        </p>
+                        <p>{t("howToConnections")}</p>
 
                         <p className="font-bold text-lg text-black dark:text-white uppercase mt-2">
                           {t("bestPractices")}
                         </p>
 
-                        <p>
-                          {t("bestPracticesChat")}
-                        </p>
+                        <p>{t("bestPracticesChat")}</p>
 
                         <p>
-                        <Trans
-                          i18nKey="followChat"
-                          components={{
-                            1: (
-                              <a
-                                href="https://chat.whatsapp.com/FJ6HissbZwE47OWmpes7Pr"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
-                              />
-                            )
-                          }}
-                        />
+                          <Trans
+                            i18nKey="followChat"
+                            components={{
+                              1: (
+                                <a
+                                  href="https://chat.whatsapp.com/FJ6HissbZwE47OWmpes7Pr"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
+                                />
+                              )
+                            }}
+                          />
                         </p>
 
                         <p>{t("thankYouForParticipating")}</p>
@@ -647,8 +626,8 @@ const Homepage = () => {
                       <Card className="text-center">
                         <p className="text-gray-600 dark:text-gray-200">
                           {stationEventToShow
-                            ? t('acceptedActivator')
-                            : t('participateHunter')}{" "}
+                            ? t("acceptedActivator")
+                            : t("participateHunter")}{" "}
                           {t("for")}:
                         </p>
 
@@ -716,46 +695,32 @@ const Homepage = () => {
                       </h3>
 
                       <p>
-                      <Trans
-                        i18nKey="founding"
-                        components={{ 1: <strong /> }}
-                      />
+                        <Trans
+                          i18nKey="founding"
+                          components={{ 1: <strong /> }}
+                        />
                       </p>
 
                       <p>
-                      <Trans
-                        i18nKey="foundingChat"
-                        components={{ 1: <strong /> }}
-                      />
+                        <Trans
+                          i18nKey="foundingChat"
+                          components={{ 1: <strong /> }}
+                        />
                       </p>
 
-                      <p>
-                        {t("antennas")}
-                      </p>
+                      <p>{t("antennas")}</p>
 
-                      <p>
-                        {t("latestYears")}
-                      </p>
+                      <p>{t("latestYears")}</p>
 
-                      <p>
-                        {t("nobodyOnVhf")}
-                      </p>
+                      <p>{t("nobodyOnVhf")}</p>
 
-                      <p>
-                        {t("results")}
-                      </p>
+                      <p>{t("results")}</p>
 
-                      <p>
-                        {t("adminsNominated")}
-                      </p>
+                      <p>{t("adminsNominated")}</p>
 
-                      <p>
-                        {t("stationsIncreasing")}
-                      </p>
+                      <p>{t("stationsIncreasing")}</p>
 
-                      <p>
-                        {t("websiteCreation")}
-                      </p>
+                      <p>{t("websiteCreation")}</p>
 
                       <p className="font-semibold text-lg">
                         {t("thankYouForContributing")}

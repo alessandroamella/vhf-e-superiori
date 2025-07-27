@@ -4,6 +4,7 @@ import {
   Alert,
   Button,
   Label,
+  Modal,
   Progress,
   Spinner,
   Textarea
@@ -12,6 +13,7 @@ import PropTypes from "prop-types";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { FaBackward, FaInfoCircle, FaPlus } from "react-icons/fa";
 import { createSearchParams, useNavigate } from "react-router";
 import { UserContext } from "../App";
@@ -24,7 +26,6 @@ const FileUploaderMemo = React.memo(
     return (
       <FileUploader
         disabled={disabled}
-        // color={!pictures.length && "failure"}
         setFiles={setFiles}
         files={files}
         maxPhotos={maxPhotos}
@@ -35,13 +36,15 @@ const FileUploaderMemo = React.memo(
 );
 
 const NewPost = () => {
-  const maxPhotos = 5;
-  const maxVideos = 2;
+  const maxPhotos = 10;
+  const maxVideos = 5;
+  const { t } = useTranslation();
 
   const { user } = useContext(UserContext);
 
   const [alert, setAlert] = useState(null);
   const [disabled, setDisabled] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   useEffect(() => {
     window.addEventListener("beforeunload", (e) => {
@@ -57,6 +60,8 @@ const NewPost = () => {
 
   const watchedDescription = watch("description");
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (user === null)
       return navigate({
@@ -65,10 +70,19 @@ const NewPost = () => {
           to: "/social/new"
         }).toString()
       });
+
+    // Check if user is not verified and show modal
+    if (user && !user.isVerified) {
+      setShowVerificationModal(true);
+      return;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  const navigate = useNavigate();
+  const handleVerificationModalClose = () => {
+    setShowVerificationModal(false);
+    navigate("/social");
+  };
 
   const [pictures, setPictures] = useState([]);
   const [videos, setVideos] = useState([]);
@@ -121,7 +135,7 @@ const NewPost = () => {
     }
 
     try {
-      const res1 = await axios.post("/api/post", formData, {
+      const { data } = await axios.post("/api/post", formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         },
@@ -131,9 +145,15 @@ const NewPost = () => {
           setUploadPercent(percent);
         }
       });
-      console.log(res1.data);
-      const res2 = await axios.get(`/api/post/${res1.data._id}`);
-      console.log(res2.data);
+      console.log(data);
+
+      navigate({
+        pathname: "/social",
+        search: createSearchParams({
+          created: data.description,
+          newPostId: data._id
+        }).toString()
+      });
     } catch (err) {
       console.log(err);
       setAlert({
@@ -149,13 +169,6 @@ const NewPost = () => {
       setIsSubmitting(false);
       setCreatedAt(null);
     }
-
-    navigate({
-      pathname: "/social",
-      search: createSearchParams({
-        created: data.description
-      }).toString()
-    });
   };
 
   function navigateBack() {
@@ -221,13 +234,6 @@ const NewPost = () => {
             onDismiss={() => setAlert(null)}
           >
             <span>{alert.msg}</span>
-          </Alert>
-        )}
-        {user && !user.isVerified && (
-          <Alert className="mt-2 mb-6" color="warning">
-            <span className="font-bold">Attenzione!</span> La tua email non è
-            verificata. Per favore clicca il link di verifica che ti abbiamo
-            inviato per email per creare un post.
           </Alert>
         )}
         {user ? (
@@ -328,6 +334,22 @@ const NewPost = () => {
           <Spinner />
         )}
       </div>
+      {showVerificationModal && (
+        <Modal
+          show={showVerificationModal}
+          onClose={handleVerificationModalClose}
+        >
+          <Modal.Header>Account non verificato</Modal.Header>
+          <Modal.Body className="text-black dark:text-white">
+            <Typography>{t("errors.USER_NOT_VERIFIED")}</Typography>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button color="gray" onClick={handleVerificationModalClose}>
+              OK
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </>
   );
 };

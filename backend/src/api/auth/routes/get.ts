@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Router } from "express";
-import returnUserWithPosts from "../../middlewares/returnUserWithPosts";
-import { isValidObjectId } from "mongoose";
 import { param } from "express-validator";
+import { isValidObjectId } from "mongoose";
 import { validate } from "../../helpers";
+import returnUserWithPosts from "../../middlewares/returnUserWithPosts";
 
 const router = Router();
 
@@ -47,11 +47,9 @@ router.get(
     validate,
     (req, res, next) => {
         const { callsign } = req.params;
-        if (isValidObjectId(callsign)) {
-            return returnUserWithPosts(req, res, next, undefined, callsign);
-        } else {
-            return returnUserWithPosts(req, res, next, callsign);
-        }
+        return isValidObjectId(callsign)
+            ? returnUserWithPosts(req, res, next, undefined, callsign)
+            : returnUserWithPosts(req, res, next, callsign);
     }
 );
 
