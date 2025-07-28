@@ -22,14 +22,10 @@ import { useCookies } from "react-cookie";
 import { Helmet } from "react-helmet";
 import {
   FaBook,
-  FaCheck,
-  FaEnvelope,
-  FaExternalLinkAlt,
   FaForward,
   FaInfoCircle,
   FaMapMarkerAlt,
   FaSave,
-  FaTimes,
   FaUndo,
   FaUser,
 } from "react-icons/fa";
@@ -37,17 +33,19 @@ import { IoIosRadio } from "react-icons/io";
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
 import {
   createSearchParams,
-  Link,
   Navigate,
   useNavigate,
   useParams,
 } from "react-router";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { FixedSizeList as List } from "react-window";
 import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import MapWatermark from "../shared/MapWatermark";
 import StationMapMarker from "../shared/StationMapMarker";
 import ShareMapBtn from "./ShareMapBtn";
+import VirtualizedQsoRow from "./VirtualizedQsoRow";
 
 function getAdifKey(qso, index) {
   return JSON.stringify({
@@ -1374,7 +1372,7 @@ const QsoManager = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="mb-16 -mt-6">
+                  <div className="-mt-6">
                     {Array.isArray(qsos) ? (
                       qsos.length > 0 ? (
                         <div>
@@ -1462,176 +1460,98 @@ const QsoManager = () => {
                             </Button.Group>
                           </div>
 
-                          <div className="shadow-lg overflow-y-auto md:-mx-6 lg:-mx-14 xl:mx-0">
-                            <Table>
-                              <Table.Head>
-                                <Table.HeadCell>
-                                  <span className="sr-only">Azioni</span>
-                                </Table.HeadCell>
-                                {user?.isAdmin && (
-                                  <Table.HeadCell>Stazione</Table.HeadCell>
-                                )}
-                                <Table.HeadCell>Nominativo</Table.HeadCell>
-                                <Table.HeadCell>Data UTC</Table.HeadCell>
-                                <Table.HeadCell>Banda</Table.HeadCell>
-                                <Table.HeadCell>Modo</Table.HeadCell>
-                                <Table.HeadCell>A locatore</Table.HeadCell>
-                                <Table.HeadCell>RST</Table.HeadCell>
-                                <Table.HeadCell>
-                                  <span className="sr-only">Azioni</span>
-                                </Table.HeadCell>
-                              </Table.Head>
-                              <Table.Body>
-                                {qsos?.map((q, i) => (
-                                  <Table.Row
-                                    onClick={() => {
-                                      setSelectedQsos(
-                                        selectedQsos.includes(q._id)
-                                          ? selectedQsos.filter(
-                                              (e) => e !== q._id,
-                                            )
-                                          : [...selectedQsos, q._id],
-                                      );
-                                    }}
-                                    key={q._id}
-                                    className={`cursor-pointer transition-colors duration-200 ${
-                                      highlighted === q._id
-                                        ? "bg-green-200 hover:bg-green-300 dark:bg-green-900 dark:hover:bg-green-800"
-                                        : selectedQsos.includes(q._id)
-                                          ? "bg-yellow-200 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800"
-                                          : i % 2 === 0
-                                            ? "hover:bg-gray-200 dark:hover:bg-gray-600"
-                                            : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
-                                    }`}
-                                  >
-                                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                      <div className="flex items-center gap-2">
-                                        <Checkbox
-                                          value={q._id}
-                                          disabled={disabled}
-                                          checked={selectedQsos.includes(q._id)}
-                                          onChange={(e) =>
-                                            selectQso(q, e.target.checked)
-                                          }
-                                        />
-                                      </div>
-                                    </Table.Cell>
-                                    {user?.isAdmin && (
-                                      <Table.Cell>
-                                        {q.fromStationCallsignOverride ||
-                                          q.fromStation?.callsign}
-                                      </Table.Cell>
-                                    )}
-                                    <Table.Cell>
-                                      <div className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex gap-1 items-center">
-                                        {q.callsign}
-                                      </div>
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                      {formatInTimeZone(
-                                        q.qsoDate,
-                                        "UTC",
-                                        "yyyy-MM-dd HH:mm",
-                                      )}
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                      {q.band || q.frequency}
-                                    </Table.Cell>
-                                    <Table.Cell>{q.mode}</Table.Cell>
-                                    <Table.Cell>{q.toLocator}</Table.Cell>
-                                    <Table.Cell>{q.rst}</Table.Cell>
-                                    <Table.Cell>
-                                      <div className="flex w-full justify-center">
-                                        <div>
-                                          <Button
-                                            color={
-                                              eqslSending.get(q._id) === "ok"
-                                                ? "success"
-                                                : eqslSending.get(q._id) ===
-                                                    "failed"
-                                                  ? "failure"
-                                                  : q.emailSent
-                                                    ? "light"
-                                                    : "info"
-                                            }
-                                            disabled={
-                                              eqslSending.get(q._id) ===
-                                              "sending"
-                                            }
-                                            onClick={() => {
-                                              forceSendEqsl(q);
-                                            }}
-                                            className={`transition-all ${
-                                              q.emailSent
-                                                ? "bg-gray-200 border-gray-200 hover:bg-gray-300"
-                                                : ""
-                                            }`}
-                                            size={q.emailSent ? "sm" : "md"}
-                                          >
-                                            <Tooltip
-                                              className="transition-all"
-                                              content={
-                                                eqslSending.get(q._id) ===
-                                                "sending"
-                                                  ? "Invio in corso..."
-                                                  : eqslSending.get(q._id) ===
-                                                      "ok"
-                                                    ? "Email inviata con successo!"
-                                                    : eqslSending.get(q._id) ===
-                                                        "failed"
-                                                      ? "Errore nell'invio, riprova"
-                                                      : q.emailSent
-                                                        ? "⚠️ eQSL già inviata, usa per reinviarla" +
-                                                          (q.email
-                                                            ? ` a ${q.email}`
-                                                            : "")
-                                                        : "Usa il pulsante per forzare l'invio" +
-                                                          (q.email
-                                                            ? ` a ${q.email}`
-                                                            : "")
-                                              }
-                                            >
-                                              {eqslSending.get(q._id) ===
-                                              "sending" ? (
-                                                <Spinner
-                                                  className="dark:text-white dark:fill-white"
-                                                  size="sm"
-                                                />
-                                              ) : eqslSending.get(q._id) ===
-                                                "ok" ? (
-                                                <FaCheck />
-                                              ) : eqslSending.get(q._id) ===
-                                                "failed" ? (
-                                                <FaTimes />
-                                              ) : (
-                                                <FaEnvelope />
-                                              )}
-                                            </Tooltip>
-                                          </Button>
-                                        </div>
+                          <div className="shadow-lg md:-mx-6 lg:-mx-14 xl:mx-0">
+                            {/* Table Header */}
+                            <div className="flex items-center bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 min-h-[60px] px-2 font-medium text-gray-900 dark:text-white w-full">
+                              <div
+                                className="flex-shrink-0 flex justify-center items-center"
+                                style={{ width: "5%" }}
+                              >
+                                <span className="sr-only">Ações</span>
+                              </div>
+                              {user?.isAdmin && (
+                                <div
+                                  className="flex-shrink-0"
+                                  style={{ width: "12%" }}
+                                >
+                                  Stazione
+                                </div>
+                              )}
+                              <div
+                                className="flex-shrink-0"
+                                style={{ width: user?.isAdmin ? "15%" : "18%" }}
+                              >
+                                Nominativo
+                              </div>
+                              <div
+                                className="flex-shrink-0"
+                                style={{ width: user?.isAdmin ? "20%" : "25%" }}
+                              >
+                                Data UTC
+                              </div>
+                              <div
+                                className="flex-shrink-0"
+                                style={{ width: user?.isAdmin ? "12%" : "15%" }}
+                              >
+                                Banda
+                              </div>
+                              <div
+                                className="flex-shrink-0"
+                                style={{ width: user?.isAdmin ? "10%" : "12%" }}
+                              >
+                                Modo
+                              </div>
+                              <div
+                                className="flex-shrink-0"
+                                style={{ width: user?.isAdmin ? "12%" : "15%" }}
+                              >
+                                A locatore
+                              </div>
+                              <div
+                                className="flex-shrink-0"
+                                style={{ width: user?.isAdmin ? "10%" : "12%" }}
+                              >
+                                RST
+                              </div>
+                              <div
+                                className={`text-center`}
+                                style={{ width: user?.isAdmin ? "14%" : "8%" }}
+                              >
+                                Azioni
+                              </div>
+                            </div>
 
-                                        {q.emailSent && (
-                                          <Tooltip content="Apri eQSL">
-                                            <Link
-                                              to={`/qso/${q._id}`}
-                                              target="_blank"
-                                            >
-                                              <Button
-                                                color="light"
-                                                className="bg-gray-200 border-gray-200 hover:bg-gray-300"
-                                                size="sm"
-                                              >
-                                                <FaExternalLinkAlt />
-                                              </Button>
-                                            </Link>
-                                          </Tooltip>
-                                        )}
-                                      </div>
-                                    </Table.Cell>
-                                  </Table.Row>
-                                ))}
-                              </Table.Body>
-                            </Table>
+                            {/* Virtualized Table Body */}
+                            <div
+                              style={{
+                                height: Math.min(600, qsos.length * 60),
+                              }}
+                            >
+                              <AutoSizer>
+                                {({ height, width }) => (
+                                  <List
+                                    height={height}
+                                    width={width}
+                                    itemCount={qsos.length}
+                                    itemSize={60}
+                                    itemData={{
+                                      qsos,
+                                      user,
+                                      highlighted,
+                                      selectedQsos,
+                                      setSelectedQsos,
+                                      selectQso,
+                                      disabled,
+                                      eqslSending,
+                                      forceSendEqsl,
+                                      formatInTimeZone,
+                                    }}
+                                  >
+                                    {VirtualizedQsoRow}
+                                  </List>
+                                )}
+                              </AutoSizer>
+                            </div>
                           </div>
                         </div>
                       ) : (
