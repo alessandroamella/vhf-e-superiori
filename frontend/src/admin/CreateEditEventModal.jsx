@@ -20,7 +20,6 @@ import {
   FaExternalLinkAlt,
   FaUndo,
 } from "react-icons/fa";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router";
 import { EventsContext, UserContext } from "../App";
 import { getErrorStr } from "../shared";
@@ -36,6 +35,7 @@ const CreateEditEventModal = ({
 }) => {
   const { setEvents } = useContext(EventsContext);
   const { user } = useContext(UserContext);
+  const { events } = useContext(EventsContext);
 
   const transformToISODate = useCallback((dateString) => {
     // Parse the input date string assuming Rome timezone
@@ -91,6 +91,45 @@ const CreateEditEventModal = ({
   const [tempOffsetData, setTempOffsetData] = useState(null);
   const [tempOffsetFrom, setTempOffsetFrom] = useState(null);
 
+  const populateForm = useCallback((e) => {
+    setName(e.name);
+    setBand(e.band);
+    setDate(formatInTimeZone(e.date, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"));
+    setJoinStart(
+      formatInTimeZone(e.joinStart, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"),
+    );
+    setJoinDeadline(
+      formatInTimeZone(e.joinDeadline, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"),
+    );
+    setLogoUrl(e.logoUrl);
+    setEqslUrl(e.eqslUrl);
+
+    setOffsetCallsign(e.offsetCallsign);
+    setOffsetData(e.offsetData);
+    setOffsetFrom(e.offsetFrom);
+
+    setTempOffsetCallsign(e.offsetCallsign);
+    setTempOffsetData(e.offsetData);
+    setTempOffsetFrom(e.offsetFrom);
+  }, []);
+
+  const cancelOffsetEdit = () => {
+    setTempOffsetCallsign(offsetCallsign);
+    setTempOffsetData(offsetData);
+    setTempOffsetFrom(offsetFrom);
+    setIsEditingOffset(false);
+  };
+
+  const resetPicture = useCallback(() => {
+    if (pictureInputRef.current) pictureInputRef.current.value = null;
+    setUploadedPic(null);
+  }, []);
+
+  const resetEqsl = useCallback(() => {
+    if (eqslInputRef.current) eqslInputRef.current.value = null;
+    setEqslPic(null);
+  }, []);
+
   const resetForm = useCallback(() => {
     setName("");
     setBand("");
@@ -130,30 +169,6 @@ const CreateEditEventModal = ({
       }
     }
   }, [showModal, eventEditing, events, populateForm, resetForm]);
-
-  const { events } = useContext(EventsContext);
-
-  const populateForm = useCallback((e) => {
-    setName(e.name);
-    setBand(e.band);
-    setDate(formatInTimeZone(e.date, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"));
-    setJoinStart(
-      formatInTimeZone(e.joinStart, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"),
-    );
-    setJoinDeadline(
-      formatInTimeZone(e.joinDeadline, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"),
-    );
-    setLogoUrl(e.logoUrl);
-    setEqslUrl(e.eqslUrl);
-
-    setOffsetCallsign(e.offsetCallsign);
-    setOffsetData(e.offsetData);
-    setOffsetFrom(e.offsetFrom);
-
-    setTempOffsetCallsign(e.offsetCallsign);
-    setTempOffsetData(e.offsetData);
-    setTempOffsetFrom(e.offsetFrom);
-  }, []);
 
   async function createEvent(e) {
     e.preventDefault();
@@ -225,6 +240,70 @@ const CreateEditEventModal = ({
       console.log(err.response?.data?.err || err);
       window.alert(
         "ERRORE crea evento: " + getErrorStr(err?.response?.data?.err || err),
+      );
+    } finally {
+      setDisabled(false);
+    }
+  }
+
+  async function deleteEvent() {
+    if (!eventEditing) return;
+
+    const texts = [
+      `Sei sicuro di voler eliminare l'evento "${name}"? Questa azione non può essere annullata.`,
+      "Tutti i QSO, richieste di partecipazione, locandine e file associati verranno eliminati. SICURO???",
+    ];
+
+    setDisabled(true);
+
+    for (const text of texts) {
+      if (!window.confirm(text)) {
+        setDisabled(false);
+        return;
+      }
+    }
+
+    try {
+      await axios.delete(`/api/event/${eventEditing}`);
+      console.log("event deleted");
+      setShowModal(false);
+      setEventEditing(null);
+
+      setAlert({
+        color: "success",
+        msg: `Evento "${name}" eliminato con successo`,
+      });
+      setAlertFromParent({
+        color: "success",
+        msg: `Evento "${name}" eliminato con successo`,
+      });
+
+      try {
+        const { data } = await axios.get("/api/event");
+        console.log("events fetched (admin)", data);
+        setEvents(data);
+      } catch (err) {
+        console.log("Errore nel caricamento degli eventi", err);
+        setAlert({
+          color: "failure",
+          msg: getErrorStr(err?.response?.data?.err),
+        });
+        setAlertFromParent({
+          color: "failure",
+          msg: getErrorStr(err?.response?.data?.err),
+        });
+        setEvents(null);
+      }
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    } catch (err) {
+      console.log(err.response?.data?.err || err);
+      window.alert(
+        "ERRORE elimina evento: " +
+          getErrorStr(err?.response?.data?.err || err),
       );
     } finally {
       setDisabled(false);
@@ -432,23 +511,6 @@ const CreateEditEventModal = ({
     );
   };
 
-  const cancelOffsetEdit = () => {
-    setTempOffsetCallsign(offsetCallsign);
-    setTempOffsetData(offsetData);
-    setTempOffsetFrom(offsetFrom);
-    setIsEditingOffset(false);
-  };
-
-  const resetPicture = useCallback(() => {
-    if (pictureInputRef.current) pictureInputRef.current.value = null;
-    setUploadedPic(null);
-  }, []);
-
-  const resetEqsl = useCallback(() => {
-    if (eqslInputRef.current) eqslInputRef.current.value = null;
-    setEqslPic(null);
-  }, []);
-
   async function copyText() {
     if (copyTimeout) clearTimeout(copyTimeout);
     copyTimeout = setTimeout(() => {
@@ -523,7 +585,7 @@ const CreateEditEventModal = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div className="flex flex-col items-center">
                   <p className="mb-2 block dark:text-gray-100">Locandina</p>
-                  <LazyLoadImage
+                  <img
                     src={logoUrl}
                     alt="Logo URL"
                     className="w-96 max-w-full max-h-96 object-contain m-auto drop-shadow-lg"
@@ -531,7 +593,7 @@ const CreateEditEventModal = ({
                 </div>
                 <div className="flex flex-col items-center">
                   <p className="mb-2 block dark:text-gray-100">EQSL</p>
-                  <LazyLoadImage
+                  <img
                     src={eqslUrl}
                     alt="EQSL URL"
                     className="w-96 max-w-full max-h-96 object-contain m-auto drop-shadow-lg"
@@ -542,7 +604,7 @@ const CreateEditEventModal = ({
                       <p className="mb-2 mt-4 md:mt-0 font-semibold tracking-tight block dark:text-white">
                         Esempio EQSL
                       </p>
-                      <LazyLoadImage
+                      <img
                         src={eqslExample}
                         alt="EQSL example"
                         className="w-96 max-w-full max-h-96 object-contain m-auto drop-shadow-lg"
@@ -908,6 +970,16 @@ const CreateEditEventModal = ({
             >
               Chiudi
             </Button>
+            {eventEditing && (
+              <Button
+                color="failure"
+                type="button"
+                disabled={disabled}
+                onClick={deleteEvent}
+              >
+                Elimina evento
+              </Button>
+            )}
             <Button type="submit" disabled={disabled}>
               {!eventEditing ? "Crea evento" : "Applica modifiche"}
             </Button>

@@ -43,18 +43,18 @@ height=$((width * original_height / original_width))
 bg_image_2="$bg_image-resize.jpg"
 
 # Ridimensiona l'immagine di sfondo
-convert "$bg_image" -resize "$width"x"$height" "$bg_image_2"
+magick "$bg_image" -resize "$width"x"$height" "$bg_image_2"
 
 # Aggiungi il primo testo con ombra
-convert -size "$width"x"$height" xc:none -fill "$font_color" -font "$font_path" \
+magick -size "$width"x"$height" xc:none -fill "$font_color" -font "$font_path" \
     -pointsize "$font_size" -gravity center -stroke "$stroke_color" -strokewidth 2 -annotate +0+"$offset" "$text" \
     \( +clone -background black -shadow 80x3+5+5 \) +swap -background none -layers merge +repage "$temp_image"
 
 # Aggiungi il secondo testo senza ombra
-convert "$temp_image" -fill "$font_color2" -font "$font_path2" -pointsize "$font_size2" -gravity center -stroke "$stroke_color2" -strokewidth 1 -annotate +0+"$offset2" "$text2" "$temp_image"
+magick "$temp_image" -fill "$font_color2" -font "$font_path2" -pointsize "$font_size2" -gravity center -stroke "$stroke_color2" -strokewidth 1 -annotate +0+"$offset2" "$text2" "$temp_image"
 
 # Aggiungi il terzo testo senza ombra
-convert "$temp_image" -fill "$font_color3" -font "$font_path3" -pointsize "$font_size3" -gravity center -stroke "$stroke_color3" -strokewidth 1 -annotate +0+"$offset3" "$text3" "$temp_image"
+magick "$temp_image" -fill "$font_color3" -font "$font_path3" -pointsize "$font_size3" -gravity center -stroke "$stroke_color3" -strokewidth 1 -annotate +0+"$offset3" "$text3" "$temp_image"
 
 composite -gravity center -dissolve 100% -geometry +0+0 "$temp_image" "$bg_image_2" "$final_image"
 
