@@ -93,6 +93,7 @@ class MapExporter {
     callsign: string,
     qsos: QsoDoc[],
     profilePic?: string,
+    hasAllQsos = false,
   ): Promise<Buffer> {
     const eventDate = moment(event.date).utc().format("DD/MM/YYYY");
 
@@ -142,6 +143,7 @@ class MapExporter {
         callsign,
         profilePic,
         points,
+        hasAllQsos,
       });
 
       // writeFileSync(path.join(process.cwd(), "map.html"), renderedHtml);
@@ -155,6 +157,7 @@ class MapExporter {
             profilePic,
             points,
             cacheKey,
+            hasAllQsos,
           },
           null,
           2,

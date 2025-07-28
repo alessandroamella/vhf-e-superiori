@@ -44,6 +44,8 @@ router.get(
         ],
       });
 
+      let hasAllQsos = false;
+
       if (qsos.length === 0) {
         if (curUser.isAdmin || curUser.isDev) {
           // just find all QSOs if admin or dev
@@ -52,6 +54,7 @@ router.get(
               event: event._id,
             }).populate("fromStation", "callsign")),
           );
+          hasAllQsos = true;
           logger.debug(
             `No QSOs found for admin ${curUser.callsign}, fetching all`,
           );
@@ -69,6 +72,7 @@ router.get(
         curUser.callsign,
         qsos,
         qrzData?.pictureUrl,
+        hasAllQsos,
       );
 
       // Return the image as a response

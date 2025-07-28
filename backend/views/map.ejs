@@ -136,6 +136,7 @@
         </div>
 
         <!-- User profile (bottom left) -->
+        <% if (locals.hasAllQsos) { %>
         <div class="user-container">
             <% if (profilePic) { %>
             <img
@@ -146,6 +147,7 @@
             <% } %>
             <p class="callsign"><%= callsign %></p>
         </div>
+        <% } %>
 
         <!-- Website branding (bottom right) -->
         <div class="website-container">
