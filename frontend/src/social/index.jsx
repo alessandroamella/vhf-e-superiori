@@ -149,7 +149,7 @@ const Social = () => {
       {!splashPlayed && <Splash ready={ready} />}
 
       <Helmet>
-        <title>{t("social")}</title>
+        <title>{t("social")} - VHF e Superiori</title>
         <meta
           name="description"
           content="Visualizza e condividi foto e video con gli altri piloti"

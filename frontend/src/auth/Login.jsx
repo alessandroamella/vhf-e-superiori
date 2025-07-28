@@ -144,7 +144,7 @@ const Login = () => {
   return (
     <>
       <Helmet>
-        <title>{t("loginVhf")}</title>
+        <title>{t("loginVhf" || "Login")} - VHF e Superiori</title>
       </Helmet>
       {user &&
         navigate(searchParams.get("to") || "/profile", { replace: true })}

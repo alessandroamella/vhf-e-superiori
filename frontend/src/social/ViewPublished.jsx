@@ -239,9 +239,7 @@ const ViewPublished = () => {
   return (
     <>
       <Helmet>
-        <title>
-          {user?.callsign || callsign} - {t("vhfAndHigher")}
-        </title>
+        <title>{user?.callsign || callsign} - VHF e Superiori</title>
       </Helmet>
       {!splashPlayed && <Splash ready={ready} />}
 

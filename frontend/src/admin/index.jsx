@@ -234,7 +234,7 @@ const AdminManager = () => {
   return (
     <>
       <Helmet>
-        <title>Admin - VHF e superiori</title>
+        <title>Admin - VHF e Superiori</title>
       </Helmet>
 
       <CreateEditEventModal
