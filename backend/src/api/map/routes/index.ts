@@ -45,8 +45,20 @@ router.get(
       });
 
       if (qsos.length === 0) {
-        logger.warn(`No QSOs found for ${curUser.callsign}`);
-        return res.status(404).json(createError(Errors.QSO_NOT_FOUND));
+        if (curUser.isAdmin || curUser.isDev) {
+          // just find all QSOs if admin or dev
+          qsos.push(
+            ...(await Qso.find({
+              event: event._id,
+            }).populate("fromStation", "callsign")),
+          );
+          logger.debug(
+            `No QSOs found for admin ${curUser.callsign}, fetching all`,
+          );
+        } else {
+          logger.warn(`No QSOs found for ${curUser.callsign}`);
+          return res.status(404).json(createError(Errors.QSO_NOT_FOUND));
+        }
       }
 
       const qrzData = await qrz.getInfo(curUser.callsign);
