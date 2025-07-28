@@ -77,6 +77,59 @@ const Signup = () => {
 
   const [locator, setLocator] = useState(null);
 
+  const captchaRef = useRef();
+  const alertRef = useRef();
+
+  const { setUser } = useContext(UserContext);
+
+  const [alert, setAlert] = useState(null);
+  const [disabled, setDisabled] = useState(false);
+
+  const navigate = useNavigate();
+
+  const [inputRef, setInputFocus] = useFocus();
+
+  const [searchParams] = useSearchParams();
+
+  const fetchQrz = useCallback(async () => {
+    if (callsign.length < 1 || callsign.length > 10) return;
+
+    setDisabled(true);
+
+    try {
+      const { data } = await axios.get("/api/qrz/" + callsign, {
+        params: {
+          geocode: true,
+        },
+      });
+      console.log("QRZ data", data);
+      if (!name) setName(data.name);
+      if (!email) setEmail(data.email);
+      if (!address && data.city && data.province && data.lat && data.lon) {
+        setAddress(data.address);
+        setAddressInput(data.address);
+        setCity(data.city);
+        setProvince(data.province);
+        setLat(data.lat);
+        setLon(data.lon);
+      }
+
+      if (data.pictureUrl) {
+        setAvatar(data.pictureUrl);
+      } else {
+        setAvatar(null);
+      }
+    } catch (err) {
+      console.log(
+        "QRZ callsign fetch failed:",
+        err?.response?.data?.err || err,
+      );
+    } finally {
+      setDisabled(false);
+      setTimeout(setInputFocus, 100);
+    }
+  }, [callsign, name, email, address, setInputFocus]);
+
   useEffect(() => {
     if (cookies.callsign) {
       console.log("fetching QRZ data");
@@ -102,20 +155,6 @@ const Signup = () => {
     setCookie("email", email, { path: "/signup", maxAge: 60 * 5 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callsign, name, phoneNumber, email, setCookie]);
-
-  const captchaRef = useRef();
-  const alertRef = useRef();
-
-  const { setUser } = useContext(UserContext);
-
-  const [alert, setAlert] = useState(null);
-  const [disabled, setDisabled] = useState(false);
-
-  const navigate = useNavigate();
-
-  const [inputRef, setInputFocus] = useFocus();
-
-  const [searchParams] = useSearchParams();
 
   const placesWidget = usePlacesWidget({
     apiKey: mapsApiKey,
@@ -164,45 +203,6 @@ const Signup = () => {
 
     fetchLocator();
   }, [lat, lon]);
-
-  const fetchQrz = useCallback(async () => {
-    if (callsign.length < 1 || callsign.length > 10) return;
-
-    setDisabled(true);
-
-    try {
-      const { data } = await axios.get("/api/qrz/" + callsign, {
-        params: {
-          geocode: true,
-        },
-      });
-      console.log("QRZ data", data);
-      if (!name) setName(data.name);
-      if (!email) setEmail(data.email);
-      if (!address && data.city && data.province && data.lat && data.lon) {
-        setAddress(data.address);
-        setAddressInput(data.address);
-        setCity(data.city);
-        setProvince(data.province);
-        setLat(data.lat);
-        setLon(data.lon);
-      }
-
-      if (data.pictureUrl) {
-        setAvatar(data.pictureUrl);
-      } else {
-        setAvatar(null);
-      }
-    } catch (err) {
-      console.log(
-        "QRZ callsign fetch failed:",
-        err?.response?.data?.err || err,
-      );
-    } finally {
-      setDisabled(false);
-      setTimeout(setInputFocus, 100);
-    }
-  }, [callsign, name, email, address, setInputFocus]);
 
   async function signup(e, recaptchaValue) {
     e?.preventDefault();

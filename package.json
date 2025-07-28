@@ -11,10 +11,12 @@
     "build:frontend": "pnpm --filter @vhf-e-superiori/frontend build",
     "build:backend": "pnpm --filter @vhf-e-superiori/backend build",
     "check": "pnpm biome check --fix",
+    "check-only": "pnpm biome check",
     "clean": "pnpm run --parallel clean",
     "start:backend": "pnpm --filter @vhf-e-superiori/backend start",
     "start:frontend-server": "pnpm --filter @vhf-e-superiori/frontend-server start",
-    "serve-frontend": "pnpm build:frontend && pnpm start:frontend-server"
+    "serve-frontend": "pnpm build:frontend && pnpm start:frontend-server",
+    "prepare": "husky"
   },
   "engines": {
     "node": ">=16.0.0",
@@ -42,6 +44,7 @@
     }
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.2"
+    "@biomejs/biome": "^2.1.2",
+    "husky": "^9.1.7"
   }
 }
