@@ -91,9 +91,13 @@ const Signup = () => {
 
   const [searchParams] = useSearchParams();
 
+  const lastFetchedCallsign = useRef(null);
+
   const fetchQrz = useCallback(async () => {
     if (callsign.length < 1 || callsign.length > 10) return;
+    if (lastFetchedCallsign.current === callsign) return; // Prevent refetching same callsign
 
+    lastFetchedCallsign.current = callsign;
     setDisabled(true);
 
     try {
@@ -103,16 +107,28 @@ const Signup = () => {
         },
       });
       console.log("QRZ data", data);
-      if (!name) setName(data.name);
-      if (!email) setEmail(data.email);
-      if (!address && data.city && data.province && data.lat && data.lon) {
-        setAddress(data.address);
-        setAddressInput(data.address);
-        setCity(data.city);
-        setProvince(data.province);
-        setLat(data.lat);
-        setLon(data.lon);
-      }
+      // Use current state values to avoid dependency loop
+      setName((prevName) => prevName || data.name);
+      setEmail((prevEmail) => prevEmail || data.email);
+
+      // Check current address state to avoid overwriting
+      setAddress((prevAddress) => {
+        if (
+          !prevAddress &&
+          data.city &&
+          data.province &&
+          data.lat &&
+          data.lon
+        ) {
+          setAddressInput(data.address);
+          setCity(data.city);
+          setProvince(data.province);
+          setLat(data.lat);
+          setLon(data.lon);
+          return data.address;
+        }
+        return prevAddress;
+      });
 
       if (data.pictureUrl) {
         setAvatar(data.pictureUrl);
@@ -128,14 +144,20 @@ const Signup = () => {
       setDisabled(false);
       setTimeout(setInputFocus, 100);
     }
-  }, [callsign, name, email, address, setInputFocus]);
+  }, [callsign, setInputFocus]);
 
+  // Only fetch QRZ data once when component mounts if there's a cookie callsign
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only run on mount
   useEffect(() => {
-    if (cookies.callsign) {
-      console.log("fetching QRZ data");
+    if (
+      cookies.callsign &&
+      cookies.callsign === callsign &&
+      !lastFetchedCallsign.current
+    ) {
+      console.log("fetching QRZ data on mount");
       fetchQrz();
     }
-  }, [cookies.callsign, fetchQrz]);
+  }, []); // Empty dependency array - only run on mount
 
   useEffect(() => {
     window.addEventListener("beforeunload", (event) => {
@@ -153,7 +175,6 @@ const Signup = () => {
     setCookie("name", name, { path: "/signup", maxAge: 60 * 5 });
     setCookie("phoneNumber", phoneNumber, { path: "/signup", maxAge: 60 * 5 });
     setCookie("email", email, { path: "/signup", maxAge: 60 * 5 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callsign, name, phoneNumber, email, setCookie]);
 
   const placesWidget = usePlacesWidget({
