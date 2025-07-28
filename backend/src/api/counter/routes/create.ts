@@ -41,7 +41,7 @@ router.post("/", body("ip").isIP().optional(), validate, async (req, res) => {
   try {
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
     await CounterView.create({
-      fromUser: (req.user as unknown as UserDoc)?._id,
+      fromUser: req.user?._id,
       ip: req.body.ip || ip,
       date: new Date(),
     });

@@ -19,7 +19,7 @@ router.get(
   validate,
   isLoggedIn,
   async (req: Request, res: Response) => {
-    const curUser = req.user as unknown as UserDoc;
+    const curUser = req.user;
     if (!curUser) {
       throw new Error("No req.user in user update");
     }

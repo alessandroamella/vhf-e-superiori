@@ -14,7 +14,6 @@ import { QsoClass } from "../qso/models/Qso";
 async function returnUserWithPosts(
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _next: NextFunction,
   callsign?: string,
   _id?: string,
@@ -29,14 +28,12 @@ async function returnUserWithPosts(
   }
   logger.debug(
     `Finding user by callsign: ${callsign} or req.user._id: ${
-      (req.user as unknown as UserDoc)._id
+      req.user?._id
     } or _id: ${_id}`,
   );
   try {
     const user = await User.findOne(
-      callsign
-        ? { callsign }
-        : { _id: _id || (req.user as unknown as UserDoc)._id },
+      callsign ? { callsign } : { _id: _id || req.user?._id },
       {
         password: 0,
         joinRequests: 0,

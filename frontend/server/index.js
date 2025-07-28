@@ -6,7 +6,7 @@ import ViteExpress from "vite-express";
 
 const app = express();
 ViteExpress.config({
-  mode: "production"
+  mode: "production",
 });
 
 const port = Number(process.env.PORT);
@@ -40,14 +40,14 @@ app.use(
           "https://www.google.com",
           "https://www.gstatic.com",
           "https://www.recaptcha.net",
-          "https://www.google-analytics.com"
+          "https://www.google-analytics.com",
         ],
         styleSrc: [
           "'self'",
           "'unsafe-inline'",
           "https://fonts.googleapis.com",
           "https://maps.googleapis.com",
-          "https://maps.gstatic.com"
+          "https://maps.gstatic.com",
         ],
         imgSrc: ["*", "data:", "blob:"],
         connectSrc: [
@@ -59,7 +59,7 @@ app.use(
           "https://checkip.amazonaws.com",
           "https://www.google.com",
           "https://www.gstatic.com",
-          "https://www.recaptcha.net"
+          "https://www.recaptcha.net",
         ],
         fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
         objectSrc: ["'none'"],
@@ -67,7 +67,7 @@ app.use(
           "'self'",
           "https://www.google.com",
           "https://www.paypal.com",
-          "https://www.recaptcha.net"
+          "https://www.recaptcha.net",
         ],
         formAction: ["'self'", "https://www.paypal.com"],
         workerSrc: ["'self'", "https://cdnjs.cloudflare.com", "blob:"],
@@ -75,26 +75,26 @@ app.use(
           "'self'",
           "https://www.google.com",
           "https://www.paypal.com",
-          "https://www.recaptcha.net"
+          "https://www.recaptcha.net",
         ],
         mediaSrc: [
           "'self'",
           "https://vhfesuperiori.s3.eu-central-1.amazonaws.com",
           "https://vhfesuperiori.s3.amazonaws.com",
-          "blob:"
-        ]
-      }
-    }
-  })
+          "blob:",
+        ],
+      },
+    },
+  }),
 );
 app.use(
   permissionsPolicy({
     features: {
       fullscreen: ["self"],
       payment: [],
-      syncXhr: []
-    }
-  })
+      syncXhr: [],
+    },
+  }),
 );
 
 // Serve public directory

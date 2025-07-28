@@ -45,8 +45,13 @@ router.delete(
   param("_id").isMongoId(),
   validate,
   async (req: Request, res: Response) => {
-    const reqUser = req.user as unknown as UserDoc;
-    const isAdmin = reqUser.isAdmin;
+    if (!req.user) {
+      logger.error("User not logged in");
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .json(createError(Errors.NOT_LOGGED_IN));
+    }
+    const isAdmin = req.user.isAdmin;
     try {
       const comment = await Comment.findOne({
         _id: req.params._id,
@@ -63,7 +68,7 @@ router.delete(
       }
       if (
         !isAdmin &&
-        comment.fromUser._id.toString() !== reqUser._id.toString()
+        comment.fromUser._id.toString() !== req.user._id.toString()
       ) {
         logger.debug("Not authorized to delete comment");
         return res

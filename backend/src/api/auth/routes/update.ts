@@ -75,7 +75,7 @@ router.put(
   body("isAdmin").optional().isBoolean().toBoolean(),
   validate,
   async (req: Request, res: Response, next: NextFunction) => {
-    const curUser = req.user as unknown as UserDoc;
+    const curUser = req.user;
     if (!curUser) {
       throw new Error("No req.user in user update");
     }
@@ -199,8 +199,8 @@ router.put(
         await EmailService.sendVerifyMail(newUser, newVerifCode, false);
       }
 
-      if (curUser._id === user._id) {
-        req.user = user.toObject() as UserDoc;
+      if (curUser._id.toString() === user._id.toString()) {
+        req.user = newUser;
       }
 
       return returnUserWithPosts(

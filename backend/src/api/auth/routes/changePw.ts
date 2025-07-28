@@ -63,7 +63,7 @@ router.post(
     }
     try {
       const user = await User.findOne({
-        _id: (req.user as unknown as UserDoc)._id,
+        _id: req.user._id,
       });
       if (!user) {
         throw new Error("Can't find user in user change pw");

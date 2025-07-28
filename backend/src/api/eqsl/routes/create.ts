@@ -71,7 +71,7 @@ router.post(
       }
 
       const user = await User.findOne({
-        _id: (req.user as unknown as UserDoc)._id,
+        _id: req.user._id,
       });
       if (!user) {
         throw new Error("User not found in eqsl create");
@@ -84,7 +84,7 @@ router.post(
 
       // TODO refactor
       const joinRequest = await JoinRequest.findOne({
-        fromUser: (req.user as unknown as UserDoc)._id,
+        fromUser: req.user._id,
         forEvent: qso.event,
         isApproved: true,
       }).populate("forEvent");
@@ -118,10 +118,7 @@ router.post(
 
       await eqslPic.fetchImage();
       await eqslPic.addQsoInfo(qso, user, null, joinRequest.forEvent);
-      const href = await eqslPic.uploadImage(
-        (req.user as unknown as UserDoc)._id.toString(),
-        true,
-      );
+      const href = await eqslPic.uploadImage(req.user._id.toString(), true);
 
       res.status(200).json({ href });
     } catch (err) {

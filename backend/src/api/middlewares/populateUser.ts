@@ -40,7 +40,7 @@ async function populateUser(req: Request, res: Response, next: NextFunction) {
           });
           return next(new Error(Errors.SERVER_ERROR));
         }
-        req.user = foundUser.toObject();
+        req.user = foundUser;
         logger.debug("populateUser successful for user " + foundUser.callsign);
       } else req.user = undefined;
       next();

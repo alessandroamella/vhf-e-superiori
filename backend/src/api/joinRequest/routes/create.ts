@@ -58,7 +58,7 @@ router.post(
     }
     try {
       const user = await User.findOne({
-        _id: (req.user as unknown as UserDoc)._id,
+        _id: req.user._id,
       });
       if (!user) {
         throw new Error("Can't find user in joinRequest create");
@@ -86,7 +86,7 @@ router.post(
       }
 
       const alreadyJoined = await JoinRequest.exists({
-        fromUser: (req.user as unknown as UserDoc)._id,
+        fromUser: req.user._id,
         forEvent: event._id,
       });
       if (alreadyJoined) {
@@ -98,7 +98,7 @@ router.post(
       const joinRequest = await JoinRequest.create({
         antenna,
         forEvent: event._id,
-        fromUser: (req.user as unknown as UserDoc)._id,
+        fromUser: req.user._id,
         isApproved: false,
       });
 

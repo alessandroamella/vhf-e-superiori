@@ -78,7 +78,7 @@ router.post(
       }
 
       const user = await User.findOne({
-        _id: (req.user as unknown as UserDoc)._id,
+        _id: req.user._id,
       });
       if (!user) {
         throw new Error("User not found in eqsl create");
@@ -119,7 +119,7 @@ router.post(
       await eqslPic.fetchImage();
       await eqslPic.addQsoInfo(qso, user, null, testEvent);
       const href = await eqslPic.uploadImage(
-        (req.user as unknown as UserDoc)._id.toString(),
+        req.user._id.toString(),
         false,
         true,
       );

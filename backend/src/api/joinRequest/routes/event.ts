@@ -62,7 +62,7 @@ router.get(
       const joinRequest = await JoinRequest.findOne(
         {
           forEvent: req.params._id,
-          fromUser: (req.user as unknown as UserDoc)._id,
+          fromUser: req.user._id,
         },
         { fromUser: 0 },
       );

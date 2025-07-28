@@ -114,9 +114,8 @@ router.get(
           ...comments.map((c) => (c.fromUser as UserDoc)?.callsign),
           ...comments.flatMap((c) =>
             c.replies?.map(
-              (r) =>
-                ((r as unknown as CommentDoc)?.fromUser as unknown as UserDoc)
-                  ?.callsign,
+              // biome-ignore lint/suspicious/noExplicitAny: typings here are stupid. we use strings refs so TS would throw errors saying the props don't exist
+              (r) => (r as any)?.fromUser?.callsign,
             ),
           ),
         ].filter(Boolean) as string[],

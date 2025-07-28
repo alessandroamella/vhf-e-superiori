@@ -69,8 +69,8 @@ router.delete(
       if (!isDocument(post?.fromUser)) {
         logger.error("Post fromUser not populated");
       } else {
-        const reqUser = req.user as unknown as UserDoc;
-        const user = post.fromUser as unknown as UserDoc;
+        const reqUser = req.user;
+        const user = post.fromUser;
 
         logger.debug("Delete post isAdmin: " + reqUser?.isAdmin);
         logger.debug(

@@ -17,7 +17,7 @@ async function checkCaptcha(
 ): Promise<void | Response> {
   try {
     // if admin, skip
-    if ((req.user as unknown as UserDoc)?.isAdmin) return next();
+    if (req.user?.isAdmin) return next();
 
     const ip = req.socket.remoteAddress;
     logger.debug("Checking CAPTCHA to");

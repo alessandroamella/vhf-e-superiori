@@ -49,7 +49,7 @@ router.get(
       const q: FilterQuery<JoinRequestClass> = {
         forEvent: event._id,
       };
-      if (!(req.user as unknown as UserDoc)?.isAdmin) {
+      if (!req.user?.isAdmin) {
         q.isApproved = true;
       }
       const joinRequests = await JoinRequest.find(q, {

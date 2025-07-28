@@ -118,7 +118,7 @@ router.post(
     const adif = Array.isArray(_adif) ? _adif[0] : _adif;
 
     const user = await User.findOne({
-      _id: (req.user as unknown as UserDoc)._id,
+      _id: req.user._id,
     });
     if (!user) {
       throw new Error("User not found in ADIF import");
@@ -306,7 +306,7 @@ router.get(
     }
 
     const user = await User.findOne({
-      _id: (req.user as unknown as UserDoc)._id,
+      _id: req.user._id,
     });
     if (!user) {
       throw new Error("User not found in ADIF export");

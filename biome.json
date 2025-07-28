@@ -8,7 +8,6 @@
       "frontend/*.json",
       "frontend/*.ts",
       "frontend/*.tsx",
-      "frontend/dist",
       "backend/src/**",
       "backend/*.json",
       "backend/*.ts",
@@ -36,14 +35,9 @@
         "noPrecisionLoss": "error",
         "noUnusedVariables": "error"
       },
-      "nursery": { "useUniqueElementIds": "off" },
-      "security": { "noDangerouslySetInnerHtml": "off" },
       "style": {
-        "noNamespace": "off",
-        "noNonNullAssertion": "off",
         "useArrayLiterals": "error",
-        "useAsConstAssertion": "error",
-        "useImportType": "off"
+        "useAsConstAssertion": "error"
       },
       "suspicious": {
         "noExplicitAny": "error",
@@ -273,26 +267,9 @@
       "linter": {
         "rules": {
           "complexity": { "noArguments": "error" },
-          "correctness": {
-            "noConstAssign": "off",
-            "noGlobalObjectCalls": "off",
-            "noInvalidConstructorSuper": "off",
-            "noSetterReturn": "off",
-            "noUndeclaredVariables": "off",
-            "noUnreachable": "off",
-            "noUnreachableSuper": "off"
-          },
           "style": { "useConst": "error" },
           "suspicious": {
-            "noDuplicateClassMembers": "off",
-            "noDuplicateObjectKeys": "off",
-            "noDuplicateParameters": "off",
-            "noFunctionAssign": "off",
-            "noImportAssign": "off",
-            "noRedeclare": "off",
-            "noUnsafeNegation": "off",
-            "noVar": "error",
-            "useGetterReturn": "off"
+            "noVar": "error"
           }
         }
       }
