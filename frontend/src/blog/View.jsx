@@ -17,6 +17,7 @@ const BlogPostViewer = () => {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
+  const { t } = useTranslation(); 
 
   const { id } = useParams();
 
@@ -48,7 +49,7 @@ const BlogPostViewer = () => {
   async function deletePost() {
     if (disabled) return;
 
-    const ok = window.confirm("Sei sicuro di voler eliminare questo post?");
+    const ok = window.confirm("Sei sicuro di voler eliminare questo post?");{t('callsign')}
     if (!ok) return;
 
     setDisabled(true);

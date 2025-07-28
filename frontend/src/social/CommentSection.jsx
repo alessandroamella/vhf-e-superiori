@@ -10,6 +10,7 @@ import CallsignLoading from "../shared/CallsignLoading";
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useTranslation } from "react-i18next";
 
 const Comment = ({
   comment,
@@ -107,7 +108,7 @@ const Comment = ({
                       <CallsignLoading user={comment.fromUser} />
                     ) : (
                       <span className="text-gray-500 dark:text-gray-300">
-                        Utente non trovato
+                        {t('userNotFound')}
                       </span>
                     )}
                   </Link>
@@ -139,7 +140,7 @@ const Comment = ({
               className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
               onClick={handleReplyClick}
             >
-              Rispondi
+              {t('reply')}
             </button>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
               {comment?.createdAt &&
@@ -173,7 +174,7 @@ const Comment = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                Mostra risposte ({comment.replies.length})
+                {t('showReplies')}({comment.replies.length})
               </>
             ) : (
               <>
@@ -189,7 +190,7 @@ const Comment = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                Nascondi risposte ({comment.replies.length})
+                {t('hideReplies')}({comment.replies.length})
               </>
             )}
           </button>
@@ -273,6 +274,7 @@ const CommentsSection = ({
 }) => {
   const commentContainerRef = useRef(null);
   const commentInputRef = useRef(null);
+  const { t } = useTranslation(); 
 
   function onReply() {
     commentInputRef.current?.focus();
@@ -288,7 +290,7 @@ const CommentsSection = ({
         className="comment-section p-4 border-t border-gray-100 dark:border-gray-700 flex flex-col w-full"
       >
         <h2 className="mb-1 text-xl font-semibold text-gray-700 dark:text-gray-300">
-          Commenti
+          {t('comments')}
         </h2>
         {alert && (
           <Alert
@@ -327,14 +329,14 @@ const CommentsSection = ({
               <div className="flex gap-4 items-center mb-2">
                 <span className="text-gray-600 dark:text-gray-400">
                   <FaInfoCircle className="inline-block mr-1 mb-[2px]" />
-                  Stai rispondendo al commento di{" "}
+                   {t('respondingToCommentOf')}{" "}
                   <span className="font-semibold">
                     {comments.find((c) => c._id === replyTo)?.fromUser.callsign}
                   </span>
                 </span>
 
                 <Button size="sm" color="red" onClick={() => setReplyTo(null)}>
-                  Annulla
+                 {t('cancel')}
                 </Button>
               </div>
             )}
@@ -372,7 +374,7 @@ const CommentsSection = ({
             ref={commentInputRef}
             className="mt-4 mb-2 flex justify-center gap-2 bg-gray-50 dark:bg-gray-800 px-2 py-3 rounded items-center flex-col"
           >
-            <p>Fai il login per commentare o rispondere ai commenti</p>
+            <p>{t('loginForCommentin')}</p>
             <FlowbiteButton
               as={Link}
               to={{
@@ -385,7 +387,7 @@ const CommentsSection = ({
               size="lg"
               color="blue"
             >
-              Login
+              {t('login')}
             </FlowbiteButton>
           </div>
         )}

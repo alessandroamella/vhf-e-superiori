@@ -5,11 +5,14 @@ import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { createSearchParams, useNavigate, useSearchParams } from "react-router";
 import { getErrorStr } from "../shared";
+import { useTranslation } from "react-i18next";
+import { Trans } from "react-i18next";
 
 const ResetPw = () => {
   const [pw, setPw] = useState("");
   const [alert, setAlert] = useState(null);
   const [disabled, setDisabled] = useState(false);
+  const { t } = useTranslation(); 
 
   const [searchParams] = useSearchParams();
 
@@ -45,16 +48,18 @@ const ResetPw = () => {
   return (
     <>
       <Helmet>
-        <title>Reset password - VHF e superiori</title>
+        <title>{t('vhfResetPassword')}</title>
       </Helmet>
       <div className="p-4 h-full flex flex-col justify-center items-center">
         <Typography variant="h1" className="dark:text-white mb-2">
-          Reset password
+           {t('resetPasswordTitle')}
         </Typography>
 
         <p className="text-gray-700 mb-4">
-          Ciao <strong>{searchParams.get("callsign")}</strong>, imposta una
-          nuova password utilizzando il seguente form
+        <Trans
+          i18nKey="resetPasswordMessage"
+          values={{ callsign: searchParams.get("callsign") }}
+        />
         </p>
 
         {alert && (
@@ -69,7 +74,7 @@ const ResetPw = () => {
 
         <form action="#" method="post" onSubmit={resetPw}>
           <div className="mb-2 block">
-            <Label htmlFor="new-password" value="Nuova password" />
+            <Label htmlFor="new-password" value={t('newPassword')} />
           </div>
           <TextInput
             id="new-password"
@@ -80,11 +85,11 @@ const ResetPw = () => {
             disabled={disabled}
             value={pw}
             onChange={e => setPw(e.target.value)}
-            helperText="Minimo 8 caratteri, almeno un numero e una maiuscola"
+            helperText={t('newPasswordHelper')}
           />
           <div className="my-4" />
           <Button type="submit" disabled={disabled}>
-            Reset password
+           {t('resetPasswordTitle')}
           </Button>
         </form>
       </div>

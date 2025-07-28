@@ -13,10 +13,12 @@ import { useTranslation } from "react-i18next";
 import { FaPlus, FaUserTag } from "react-icons/fa";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MenuContent from "../sideMenu/MenuContent";
+import { useTranslation } from "react-i18next";
 
 const Social = () => {
   const { splashPlayed } = useContext(SplashContext);
   const { ready } = useContext(ReadyContext);
+  const { t } = useTranslation(); 
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -123,6 +125,7 @@ const Social = () => {
   }, [scrollTo, posts]);
 
   const filteredPosts = useMemo(() => {
+
     if (!posts) return [];
     return posts.filter(
       (p) =>
@@ -143,7 +146,7 @@ const Social = () => {
       {!splashPlayed && <Splash ready={ready} />}
 
       <Helmet>
-        <title>Social</title>
+        <title>{t("social")}</title>
         <meta
           name="description"
           content="Visualizza e condividi foto e video con gli altri piloti"
@@ -176,6 +179,7 @@ const Social = () => {
             </p>
 
             <p>{t("contentsInElaboration")}</p>
+
           </Alert>
         )}
 
@@ -183,7 +187,7 @@ const Social = () => {
           <TextInput
             value={filterCallsign}
             onChange={(e) => setFilterCallsign(e.target.value || null)}
-            placeholder="Cerca per nominativo..."
+            placeholder={t("searchByCallsign")}
             icon={FaUserTag}
           />
         </div>
@@ -198,7 +202,7 @@ const Social = () => {
             className="text-xl text-white font-bold flex items-center gap-2"
           >
             <FaPlus />
-            Inserisci foto / video
+             {t("insertPhotoVideo")}
           </Link>
         </Button>
 
@@ -237,7 +241,7 @@ const Social = () => {
                   }
                   endMessage={
                     <p style={{ textAlign: "center", display: "none" }}>
-                      <b>Per ora è tutto!</b>
+                      <b>{t("allForNow")}</b>
                     </p>
                   }
                 >
@@ -258,10 +262,10 @@ const Social = () => {
               ) : (
                 <div className="p-5">
                   {filteredPosts?.length === posts?.length ? (
-                    <p>Ancora nessun post</p>
+                    <p>{t("noPostsYet")}</p>
                   ) : (
                     <p>
-                      Nessun post trovato con nominativo &quot;
+                       {t("noPostWithCallSign")} &quot;
                       <strong>{filterCallsign}</strong>&quot;
                     </p>
                   )}

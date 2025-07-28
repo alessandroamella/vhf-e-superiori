@@ -48,10 +48,12 @@ import CallsignLoading from "../shared/CallsignLoading";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import MapPrint from "../shared/MapPrint";
 import StationMapMarker from "../shared/StationMapMarker";
+import { useTranslation } from "react-i18next";
 
 const ViewPublished = () => {
   const { splashPlayed } = useContext(SplashContext);
   const { ready } = useContext(ReadyContext);
+  const { t } = useTranslation(); 
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -217,13 +219,13 @@ const ViewPublished = () => {
 
   // const [showQsosModal, setShowQsosModal] = useState(false);
 
-  const socialTitle = user ? `QSO di ${user?.callsign}` : "Visualizza QSO";
+  const socialTitle = user ? t('qsoByCallsign', { callsign: user?.callsign }) : t('viewQSO');
   const socialBody =
     socialTitle +
     " " +
     (validQsos?.length
-      ? `Visualizza i ${validQsos?.length} QSO di ${user?.callsign}`
-      : "Visualizza tutti i QSO");
+      ? t('viewQSOWithCount', { count: validQsos.length, callsign: user?.callsign })
+      : t('viewAllQSO'));
 
   const location = useLocation();
   const curUrl = "https://" + window.location.hostname + location.pathname;
@@ -231,7 +233,7 @@ const ViewPublished = () => {
   return (
     <>
       <Helmet>
-        <title>{user?.callsign || callsign} - VHF e superiori</title>
+        <title>{user?.callsign || callsign} - {t("vhfAndHigher")}</title>
       </Helmet>
       {!splashPlayed && <Splash ready={ready} />}
 
@@ -250,7 +252,7 @@ const ViewPublished = () => {
               validQsos && (
                 <span>
                   {" "}
-                  (<strong>{validQsos.length}</strong> registrati)
+                  (<strong>{validQsos.length}</strong> {t("signUpLowercase")})
                 </span>
               )
             }
@@ -261,15 +263,15 @@ const ViewPublished = () => {
             <Table striped>
               <Table.Head>
                 <Table.HeadCell className="hidden md:block">
-                  Numero
+                  {t("number")}
                 </Table.HeadCell>
-                <Table.HeadCell>Attivatore</Table.HeadCell>
-                <Table.HeadCell>Nominativo</Table.HeadCell>
-                <Table.HeadCell>Data</Table.HeadCell>
-                <Table.HeadCell>Banda</Table.HeadCell>
-                <Table.HeadCell>Modo</Table.HeadCell>
-                <Table.HeadCell>Locatore</Table.HeadCell>
-                <Table.HeadCell>RST</Table.HeadCell>
+                <Table.HeadCell>{t("activator")}</Table.HeadCell>
+                <Table.HeadCell>{t("callsign")}</Table.HeadCell>
+                <Table.HeadCell>{t("date")}</Table.HeadCell>
+                <Table.HeadCell>{t("band")}</Table.HeadCell>
+                <Table.HeadCell>{t("mode")}</Table.HeadCell>
+                <Table.HeadCell>{t("locator")}</Table.HeadCell>
+                <Table.HeadCell>{t("RST")}</Table.HeadCell>
               </Table.Head>
               <Table.Body>
                 {validQsos?.map((qso, i) => (
@@ -336,7 +338,7 @@ const ViewPublished = () => {
               type="button"
               onClick={() => setShowQsosModal(false)}
             >
-              Chiudi
+              {t("close")}
             </Button>
           </div>
         </Modal.Footer>
@@ -360,11 +362,11 @@ const ViewPublished = () => {
             onDismiss={() => navigate("/social")}
           >
             <p>
-              Post{" "}
+              {t("post")}{" "}
               <span className="font-semibold">
                 {searchParams?.get("created")}
               </span>{" "}
-              creato con successo!
+              {t("successfullyCreated")}
             </p>
             {/* <p>Dovrà essere approvato prima di essere visibile pubblicamente</p> */}
           </Alert>
@@ -380,7 +382,7 @@ const ViewPublished = () => {
         >
           <Link to="/social/new" className="text-xl text-white font-bold">
             {/* <FaPlus /> */}
-            Inserisci foto / video
+            {t("insertPhotoVideo")}
           </Link>
           {/* <span className="ml-1">Nuovo post</span> */}
         </Button>
@@ -400,7 +402,7 @@ const ViewPublished = () => {
                     <p>{user?.name}</p>
                     {user?.createdAt && (
                       <p className="text-gray-500 dark:text-gray-300 text-sm">
-                        Membro dal
+                        {t("memberSince")}
                         {[1, 8].includes(getDate(new Date(user.createdAt)))
                           ? "l'"
                           : " "}
@@ -449,7 +451,7 @@ const ViewPublished = () => {
                       size="lg"
                       disabled={isFakeLoading}
                     >
-                      Crea mappa
+                      {t("createMap")}
                       {isFakeLoading && (
                         <Spinner className="ml-1 dark:text-white dark:fill-white" />
                       )}
@@ -459,7 +461,7 @@ const ViewPublished = () => {
                       content={`Non ci sono QSO registrati con nominativo ${callsign}`}
                     >
                       <Button size="lg" disabled>
-                        Crea mappa
+                        {t("createMap")}
                       </Button>
                     </Tooltip>
                   )}
@@ -498,7 +500,7 @@ const ViewPublished = () => {
                         color="light"
                       >
                         <Dropdown.Item onClick={() => setEventToFilter(null)}>
-                          Tutti ({validQsos?.length})
+                        {t("all")}({validQsos?.length})
                         </Dropdown.Item>
                         {mappedEvents?.map((e) => (
                           <Dropdown.Item
@@ -517,7 +519,7 @@ const ViewPublished = () => {
                     </div>
                     <Button onClick={() => setShowQsosModal(true)}>
                       <FaExternalLinkAlt className="inline mr-1" />
-                      <span className="mr-1">Visualizza QSO di</span>{" "}
+                      <span className="mr-1">{t("viewQSOsOf")}</span>{" "} 
                       <CallsignLoading user={user} />
                     </Button>
                   </div>
@@ -602,11 +604,12 @@ const ViewPublished = () => {
                     <Card className="mt-4">
                       <div className="flex flex-col items-center gap-4">
                         <p>
-                          Nessun QSO registato con nominativo {user?.callsign}
+                          {t("noQSOsHavingCallsign")} {user?.callsign}
                           {_eventToFilter && (
                             <span>
                               {" "}
-                              per l&apos;evento{" "}
+                              {t("forEvent")}
+                              {" "}
                               <strong>
                                 {
                                   mappedEvents?.find(
@@ -619,7 +622,7 @@ const ViewPublished = () => {
                         </p>
                         <Button onClick={() => setEventToFilter(null)}>
                           <FaArrowLeft className="inline mr-2 mt-[3px]" />
-                          Torna alla mappa senza filtro
+                          {t("backToNoFilterMap")}
                         </Button>
                       </div>
                     </Card>
