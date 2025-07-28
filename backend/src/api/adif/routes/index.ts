@@ -103,7 +103,9 @@ router.post(
   validate,
   isLoggedIn,
   async (req, res) => {
-    if (!req.user) {
+    const reqUser = req.user as UserDoc | undefined;
+
+    if (!reqUser) {
       throw new Error("No req.user in ADIF import");
     } else if (!req.files) {
       logger.info("No files to upload");
@@ -118,7 +120,7 @@ router.post(
     const adif = Array.isArray(_adif) ? _adif[0] : _adif;
 
     const user = await User.findOne({
-      _id: req.user._id,
+      _id: reqUser._id,
     });
     if (!user) {
       throw new Error("User not found in ADIF import");
@@ -301,12 +303,14 @@ router.get(
   validate,
   isLoggedIn,
   async (req, res) => {
-    if (!req.user) {
+    const reqUser = req.user as UserDoc | undefined;
+
+    if (!reqUser) {
       throw new Error("No req.user in ADIF export");
     }
 
     const user = await User.findOne({
-      _id: req.user._id,
+      _id: reqUser._id,
     });
     if (!user) {
       throw new Error("User not found in ADIF export");
