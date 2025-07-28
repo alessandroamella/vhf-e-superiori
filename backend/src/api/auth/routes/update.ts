@@ -200,7 +200,15 @@ router.put(
       }
 
       if (curUser._id.toString() === user._id.toString()) {
-        req.user = newUser;
+        // Transform the Mongoose document to match the expected req.user type
+        // biome-ignore lint/suspicious/noExplicitAny: Needed for type conversion
+        const newUserLean = newUser.toObject() as any;
+        req.user = {
+          ...newUserLean,
+          createdAt: newUserLean.createdAt.toISOString(),
+          updatedAt: newUserLean.updatedAt.toISOString(),
+          _id: newUserLean._id.toString(),
+        } as unknown as typeof req.user;
       }
 
       return returnUserWithPosts(

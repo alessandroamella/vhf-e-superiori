@@ -30,7 +30,7 @@ async function populateUser(req: Request, res: Response, next: NextFunction) {
             passwordResetCode: 0,
             __v: 0,
           },
-        );
+        ).lean();
         if (!foundUser) {
           logger.error("User with valid token not found in populateUser");
           logger.error(user);
@@ -40,7 +40,15 @@ async function populateUser(req: Request, res: Response, next: NextFunction) {
           });
           return next(new Error(Errors.SERVER_ERROR));
         }
-        req.user = foundUser;
+        // Transform the lean document to match the expected req.user type
+        // biome-ignore lint/suspicious/noExplicitAny: Needed for type conversion
+        const userWithTimestamps = foundUser as any;
+        req.user = {
+          ...foundUser,
+          createdAt: userWithTimestamps.createdAt.toISOString(),
+          updatedAt: userWithTimestamps.updatedAt.toISOString(),
+          _id: foundUser._id.toString(),
+        } as unknown as typeof req.user;
         logger.debug("populateUser successful for user " + foundUser.callsign);
       } else req.user = undefined;
       next();
