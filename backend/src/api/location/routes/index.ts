@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { location } from "..";
 import { param, query } from "express-validator";
-import { createError, validate } from "../../helpers";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
-import { Errors } from "../../errors";
 import { logger } from "../../../shared";
+import { Errors } from "../../errors";
+import { createError, validate } from "../../helpers";
+import { location } from "..";
 
 const router = Router();
 
@@ -56,38 +56,36 @@ const router = Router();
  */
 
 router.get(
-    "/locator/:lat/:lon",
-    param("lat").isNumeric(),
-    param("lon").isNumeric(),
-    validate,
-    async (req, res) => {
-        const lat = parseFloat(req.params.lat);
-        const lon = parseFloat(req.params.lon);
+  "/locator/:lat/:lon",
+  param("lat").isNumeric(),
+  param("lon").isNumeric(),
+  validate,
+  async (req, res) => {
+    const lat = parseFloat(req.params.lat);
+    const lon = parseFloat(req.params.lon);
 
-        try {
-            const qth = location.calculateQth(lat, lon);
+    try {
+      const qth = location.calculateQth(lat, lon);
 
-            if (!qth) {
-                throw new EvalError("Invalid lat/lon");
-            }
+      if (!qth) {
+        throw new EvalError("Invalid lat/lon");
+      }
 
-            res.json({ locator: qth });
-        } catch (err) {
-            if (err instanceof EvalError) {
-                logger.debug("Error while parsing lat/lon");
-                logger.debug(err);
-                res.status(BAD_REQUEST).json(
-                    createError(Errors.ERROR_QTH_PARSE)
-                );
-            } else {
-                logger.error("Error while parsing lat/lon");
-                logger.error(err);
-                res.status(INTERNAL_SERVER_ERROR).json(
-                    createError(Errors.ERROR_QTH_PARSE)
-                );
-            }
-        }
+      res.json({ locator: qth });
+    } catch (err) {
+      if (err instanceof EvalError) {
+        logger.debug("Error while parsing lat/lon");
+        logger.debug(err);
+        res.status(BAD_REQUEST).json(createError(Errors.ERROR_QTH_PARSE));
+      } else {
+        logger.error("Error while parsing lat/lon");
+        logger.error(err);
+        res
+          .status(INTERNAL_SERVER_ERROR)
+          .json(createError(Errors.ERROR_QTH_PARSE));
+      }
     }
+  },
 );
 
 /**
@@ -155,83 +153,75 @@ router.get(
  */
 
 router.get(
-    "/latlon/:qth",
-    param("qth").isString(),
-    query("geocode").isBoolean().optional().toBoolean(),
-    validate,
-    async (req, res) => {
-        const qth = req.params.qth as string;
+  "/latlon/:qth",
+  param("qth").isString(),
+  query("geocode").isBoolean().optional().toBoolean(),
+  validate,
+  async (req, res) => {
+    const qth = req.params.qth as string;
 
-        try {
-            const latLon = location.calculateLatLon(qth);
+    try {
+      const latLon = location.calculateLatLon(qth);
 
-            if (!latLon) {
-                throw new EvalError("Invalid QTH");
-            }
+      if (!latLon) {
+        throw new EvalError("Invalid QTH");
+      }
 
-            const locator = location.calculateQth(latLon[0], latLon[1]);
+      const locator = location.calculateQth(latLon[0], latLon[1]);
 
-            if (!locator) {
-                logger.warn(
-                    "Invalid calculated lat/lon while calculating locator"
-                );
-                throw new EvalError("Invalid QTH");
-            }
+      if (!locator) {
+        logger.warn("Invalid calculated lat/lon while calculating locator");
+        throw new EvalError("Invalid QTH");
+      }
 
-            const address: {
-                city?: string;
-                province?: string;
-                formatted?: string;
-            } = {};
-            if (req.query.geocode) {
-                const geocoded = await location.reverseGeocode(
-                    latLon[0],
-                    latLon[1]
-                );
-                if (!geocoded) {
-                    logger.warn(
-                        "Error while reverse geocoding lat " +
-                            latLon[0] +
-                            " lon " +
-                            latLon[1]
-                    );
-                    throw new EvalError("Error while reverse geocoding");
-                }
-
-                logger.debug("Reverse geocoded address:");
-                logger.debug(geocoded);
-
-                const { city, province, formatted } =
-                    location.parseData(geocoded);
-                address.city = city;
-                address.province = province;
-                address.formatted = formatted;
-            }
-
-            res.json({
-                lat: latLon[0],
-                lon: latLon[1],
-                locator,
-                address: address.formatted,
-                city: address.city,
-                province: address.province
-            });
-        } catch (err) {
-            if (err instanceof EvalError) {
-                logger.debug("Error while parsing QTH");
-                logger.debug(err);
-                res.status(BAD_REQUEST).json(
-                    createError(Errors.ERROR_QTH_PARSE)
-                );
-            } else {
-                logger.error("Error while parsing QTH");
-                logger.error(err);
-                res.status(INTERNAL_SERVER_ERROR).json(
-                    createError(Errors.ERROR_QTH_PARSE)
-                );
-            }
+      const address: {
+        city?: string;
+        province?: string;
+        formatted?: string;
+      } = {};
+      if (req.query.geocode) {
+        const geocoded = await location.reverseGeocode(latLon[0], latLon[1]);
+        if (!geocoded) {
+          logger.warn(
+            "Error while reverse geocoding lat " +
+              latLon[0] +
+              " lon " +
+              latLon[1],
+          );
+          throw new EvalError("Error while reverse geocoding");
         }
+
+        logger.debug("Reverse geocoded address:");
+        logger.debug(geocoded);
+
+        const { city, province, formatted } = location.parseData(geocoded);
+        address.city = city;
+        address.province = province;
+        address.formatted = formatted;
+      }
+
+      res.json({
+        lat: latLon[0],
+        lon: latLon[1],
+        locator,
+        address: address.formatted,
+        city: address.city,
+        province: address.province,
+      });
+    } catch (err) {
+      if (err instanceof EvalError) {
+        logger.debug("Error while parsing QTH");
+        logger.debug(err);
+        res.status(BAD_REQUEST).json(createError(Errors.ERROR_QTH_PARSE));
+      } else {
+        logger.error("Error while parsing QTH");
+        logger.error(err);
+        res
+          .status(INTERNAL_SERVER_ERROR)
+          .json(createError(Errors.ERROR_QTH_PARSE));
+      }
     }
+  },
 );
 
 export default router;

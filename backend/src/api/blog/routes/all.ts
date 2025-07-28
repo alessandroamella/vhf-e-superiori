@@ -59,50 +59,50 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get(
-    "/",
-    query("limit").optional().isInt().toInt(),
-    query("offset").optional().isInt().toInt(),
-    query("fromUser").optional().isMongoId(),
-    query("q").optional().isString().trim().escape(),
-    validate,
-    async (req, res) => {
-        try {
-            const limit = parseInt(req.query.limit as string) as number;
-            const skip = parseInt(req.query.offset as string) as number;
+  "/",
+  query("limit").optional().isInt().toInt(),
+  query("offset").optional().isInt().toInt(),
+  query("fromUser").optional().isMongoId(),
+  query("q").optional().isString().trim().escape(),
+  validate,
+  async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) as number;
+      const skip = parseInt(req.query.offset as string) as number;
 
-            const query: FilterQuery<BlogPostClass> = {};
-            if (req.query.fromUser) query.fromUser = req.query.fromUser;
-            if (req.query.q) {
-                query.$or = [
-                    { title: { $regex: req.query.q as string, $options: "i" } },
-                    {
-                        contentMd: {
-                            $regex: req.query.q as string,
-                            $options: "i"
-                        }
-                    }
-                ];
-            }
+      const query: FilterQuery<BlogPostClass> = {};
+      if (req.query.fromUser) query.fromUser = req.query.fromUser;
+      if (req.query.q) {
+        query.$or = [
+          { title: { $regex: req.query.q as string, $options: "i" } },
+          {
+            contentMd: {
+              $regex: req.query.q as string,
+              $options: "i",
+            },
+          },
+        ];
+      }
 
-            const blogPostQuery = BlogPost.find(query);
-            if (limit) blogPostQuery.limit(limit);
-            if (skip) blogPostQuery.skip(skip);
+      const blogPostQuery = BlogPost.find(query);
+      if (limit) blogPostQuery.limit(limit);
+      if (skip) blogPostQuery.skip(skip);
 
-            const blogPosts = await blogPostQuery
-                .sort({ createdAt: -1 })
-                .populate({
-                    path: "fromUser",
-                    select: "callsign isDev isAdmin"
-                })
-                .lean();
+      const blogPosts = await blogPostQuery
+        .sort({ createdAt: -1 })
+        .populate({
+          path: "fromUser",
+          select: "callsign isDev isAdmin",
+        })
+        .lean();
 
-            res.json(blogPosts);
-        } catch (err) {
-            logger.error("Error in blog post all");
-            logger.error(err);
-            return res.status(INTERNAL_SERVER_ERROR).json(createError());
-        }
+      res.json(blogPosts);
+    } catch (err) {
+      logger.error("Error in blog post all");
+      logger.error(err);
+      return res.status(INTERNAL_SERVER_ERROR).json(createError());
     }
+  },
 );
 
 export default router;

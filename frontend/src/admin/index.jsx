@@ -13,7 +13,7 @@ import {
   Label,
   Modal,
   Pagination,
-  Spinner
+  Spinner,
 } from "flowbite-react";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
@@ -23,7 +23,7 @@ import {
   createSearchParams,
   Link,
   useNavigate,
-  useSearchParams
+  useSearchParams,
 } from "react-router";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -56,13 +56,13 @@ const AdminManager = () => {
   const postsCurPage = Math.ceil((posts?.length || 0) / postsPerPage);
   const postsInterval = [
     (postPage - 1) * postsPerPage,
-    (postPage - 1) * postsPerPage + postsPerPage
+    (postPage - 1) * postsPerPage + postsPerPage,
   ];
   const eventsPerPage = 10;
   const eventsCurPage = Math.ceil((events?.length || 0) / eventsPerPage);
   const eventsInterval = [
     (eventPage - 1) * eventsPerPage,
-    (eventPage - 1) * eventsPerPage + eventsPerPage
+    (eventPage - 1) * eventsPerPage + eventsPerPage,
   ];
 
   const isFetchingUsers = useRef(false);
@@ -80,7 +80,7 @@ const AdminManager = () => {
       console.log("Errore nel caricamento degli utenti", err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
       setUsers(null);
     } finally {
@@ -104,7 +104,7 @@ const AdminManager = () => {
         console.log("Errore nel caricamento dei post", err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
         setPosts(null);
       }
@@ -133,7 +133,7 @@ const AdminManager = () => {
       else searchParams.set("event", _id);
       setSearchParams(searchParams);
     },
-    [searchParams, setSearchParams]
+    [searchParams, setSearchParams],
   );
 
   const editEventModal = useCallback(
@@ -142,7 +142,7 @@ const AdminManager = () => {
       setEventEditing(e._id);
       setShowModal(true);
     },
-    [setEventEditing]
+    [setEventEditing],
   );
 
   useEffect(() => {
@@ -173,11 +173,11 @@ const AdminManager = () => {
       console.log(err?.response?.data || err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
       window.scrollTo({
         top: 0,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     } finally {
       setIsDeleting(false);
@@ -206,7 +206,7 @@ const AdminManager = () => {
         console.log("Errore nel caricamento dei post", err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       }
     }
@@ -224,8 +224,8 @@ const AdminManager = () => {
         search: createSearchParams({
           to:
             "/eventmanager" +
-            (eventEditing ? createSearchParams({ event: eventEditing }) : "")
-        }).toString()
+            (eventEditing ? createSearchParams({ event: eventEditing }) : ""),
+        }).toString(),
       });
     } else if (user && !user.isAdmin) {
       navigate(-1);
@@ -359,7 +359,7 @@ const AdminManager = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 md:gap-4">
                       {events
                         .filter((e) =>
-                          hidePastEvents ? isFuture(new Date(e.date)) : true
+                          hidePastEvents ? isFuture(new Date(e.date)) : true,
                         )
                         .slice(...eventsInterval)
                         .map((e) => (
@@ -392,18 +392,17 @@ const AdminManager = () => {
                                 "Europe/Rome",
                                 "eee d MMMM Y",
                                 {
-                                  locale: it
-                                }
+                                  locale: it,
+                                },
                               )}
-                              <br />
-                              🕒{" "}
+                              <br />🕒{" "}
                               {formatInTimeZone(
                                 new Date(e.date),
                                 "Europe/Rome",
                                 "HH:mm",
                                 {
-                                  locale: it
-                                }
+                                  locale: it,
+                                },
                               )}
                             </p>
                             <p className="font-normal text-gray-700 dark:text-gray-400">
@@ -417,8 +416,8 @@ const AdminManager = () => {
                                   "Europe/Rome",
                                   "eee d MMMM Y",
                                   {
-                                    locale: it
-                                  }
+                                    locale: it,
+                                  },
                                 )}
                               </strong>
                             </p>
@@ -469,8 +468,8 @@ const AdminManager = () => {
                               "Europe/Rome",
                               "eee d MMMM Y",
                               {
-                                locale: it
-                              }
+                                locale: it,
+                              },
                             )}
                           </p>
                         </Card>

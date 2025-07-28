@@ -10,14 +10,14 @@ import {
   Marker,
   Popup,
   TileLayer,
-  useMapEvents
+  useMapEvents,
 } from "react-leaflet";
 import ReactPlaceholder from "react-placeholder";
 import {
-  Link,
   createSearchParams,
+  Link,
   useNavigate,
-  useSearchParams
+  useSearchParams,
 } from "react-router";
 import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
@@ -31,7 +31,7 @@ const CustomMarker = ({
   lon,
   setLon,
   fly,
-  updateFn
+  updateFn,
 }) => {
   const icon = useMemo(
     () =>
@@ -40,9 +40,9 @@ const CustomMarker = ({
         iconAnchor: [10, 41],
         popupAnchor: [2, -40],
         iconUrl: "/mapicon/marker-icon.png",
-        shadowUrl: "/mapicon/marker-shadow.png"
+        shadowUrl: "/mapicon/marker-shadow.png",
       }),
-    []
+    [],
   );
 
   const map = useMapEvents({
@@ -59,7 +59,7 @@ const CustomMarker = ({
       // map.locate({ setView: true });
       // const { lat, lng } = e.latlng;
       // L.marker([lat, lng], { icon }).addTo(map);
-    }
+    },
   });
 
   if (fly) map.flyTo([lat, lon], map.getZoom());
@@ -131,7 +131,7 @@ const BeaconEditor = () => {
         //   msg: getErrorStr(err?.response?.data?.err)
         // });
         window.alert(
-          "Errore nel caricamento del beacon: " + err?.response?.data?.err
+          "Errore nel caricamento del beacon: " + err?.response?.data?.err,
         );
         navigate("/beacon");
       } finally {
@@ -151,8 +151,8 @@ const BeaconEditor = () => {
       navigate({
         pathname: "/login",
         search: createSearchParams({
-          to: "/beacon/editor" + (id ? `?id=${id}` : "")
-        }).toString()
+          to: "/beacon/editor" + (id ? `?id=${id}` : ""),
+        }).toString(),
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -186,7 +186,7 @@ const BeaconEditor = () => {
     if (!lat || !lon || !isPositionSet) {
       setAlert({
         color: "failure",
-        msg: "Seleziona la posizione del beacon sulla mappa"
+        msg: "Seleziona la posizione del beacon sulla mappa",
       });
       window.scrollTo(0, 0);
       return;
@@ -208,7 +208,7 @@ const BeaconEditor = () => {
         qtf,
         power,
         lat,
-        lon
+        lon,
       };
       // let res;
       let _id;
@@ -224,12 +224,12 @@ const BeaconEditor = () => {
     } catch (err) {
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
 
       window.scrollTo({
         top: 0,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     } finally {
       setDisabled(false);
@@ -243,7 +243,7 @@ const BeaconEditor = () => {
       console.log("not fetching lat lon for locator", {
         isPositionSet,
         isLocatorFocused,
-        locator
+        locator,
       });
       return;
     }
@@ -252,7 +252,7 @@ const BeaconEditor = () => {
       "fetching lat lon for locator",
       locator,
       "len is",
-      locator.length
+      locator.length,
     );
 
     async function getLatLon() {
@@ -316,9 +316,9 @@ const BeaconEditor = () => {
         console.log("Errore nella geolocalizzazione", err);
         setAlert({
           color: "failure",
-          msg: "Errore nella geolocalizzazione"
+          msg: "Errore nella geolocalizzazione",
         });
-      }
+      },
     );
   }
 
@@ -609,7 +609,7 @@ CustomMarker.propTypes = {
   lon: PropTypes.number,
   setLon: PropTypes.func,
   fly: PropTypes.bool,
-  updateFn: PropTypes.func
+  updateFn: PropTypes.func,
 };
 
 CustomMarker.displayName = "CustomMarker";

@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from "react";
 
 import "swiper/css";
@@ -12,12 +12,11 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 
+import axios from "axios";
 import { it } from "date-fns/locale";
+import PropTypes from "prop-types";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlaceholder from "react-placeholder/lib";
-
-import axios from "axios";
-import PropTypes from "prop-types";
 import { Link } from "react-router";
 import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
@@ -62,7 +61,7 @@ const ViewPostContent = React.memo(({ postExtended, hideComments }) => {
         const payload = {
           content,
           forPost: post._id,
-          ...(replyTo && { parentComment: replyTo })
+          ...(replyTo && { parentComment: replyTo }),
         };
         console.log("sending comment with payload", payload);
         const { data } = await axios.post("/api/comment", payload);
@@ -70,24 +69,24 @@ const ViewPostContent = React.memo(({ postExtended, hideComments }) => {
           ? comments.map((c) =>
               c._id === data.parentComment
                 ? { ...c, replies: [...c.replies, data] }
-                : c
+                : c,
             )
           : [...comments, data];
         _comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setComments(_comments);
         setAlert({
           color: "success",
-          msg: "Commento inviato con successo!"
+          msg: "Commento inviato con successo!",
         });
         console.log("comment", data);
         commentContainerRef.current?.scrollIntoView({
-          behavior: "smooth"
+          behavior: "smooth",
         });
         document.querySelector(".comments-card").scrollTop = 0;
         setTimeout(() => {
           document.querySelector(`#comment-${data._id}`)?.scrollIntoView({
             behavior: "smooth",
-            block: "center"
+            block: "center",
           });
         }, 100);
 
@@ -106,14 +105,14 @@ const ViewPostContent = React.memo(({ postExtended, hideComments }) => {
       } catch (err) {
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setContent("");
         setDisabled(false);
       }
     },
-    [comments, content, post, replyTo]
+    [comments, content, post, replyTo],
   );
 
   const deleteComment = useCallback(
@@ -121,7 +120,7 @@ const ViewPostContent = React.memo(({ postExtended, hideComments }) => {
       e.preventDefault();
       if (
         !window.confirm(
-          `Vuoi davvero eliminare il commento "${comment.content}"?`
+          `Vuoi davvero eliminare il commento "${comment.content}"?`,
         )
       ) {
         return;
@@ -133,7 +132,7 @@ const ViewPostContent = React.memo(({ postExtended, hideComments }) => {
         const { data } = await axios.delete("/api/comment/" + comment._id);
         setAlert({
           color: "success",
-          msg: "Commento eliminato con successo"
+          msg: "Commento eliminato con successo",
         });
         if (data.parentComment) {
           setComments(
@@ -141,10 +140,10 @@ const ViewPostContent = React.memo(({ postExtended, hideComments }) => {
               c._id === data.parentComment
                 ? {
                     ...c,
-                    replies: c.replies.filter((_c) => _c._id !== comment._id)
+                    replies: c.replies.filter((_c) => _c._id !== comment._id),
                   }
-                : c
-            )
+                : c,
+            ),
           );
         } else {
           setComments(comments.filter((_c) => _c._id !== comment._id));
@@ -153,13 +152,13 @@ const ViewPostContent = React.memo(({ postExtended, hideComments }) => {
         console.log("error in comment delete", err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setDisabled(false);
       }
     },
-    [comments]
+    [comments],
   );
 
   return (
@@ -222,7 +221,7 @@ const ViewPostContent = React.memo(({ postExtended, hideComments }) => {
                         post?.createdAt,
                         "Europe/Rome",
                         "d MMM yyyy HH:mm",
-                        { locale: it }
+                        { locale: it },
                       )}
                   </span>
                 </ReactPlaceholder>
@@ -254,7 +253,7 @@ const ViewPostContent = React.memo(({ postExtended, hideComments }) => {
 });
 ViewPostContent.propTypes = {
   postExtended: PropTypes.object,
-  hideComments: PropTypes.bool
+  hideComments: PropTypes.bool,
 };
 
 ViewPostContent.displayName = "ViewPostContent";

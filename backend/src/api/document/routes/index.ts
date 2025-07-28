@@ -1,6 +1,6 @@
 import { Router } from "express";
-import tosRoute from "./tos";
 import privacyRoute from "./privacy";
+import tosRoute from "./tos";
 
 const router = Router();
 

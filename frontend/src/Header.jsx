@@ -33,7 +33,7 @@ const LinkButton = ({ to, children, keepCurrent }) => {
 LinkButton.propTypes = {
   to: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
-  keepCurrent: PropTypes.bool
+  keepCurrent: PropTypes.bool,
 };
 
 const Header = () => {

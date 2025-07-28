@@ -9,8 +9,8 @@ export const BeaconProperties = getModelForClass(BeaconPropertiesClass);
 export type BeaconPropertiesDoc = DocumentType<BeaconPropertiesClass>;
 
 export type BeaconDocWithProp = BeaconDoc & {
-    properties: BeaconPropertiesDoc;
+  properties: BeaconPropertiesDoc;
 };
 export type BeaconDocWithProps = BeaconDoc & {
-    properties: BeaconPropertiesDoc[];
+  properties: BeaconPropertiesDoc[];
 };

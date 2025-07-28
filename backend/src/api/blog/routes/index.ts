@@ -1,11 +1,10 @@
 import { Router } from "express";
-
-import getRoute from "./get";
+import isAdmin from "../../middlewares/isAdmin";
+import isLoggedIn from "../../middlewares/isLoggedIn";
 import allRoute from "./all";
 import createRoute from "./create";
 import deleteRoute from "./delete";
-import isLoggedIn from "../../middlewares/isLoggedIn";
-import isAdmin from "../../middlewares/isAdmin";
+import getRoute from "./get";
 
 const router = Router();
 

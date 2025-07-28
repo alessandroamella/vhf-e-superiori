@@ -15,7 +15,7 @@ import {
   Spinner,
   Table,
   TextInput,
-  Tooltip
+  Tooltip,
 } from "flowbite-react";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
@@ -31,16 +31,16 @@ import {
   FaSave,
   FaTimes,
   FaUndo,
-  FaUser
+  FaUser,
 } from "react-icons/fa";
 import { IoIosRadio } from "react-icons/io";
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
 import {
+  createSearchParams,
   Link,
   Navigate,
-  createSearchParams,
   useNavigate,
-  useParams
+  useParams,
 } from "react-router";
 import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
@@ -65,7 +65,7 @@ const QsoManager = () => {
       _setAlert(alert);
       if (alert) scrollToAlert();
     },
-    [_setAlert]
+    [_setAlert],
   );
 
   const [fromStation, setFromStation] = useState(null);
@@ -86,19 +86,19 @@ const QsoManager = () => {
       try {
         const { data } = await axios.get("/api/auth/all", {
           params: {
-            sortByCallsign: true
-          }
+            sortByCallsign: true,
+          },
         });
         console.log("users", data);
         setUsers(data);
         setFromStation(
-          data.find((e) => e.callsign === user.callsign) || data[0]
+          data.find((e) => e.callsign === user.callsign) || data[0],
         );
       } catch (err) {
         console.log("Errore nel caricamento degli utenti", err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
 
         setUsers(null);
@@ -112,8 +112,8 @@ const QsoManager = () => {
       const { data } = await axios.get("/api/qso", {
         params: {
           event: id,
-          fromStation: user.isAdmin ? undefined : user._id
-        }
+          fromStation: user.isAdmin ? undefined : user._id,
+        },
       });
       console.log("QSOs", data);
       data.sort((b, a) => new Date(a.qsoDate) - new Date(b.qsoDate));
@@ -122,7 +122,7 @@ const QsoManager = () => {
       console.log("Errore nel caricamento dei QSO", err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
 
       setQsos(null);
@@ -145,7 +145,7 @@ const QsoManager = () => {
         console.log("Errore nel caricamento dell'evento", err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
 
         setEvent(null);
@@ -162,7 +162,7 @@ const QsoManager = () => {
     if (user === null) {
       setAlert({
         color: "failure",
-        msg: "Devi prima effettuare il login"
+        msg: "Devi prima effettuare il login",
       });
 
       return;
@@ -179,12 +179,12 @@ const QsoManager = () => {
             ?.filter((e) => e.isApproved)
             ?.map((e) => e.fromUser.callsign)
             ?.includes(user.callsign),
-        event.joinRequests
+        event.joinRequests,
       );
       if (user.isAdmin) {
         setAlert({
           color: "info",
-          msg: "Non sei una stazione attivatrice per questo evento, ma sei un amministratore e puoi comunque gestire i QSO"
+          msg: "Non sei una stazione attivatrice per questo evento, ma sei un amministratore e puoi comunque gestire i QSO",
         });
       }
       // now we allow everyone
@@ -200,14 +200,14 @@ const QsoManager = () => {
     } else if (event === null) {
       setAlert({
         color: "failure",
-        msg: "Evento non trovato"
+        msg: "Evento non trovato",
       });
 
       return;
     } else if (qsos === null) {
       setAlert({
         color: "failure",
-        msg: "Errore nel caricamento dei QSO"
+        msg: "Errore nel caricamento dei QSO",
       });
 
       return;
@@ -253,7 +253,7 @@ const QsoManager = () => {
         setFormattedAddress(null);
 
         const { data } = await axios.get(
-          `/api/location/locator/${position.coords.latitude}/${position.coords.longitude}`
+          `/api/location/locator/${position.coords.latitude}/${position.coords.longitude}`,
         );
         console.log("fetched locator in geolocalize", data);
         setLocator(data.locator);
@@ -262,9 +262,9 @@ const QsoManager = () => {
         console.log("Errore nella geolocalizzazione", err);
         setAlert({
           color: "failure",
-          msg: "Errore nella geolocalizzazione"
+          msg: "Errore nella geolocalizzazione",
         });
-      }
+      },
     );
   }, [setAlert]);
 
@@ -296,8 +296,8 @@ const QsoManager = () => {
         setFormattedAddress(false);
         const { data } = await axios.get(`/api/location/latlon/${locator}`, {
           params: {
-            geocode: true
-          }
+            geocode: true,
+          },
         });
         console.log("fetched lat lon", data);
         setLocator(data.locator);
@@ -326,7 +326,7 @@ const QsoManager = () => {
       ) {
         try {
           const { data } = await axios.get(
-            `/api/location/locator/${user.lat}/${user.lon}`
+            `/api/location/locator/${user.lat}/${user.lon}`,
           );
           console.log("fetched locator from user lat lon", data);
           _locator = data.locator;
@@ -338,14 +338,14 @@ const QsoManager = () => {
       if (!_locator && !isManuallySettingLocator && !formattedAddress) {
         try {
           const { data } = await axios.get(
-            "/api/autocomplete/" + user.callsign.replaceAll("/", "%2F")
+            "/api/autocomplete/" + user.callsign.replaceAll("/", "%2F"),
           );
           console.log("fetched locator from user callsign", data);
           _locator = data.locator;
         } catch (err) {
           console.error(
             "error in USER locator fetch",
-            err?.response?.data || err
+            err?.response?.data || err,
           );
         }
       }
@@ -383,11 +383,11 @@ const QsoManager = () => {
     // durata di 4 ore
     setCookie("callsign", callsign, {
       path: "/qsomanager",
-      maxAge: 60 * 60 * 4
+      maxAge: 60 * 60 * 4,
     });
     setCookie("locator", locator, {
       path: "/qsomanager",
-      maxAge: 60 * 60 * 36 // 36 ore
+      maxAge: 60 * 60 * 36, // 36 ore
     });
   }, [callsign, locator, setCookie]);
 
@@ -398,7 +398,7 @@ const QsoManager = () => {
       if (callsign === user?.callsign) {
         setAlert({
           color: "failure",
-          msg: "Non puoi creare un QSO con te stesso"
+          msg: "Non puoi creare un QSO con te stesso",
         });
         setDisabled(false);
         return;
@@ -422,7 +422,7 @@ const QsoManager = () => {
           fromStationCity: city,
           fromStationProvince: province,
           fromStationLat: lat,
-          fromStationLon: lon
+          fromStationLon: lon,
           // emailSent,
           // emailSentDate,
           // notes,
@@ -457,7 +457,7 @@ const QsoManager = () => {
       } catch (err) {
         console.log(err.response?.data?.err || err);
         window.alert(
-          "ERRORE crea QSO: " + getErrorStr(err?.response?.data?.err || err)
+          "ERRORE crea QSO: " + getErrorStr(err?.response?.data?.err || err),
         );
 
         // setAlert({
@@ -481,8 +481,8 @@ const QsoManager = () => {
       province,
       qsos,
       setAlert,
-      user
-    ]
+      user,
+    ],
   );
 
   const [autocomplete, setAutocomplete] = useState(null);
@@ -497,7 +497,7 @@ const QsoManager = () => {
     if (callsign.length <= 2) {
       console.log(
         "too shirt for autocomplete, callsign length",
-        callsign.length
+        callsign.length,
       );
       setAutocomplete(null);
       return;
@@ -509,7 +509,7 @@ const QsoManager = () => {
     autocompleteTimeout.current = setTimeout(async () => {
       try {
         const { data } = await axios.get(
-          "/api/autocomplete/" + callsign.replaceAll("/", "%2F")
+          "/api/autocomplete/" + callsign.replaceAll("/", "%2F"),
         );
         console.log("autocomplete", data);
         if (data.callsign !== callsign) {
@@ -550,7 +550,7 @@ const QsoManager = () => {
   function getAdifKey(qso, index) {
     return JSON.stringify({
       callsign: qso.callsign,
-      index
+      index,
     });
   }
 
@@ -569,8 +569,8 @@ const QsoManager = () => {
       try {
         const { data } = await axios.post("/api/adif/import", formData, {
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         });
         console.log("imported", { data });
 
@@ -579,20 +579,20 @@ const QsoManager = () => {
           data.reduce((acc, q, i) => {
             acc[getAdifKey(q, i)] = true;
             return acc;
-          }, {})
+          }, {}),
         );
         setShowModal(true);
       } catch (err) {
         console.log(err?.response?.data || err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setDisabled(false);
       }
     },
-    [id, setAlert]
+    [id, setAlert],
   );
 
   const [isImportingAdif, setIsImportingAdif] = useState(false);
@@ -623,15 +623,15 @@ const QsoManager = () => {
         JSON.stringify(
           adifQsos
             .map((q, i) => getAdifKey(q, i))
-            .filter((k) => !adifChecked[k])
-        )
+            .filter((k) => !adifChecked[k]),
+        ),
       );
       formData.append("save", true);
       try {
         const { data } = await axios.post("/api/adif/import", formData, {
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         });
         console.log("imported", { data });
 
@@ -644,7 +644,7 @@ const QsoManager = () => {
         setTimeout(() => {
           setAlert({
             color: "success",
-            msg: data.length + " QSO importati con successo"
+            msg: data.length + " QSO importati con successo",
           });
           setDisabled(false);
         }, 690);
@@ -652,7 +652,7 @@ const QsoManager = () => {
         console.log(err?.response?.data || err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
         setDisabled(false);
       } finally {
@@ -670,8 +670,8 @@ const QsoManager = () => {
       lat,
       lon,
       province,
-      setAlert
-    ]
+      setAlert,
+    ],
   );
 
   function resetAdif() {
@@ -696,7 +696,7 @@ const QsoManager = () => {
   const deleteSelected = useCallback(async () => {
     if (
       !window.confirm(
-        `Vuoi ELIMINARE i QSO selezionati (${selectedQsos.length})?\n⚠️⚠️ L'operazione è irrevocabile!`
+        `Vuoi ELIMINARE i QSO selezionati (${selectedQsos.length})?\n⚠️⚠️ L'operazione è irrevocabile!`,
       )
     ) {
       return;
@@ -715,7 +715,7 @@ const QsoManager = () => {
 
       setAlert({
         color: "success",
-        msg: `Eliminat${deleted.length === 1 ? "o" : "i"} ${deleted.length} QSO`
+        msg: `Eliminat${deleted.length === 1 ? "o" : "i"} ${deleted.length} QSO`,
       });
 
       setDeleteQsoAnimation(true);
@@ -724,7 +724,7 @@ const QsoManager = () => {
       console.log(err?.response?.data || err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
     } finally {
       setDisabled(false);
@@ -744,7 +744,7 @@ const QsoManager = () => {
 
     setAlert({
       color: "success",
-      msg: `Esportati ${selectedQsos.length} QSO`
+      msg: `Esportati ${selectedQsos.length} QSO`,
     });
   }, [id, selectedQsos, setAlert]);
 
@@ -763,8 +763,8 @@ const QsoManager = () => {
           qsos.map((qso) =>
             qso._id === q._id
               ? { ...qso, imageHref: data?.href, emailSent: true }
-              : qso
-          )
+              : qso,
+          ),
         );
         eqslSending.set(q._id, "ok");
         // setAlert({
@@ -776,7 +776,7 @@ const QsoManager = () => {
         console.log(err?.response?.data || err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setTimeout(() => {
@@ -784,7 +784,7 @@ const QsoManager = () => {
         }, 3000);
       }
     },
-    [eqslSending, qsos, setAlert]
+    [eqslSending, qsos, setAlert],
   );
 
   const [allPredataInserted, setAllPredataInserted] = useState(false);
@@ -802,12 +802,12 @@ const QsoManager = () => {
     async function updateLocator() {
       try {
         await axios.put(`/api/qso/changelocator/${event._id}`, {
-          locator
+          locator,
         });
         lastUpdatedLocator.current = locator;
         setCookie("locator", locator, {
           path: "/qsomanager",
-          maxAge: 60 * 60 * 36 // 36 ore
+          maxAge: 60 * 60 * 36, // 36 ore
         });
       } catch (err) {
         console.log("Error while updating locator", err);
@@ -815,7 +815,7 @@ const QsoManager = () => {
           color: "failure",
           msg:
             "Errore nell'aggiornamento del locatore. " +
-            getErrorStr(err?.response?.data?.err)
+            getErrorStr(err?.response?.data?.err),
         });
       }
     }
@@ -851,8 +851,8 @@ const QsoManager = () => {
       to={{
         pathname: "/login",
         search: createSearchParams({
-          to: window.location.pathname + window.location.search
-        }).toString()
+          to: window.location.pathname + window.location.search,
+        }).toString(),
       }}
     />
   ) : (
@@ -883,7 +883,7 @@ const QsoManager = () => {
                         adifQsos.reduce((acc, q, i) => {
                           acc[getAdifKey(q, i)] = true;
                           return acc;
-                        }, {})
+                        }, {}),
                       );
                     }}
                   >
@@ -897,7 +897,7 @@ const QsoManager = () => {
                         adifQsos.reduce((acc, q, i) => {
                           acc[getAdifKey(q, i)] = false;
                           return acc;
-                        }, {})
+                        }, {}),
                       );
                     }}
                   >
@@ -932,7 +932,7 @@ const QsoManager = () => {
                               onChange={(e) => {
                                 setAdifChecked({
                                   ...adifChecked,
-                                  [getAdifKey(q, i)]: e.target.checked
+                                  [getAdifKey(q, i)]: e.target.checked,
                                 });
                               }}
                             />{" "}
@@ -942,7 +942,7 @@ const QsoManager = () => {
                             {formatInTimeZone(
                               q.qsoDate,
                               "UTC",
-                              "yyyy-MM-dd HH:mm"
+                              "yyyy-MM-dd HH:mm",
                             )}
                           </Table.Cell>
                           <Table.Cell>{q.band || q.frequency}</Table.Cell>
@@ -1122,7 +1122,7 @@ const QsoManager = () => {
                                         value={callsignOverride}
                                         onChange={(e) =>
                                           setCallsignOverride(
-                                            e.target.value.toUpperCase()
+                                            e.target.value.toUpperCase(),
                                           )
                                         }
                                       />
@@ -1143,8 +1143,8 @@ const QsoManager = () => {
                                             formattedAddress
                                               ? "success"
                                               : formattedAddress === false
-                                              ? "info"
-                                              : "warning"
+                                                ? "info"
+                                                : "warning"
                                           }
                                           disabled={disabled}
                                           id="locator"
@@ -1165,8 +1165,8 @@ const QsoManager = () => {
                                               e.target.value,
                                               {
                                                 path: "/qsomanager",
-                                                maxAge: 60 * 60 * 4
-                                              }
+                                                maxAge: 60 * 60 * 4,
+                                              },
                                             );
                                             if (e.target.value.length !== 6) {
                                               setFormattedAddress(null);
@@ -1212,7 +1212,7 @@ const QsoManager = () => {
                                       setCallsign(val);
                                       setCookie("callsign", val, {
                                         path: "/qsomanager",
-                                        maxAge: 60 * 60 * 4
+                                        maxAge: 60 * 60 * 4,
                                       });
                                     }}
                                     required
@@ -1432,7 +1432,7 @@ const QsoManager = () => {
                                   disabled ||
                                   selectedQsos.length === 0 ||
                                   selectedQsos.some(
-                                    (e) => eqslSending.get(e) === "sending"
+                                    (e) => eqslSending.get(e) === "sending",
                                   )
                                 }
                                 onClick={deleteSelected}
@@ -1443,7 +1443,7 @@ const QsoManager = () => {
                                     size="sm"
                                   />
                                 ) : selectedQsos.some(
-                                    (e) => eqslSending.get(e) === "sending"
+                                    (e) => eqslSending.get(e) === "sending",
                                   ) ? (
                                   <Tooltip
                                     content={`Attendi che la eQSL per ${
@@ -1452,8 +1452,8 @@ const QsoManager = () => {
                                           q._id ===
                                           selectedQsos.find(
                                             (e) =>
-                                              eqslSending.get(e) === "sending"
-                                          )
+                                              eqslSending.get(e) === "sending",
+                                          ),
                                       )?.callsign
                                     } si invii...`}
                                   >
@@ -1495,9 +1495,9 @@ const QsoManager = () => {
                                       setSelectedQsos(
                                         selectedQsos.includes(q._id)
                                           ? selectedQsos.filter(
-                                              (e) => e !== q._id
+                                              (e) => e !== q._id,
                                             )
-                                          : [...selectedQsos, q._id]
+                                          : [...selectedQsos, q._id],
                                       );
                                     }}
                                     key={q._id}
@@ -1505,10 +1505,10 @@ const QsoManager = () => {
                                       highlighted === q._id
                                         ? "bg-green-200 hover:bg-green-300 dark:bg-green-900 dark:hover:bg-green-800"
                                         : selectedQsos.includes(q._id)
-                                        ? "bg-yellow-200 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800"
-                                        : i % 2 === 0
-                                        ? "hover:bg-gray-200 dark:hover:bg-gray-600"
-                                        : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
+                                          ? "bg-yellow-200 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800"
+                                          : i % 2 === 0
+                                            ? "hover:bg-gray-200 dark:hover:bg-gray-600"
+                                            : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
                                     }`}
                                   >
                                     <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
@@ -1538,7 +1538,7 @@ const QsoManager = () => {
                                       {formatInTimeZone(
                                         q.qsoDate,
                                         "UTC",
-                                        "yyyy-MM-dd HH:mm"
+                                        "yyyy-MM-dd HH:mm",
                                       )}
                                     </Table.Cell>
                                     <Table.Cell>
@@ -1555,11 +1555,11 @@ const QsoManager = () => {
                                               eqslSending.get(q._id) === "ok"
                                                 ? "success"
                                                 : eqslSending.get(q._id) ===
-                                                  "failed"
-                                                ? "failure"
-                                                : q.emailSent
-                                                ? "light"
-                                                : "info"
+                                                    "failed"
+                                                  ? "failure"
+                                                  : q.emailSent
+                                                    ? "light"
+                                                    : "info"
                                             }
                                             disabled={
                                               eqslSending.get(q._id) ===
@@ -1582,20 +1582,20 @@ const QsoManager = () => {
                                                 "sending"
                                                   ? "Invio in corso..."
                                                   : eqslSending.get(q._id) ===
-                                                    "ok"
-                                                  ? "Email inviata con successo!"
-                                                  : eqslSending.get(q._id) ===
-                                                    "failed"
-                                                  ? "Errore nell'invio, riprova"
-                                                  : q.emailSent
-                                                  ? "⚠️ eQSL già inviata, usa per reinviarla" +
-                                                    (q.email
-                                                      ? " a " + q.email
-                                                      : "")
-                                                  : "Usa il pulsante per forzare l'invio" +
-                                                    (q.email
-                                                      ? " a " + q.email
-                                                      : "")
+                                                      "ok"
+                                                    ? "Email inviata con successo!"
+                                                    : eqslSending.get(q._id) ===
+                                                        "failed"
+                                                      ? "Errore nell'invio, riprova"
+                                                      : q.emailSent
+                                                        ? "⚠️ eQSL già inviata, usa per reinviarla" +
+                                                          (q.email
+                                                            ? " a " + q.email
+                                                            : "")
+                                                        : "Usa il pulsante per forzare l'invio" +
+                                                          (q.email
+                                                            ? " a " + q.email
+                                                            : "")
                                               }
                                             >
                                               {eqslSending.get(q._id) ===
@@ -1685,14 +1685,14 @@ const QsoManager = () => {
                             q.fromStationLat &&
                             q.fromStationLon &&
                             q.toStationLat &&
-                            q.toStationLon
+                            q.toStationLon,
                         )
                         .map((q) => (
                           <>
                             <Polyline
                               positions={[
                                 [q.fromStationLat, q.fromStationLon],
-                                [q.toStationLat, q.toStationLon]
+                                [q.toStationLat, q.toStationLon],
                               ]}
                               color="blue"
                               weight={2} // make a bit thinner

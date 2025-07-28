@@ -11,7 +11,7 @@ const DevBadge = ({ short }) => {
   );
 };
 DevBadge.propTypes = {
-  short: PropTypes.bool
+  short: PropTypes.bool,
 };
 
 const AdminBadge = ({ short }) => {
@@ -23,7 +23,7 @@ const AdminBadge = ({ short }) => {
   );
 };
 AdminBadge.propTypes = {
-  short: PropTypes.bool
+  short: PropTypes.bool,
 };
 
 const CallsignLoading = ({ user, className, prefix, suffix, short }) => {
@@ -39,7 +39,7 @@ const CallsignLoading = ({ user, className, prefix, suffix, short }) => {
         <div
           className={classNames("flex gap-2", {
             "flex-row": !short,
-            "flex-col": short
+            "flex-col": short,
           })}
         >
           {user?.isDev &&
@@ -70,7 +70,7 @@ CallsignLoading.propTypes = {
   className: PropTypes.string,
   prefix: PropTypes.node,
   suffix: PropTypes.node,
-  short: PropTypes.bool
+  short: PropTypes.bool,
 };
 
 CallsignLoading.displayName = "CallsignLoading";

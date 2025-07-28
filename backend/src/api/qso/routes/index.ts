@@ -1,12 +1,10 @@
 import { Router } from "express";
-
+import isLoggedIn from "../../middlewares/isLoggedIn";
 import allRoute from "./all";
-import getRoute from "./get";
+import changeLocatorRoute from "./changeLocator";
 import createRoute from "./create";
 import deleteRoute from "./delete";
-import changeLocatorRoute from "./changeLocator";
-
-import isLoggedIn from "../../middlewares/isLoggedIn";
+import getRoute from "./get";
 
 const router = Router();
 

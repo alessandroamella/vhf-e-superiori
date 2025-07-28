@@ -1,9 +1,9 @@
 import {
-    getModelForClass,
-    modelOptions,
-    prop,
-    Ref,
-    Severity
+  getModelForClass,
+  modelOptions,
+  prop,
+  Ref,
+  Severity,
 } from "@typegoose/typegoose";
 
 /**
@@ -76,57 +76,57 @@ import {
  */
 
 @modelOptions({
-    schemaOptions: { timestamps: true },
-    options: { allowMixed: Severity.ERROR, customName: "BeaconProperties" }
+  schemaOptions: { timestamps: true },
+  options: { allowMixed: Severity.ERROR, customName: "BeaconProperties" },
 })
 export class BeaconPropertiesClass {
-    @prop({ required: true, ref: "Beacon" })
-    public forBeacon!: Ref<"Beacon">;
+  @prop({ required: true, ref: "Beacon" })
+  public forBeacon!: Ref<"Beacon">;
 
-    @prop({ required: false })
-    public name?: string;
+  @prop({ required: false })
+  public name?: string;
 
-    @prop({ required: true })
-    public frequency!: number; // in MHz
+  @prop({ required: true })
+  public frequency!: number; // in MHz
 
-    @prop({ required: true })
-    public qthStr!: string;
+  @prop({ required: true })
+  public qthStr!: string;
 
-    @prop({ required: true })
-    public locator!: string;
+  @prop({ required: true })
+  public locator!: string;
 
-    @prop({ required: true })
-    public hamsl!: number; // height above mean sea level in meters
+  @prop({ required: true })
+  public hamsl!: number; // height above mean sea level in meters
 
-    @prop({ required: true })
-    public antenna!: string;
+  @prop({ required: true })
+  public antenna!: string;
 
-    @prop({ required: true })
-    public mode!: string;
+  @prop({ required: true })
+  public mode!: string;
 
-    @prop({ required: true })
-    public qtf!: string; // direction of the antenna
+  @prop({ required: true })
+  public qtf!: string; // direction of the antenna
 
-    @prop({ required: true })
-    public power!: number; // in watts
+  @prop({ required: true })
+  public power!: number; // in watts
 
-    @prop({ required: false })
-    public lat?: number;
+  @prop({ required: false })
+  public lat?: number;
 
-    @prop({ required: false })
-    public lon?: number;
+  @prop({ required: false })
+  public lon?: number;
 
-    @prop({ required: false, ref: "User" })
-    public verifiedBy?: Ref<"User">;
+  @prop({ required: false, ref: "User" })
+  public verifiedBy?: Ref<"User">;
 
-    @prop({ required: false })
-    public verifyDate?: Date;
+  @prop({ required: false })
+  public verifyDate?: Date;
 
-    @prop({ required: true, ref: "User" })
-    public editAuthor!: Ref<"User">;
+  @prop({ required: true, ref: "User" })
+  public editAuthor!: Ref<"User">;
 
-    @prop({ required: true, default: Date.now })
-    public editDate!: Date;
+  @prop({ required: true, default: Date.now })
+  public editDate!: Date;
 }
 
 const BeaconProperties = getModelForClass(BeaconPropertiesClass);

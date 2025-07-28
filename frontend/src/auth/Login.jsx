@@ -29,12 +29,12 @@ const Login = () => {
       if (resetPw) {
         emailRef.current?.focus();
         emailRef.current?.scrollIntoView({
-          behavior: "smooth"
+          behavior: "smooth",
         });
       } else {
         window.scrollTo({
           top: 200,
-          behavior: "smooth"
+          behavior: "smooth",
         });
       }
     }, 100);
@@ -54,23 +54,23 @@ const Login = () => {
     } catch (err) {
       console.log("captcha error", err);
       loginFormRef.current?.scrollIntoView({
-        behavior: "smooth"
+        behavior: "smooth",
       });
 
       return setAlert({
         color: "failure",
-        msg: t("recaptchaError")
+        msg: t("recaptchaError"),
       });
     }
 
     if (!token) {
       loginFormRef.current?.scrollIntoView({
-        behavior: "smooth"
+        behavior: "smooth",
       });
 
       return setAlert({
         color: "failure",
-        msg: t("notARobot")
+        msg: t("notARobot"),
       });
     }
 
@@ -78,22 +78,22 @@ const Login = () => {
     try {
       await axios.post("/api/auth/sendresetpw", {
         email,
-        token
+        token,
       });
       setAlert({
         color: "success",
-        msg: t("resetPasswordEmail")
+        msg: t("resetPasswordEmail"),
       });
     } catch (err) {
       console.log("pw send reset error", err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
       setDisabled(false);
     } finally {
       loginFormRef.current?.scrollIntoView({
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
   }
@@ -110,7 +110,7 @@ const Login = () => {
     try {
       const { data } = await axios.post("/api/auth/login", {
         callsign,
-        password
+        password,
       });
       console.log(data);
       setUser(data);
@@ -119,7 +119,7 @@ const Login = () => {
       console.log(err.response.data);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
       setUser(null);
       setDisabled(false);
@@ -132,7 +132,7 @@ const Login = () => {
     if (hasAlert) {
       setAlert({
         color: "success",
-        msg: t("resetPasswordSuccess")
+        msg: t("resetPasswordSuccess"),
       });
       searchParams.delete("alert");
       setSearchParams(searchParams);
@@ -181,7 +181,7 @@ const Login = () => {
 
           <form action="#" method="post" onSubmit={login}>
             <div className="mb-2 block">
-              <Label htmlFor="callsign" value={t('callsign')} />
+              <Label htmlFor="callsign" value={t("callsign")} />
             </div>
             <TextInput
               type="text"

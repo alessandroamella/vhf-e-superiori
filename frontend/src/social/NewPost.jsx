@@ -7,7 +7,7 @@ import {
   Modal,
   Progress,
   Spinner,
-  Textarea
+  Textarea,
 } from "flowbite-react";
 import PropTypes from "prop-types";
 import React, { useContext, useEffect, useMemo, useState } from "react";
@@ -32,7 +32,7 @@ const FileUploaderMemo = React.memo(
         maxVideos={maxVideos}
       />
     );
-  }
+  },
 );
 
 const NewPost = () => {
@@ -67,8 +67,8 @@ const NewPost = () => {
       return navigate({
         pathname: "/login",
         search: createSearchParams({
-          to: "/social/new"
-        }).toString()
+          to: "/social/new",
+        }).toString(),
       });
 
     // Check if user is not verified and show modal
@@ -115,7 +115,7 @@ const NewPost = () => {
     ) {
       setAlert({
         color: "failure",
-        msg: "Devi aggiungere almeno una foto o un video per creare un post."
+        msg: "Devi aggiungere almeno una foto o un video per creare un post.",
       });
 
       return;
@@ -137,13 +137,13 @@ const NewPost = () => {
     try {
       const { data } = await axios.post("/api/post", formData, {
         headers: {
-          "Content-Type": "multipart/form-data"
+          "Content-Type": "multipart/form-data",
         },
         onUploadProgress: (e) => {
           const percent = (e.loaded / e.total) * 100;
           console.log("uploading...", percent);
           setUploadPercent(percent);
-        }
+        },
       });
       console.log(data);
 
@@ -151,18 +151,18 @@ const NewPost = () => {
         pathname: "/social",
         search: createSearchParams({
           created: data.description,
-          newPostId: data._id
-        }).toString()
+          newPostId: data._id,
+        }).toString(),
       });
     } catch (err) {
       console.log(err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
       window.scrollTo({
         top: 0,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     } finally {
       setDisabled(false);
@@ -173,12 +173,12 @@ const NewPost = () => {
 
   function navigateBack() {
     window.confirm(
-      "Sei sicuro di voler tornare indietro? Tutti i dati inseriti verranno persi."
+      "Sei sicuro di voler tornare indietro? Tutti i dati inseriti verranno persi.",
     )
       ? navigate("/social")
       : window.scrollTo({
           top: 0,
-          behavior: "smooth"
+          behavior: "smooth",
         });
   }
 
@@ -188,16 +188,16 @@ const NewPost = () => {
   const postPictures = useMemo(
     () =>
       [...Array(pictures.length).keys()].map((e) =>
-        window.URL.createObjectURL(pictures[e])
+        window.URL.createObjectURL(pictures[e]),
       ),
-    [pictures]
+    [pictures],
   );
   const postVideos = useMemo(
     () =>
       [...Array(videos.length).keys()].map((e) =>
-        window.URL.createObjectURL(videos[e])
+        window.URL.createObjectURL(videos[e]),
       ),
-    [videos]
+    [videos],
   );
   const postUser = user;
 
@@ -209,7 +209,7 @@ const NewPost = () => {
       createdAt: postCreatedAt,
       pictures: postPictures,
       videos: postVideos,
-      fromUser: postUser
+      fromUser: postUser,
     };
   }, [createdAt, postDescription, postPictures, postVideos, postUser]);
 
@@ -260,7 +260,7 @@ const NewPost = () => {
                   {...register("description", {
                     required: true,
                     maxLength: 300,
-                    minLength: 1
+                    minLength: 1,
                   })}
                   minLength={1}
                   maxLength={300}
@@ -359,7 +359,7 @@ FileUploaderMemo.propTypes = {
   setFiles: PropTypes.func,
   disabled: PropTypes.bool,
   maxPhotos: PropTypes.number,
-  maxVideos: PropTypes.number
+  maxVideos: PropTypes.number,
 };
 
 FileUploaderMemo.displayName = "FileUploaderMemo";

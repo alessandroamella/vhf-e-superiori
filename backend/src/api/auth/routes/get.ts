@@ -42,15 +42,15 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get(
-    "/:callsign",
-    param("callsign").isString().trim().toUpperCase(),
-    validate,
-    (req, res, next) => {
-        const { callsign } = req.params;
-        return isValidObjectId(callsign)
-            ? returnUserWithPosts(req, res, next, undefined, callsign)
-            : returnUserWithPosts(req, res, next, callsign);
-    }
+  "/:callsign",
+  param("callsign").isString().trim().toUpperCase(),
+  validate,
+  (req, res, next) => {
+    const { callsign } = req.params;
+    return isValidObjectId(callsign)
+      ? returnUserWithPosts(req, res, next, undefined, callsign)
+      : returnUserWithPosts(req, res, next, callsign);
+  },
 );
 
 export default router;

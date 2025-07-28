@@ -1,7 +1,7 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { MediaBlock } from "react-placeholder/lib/placeholders";
-import PropTypes from "prop-types";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -35,7 +35,7 @@ const LazyPDFViewer = ({ pdfName, shouldRender }) => {
 
 LazyPDFViewer.propTypes = {
   pdfName: PropTypes.string.isRequired,
-  shouldRender: PropTypes.bool.isRequired
+  shouldRender: PropTypes.bool.isRequired,
 };
 
 LazyPDFViewer.displayName = "LazyPDFViewer";

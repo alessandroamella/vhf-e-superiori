@@ -1,6 +1,6 @@
 import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
-import { UserClass } from "../../auth/models";
 import mongoose from "mongoose";
+import { UserClass } from "../../auth/models";
 
 /**
  * @swagger
@@ -31,29 +31,29 @@ import mongoose from "mongoose";
  */
 
 @modelOptions({
-    schemaOptions: { timestamps: true },
-    options: { allowMixed: Severity.ERROR, customName: "BlogPost" }
+  schemaOptions: { timestamps: true },
+  options: { allowMixed: Severity.ERROR, customName: "BlogPost" },
 })
 export class BlogPostClass {
-    // fromStation is User ref
-    @prop({ required: true, ref: () => UserClass })
-    public fromUser!: Ref<UserClass>;
+  // fromStation is User ref
+  @prop({ required: true, ref: () => UserClass })
+  public fromUser!: Ref<UserClass>;
 
-    @prop({ required: true })
-    public title!: string;
+  @prop({ required: true })
+  public title!: string;
 
-    @prop({ required: true })
-    public contentMd!: string; // content in markdown
+  @prop({ required: true })
+  public contentMd!: string; // content in markdown
 
-    @prop({ required: true, default: [], type: String })
-    public tags!: mongoose.Types.Array<string>; // tags for the post
+  @prop({ required: true, default: [], type: String })
+  public tags!: mongoose.Types.Array<string>; // tags for the post
 
-    @prop({ required: false })
-    public image?: string; // image for the post
+  @prop({ required: false })
+  public image?: string; // image for the post
 
-    @prop({ required: true, default: [], type: String })
-    public fileContents!: mongoose.Types.Array<string>;
+  @prop({ required: true, default: [], type: String })
+  public fileContents!: mongoose.Types.Array<string>;
 
-    @prop({ required: true, ref: () => UserClass })
-    public comments!: Ref<UserClass>[];
+  @prop({ required: true, ref: () => UserClass })
+  public comments!: Ref<UserClass>[];
 }

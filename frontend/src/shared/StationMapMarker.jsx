@@ -1,7 +1,7 @@
-import { useMemo } from "react";
-import { Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import PropTypes from "prop-types";
+import { useMemo } from "react";
+import { Marker, Popup } from "react-leaflet";
 
 const StationMapMarker = ({
   iconRescaleFactor,
@@ -9,18 +9,18 @@ const StationMapMarker = ({
   lat,
   lon,
   locator,
-  icon
+  icon,
 }) => {
   const _icon = useMemo(() => {
     return (
       icon ||
       L.icon({
-        iconSize: [25, 41].map(e => e * (iconRescaleFactor || 1)),
-        iconAnchor: [10, 41].map(e => e * (iconRescaleFactor || 1)),
-        popupAnchor: [2, -40].map(e => e * (iconRescaleFactor || 1)),
+        iconSize: [25, 41].map((e) => e * (iconRescaleFactor || 1)),
+        iconAnchor: [10, 41].map((e) => e * (iconRescaleFactor || 1)),
+        popupAnchor: [2, -40].map((e) => e * (iconRescaleFactor || 1)),
         iconUrl: "/mapicon/marker-icon.png",
         shadowUrl: "/mapicon/marker-shadow.png",
-        shadowSize: iconRescaleFactor ? 0 : undefined
+        shadowSize: iconRescaleFactor ? 0 : undefined,
       })
     );
   }, [icon, iconRescaleFactor]);
@@ -52,7 +52,7 @@ StationMapMarker.propTypes = {
   lat: PropTypes.number.isRequired,
   lon: PropTypes.number.isRequired,
   locator: PropTypes.string,
-  icon: PropTypes.object
+  icon: PropTypes.object,
 };
 
 StationMapMarker.displayName = "StationMapMarker";

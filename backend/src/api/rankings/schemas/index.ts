@@ -31,8 +31,8 @@ import type { QsoDoc } from "../../qso/models";
  *            example: 100
  */
 export interface Ranking {
-    callsign: string;
-    qsos: QsoDoc[];
-    position: number;
-    points: number;
+  callsign: string;
+  qsos: QsoDoc[];
+  position: number;
+  points: number;
 }

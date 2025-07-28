@@ -21,7 +21,7 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get("/", (req, res) => {
-    res.sendFile("privacy.md", { root: path.join(process.cwd(), "documents") });
+  res.sendFile("privacy.md", { root: path.join(process.cwd(), "documents") });
 });
 
 export default router;

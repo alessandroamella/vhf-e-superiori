@@ -10,7 +10,7 @@ import {
   Label,
   Modal,
   Spinner,
-  TextInput
+  TextInput,
 } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
@@ -18,7 +18,7 @@ import {
   FaClipboard,
   FaClipboardCheck,
   FaExternalLinkAlt,
-  FaUndo
+  FaUndo,
 } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router";
@@ -32,7 +32,7 @@ const CreateEditEventModal = ({
   setShowModal,
   eventEditing,
   setEventEditing,
-  setAlertFromParent
+  setAlertFromParent,
 }) => {
   const { setEvents } = useContext(EventsContext);
   const { user } = useContext(UserContext);
@@ -57,14 +57,14 @@ const CreateEditEventModal = ({
   const [name, setName] = useState("");
   const [band, setBand] = useState("");
   const [date, setDate] = useState(
-    new Date().toISOString().slice(0, -14) + "T10:00"
+    new Date().toISOString().slice(0, -14) + "T10:00",
   );
   const [joinStart, setJoinStart] = useState(
     new Date(`${getYear(new Date())}/01/01`).toISOString().slice(0, -14) +
-      "T00:00"
+      "T00:00",
   );
   const [joinDeadline, setJoinDeadline] = useState(
-    new Date().toISOString().slice(0, -14) + "T10:00"
+    new Date().toISOString().slice(0, -14) + "T10:00",
   );
   const [logoUrl, setLogoUrl] = useState("/logo-min.png");
   const [eqslUrl, setEqslUrl] = useState("/logo-min.png");
@@ -139,10 +139,10 @@ const CreateEditEventModal = ({
     setBand(e.band);
     setDate(formatInTimeZone(e.date, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"));
     setJoinStart(
-      formatInTimeZone(e.joinStart, "Europe/Rome", "yyyy-MM-dd'T'HH:mm")
+      formatInTimeZone(e.joinStart, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"),
     );
     setJoinDeadline(
-      formatInTimeZone(e.joinDeadline, "Europe/Rome", "yyyy-MM-dd'T'HH:mm")
+      formatInTimeZone(e.joinDeadline, "Europe/Rome", "yyyy-MM-dd'T'HH:mm"),
     );
     setLogoUrl(e.logoUrl);
     setEqslUrl(e.eqslUrl);
@@ -172,7 +172,7 @@ const CreateEditEventModal = ({
         eqslUrl,
         offsetCallsign,
         offsetData,
-        offsetFrom
+        offsetFrom,
       };
 
       ["date", "joinStart", "joinDeadline"].forEach((e) => {
@@ -192,13 +192,13 @@ const CreateEditEventModal = ({
         color: "success",
         msg: `Evento "${name}" ${
           !eventEditing ? "creato" : "modificato"
-        } con successo`
+        } con successo`,
       });
       setAlertFromParent({
         color: "success",
         msg: `Evento "${name}" ${
           !eventEditing ? "creato" : "modificato"
-        } con successo`
+        } con successo`,
       });
 
       try {
@@ -209,23 +209,23 @@ const CreateEditEventModal = ({
         console.log("Errore nel caricamento degli eventi", err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
         setAlertFromParent({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
         setEvents(null);
       }
 
       window.scrollTo({
         top: 0,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     } catch (err) {
       console.log(err.response?.data?.err || err);
       window.alert(
-        "ERRORE crea evento: " + getErrorStr(err?.response?.data?.err || err)
+        "ERRORE crea evento: " + getErrorStr(err?.response?.data?.err || err),
       );
     } finally {
       setDisabled(false);
@@ -239,16 +239,16 @@ const CreateEditEventModal = ({
     try {
       const { data } = await axios.post("/api/event/upload", formData, {
         headers: {
-          "Content-Type": "multipart/form-data"
+          "Content-Type": "multipart/form-data",
         },
-        timeout: 2 * 60 * 1000 // 2 minutes timeout
+        timeout: 2 * 60 * 1000, // 2 minutes timeout
       });
       console.log("filesPath", data);
       return data;
     } catch (err) {
       console.log(err);
       window.alert(
-        "ERRORE upload immagine: " + getErrorStr(err?.response?.data?.err)
+        "ERRORE upload immagine: " + getErrorStr(err?.response?.data?.err),
       );
       return null;
     }
@@ -266,7 +266,7 @@ const CreateEditEventModal = ({
           console.log("compress img error");
           console.log(err.message);
           return reject(err);
-        }
+        },
       });
     });
   };
@@ -293,7 +293,7 @@ const CreateEditEventModal = ({
         "Errore nella compressione (in caso mandamelo): " +
           err +
           "\nJSON: " +
-          JSON.stringify(err, null, 2)
+          JSON.stringify(err, null, 2),
       );
       return;
     } finally {
@@ -309,7 +309,7 @@ const CreateEditEventModal = ({
       window.alert(
         "Path immagine: " +
           filePath.path +
-          '\nRICORDA DI PREMERE IL TASTO "Applica modifiche"'
+          '\nRICORDA DI PREMERE IL TASTO "Applica modifiche"',
       );
     } catch (err) {
       window.alert("ERRORE upload immagine (outer): " + getErrorStr(err));
@@ -335,23 +335,23 @@ const CreateEditEventModal = ({
 
       const { data } = await axios.post("/api/event/upload", formData, {
         headers: {
-          "Content-Type": "multipart/form-data"
+          "Content-Type": "multipart/form-data",
         },
         timeout: 2 * 60 * 1000, // 2 minutes timeout,
-        params: { isEqsl: true, quality: 80 } // higher quality for eqsl
+        params: { isEqsl: true, quality: 80 }, // higher quality for eqsl
       });
       console.log("filesPath", data);
       setEqslPic(data.path);
       window.alert(
         "Path immagine: " +
           data.path +
-          '\nRICORDA DI PREMERE IL TASTO "Applica modifiche"'
+          '\nRICORDA DI PREMERE IL TASTO "Applica modifiche"',
       );
       setEqslUrl(data.path);
 
       if (!user.city || !user.province) {
         window.alert(
-          "Ricordati di aggiornare la tua città e provincia per poter visualizzare l'anteprima dell'EQSL"
+          "Ricordati di aggiornare la tua città e provincia per poter visualizzare l'anteprima dell'EQSL",
         );
       } else {
         await renderEqslExample(data.path);
@@ -367,7 +367,7 @@ const CreateEditEventModal = ({
     _eqslPic,
     _offsetCallsign,
     _offsetData,
-    _offsetFrom
+    _offsetFrom,
   ) {
     _eqslPic = _eqslPic || eqslPic || eqslUrl;
     _offsetCallsign = _offsetCallsign || offsetCallsign;
@@ -389,7 +389,7 @@ const CreateEditEventModal = ({
         // _offsetFrom = offsetFrom;
 
         return window.alert(
-          "Inserisci prima l'offset per poter visualizzare l'anteprima dell'EQSL"
+          "Inserisci prima l'offset per poter visualizzare l'anteprima dell'EQSL",
         );
       }
 
@@ -397,7 +397,7 @@ const CreateEditEventModal = ({
         href: _eqslPic,
         offsetCallsign: _offsetCallsign,
         offsetData: _offsetData,
-        offsetFrom: _offsetFrom
+        offsetFrom: _offsetFrom,
       });
       console.log("eqsl preview", res2.data);
       setEqslExample(res2.data.href);
@@ -411,11 +411,11 @@ const CreateEditEventModal = ({
   const applyOffset = async () => {
     if (
       [tempOffsetCallsign, tempOffsetData, tempOffsetFrom].some((e) =>
-        isNaN(parseInt(e))
+        isNaN(parseInt(e)),
       )
     ) {
       window.alert(
-        "Non hai inserito tutti i campi, l'offset non è stato modificato"
+        "Non hai inserito tutti i campi, l'offset non è stato modificato",
       );
       return;
     }
@@ -429,7 +429,7 @@ const CreateEditEventModal = ({
       null,
       tempOffsetCallsign,
       tempOffsetData,
-      tempOffsetFrom
+      tempOffsetFrom,
     );
   };
 
@@ -458,7 +458,7 @@ const CreateEditEventModal = ({
     }, 1000);
     try {
       await navigator.clipboard.writeText(
-        window.location.origin + "/qsomanager/" + eventEditing
+        window.location.origin + "/qsomanager/" + eventEditing,
       );
       setCopied(true);
       setCopiedError(false);
@@ -474,7 +474,7 @@ const CreateEditEventModal = ({
     setJoinRequests(null);
     try {
       const { data } = await axios.get(
-        "/api/joinrequest/eventadmin/" + eventId
+        "/api/joinrequest/eventadmin/" + eventId,
       );
       console.log("joinRequests", data);
 
@@ -483,7 +483,7 @@ const CreateEditEventModal = ({
       console.log(err.response.data);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
       setJoinRequests(false);
     }
@@ -925,7 +925,7 @@ CreateEditEventModal.propTypes = {
   setShowModal: PropTypes.func,
   eventEditing: PropTypes.object,
   setEventEditing: PropTypes.func,
-  setAlertFromParent: PropTypes.func
+  setAlertFromParent: PropTypes.func,
 };
 
 export default CreateEditEventModal;

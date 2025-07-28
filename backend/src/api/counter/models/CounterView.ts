@@ -21,16 +21,16 @@ import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
  *            description: Date of the connection
  */
 @modelOptions({
-    schemaOptions: { timestamps: false },
-    options: { allowMixed: Severity.ERROR, customName: "CounterView" }
+  schemaOptions: { timestamps: false },
+  options: { allowMixed: Severity.ERROR, customName: "CounterView" },
 })
 export class CounterViewClass {
-    @prop({ required: false, ref: "User" })
-    public fromUser?: Ref<"User">;
+  @prop({ required: false, ref: "User" })
+  public fromUser?: Ref<"User">;
 
-    @prop({ required: true })
-    public ip!: string;
+  @prop({ required: true })
+  public ip!: string;
 
-    @prop({ required: true })
-    public date!: Date;
+  @prop({ required: true })
+  public date!: Date;
 }

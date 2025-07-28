@@ -54,61 +54,59 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get(
-    "/",
-    query("limit").optional().isInt({ min: 1 }).toInt(),
-    query("sortByCallsign").optional().isBoolean().toBoolean(),
-    validate,
-    async (req, res) => {
-        try {
-            const limit = parseInt(req.query.limit as string) as number;
-            const users = User.find(
-                {},
-                {
-                    password: 0,
-                    // joinRequests: 0,
-                    verificationCode: 0,
-                    passwordResetCode: 0,
-                    __v: 0
-                }
-            );
-            if (limit) users.limit(limit);
-            if (req.query.sortByCallsign && req.query.sortByCallsign === "true")
-                users.sort({ callsign: 1 });
-            else users.sort({ createdAt: -1 });
+  "/",
+  query("limit").optional().isInt({ min: 1 }).toInt(),
+  query("sortByCallsign").optional().isBoolean().toBoolean(),
+  validate,
+  async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) as number;
+      const users = User.find(
+        {},
+        {
+          password: 0,
+          // joinRequests: 0,
+          verificationCode: 0,
+          passwordResetCode: 0,
+          __v: 0,
+        },
+      );
+      if (limit) users.limit(limit);
+      if (req.query.sortByCallsign && req.query.sortByCallsign === "true")
+        users.sort({ callsign: 1 });
+      else users.sort({ createdAt: -1 });
 
-            const result = await users.exec();
+      const result = await users.exec();
 
-            const joinRequests = await JoinRequest.find({
-                fromUser: { $in: result.map((u) => u._id) }
-            })
-                .populate({
-                    path: "fromUser",
-                    select: "callsign name email phoneNumber isDev isAdmin"
-                })
-                .populate({ path: "forEvent", select: "name" })
-                .sort({ createdAt: -1 });
+      const joinRequests = await JoinRequest.find({
+        fromUser: { $in: result.map((u) => u._id) },
+      })
+        .populate({
+          path: "fromUser",
+          select: "callsign name email phoneNumber isDev isAdmin",
+        })
+        .populate({ path: "forEvent", select: "name" })
+        .sort({ createdAt: -1 });
 
-            return res.json(
-                result.map((u) => {
-                    const _joinRequests = joinRequests.filter(
-                        (jr) => jr.fromUser._id.toString() === u._id.toString()
-                    );
-                    return {
-                        ...u.toJSON(),
-                        joinRequests: _joinRequests,
-                        locator:
-                            u.lat && u.lon
-                                ? location.calculateQth(u.lat, u.lon)
-                                : null
-                    };
-                })
-            );
-        } catch (err) {
-            logger.error("Error in users all");
-            logger.error(err);
-            return res.status(INTERNAL_SERVER_ERROR).json(createError());
-        }
+      return res.json(
+        result.map((u) => {
+          const _joinRequests = joinRequests.filter(
+            (jr) => jr.fromUser._id.toString() === u._id.toString(),
+          );
+          return {
+            ...u.toJSON(),
+            joinRequests: _joinRequests,
+            locator:
+              u.lat && u.lon ? location.calculateQth(u.lat, u.lon) : null,
+          };
+        }),
+      );
+    } catch (err) {
+      logger.error("Error in users all");
+      logger.error(err);
+      return res.status(INTERNAL_SERVER_ERROR).json(createError());
     }
+  },
 );
 
 export default router;

@@ -9,22 +9,21 @@ import {
   Label,
   Modal,
   Spinner,
-  TextInput
+  TextInput,
 } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useMemo, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { FaInfo } from "react-icons/fa";
 import { Link } from "react-router";
 import { EventsContext, UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
-import { useTranslation } from "react-i18next";
-import { Trans } from "react-i18next";
 
 const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
   const { user } = useContext(UserContext);
   const { events } = useContext(EventsContext);
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   const [joinableEvents, setJoinableEvents] = useState(null);
   useEffect(() => {
@@ -52,7 +51,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
     try {
       await axios.post("/api/joinrequest", {
         antenna,
-        forEvent: event._id
+        forEvent: event._id,
       });
 
       setJoinError(null);
@@ -132,7 +131,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
     >
       <form onSubmit={sendJoinRequest}>
         <Modal.Header>
-          {t('participationRequest')}{" "}
+          {t("participationRequest")}{" "}
           <span className="underline">{!disabled && event?.name}</span>
         </Modal.Header>
         <Modal.Body>
@@ -166,7 +165,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                   <span className="inline">
                     <FaInfo className="inline" />
                   </span>{" "}
-                  {t('noEventsToJoin')}
+                  {t("noEventsToJoin")}
                 </span>
               </Alert>
             ) : (
@@ -181,21 +180,29 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                 <Trans
                   i18nKey="requestParticipation"
                   values={{ eventName: event.name }}
-                  components={{ Link: <Link to="/profile" className="underline decoration-dotted hover:text-black transition-colors" /> }}
+                  components={{
+                    Link: (
+                      <Link
+                        to="/profile"
+                        className="underline decoration-dotted hover:text-black transition-colors"
+                      />
+                    ),
+                  }}
                 />
               </span>
             </Alert>
           ) : isAfter(new Date(), new Date(event.joinDeadline)) ? (
             <Alert color="warning" className="mb-4">
               <span>
-                <span className="font-medium">{t('attention')}</span> {t('requestTimeExpired')}{" "}
+                <span className="font-medium">{t("attention")}</span>{" "}
+                {t("requestTimeExpired")}{" "}
                 {formatInTimeZone(
                   new Date(event.joinDeadline),
                   "Europe/Rome",
                   "dd/MM/yyyy 'alle ore' HH:mm",
                   {
-                    locale: it
-                  }
+                    locale: it,
+                  },
                 )}
                 .
               </span>
@@ -203,14 +210,15 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
           ) : isBefore(new Date(), new Date(event.joinStart)) ? (
             <Alert color="warning" className="mb-4">
               <span>
-                <span className="font-medium">{t('attention')}</span> {t('requestTimeStart')}{" "}
+                <span className="font-medium">{t("attention")}</span>{" "}
+                {t("requestTimeStart")}{" "}
                 {formatInTimeZone(
                   new Date(event.joinStart),
                   "Europe/Rome",
                   "dd/MM/yyyy 'alle ore' HH:mm",
                   {
-                    locale: it
-                  }
+                    locale: it,
+                  },
                 )}
                 .
               </span>
@@ -220,14 +228,15 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
               {joinError && (
                 <Alert color="failure" className="mb-4">
                   <span>
-                    <span className="font-medium">{t('Error')}</span> {joinError}
+                    <span className="font-medium">{t("Error")}</span>{" "}
+                    {joinError}
                   </span>
                 </Alert>
               )}
 
               <div className="flex flex-col gap-4">
                 <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                  {t('formEvent')}
+                  {t("formEvent")}
                 </p>
 
                 <div>
@@ -253,14 +262,13 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                     required
                   />
                   <Label htmlFor="accept-tos">
-                    {t('viewRulesDeclaration')}
-                    {" "}
+                    {t("viewRulesDeclaration")}{" "}
                     <a
                       href="/docs/Regolamento_FLASH_MOB_2023_01_23.pdf"
                       target="_blank"
                       className="underline"
                     >
-                      {t('rules')}
+                      {t("rules")}
                     </a>
                   </Label>
                 </div>
@@ -276,13 +284,15 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
               disabled={disabled && !closable && !noEventsToJoin}
               onClick={() => setOpen(false)}
             >
-              {t('close')}
+              {t("close")}
             </Button>
             <Button type="submit" disabled={disabled}>
               {isSending ? (
                 <Spinner />
               ) : (
-                <span>{t('sendRequestAs')} {user?.callsign}</span>
+                <span>
+                  {t("sendRequestAs")} {user?.callsign}
+                </span>
               )}
             </Button>
           </div>
@@ -296,7 +306,7 @@ JoinRequestModal.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   event: PropTypes.object,
-  setEvent: PropTypes.func.isRequired
+  setEvent: PropTypes.func.isRequired,
 };
 
 JoinRequestModal.displayName = "JoinRequestModal";

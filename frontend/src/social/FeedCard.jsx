@@ -4,13 +4,13 @@ import ReactPlaceholder from "react-placeholder";
 import { Link } from "react-router";
 import "swiper/css";
 import "swiper/css/pagination";
-import { Swiper, SwiperSlide } from "swiper/react";
 // import "swiper/css/navigation";
 // import "swiper/css/scrollbar";
 import axios from "axios";
 import { Avatar, Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
 import { FaTrash } from "react-icons/fa";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import CallsignLoading from "../shared/CallsignLoading";
@@ -53,7 +53,7 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
           user?.isAdmin && p.fromUser._id !== user._id
             ? ` di ${p.fromUser.callsign}`
             : ""
-        }?`
+        }?`,
       )
     ) {
       return;
@@ -65,7 +65,7 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
       await axios.delete("/api/post/" + p._id);
       setAlert({
         color: "success",
-        msg: "Post eliminato con successo"
+        msg: "Post eliminato con successo",
       });
       setUser({ ...user, posts: user.posts.filter((_p) => _p._id !== p._id) });
       setPosts(posts.filter((_p) => _p._id !== p._id));
@@ -73,7 +73,7 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
       console.log("error in post delete", err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
     } finally {
       setDeleteDisabled(false);
@@ -150,7 +150,7 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
             loop={false}
             autoplay={{
               delay: 2500,
-              disableOnInteraction: false
+              disableOnInteraction: false,
             }}
           >
             {post?.pictures?.map((picture) => (
@@ -224,7 +224,7 @@ FeedCard.propTypes = {
   post: PropTypes.object,
   pp: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   setAlert: PropTypes.func,
-  id: PropTypes.string
+  id: PropTypes.string,
 };
 
 FeedCard.displayName = "FeedCard";

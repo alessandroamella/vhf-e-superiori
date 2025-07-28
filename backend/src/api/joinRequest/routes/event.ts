@@ -51,33 +51,33 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get(
-    "/:_id",
-    param("_id").isMongoId(),
-    validate,
-    async (req: Request, res: Response) => {
-        if (!req.user) {
-            throw new Error("No req.user in joinRequest get event");
-        }
-        try {
-            const joinRequest = await JoinRequest.findOne(
-                {
-                    forEvent: req.params._id,
-                    fromUser: (req.user as unknown as UserDoc)._id
-                },
-                { fromUser: 0 }
-            );
-            if (!joinRequest) {
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
-            }
-            res.json(joinRequest);
-        } catch (err) {
-            logger.error("Error while finding joinRequests for event");
-            logger.error(err);
-            res.status(INTERNAL_SERVER_ERROR).json(createError());
-        }
+  "/:_id",
+  param("_id").isMongoId(),
+  validate,
+  async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new Error("No req.user in joinRequest get event");
     }
+    try {
+      const joinRequest = await JoinRequest.findOne(
+        {
+          forEvent: req.params._id,
+          fromUser: (req.user as unknown as UserDoc)._id,
+        },
+        { fromUser: 0 },
+      );
+      if (!joinRequest) {
+        return res
+          .status(BAD_REQUEST)
+          .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
+      }
+      res.json(joinRequest);
+    } catch (err) {
+      logger.error("Error while finding joinRequests for event");
+      logger.error(err);
+      res.status(INTERNAL_SERVER_ERROR).json(createError());
+    }
+  },
 );
 
 export default router;

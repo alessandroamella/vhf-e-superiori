@@ -7,8 +7,6 @@ import Signup from "./auth/Signup";
 import ViewEvent from "./event/ViewEvent";
 import Homepage from "./homepage";
 import "./index.css";
-import Profile from "./profile";
-import reportWebVitals from "./reportWebVitals";
 // import Regolamento from "./homepage/Regolamento";
 // import Info from "./homepage/Info";
 import BeaconHomepage from "./beacon";
@@ -21,7 +19,9 @@ import Qso from "./event/Qso";
 import QsoManager from "./event/QsoManager";
 import Rankings from "./event/Rankings";
 import ProgettiGianni from "./homepage/ProgettiGianni";
+import Profile from "./profile";
 import ResetPw from "./profile/ResetPw";
+import reportWebVitals from "./reportWebVitals";
 import Social from "./social";
 import NewPost from "./social/NewPost";
 import ViewPost from "./social/ViewPost";
@@ -39,7 +39,7 @@ import {
   SidebarOpenContext,
   SplashContext,
   UserContext,
-  ViewsContext
+  ViewsContext,
 } from "./App";
 import BlogPostEditor from "./blog/Editor";
 import BlogPostViewer from "./blog/View";
@@ -216,7 +216,7 @@ export const App = () => {
               <JoinOpenContext.Provider
                 value={{
                   joinOpen,
-                  setJoinOpen
+                  setJoinOpen,
                 }}
               >
                 <ViewsContext.Provider value={{ views }}>

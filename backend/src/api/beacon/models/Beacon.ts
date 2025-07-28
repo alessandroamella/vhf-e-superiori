@@ -18,10 +18,10 @@ import { modelOptions, prop, Severity } from "@typegoose/typegoose";
  */
 
 @modelOptions({
-    schemaOptions: { timestamps: true },
-    options: { allowMixed: Severity.ERROR, customName: "Beacon" }
+  schemaOptions: { timestamps: true },
+  options: { allowMixed: Severity.ERROR, customName: "Beacon" },
 })
 export class BeaconClass {
-    @prop({ required: true, minlength: 1, maxlength: 10, uppercase: true })
-    public callsign!: string;
+  @prop({ required: true, minlength: 1, maxlength: 10, uppercase: true })
+  public callsign!: string;
 }

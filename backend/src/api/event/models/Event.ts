@@ -45,40 +45,40 @@ import { modelOptions, prop, Severity } from "@typegoose/typegoose";
  */
 
 @modelOptions({
-    schemaOptions: { timestamps: true },
-    options: { allowMixed: Severity.ERROR, customName: "Event" }
+  schemaOptions: { timestamps: true },
+  options: { allowMixed: Severity.ERROR, customName: "Event" },
 })
 export class EventClass {
-    @prop({ required: true, minlength: 1 })
-    public name!: string;
+  @prop({ required: true, minlength: 1 })
+  public name!: string;
 
-    @prop({ required: false })
-    public description?: string;
+  @prop({ required: false })
+  public description?: string;
 
-    @prop({ required: true, minlength: 1 })
-    public band!: string;
+  @prop({ required: true, minlength: 1 })
+  public band!: string;
 
-    @prop({ required: true })
-    public date!: Date;
+  @prop({ required: true })
+  public date!: Date;
 
-    @prop({ required: true })
-    public joinStart!: Date;
+  @prop({ required: true })
+  public joinStart!: Date;
 
-    @prop({ required: true })
-    public joinDeadline!: Date;
+  @prop({ required: true })
+  public joinDeadline!: Date;
 
-    @prop({ required: false })
-    public logoUrl?: string;
+  @prop({ required: false })
+  public logoUrl?: string;
 
-    @prop({ required: false })
-    public eqslUrl?: string;
+  @prop({ required: false })
+  public eqslUrl?: string;
 
-    @prop({ required: false })
-    public offsetCallsign?: number;
+  @prop({ required: false })
+  public offsetCallsign?: number;
 
-    @prop({ required: false })
-    public offsetData?: number;
+  @prop({ required: false })
+  public offsetData?: number;
 
-    @prop({ required: false })
-    public offsetFrom?: number;
+  @prop({ required: false })
+  public offsetFrom?: number;
 }

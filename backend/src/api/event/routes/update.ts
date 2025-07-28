@@ -1,10 +1,9 @@
 import { Request, Response, Router } from "express";
-import EventModel from "../models";
-import { checkSchema } from "express-validator";
-import { createError, validate } from "../../helpers";
-import { logger } from "../../../shared";
+import { checkSchema, param } from "express-validator";
 import { INTERNAL_SERVER_ERROR } from "http-status";
-import { param } from "express-validator";
+import { logger } from "../../../shared";
+import { createError, validate } from "../../helpers";
+import EventModel from "../models";
 import updateSchema from "../schemas/updateSchema";
 
 const router = Router();
@@ -57,49 +56,49 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.put(
-    "/:_id",
-    param("_id").isMongoId(),
-    checkSchema(updateSchema),
-    validate,
-    async (req: Request, res: Response) => {
-        try {
-            const {
-                name,
-                band,
-                description,
-                date,
-                logoUrl,
-                eqslUrl,
-                joinStart,
-                joinDeadline,
-                offsetCallsign,
-                offsetData,
-                offsetFrom
-            } = req.body;
-            const event = await EventModel.findOneAndUpdate(
-                { _id: req.params._id },
-                {
-                    name,
-                    band,
-                    description,
-                    date,
-                    logoUrl,
-                    eqslUrl,
-                    joinStart,
-                    joinDeadline,
-                    offsetCallsign,
-                    offsetData,
-                    offsetFrom
-                },
-                { new: true }
-            );
-            res.json(event?.toObject());
-        } catch (err) {
-            logger.error("Error while updating event");
-            logger.error(err);
-            res.status(INTERNAL_SERVER_ERROR).json(createError());
-        }
+  "/:_id",
+  param("_id").isMongoId(),
+  checkSchema(updateSchema),
+  validate,
+  async (req: Request, res: Response) => {
+    try {
+      const {
+        name,
+        band,
+        description,
+        date,
+        logoUrl,
+        eqslUrl,
+        joinStart,
+        joinDeadline,
+        offsetCallsign,
+        offsetData,
+        offsetFrom,
+      } = req.body;
+      const event = await EventModel.findOneAndUpdate(
+        { _id: req.params._id },
+        {
+          name,
+          band,
+          description,
+          date,
+          logoUrl,
+          eqslUrl,
+          joinStart,
+          joinDeadline,
+          offsetCallsign,
+          offsetData,
+          offsetFrom,
+        },
+        { new: true },
+      );
+      res.json(event?.toObject());
+    } catch (err) {
+      logger.error("Error while updating event");
+      logger.error(err);
+      res.status(INTERNAL_SERVER_ERROR).json(createError());
     }
+  },
 );
 
 export default router;

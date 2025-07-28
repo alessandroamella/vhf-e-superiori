@@ -6,7 +6,7 @@ import {
   Label,
   Modal,
   TextInput,
-  Tooltip
+  Tooltip,
 } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
@@ -26,7 +26,7 @@ const EditUserModal = ({
   setAlert,
   disabled,
   setDisabled,
-  user
+  user,
 }) => {
   const [addressInput, setAddressInput] = useState("");
   const addressInputRef = useRef(null);
@@ -49,7 +49,7 @@ const EditUserModal = ({
     // scroll div to top
     editUserRef.current.scrollTo({
       top: 0,
-      behavior: "smooth"
+      behavior: "smooth",
     });
   }, [editAlert]);
 
@@ -71,7 +71,7 @@ const EditUserModal = ({
       console.log(err);
       setEditAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
     } finally {
       setDisabled(false);
@@ -81,7 +81,7 @@ const EditUserModal = ({
   async function sendPwResetMail() {
     if (
       !window.confirm(
-        `Vuoi inviare una email di reset password all'utente ${userEditing.callsign} (email: ${userEditing.email})?`
+        `Vuoi inviare una email di reset password all'utente ${userEditing.callsign} (email: ${userEditing.email})?`,
       )
     ) {
       return;
@@ -90,19 +90,19 @@ const EditUserModal = ({
     try {
       await axios.post("/api/auth/sendresetpw", {
         email: userEditing.email,
-        token: "nope" // admin so no captcha
+        token: "nope", // admin so no captcha
       });
       window.alert("Email inviata");
     } catch (err) {
       console.log(err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
       setUserEditing(null);
       window.scrollTo({
         top: 0,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     } finally {
       setDisabled(false);
@@ -163,13 +163,13 @@ const EditUserModal = ({
                 <ReactGoogleAutocomplete
                   apiKey={mapsApiKey}
                   options={{
-                    types: ["geocode"]
+                    types: ["geocode"],
                   }}
                   onPlaceSelected={(place) => {
                     console.log("place", place);
                     const addr = place.formatted_address;
                     let cityIndex = place.address_components.findIndex((c) =>
-                      c.types.includes("administrative_area_level_3")
+                      c.types.includes("administrative_area_level_3"),
                     );
                     if (cityIndex === -1) {
                       cityIndex = 1;
@@ -184,7 +184,7 @@ const EditUserModal = ({
                       province,
                       lat: place.geometry.location.lat(),
                       lon: place.geometry.location.lng(),
-                      address: addr
+                      address: addr,
                     });
                   }}
                   className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 rounded-lg p-2.5 text-sm"
@@ -211,8 +211,8 @@ const EditUserModal = ({
                       typeof userEditing?.isVerified !== "boolean"
                         ? "(caricamento...)"
                         : userEditing?.isVerified
-                        ? "(✅ verificata)"
-                        : "(❌ non verificata, clicca su 'Applica modifiche' per forzare la verifica)"
+                          ? "(✅ verificata)"
+                          : "(❌ non verificata, clicca su 'Applica modifiche' per forzare la verifica)"
                     }`}
                   />
                 </div>
@@ -224,7 +224,7 @@ const EditUserModal = ({
                   onChange={(e) =>
                     setUserEditing({
                       ...userEditing,
-                      email: e.target.value
+                      email: e.target.value,
                     })
                   }
                   disabled={disabled}
@@ -242,7 +242,7 @@ const EditUserModal = ({
                   onChange={(e) =>
                     setUserEditing({
                       ...userEditing,
-                      phoneNumber: e.target.value
+                      phoneNumber: e.target.value,
                     })
                   }
                   disabled={disabled}
@@ -260,7 +260,7 @@ const EditUserModal = ({
                   onChange={(e) =>
                     setUserEditing({
                       ...userEditing,
-                      callsign: e.target.value.toUpperCase()
+                      callsign: e.target.value.toUpperCase(),
                     })
                   }
                   disabled={disabled}
@@ -278,8 +278,8 @@ const EditUserModal = ({
                         userEditing?._id === user?._id
                           ? "Non puoi rimuovere i tuoi permessi"
                           : userEditing?.isAdmin
-                          ? "ATTENZIONE: rimuovendo i permessi di amministratore, l'utente non potrà più accedere a questa pagina e non potrà più gestire gli eventi."
-                          : "Concedi i permessi di amministratore"
+                            ? "ATTENZIONE: rimuovendo i permessi di amministratore, l'utente non potrà più accedere a questa pagina e non potrà più gestire gli eventi."
+                            : "Concedi i permessi di amministratore"
                       }
                     >
                       <Checkbox
@@ -288,7 +288,7 @@ const EditUserModal = ({
                         onChange={(e) =>
                           setUserEditing({
                             ...userEditing,
-                            isAdmin: e.target.checked
+                            isAdmin: e.target.checked,
                           })
                         }
                         disabled={disabled || userEditing?._id === user?._id}
@@ -343,7 +343,7 @@ EditUserModal.propTypes = {
   setAlert: PropTypes.func,
   disabled: PropTypes.bool,
   setDisabled: PropTypes.func,
-  user: PropTypes.object
+  user: PropTypes.object,
 };
 
 EditUserModal.displayName = "EditUserModal";

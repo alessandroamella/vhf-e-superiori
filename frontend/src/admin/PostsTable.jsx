@@ -15,7 +15,7 @@ const PostsTable = ({
   deletePost,
   postPage,
   postsCurPage,
-  setPostPage
+  setPostPage,
 }) => {
   return posts ? (
     <div>
@@ -31,7 +31,7 @@ const PostsTable = ({
           <Table.HeadCell>Creazione</Table.HeadCell>
         </Table.Head>
         <Table.Body>
-          {posts?.slice(...postsInterval)?.map(u => (
+          {posts?.slice(...postsInterval)?.map((u) => (
             <Table.Row key={u._id}>
               <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                 <div className="flex items-center gap-2">
@@ -60,11 +60,11 @@ const PostsTable = ({
                   slidesPerView="auto"
                   navigation
                   pagination={{
-                    clickable: true
+                    clickable: true,
                   }}
                   modules={[Navigation, SwiperPagination]}
                 >
-                  {u.pictures.map(p => (
+                  {u.pictures.map((p) => (
                     <SwiperSlide key={p}>
                       <Zoom>
                         <LazyLoadImage
@@ -84,11 +84,11 @@ const PostsTable = ({
                     slidesPerView="auto"
                     navigation
                     pagination={{
-                      clickable: true
+                      clickable: true,
                     }}
                     modules={[Navigation, SwiperPagination]}
                   >
-                    {u.videos.map(v => (
+                    {u.videos.map((v) => (
                       <SwiperSlide key={v}>
                         <ReactPlayer
                           controls
@@ -105,7 +105,7 @@ const PostsTable = ({
                 {formatInTimeZone(
                   u.createdAt,
                   "Europe/Rome",
-                  "dd/MM/yyyy HH:mm:ss"
+                  "dd/MM/yyyy HH:mm:ss",
                 )}
               </Table.Cell>
             </Table.Row>
@@ -133,7 +133,7 @@ PostsTable.propTypes = {
   deletePost: PropTypes.func,
   postPage: PropTypes.number,
   postsCurPage: PropTypes.number,
-  setPostPage: PropTypes.func
+  setPostPage: PropTypes.func,
 };
 PostsTable.displayName = "PostsTable";
 

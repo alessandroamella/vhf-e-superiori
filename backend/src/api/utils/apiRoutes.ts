@@ -14,14 +14,13 @@ import eventRoutes from "../event/routes";
 import joinRequestRoutes from "../joinRequest/routes";
 import locationRoutes from "../location/routes";
 import mapRoutes from "../map/routes";
+import errorHandler from "../middlewares/errorHandler";
+import populateUser from "../middlewares/populateUser";
 import postRoutes from "../post/routes";
 import qrzRoutes from "../qrz/routes";
 import qsoRoutes from "../qso/routes";
 import rankingsRoutes from "../rankings/routes";
 import notFound from "./notFound";
-
-import errorHandler from "../middlewares/errorHandler";
-import populateUser from "../middlewares/populateUser";
 
 import "../jobs"; // cron jobs
 
@@ -33,7 +32,7 @@ import morgan from "morgan";
 import { join } from "path";
 import { cwd } from "process";
 import { envs } from "../../shared/envs";
-import { logger, LoggerStream } from "../../shared/logger";
+import { LoggerStream, logger } from "../../shared/logger";
 import { Errors } from "../errors";
 import { createError } from "../helpers";
 
@@ -49,49 +48,43 @@ router.use(cookieParser(envs.COOKIE_SECRET));
 router.use(populateUser);
 
 router.use(
-    fileUpload({
-        limits: { fileSize: 100 * 1024 * 1024 },
-        abortOnLimit: true,
-        // useTempFiles: false,
-        tempFileDir: join(
-            cwd(),
-            envs.BASE_TEMP_DIR,
-            envs.FILE_UPLOAD_TMP_FOLDER
-        ),
-        useTempFiles: true,
-        safeFileNames: true,
-        preserveExtension: false,
-        responseOnLimit: JSON.stringify(createError(Errors.FILE_SIZE_TOO_LARGE))
-        // tempFileDir
-    })
+  fileUpload({
+    limits: { fileSize: 100 * 1024 * 1024 },
+    abortOnLimit: true,
+    // useTempFiles: false,
+    tempFileDir: join(cwd(), envs.BASE_TEMP_DIR, envs.FILE_UPLOAD_TMP_FOLDER),
+    useTempFiles: true,
+    safeFileNames: true,
+    preserveExtension: false,
+    responseOnLimit: JSON.stringify(createError(Errors.FILE_SIZE_TOO_LARGE)),
+    // tempFileDir
+  }),
 );
 router.use((req, res, next) => {
-    if (!req.files) return next();
-    for (const key in req.files) {
-        const fileArr = Array.isArray(req.files[key])
-            ? (req.files[key] as fileUpload.UploadedFile[])
-            : ([req.files[key]] as fileUpload.UploadedFile[]);
-        if (fileArr.length > 7) {
-            return res
-                .status(BAD_REQUEST)
-                .json(createError(Errors.TOO_MANY_FILES));
-        }
-        for (const f of fileArr) {
-            if (f.size > 300 * 1024 * 1024) {
-                logger.debug(
-                    "Tried to upload file too large: " +
-                        f.name +
-                        ", size: " +
-                        f.size +
-                        " bytes"
-                );
-                return res
-                    .status(REQUEST_ENTITY_TOO_LARGE)
-                    .json(createError(Errors.FILE_SIZE_TOO_LARGE));
-            }
-        }
+  if (!req.files) return next();
+  for (const key in req.files) {
+    const fileArr = Array.isArray(req.files[key])
+      ? (req.files[key] as fileUpload.UploadedFile[])
+      : ([req.files[key]] as fileUpload.UploadedFile[]);
+    if (fileArr.length > 7) {
+      return res.status(BAD_REQUEST).json(createError(Errors.TOO_MANY_FILES));
     }
-    next();
+    for (const f of fileArr) {
+      if (f.size > 300 * 1024 * 1024) {
+        logger.debug(
+          "Tried to upload file too large: " +
+            f.name +
+            ", size: " +
+            f.size +
+            " bytes",
+        );
+        return res
+          .status(REQUEST_ENTITY_TOO_LARGE)
+          .json(createError(Errors.FILE_SIZE_TOO_LARGE));
+      }
+    }
+  }
+  next();
 });
 
 router.use("/auth", authRoutes);

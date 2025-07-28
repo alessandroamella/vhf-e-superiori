@@ -45,26 +45,26 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get(
-    "/:id",
-    param("id").isMongoId(),
-    validate,
-    async (req: Request, res: Response) => {
-        try {
-            const joinRequests = await JoinRequest.find({
-                forEvent: req.params.id
-            })
-                .populate({
-                    path: "fromUser",
-                    select: "callsign name email phoneNumber isDev isAdmin"
-                })
-                .sort({ createdAt: -1 });
-            res.json(joinRequests);
-        } catch (err) {
-            logger.error("Error while finding joinRequests for eventAdmin");
-            logger.error(err);
-            res.status(INTERNAL_SERVER_ERROR).json(createError());
-        }
+  "/:id",
+  param("id").isMongoId(),
+  validate,
+  async (req: Request, res: Response) => {
+    try {
+      const joinRequests = await JoinRequest.find({
+        forEvent: req.params.id,
+      })
+        .populate({
+          path: "fromUser",
+          select: "callsign name email phoneNumber isDev isAdmin",
+        })
+        .sort({ createdAt: -1 });
+      res.json(joinRequests);
+    } catch (err) {
+      logger.error("Error while finding joinRequests for eventAdmin");
+      logger.error(err);
+      res.status(INTERNAL_SERVER_ERROR).json(createError());
     }
+  },
 );
 
 export default router;

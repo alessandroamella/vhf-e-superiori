@@ -7,7 +7,7 @@ import {
   Modal,
   Spinner,
   Table,
-  Tabs
+  Tabs,
 } from "flowbite-react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
@@ -24,7 +24,7 @@ import {
   TwitterIcon,
   TwitterShareButton,
   WhatsappIcon,
-  WhatsappShareButton
+  WhatsappShareButton,
 } from "react-share";
 import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
@@ -46,7 +46,7 @@ const EventList = () => {
       } catch (err) {
         setAlertEvents({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setLoadingEvents(false);
@@ -95,7 +95,7 @@ const EventList = () => {
             {formatInTimeZone(
               new Date(event.date),
               "Europe/Rome",
-              "dd/MM/yyyy"
+              "dd/MM/yyyy",
             )}
           </ListGroup.Item>
         ))}
@@ -119,7 +119,7 @@ const Rankings = () => {
         setLoading(true);
 
         const { data } = await axios.get(
-          id ? `/api/rankings/${id}` : "/api/rankings"
+          id ? `/api/rankings/${id}` : "/api/rankings",
         );
         console.log("event and rankings:", data);
         const { event, rankings } = data;
@@ -133,7 +133,7 @@ const Rankings = () => {
       } catch (err) {
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setLoading(false);
@@ -152,7 +152,7 @@ const Rankings = () => {
         new Date(event.date),
         "Europe/Rome",
         "dd MMMM yyyy",
-        { locale: it }
+        { locale: it },
       )} - VHF e superiori`
     : `Classifiche dell'anno ${year} - VHF e superiori`;
 
@@ -169,8 +169,8 @@ const Rankings = () => {
         const { data } = await axios.get("/api/qso", {
           params: {
             event: event._id,
-            callsignAnywhere: user.callsign
-          }
+            callsignAnywhere: user.callsign,
+          },
         });
         console.log("QSOs", data);
         data.sort((b, a) => new Date(a.qsoDate) - new Date(b.qsoDate));
@@ -179,7 +179,7 @@ const Rankings = () => {
         console.log("Errore nel caricamento dei QSO", err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
 
         setQsos(null);
@@ -218,7 +218,7 @@ const Rankings = () => {
                   (r) =>
                     r.callsign === showRankings ||
                     (r.fromStationCallsignOverride ||
-                      r.fromStation?.callsign) === showRankings
+                      r.fromStation?.callsign) === showRankings,
                 )
                 .map((r) => (
                   <Table striped key={r.callsign}>
@@ -248,7 +248,7 @@ const Rankings = () => {
                             {formatInTimeZone(
                               new Date(qso.qsoDate),
                               "Europe/Rome",
-                              "dd/MM/yyyy HH:mm"
+                              "dd/MM/yyyy HH:mm",
                             )}
                           </Table.Cell>
                           <Table.Cell>
@@ -310,7 +310,7 @@ const Rankings = () => {
                       {formatInTimeZone(
                         new Date(event.date),
                         "Europe/Rome",
-                        "dd/MM/yyyy"
+                        "dd/MM/yyyy",
                       )}
                     </>
                   )}
@@ -356,7 +356,7 @@ const Rankings = () => {
                                   </Table.Cell>
                                   <Table.Cell>{r.points}</Table.Cell>
                                 </Table.Row>
-                              )
+                              ),
                             )}
                           </Table.Body>
                         </Table>

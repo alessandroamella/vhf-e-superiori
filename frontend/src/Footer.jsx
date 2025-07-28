@@ -1,14 +1,14 @@
 import { Spinner } from "flowbite-react";
 import { useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { FaCircle } from "react-icons/fa";
 import { Link } from "react-router";
 import { ReadyContext, ViewsContext } from "./App";
-import { useTranslation } from "react-i18next";
 
 const Footer = () => {
   const { ready } = useContext(ReadyContext);
   const { views } = useContext(ViewsContext);
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   return (
     ready && (
@@ -50,7 +50,7 @@ const Footer = () => {
         <FaCircle className="hidden md:block scale-[.25] text-gray-700 dark:text-gray-300 mx-2" />
 
         <span className="text-center">
-           {t("accessCounter")}:{" "}
+          {t("accessCounter")}:{" "}
           {views ? (
             <strong>{views}</strong>
           ) : views === false ? (

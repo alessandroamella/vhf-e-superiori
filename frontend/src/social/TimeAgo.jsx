@@ -6,7 +6,7 @@ const TimeAgo = ({ createdAt }) => {
   // Converte la data in ora locale.
   const zonedDate = utcToZonedTime(
     new Date(createdAt),
-    Intl.DateTimeFormat().resolvedOptions().timeZone
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
 
   // Calcola la differenza tra la data attuale e la data di creazione del post.
@@ -21,18 +21,18 @@ const TimeAgo = ({ createdAt }) => {
     .replace("about", "")
     .replace("less than a minute ago", "1m")
     .split(" ")
-    .map(word => abbreviate(word, "minute", "m"))
-    .map(word => abbreviate(word, "hour", "h"))
-    .map(word => abbreviate(word, "day", "g"))
-    .map(word => abbreviate(word, "month", "M"))
-    .map(word => abbreviate(word, "year", "a"))
+    .map((word) => abbreviate(word, "minute", "m"))
+    .map((word) => abbreviate(word, "hour", "h"))
+    .map((word) => abbreviate(word, "day", "g"))
+    .map((word) => abbreviate(word, "month", "M"))
+    .map((word) => abbreviate(word, "year", "a"))
     .join(" ")
     .trim(); // Rimuove eventuali spazi bianchi all'inizio o alla fine.
 
   return <span>{abbreviatedTimeAgo}</span>;
 };
 TimeAgo.propTypes = {
-  createdAt: PropTypes.string.isRequired
+  createdAt: PropTypes.string.isRequired,
 };
 
 export default TimeAgo;

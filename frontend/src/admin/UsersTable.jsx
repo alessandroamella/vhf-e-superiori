@@ -5,7 +5,7 @@ import {
   Spinner,
   Table,
   TextInput,
-  Tooltip
+  Tooltip,
 } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
@@ -19,7 +19,7 @@ const UsersTable = ({
   users,
   disabled,
   setUserEditing,
-  setJoinRequestsModal
+  setJoinRequestsModal,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -38,7 +38,7 @@ const UsersTable = ({
             user.phoneNumber?.toLowerCase().includes(searchLower) ||
             user.locator?.toLowerCase().includes(searchLower)
           );
-        })
+        }),
       );
     }
   }, [users, searchTerm]);
@@ -86,8 +86,8 @@ const UsersTable = ({
           "border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700",
           {
             "cursor-pointer": !disabled,
-            "cursor-not-allowed": disabled
-          }
+            "cursor-not-allowed": disabled,
+          },
         )}
       >
         <div className="grid grid-cols-3 md:grid-cols-5 h-full">
@@ -166,7 +166,7 @@ UsersTable.propTypes = {
   users: PropTypes.array,
   disabled: PropTypes.bool,
   setUserEditing: PropTypes.func,
-  setJoinRequestsModal: PropTypes.func
+  setJoinRequestsModal: PropTypes.func,
 };
 UsersTable.displayName = "UsersTable";
 

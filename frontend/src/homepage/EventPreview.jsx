@@ -36,8 +36,8 @@ const EventPreview = ({ event, ...props }) => {
             "Europe/Rome",
             "📅 dd/MM/yyyy  🕒 HH:mm",
             {
-              locale: it
-            }
+              locale: it,
+            },
           )}
         </div>
 
@@ -45,7 +45,7 @@ const EventPreview = ({ event, ...props }) => {
           <div
             className="line-clamp-5 mt-3"
             dangerouslySetInnerHTML={{
-              __html: event.description
+              __html: event.description,
             }}
           />
         )}
@@ -61,7 +61,7 @@ const EventPreview = ({ event, ...props }) => {
 };
 
 EventPreview.propTypes = {
-  event: PropTypes.object.isRequired
+  event: PropTypes.object.isRequired,
 };
 
 EventPreview.displayName = "EventPreview";

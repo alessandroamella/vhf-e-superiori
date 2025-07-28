@@ -36,18 +36,18 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get("/", async (req, res) => {
-    try {
-        const views = await CounterView.estimatedDocumentCount();
-        logger.debug("Total views: " + views);
-        res.json({
-            views,
-            date: new Date()
-        });
-    } catch (err) {
-        logger.error("Error in counter view get");
-        logger.error(err);
-        return res.status(INTERNAL_SERVER_ERROR).json(createError());
-    }
+  try {
+    const views = await CounterView.estimatedDocumentCount();
+    logger.debug("Total views: " + views);
+    res.json({
+      views,
+      date: new Date(),
+    });
+  } catch (err) {
+    logger.error("Error in counter view get");
+    logger.error(err);
+    return res.status(INTERNAL_SERVER_ERROR).json(createError());
+  }
 });
 
 export default router;

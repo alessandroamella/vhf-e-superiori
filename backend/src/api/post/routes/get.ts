@@ -60,100 +60,94 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get(
-    "/:_id",
-    param("_id", "Post ID is invalid").isMongoId(),
-    validate,
-    async (req, res) => {
-        try {
-            const post = await BasePost.findOne({
-                _id: req.params?._id,
-                isProcessing: false,
-                hidden: false
-            }).populate({
-                path: "fromUser",
-                select: "callsign name isDev isAdmin"
-            });
-            if (post?.isProcessing) {
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.POST_IS_PROCESSING));
-            }
+  "/:_id",
+  param("_id", "Post ID is invalid").isMongoId(),
+  validate,
+  async (req, res) => {
+    try {
+      const post = await BasePost.findOne({
+        _id: req.params?._id,
+        isProcessing: false,
+        hidden: false,
+      }).populate({
+        path: "fromUser",
+        select: "callsign name isDev isAdmin",
+      });
+      if (post?.isProcessing) {
+        return res
+          .status(BAD_REQUEST)
+          .json(createError(Errors.POST_IS_PROCESSING));
+      }
 
-            if (!post) {
-                return res
-                    .status(NOT_FOUND)
-                    .json(createError(Errors.POST_NOT_FOUND));
-            } else if (!isDocument(post.fromUser)) {
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.USER_NOT_FOUND));
-            }
+      if (!post) {
+        return res.status(NOT_FOUND).json(createError(Errors.POST_NOT_FOUND));
+      } else if (!isDocument(post.fromUser)) {
+        return res.status(BAD_REQUEST).json(createError(Errors.USER_NOT_FOUND));
+      }
 
-            logger.debug("Fetched post " + post?._id);
+      logger.debug("Fetched post " + post?._id);
 
-            const replyIds =
-                (await Comment.distinct("replies"))?.filter((id) => id) || [];
+      const replyIds =
+        (await Comment.distinct("replies"))?.filter((id) => id) || [];
 
-            // find only top-level comments, populate replies
-            const comments = await Comment.find({
-                forPost: post._id,
-                _id: { $nin: replyIds }
-            }).populate([
-                {
-                    path: "fromUser",
-                    select: "callsign name isDev isAdmin"
-                },
-                {
-                    path: "replies",
-                    populate: {
-                        path: "fromUser",
-                        select: "callsign name isDev isAdmin"
-                    }
-                }
-            ]);
+      // find only top-level comments, populate replies
+      const comments = await Comment.find({
+        forPost: post._id,
+        _id: { $nin: replyIds },
+      }).populate([
+        {
+          path: "fromUser",
+          select: "callsign name isDev isAdmin",
+        },
+        {
+          path: "replies",
+          populate: {
+            path: "fromUser",
+            select: "callsign name isDev isAdmin",
+          },
+        },
+      ]);
 
-            const allCallsigns = new Set(
-                [
-                    post.fromUser.callsign,
-                    ...comments.map((c) => (c.fromUser as UserDoc)?.callsign),
-                    ...comments.flatMap((c) =>
-                        c.replies?.map(
-                            (r) =>
-                                (
-                                    (r as unknown as CommentDoc)
-                                        ?.fromUser as unknown as UserDoc
-                                )?.callsign
-                        )
-                    )
-                ].filter(Boolean) as string[]
-            );
+      const allCallsigns = new Set(
+        [
+          post.fromUser.callsign,
+          ...comments.map((c) => (c.fromUser as UserDoc)?.callsign),
+          ...comments.flatMap((c) =>
+            c.replies?.map(
+              (r) =>
+                ((r as unknown as CommentDoc)?.fromUser as unknown as UserDoc)
+                  ?.callsign,
+            ),
+          ),
+        ].filter(Boolean) as string[],
+      );
 
-            logger.debug(
-                `Fetched ${allCallsigns.size} callsigns: ${[
-                    ...allCallsigns
-                ].join(", ")}`
-            );
+      logger.debug(
+        `Fetched ${allCallsigns.size} callsigns: ${[...allCallsigns].join(
+          ", ",
+        )}`,
+      );
 
-            const infos = await Promise.all(
-                [...allCallsigns].map((e) => qrz.getInfo(e))
-            );
+      const infos = await Promise.all(
+        [...allCallsigns].map((e) => qrz.getInfo(e)),
+      );
 
-            const pps = Object.fromEntries(
-                infos
-                    .filter((e) => e?.pictureUrl)
-                    .map((e) => [e!.callsign, e!.pictureUrl])
-            );
+      const pps = Object.fromEntries(
+        infos
+          .filter((e) => e?.pictureUrl)
+          .map((e) => [e!.callsign, e!.pictureUrl]),
+      );
 
-            res.json({
-                post: { ...post.toJSON(), comments },
-                pps
-            });
-        } catch (err) {
-            logger.error("Error in post get");
-            logger.error(err);
-            return res.status(INTERNAL_SERVER_ERROR).json(createError());
-        }
+      res.json({
+        post: { ...post.toJSON(), comments },
+        pps,
+      });
+    } catch (err) {
+      logger.error("Error in post get");
+      logger.error(err);
+      return res.status(INTERNAL_SERVER_ERROR).json(createError());
     }
+  },
 );
 
 export default router;

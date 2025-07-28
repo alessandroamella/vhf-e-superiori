@@ -69,181 +69,177 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.post(
-    "/",
-    checkSchema(createSchema),
-    validate,
-    async (req: Request, res: Response) => {
-        let responseSent = false;
+  "/",
+  checkSchema(createSchema),
+  validate,
+  async (req: Request, res: Response) => {
+    let responseSent = false;
 
-        if (!req.user) {
-            throw new Error("No req.user in post create");
-        }
-        try {
-            const user = await User.findOne({
-                _id: (req.user as unknown as UserDoc)._id
-            });
-            if (!user) {
-                throw new Error("User not found in post create");
-            }
-
-            const { description } = req.body;
-
-            const _files = req.files?.content ?? [];
-            const files: fileUpload.UploadedFile[] = Array.isArray(_files)
-                ? _files
-                : [_files];
-
-            logger.info("Checking files: ");
-            logger.info(files);
-
-            const picTempPaths: string[] = [];
-            const vidTempPaths: string[] = [];
-
-            for (const f of files) {
-                if (f.mimetype.includes("image")) {
-                    picTempPaths.push(f.tempFilePath);
-                } else if (f.mimetype.includes("video")) {
-                    vidTempPaths.push(f.tempFilePath);
-                } else {
-                    logger.error("File MIME type not allowed");
-                    return res
-                        .status(BAD_REQUEST)
-                        .json(createError(Errors.INVALID_FILE_MIME_TYPE));
-                }
-            }
-
-            if (picTempPaths.length > 10) {
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.INVALID_PICS_NUM));
-            } else if (vidTempPaths.length > 5) {
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.INVALID_VIDS_NUM));
-            } else if (picTempPaths.length + vidTempPaths.length === 0) {
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.NO_CONTENT));
-            }
-
-            logger.debug(`Creating post fromUser: ${JSON.stringify(user)}`);
-            const post = new BasePost({
-                fromUser: user._id,
-                description,
-                isProcessing: true
-            });
-            try {
-                await post.validate();
-            } catch (err) {
-                logger.error("Error while validating post");
-                logger.error(err);
-                return res
-                    .status(BAD_REQUEST)
-                    .json(createError(Errors.INVALID_POST));
-            }
-
-            logger.info("Creating post:");
-            logger.info(post);
-            logger.info(
-                `${picTempPaths.length} pictures and ${vidTempPaths.length} videos`
-            );
-
-            await post.save();
-
-            res.json(post.toObject());
-            responseSent = true;
-
-            const compressedImgPaths: string[] = [];
-            const compressedVidPaths: string[] = [];
-
-            for (const p of picTempPaths) {
-                const originalStat = await stat(p);
-                const originalSizeKb = originalStat.size / 1024;
-
-                if (originalSizeKb > 1024 * 3) {
-                    logger.debug(`Compressing picture ${p}`);
-                    const minifiedPath = p + ".min.jpg";
-                    await sharp(p).jpeg({ quality: 80 }).toFile(minifiedPath);
-
-                    const newStat = await stat(minifiedPath);
-                    const newSizeKb = newStat.size / 1024;
-
-                    logger.info(
-                        `Minified picture for post ${post._id} saved to ${minifiedPath} (${originalSizeKb}Kb -> ${newSizeKb}Kb)`
-                    );
-                    await unlink(p);
-
-                    compressedImgPaths.push(minifiedPath);
-                } else {
-                    logger.info(
-                        `Picture ${p} is small enough (${originalSizeKb}Kb), not minifying`
-                    );
-                    compressedImgPaths.push(p);
-                }
-            }
-
-            for (const v of vidTempPaths) {
-                logger.debug(`Compressing video ${v}`);
-                const compressedPath = v + ".compressed.mp4";
-                const compressor = new VideoCompressor(v, compressedPath);
-                await compressor.compress();
-
-                const originalStat = await stat(v);
-                const originalSizeMb = originalStat.size / 1024 / 1024;
-
-                const newStat = await stat(compressedPath);
-                const newSizeMb = newStat.size / 1024 / 1024;
-
-                logger.info(
-                    `Compressed video for post ${post._id} saved to ${compressedPath} (${originalSizeMb}Mb -> ${newSizeMb}Mb)`
-                );
-                await unlink(v);
-
-                compressedVidPaths.push(compressedPath);
-            }
-
-            const compressedImgUrls: string[] = [];
-            const compressedVidUrls: string[] = [];
-
-            for (const f of [...compressedImgPaths, ...compressedVidPaths]) {
-                const isImage = !f.endsWith(".mp4");
-
-                const mimeType = isImage ? "image/jpeg" : "video/mp4";
-                const awsPath = await s3.uploadFile({
-                    fileName: s3.generateFileName({
-                        userId: user._id.toString(),
-                        mimeType
-                    }),
-                    filePath: f,
-                    mimeType,
-                    folder: isImage ? "pics" : "vids"
-                });
-
-                if (isImage) {
-                    compressedImgUrls.push(awsPath);
-                } else {
-                    compressedVidUrls.push(awsPath);
-                }
-
-                logger.info(
-                    `Minified file for post ${post._id} uploaded to ${awsPath}`
-                );
-            }
-
-            post.isProcessing = false;
-            post.pictures.push(...compressedImgUrls);
-            post.videos.push(...compressedVidUrls);
-            logger.info("Post after processing:");
-            logger.info(post);
-            await post.save();
-        } catch (err) {
-            logger.error("Error while creating post");
-            logger.error(err);
-            if (!responseSent) {
-                res.status(INTERNAL_SERVER_ERROR).json(createError());
-            }
-        }
+    if (!req.user) {
+      throw new Error("No req.user in post create");
     }
+    try {
+      const user = await User.findOne({
+        _id: (req.user as unknown as UserDoc)._id,
+      });
+      if (!user) {
+        throw new Error("User not found in post create");
+      }
+
+      const { description } = req.body;
+
+      const _files = req.files?.content ?? [];
+      const files: fileUpload.UploadedFile[] = Array.isArray(_files)
+        ? _files
+        : [_files];
+
+      logger.info("Checking files: ");
+      logger.info(files);
+
+      const picTempPaths: string[] = [];
+      const vidTempPaths: string[] = [];
+
+      for (const f of files) {
+        if (f.mimetype.includes("image")) {
+          picTempPaths.push(f.tempFilePath);
+        } else if (f.mimetype.includes("video")) {
+          vidTempPaths.push(f.tempFilePath);
+        } else {
+          logger.error("File MIME type not allowed");
+          return res
+            .status(BAD_REQUEST)
+            .json(createError(Errors.INVALID_FILE_MIME_TYPE));
+        }
+      }
+
+      if (picTempPaths.length > 10) {
+        return res
+          .status(BAD_REQUEST)
+          .json(createError(Errors.INVALID_PICS_NUM));
+      } else if (vidTempPaths.length > 5) {
+        return res
+          .status(BAD_REQUEST)
+          .json(createError(Errors.INVALID_VIDS_NUM));
+      } else if (picTempPaths.length + vidTempPaths.length === 0) {
+        return res.status(BAD_REQUEST).json(createError(Errors.NO_CONTENT));
+      }
+
+      logger.debug(`Creating post fromUser: ${JSON.stringify(user)}`);
+      const post = new BasePost({
+        fromUser: user._id,
+        description,
+        isProcessing: true,
+      });
+      try {
+        await post.validate();
+      } catch (err) {
+        logger.error("Error while validating post");
+        logger.error(err);
+        return res.status(BAD_REQUEST).json(createError(Errors.INVALID_POST));
+      }
+
+      logger.info("Creating post:");
+      logger.info(post);
+      logger.info(
+        `${picTempPaths.length} pictures and ${vidTempPaths.length} videos`,
+      );
+
+      await post.save();
+
+      res.json(post.toObject());
+      responseSent = true;
+
+      const compressedImgPaths: string[] = [];
+      const compressedVidPaths: string[] = [];
+
+      for (const p of picTempPaths) {
+        const originalStat = await stat(p);
+        const originalSizeKb = originalStat.size / 1024;
+
+        if (originalSizeKb > 1024 * 3) {
+          logger.debug(`Compressing picture ${p}`);
+          const minifiedPath = p + ".min.jpg";
+          await sharp(p).jpeg({ quality: 80 }).toFile(minifiedPath);
+
+          const newStat = await stat(minifiedPath);
+          const newSizeKb = newStat.size / 1024;
+
+          logger.info(
+            `Minified picture for post ${post._id} saved to ${minifiedPath} (${originalSizeKb}Kb -> ${newSizeKb}Kb)`,
+          );
+          await unlink(p);
+
+          compressedImgPaths.push(minifiedPath);
+        } else {
+          logger.info(
+            `Picture ${p} is small enough (${originalSizeKb}Kb), not minifying`,
+          );
+          compressedImgPaths.push(p);
+        }
+      }
+
+      for (const v of vidTempPaths) {
+        logger.debug(`Compressing video ${v}`);
+        const compressedPath = v + ".compressed.mp4";
+        const compressor = new VideoCompressor(v, compressedPath);
+        await compressor.compress();
+
+        const originalStat = await stat(v);
+        const originalSizeMb = originalStat.size / 1024 / 1024;
+
+        const newStat = await stat(compressedPath);
+        const newSizeMb = newStat.size / 1024 / 1024;
+
+        logger.info(
+          `Compressed video for post ${post._id} saved to ${compressedPath} (${originalSizeMb}Mb -> ${newSizeMb}Mb)`,
+        );
+        await unlink(v);
+
+        compressedVidPaths.push(compressedPath);
+      }
+
+      const compressedImgUrls: string[] = [];
+      const compressedVidUrls: string[] = [];
+
+      for (const f of [...compressedImgPaths, ...compressedVidPaths]) {
+        const isImage = !f.endsWith(".mp4");
+
+        const mimeType = isImage ? "image/jpeg" : "video/mp4";
+        const awsPath = await s3.uploadFile({
+          fileName: s3.generateFileName({
+            userId: user._id.toString(),
+            mimeType,
+          }),
+          filePath: f,
+          mimeType,
+          folder: isImage ? "pics" : "vids",
+        });
+
+        if (isImage) {
+          compressedImgUrls.push(awsPath);
+        } else {
+          compressedVidUrls.push(awsPath);
+        }
+
+        logger.info(
+          `Minified file for post ${post._id} uploaded to ${awsPath}`,
+        );
+      }
+
+      post.isProcessing = false;
+      post.pictures.push(...compressedImgUrls);
+      post.videos.push(...compressedVidUrls);
+      logger.info("Post after processing:");
+      logger.info(post);
+      await post.save();
+    } catch (err) {
+      logger.error("Error while creating post");
+      logger.error(err);
+      if (!responseSent) {
+        res.status(INTERNAL_SERVER_ERROR).json(createError());
+      }
+    }
+  },
 );
 
 export default router;

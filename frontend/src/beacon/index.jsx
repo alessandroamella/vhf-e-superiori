@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { FaPlus } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
-import { Link, createSearchParams, useNavigate } from "react-router";
+import { createSearchParams, Link, useNavigate } from "react-router";
 import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import { inRange } from "../shared/inRange";
@@ -42,7 +42,7 @@ const BeaconHomepage = () => {
         console.log("Errore nel caricamento dei beacon", err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
         setBeacons(null);
       } finally {
@@ -87,8 +87,8 @@ const BeaconHomepage = () => {
                         : navigate({
                             pathname: "/login",
                             search: createSearchParams({
-                              to: "/beacon/editor"
-                            }).toString()
+                              to: "/beacon/editor",
+                            }).toString(),
                           })
                     }
                   >
@@ -145,12 +145,12 @@ const BeaconHomepage = () => {
                               inRange(
                                 Math.floor(beacon.properties.frequency),
                                 band - 1,
-                                band + 1
-                              )
+                                band + 1,
+                              ),
                           )
                           ?.sort(
                             (a, b) =>
-                              a.properties?.frequency - b.properties?.frequency
+                              a.properties?.frequency - b.properties?.frequency,
                           )
                           ?.map((beacon) => (
                             <Table.Row

@@ -14,7 +14,7 @@ import {
   FaUserPlus,
   FaUserShield,
   FaUsers,
-  FaWhatsapp
+  FaWhatsapp,
 } from "react-icons/fa";
 import { HiMoon, HiSun } from "react-icons/hi";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -54,7 +54,7 @@ const SectionHref = ({ href, wip, children }) => {
 SectionHref.propTypes = {
   href: PropTypes.string.isRequired,
   wip: PropTypes.bool,
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
 const SectionLink = ({ to, children, redirectBack, ...rest }) => {
@@ -71,9 +71,9 @@ const SectionLink = ({ to, children, redirectBack, ...rest }) => {
               pathname: to,
               search: redirectBack
                 ? createSearchParams({
-                    to: location.pathname
+                    to: location.pathname,
                   }).toString()
-                : undefined
+                : undefined,
             }
       }
       onClick={() => setTimeout(() => setSidebarOpen(false), 50)}
@@ -88,7 +88,7 @@ const SectionLink = ({ to, children, redirectBack, ...rest }) => {
 SectionLink.propTypes = {
   to: PropTypes.string,
   children: PropTypes.node.isRequired,
-  redirectBack: PropTypes.bool
+  redirectBack: PropTypes.bool,
 };
 
 const SectionTitle = ({ children, className, ...rest }) => {
@@ -106,7 +106,7 @@ const SectionTitle = ({ children, className, ...rest }) => {
 
 SectionTitle.propTypes = {
   children: PropTypes.node,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 const MenuContent = ({ isSideBar }) => {
@@ -279,8 +279,8 @@ const MenuContent = ({ isSideBar }) => {
             : {
                 pathname: "/login",
                 search: createSearchParams({
-                  to: location.pathname
-                }).toString()
+                  to: location.pathname,
+                }).toString(),
               }
         }
       >
@@ -307,7 +307,7 @@ const MenuContent = ({ isSideBar }) => {
 };
 
 MenuContent.propTypes = {
-  isSideBar: PropTypes.bool
+  isSideBar: PropTypes.bool,
 };
 
 MenuContent.displayName = "MenuContent";

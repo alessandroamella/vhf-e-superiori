@@ -1,11 +1,10 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-import { UserContext } from "../App";
-
 import axios, { isAxiosError } from "axios";
 import { Alert, Button, Spinner } from "flowbite-react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { FaBackward, FaTrash } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router";
+import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import ViewPostContent from "./ViewPostContent";
 
@@ -31,18 +30,18 @@ const ViewPost = () => {
         if (isAxiosError(err) && err.response.status === 404) {
           setAlert({
             color: "failure",
-            msg: "Post non trovato"
+            msg: "Post non trovato",
           });
         } else {
           setAlert({
             color: "failure",
-            msg: getErrorStr(err?.response?.data?.err)
+            msg: getErrorStr(err?.response?.data?.err),
           });
         }
         setPostExtended(null);
         window.scrollTo({
           top: 0,
-          behavior: "smooth"
+          behavior: "smooth",
         });
       }
     }
@@ -63,7 +62,7 @@ const ViewPost = () => {
       await axios.delete("/api/post/" + p._id);
       setAlert({
         color: "success",
-        msg: "Post eliminato con successo"
+        msg: "Post eliminato con successo",
       });
       setUser({ ...user, posts: user.posts.filter((_p) => _p._id !== p._id) });
       navigate("/social");
@@ -71,7 +70,7 @@ const ViewPost = () => {
       console.log("error in post delete", err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
     } finally {
       setDeleteDisabled(false);

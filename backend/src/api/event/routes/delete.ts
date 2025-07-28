@@ -1,9 +1,9 @@
 import { Request, Response, Router } from "express";
-import EventModel from "../models";
-import { createError, validate } from "../../helpers";
-import { logger } from "../../../shared";
-import { INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { param } from "express-validator";
+import { INTERNAL_SERVER_ERROR, OK } from "http-status";
+import { logger } from "../../../shared";
+import { createError, validate } from "../../helpers";
+import EventModel from "../models";
 
 const router = Router();
 
@@ -39,19 +39,19 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.delete(
-    "/:_id",
-    param("_id").isMongoId(),
-    validate,
-    async (req: Request, res: Response) => {
-        try {
-            await EventModel.deleteOne({ _id: req.params._id });
-            res.sendStatus(OK);
-        } catch (err) {
-            logger.error("Error while deleting event");
-            logger.error(err);
-            res.status(INTERNAL_SERVER_ERROR).json(createError());
-        }
+  "/:_id",
+  param("_id").isMongoId(),
+  validate,
+  async (req: Request, res: Response) => {
+    try {
+      await EventModel.deleteOne({ _id: req.params._id });
+      res.sendStatus(OK);
+    } catch (err) {
+      logger.error("Error while deleting event");
+      logger.error(err);
+      res.status(INTERNAL_SERVER_ERROR).json(createError());
     }
+  },
 );
 
 export default router;

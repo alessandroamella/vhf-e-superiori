@@ -21,7 +21,7 @@ import {
   TwitterIcon,
   TwitterShareButton,
   WhatsappIcon,
-  WhatsappShareButton
+  WhatsappShareButton,
 } from "react-share";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
@@ -45,7 +45,7 @@ function ChangeView({ center, markers }) {
 
 ChangeView.propTypes = {
   center: PropTypes.object,
-  markers: PropTypes.array
+  markers: PropTypes.array,
 };
 
 const Qso = () => {
@@ -66,11 +66,11 @@ const Qso = () => {
       } catch (err) {
         console.log(
           "Errore nel caricamento dell'evento",
-          err?.response?.data || err
+          err?.response?.data || err,
         );
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err || err)
+          msg: getErrorStr(err?.response?.data?.err || err),
         });
         setQso(null);
       }
@@ -147,7 +147,7 @@ const Qso = () => {
                               formatInTimeZone(
                                 new Date(qso.qsoDate),
                                 "UTC",
-                                "dd/MM/yyyy HH:mm"
+                                "dd/MM/yyyy HH:mm",
                               )}{" "}
                             UTC
                           </Table.Cell>
@@ -233,11 +233,11 @@ const Qso = () => {
                     <ChangeView
                       center={{
                         lat: qso.fromStationLat,
-                        lon: qso.fromStationLon
+                        lon: qso.fromStationLon,
                       }}
                       markers={[
                         { lat: qso.fromStationLat, lon: qso.fromStationLon },
-                        { lat: qso.toStationLat, lon: qso.toStationLon }
+                        { lat: qso.toStationLat, lon: qso.toStationLon },
                       ]}
                     />
                     <TileLayer
@@ -247,7 +247,7 @@ const Qso = () => {
                     <Polyline
                       positions={[
                         [qso.fromStationLat, qso.fromStationLon],
-                        [qso.toStationLat, qso.toStationLon]
+                        [qso.toStationLat, qso.toStationLon],
                       ]}
                       color="blue"
                     />

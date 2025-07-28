@@ -37,20 +37,20 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get("/", async (req: Request, res: Response) => {
-    if (!req.user) {
-        throw new Error("No req.user in joinRequest get all");
-    }
-    try {
-        const joinRequests = await JoinRequest.find(
-            { fromUser: (req.user as unknown as UserDoc)._id },
-            { fromUser: 0 }
-        );
-        res.json(joinRequests);
-    } catch (err) {
-        logger.error("Error while finding all joinRequests");
-        logger.error(err);
-        res.status(INTERNAL_SERVER_ERROR).json(createError());
-    }
+  if (!req.user) {
+    throw new Error("No req.user in joinRequest get all");
+  }
+  try {
+    const joinRequests = await JoinRequest.find(
+      { fromUser: (req.user as unknown as UserDoc)._id },
+      { fromUser: 0 },
+    );
+    res.json(joinRequests);
+  } catch (err) {
+    logger.error("Error while finding all joinRequests");
+    logger.error(err);
+    res.status(INTERNAL_SERVER_ERROR).json(createError());
+  }
 });
 
 export default router;

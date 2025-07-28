@@ -9,7 +9,7 @@ import { Helmet } from "react-helmet";
 import {
   FaBackward,
   FaExclamationTriangle,
-  FaInfoCircle
+  FaInfoCircle,
 } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { createSearchParams, Link, useNavigate, useParams } from "react-router";
@@ -59,12 +59,12 @@ const ViewEvent = () => {
     try {
       await axios.post("/api/joinrequest", {
         antenna,
-        forEvent: event._id
+        forEvent: event._id,
       });
 
       setAlert({
         color: "success",
-        msg: "Richiesta di partecipazione inviata con successo!"
+        msg: "Richiesta di partecipazione inviata con successo!",
       });
       setJoinError(null);
       setShowJoinModal(false);
@@ -206,8 +206,8 @@ const ViewEvent = () => {
               "Europe/Rome",
               "📅 dd/MM/yyyy  🕒 HH:mm ",
               {
-                locale: it
-              }
+                locale: it,
+              },
             )}
             📡 {event.band}
           </div>
@@ -215,7 +215,7 @@ const ViewEvent = () => {
           {event.description ? (
             <div
               dangerouslySetInnerHTML={{
-                __html: event.description
+                __html: event.description,
               }}
               className="text-gray-700 my-8"
             />
@@ -260,8 +260,8 @@ const ViewEvent = () => {
                             "Europe/Rome",
                             "eeee d MMMM Y",
                             {
-                              locale: it
-                            }
+                              locale: it,
+                            },
                           )}
                         </span>{" "}
                         alle ore
@@ -272,8 +272,8 @@ const ViewEvent = () => {
                             "Europe/Rome",
                             "HH:mm",
                             {
-                              locale: it
-                            }
+                              locale: it,
+                            },
                           )}
                         </span>{" "}
                         per prenotarti a questo evento!
@@ -305,8 +305,8 @@ const ViewEvent = () => {
                       navigate({
                         pathname: "/login",
                         search: createSearchParams({
-                          to: "/social/new"
-                        }).toString()
+                          to: "/social/new",
+                        }).toString(),
                       })
                     }
                   >
@@ -326,8 +326,8 @@ const ViewEvent = () => {
                     "Europe/Rome",
                     "eeee d MMMM Y 'alle ore' HH:mm",
                     {
-                      locale: it
-                    }
+                      locale: it,
+                    },
                   )}
                 </span>
               </div>
@@ -350,7 +350,7 @@ const ViewEvent = () => {
 
 EventContainer.propTypes = {
   event: PropTypes.object,
-  children: PropTypes.node
+  children: PropTypes.node,
 };
 
 EventContainer.displayName = "EventContainer";

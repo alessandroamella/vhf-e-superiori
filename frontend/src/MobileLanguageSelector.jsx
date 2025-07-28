@@ -12,7 +12,7 @@ const MobileLanguageSelector = ({ className }) => {
     { code: "fr", name: "Français", countryCode: "FR" },
     { code: "de", name: "Deutsch", countryCode: "DE" },
     { code: "mt", name: "Malti", countryCode: "MT" },
-    { code: "en", name: "English", countryCode: "GB" }
+    { code: "en", name: "English", countryCode: "GB" },
   ];
 
   const handleLanguageChange = (languageCode) => {
@@ -54,7 +54,7 @@ const MobileLanguageSelector = ({ className }) => {
 };
 
 MobileLanguageSelector.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 export default MobileLanguageSelector;

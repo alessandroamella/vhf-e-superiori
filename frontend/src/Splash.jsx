@@ -9,8 +9,8 @@ const Splash = ({ ready }) => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+      transition: { staggerChildren: 0.1 },
+    },
   };
 
   const character = {
@@ -22,9 +22,9 @@ const Splash = ({ ready }) => {
       transition: {
         type: "spring",
         damping: 15,
-        stiffness: 100
-      }
-    }
+        stiffness: 100,
+      },
+    },
   };
 
   return (
@@ -64,7 +64,7 @@ const Splash = ({ ready }) => {
 };
 
 Splash.propTypes = {
-  ready: PropTypes.bool.isRequired
+  ready: PropTypes.bool.isRequired,
 };
 
 export default Splash;

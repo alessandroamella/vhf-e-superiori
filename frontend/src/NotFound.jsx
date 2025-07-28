@@ -1,10 +1,10 @@
 import { Button } from "flowbite-react";
+import { useTranslation } from "react-i18next";
 import { HiHome, HiOutlineArrowLeft } from "react-icons/hi";
 import { Link } from "react-router";
-import { useTranslation } from "react-i18next";
 
 const NotFoundPage = () => {
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-50 dark:bg-gray-900 px-4">
       <div className="text-center max-w-lg">
@@ -13,10 +13,10 @@ const NotFoundPage = () => {
           404
         </h1>
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-3">
-          {t('pageNotFound')}
+          {t("pageNotFound")}
         </h2>
         <p className="text-gray-500 dark:text-gray-500 mb-8">
-          {t('pageRemoved')}
+          {t("pageRemoved")}
         </p>
 
         {/* Action Buttons */}
@@ -27,7 +27,7 @@ const NotFoundPage = () => {
             className="inline-flex items-center justify-center"
           >
             <HiOutlineArrowLeft className="mr-2 h-5 w-5" />
-            {t('goBack')}
+            {t("goBack")}
           </Button>
 
           <Button
@@ -38,7 +38,7 @@ const NotFoundPage = () => {
             className="inline-flex items-center dark:text-white justify-center"
           >
             <HiHome className="mr-2 h-5 w-5" />
-            {t('goBackToHome')}
+            {t("goBackToHome")}
           </Button>
         </div>
       </div>

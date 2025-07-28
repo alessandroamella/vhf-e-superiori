@@ -1,8 +1,8 @@
 import { Router } from "express";
+import { INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
 import { createError, validate } from "../../helpers";
 import { User } from "../models";
-import { INTERNAL_SERVER_ERROR } from "http-status";
 
 const router = Router();
 
@@ -30,21 +30,21 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get("/", validate, async (req, res) => {
-    try {
-        const users = await User.find(
-            { isAdmin: true },
-            {
-                name: 1,
-                callsign: 1
-            }
-        ).sort({ callsign: 1 });
+  try {
+    const users = await User.find(
+      { isAdmin: true },
+      {
+        name: 1,
+        callsign: 1,
+      },
+    ).sort({ callsign: 1 });
 
-        return res.json(users);
-    } catch (err) {
-        logger.error("Error in admins all");
-        logger.error(err);
-        return res.status(INTERNAL_SERVER_ERROR).json(createError());
-    }
+    return res.json(users);
+  } catch (err) {
+    logger.error("Error in admins all");
+    logger.error(err);
+    return res.status(INTERNAL_SERVER_ERROR).json(createError());
+  }
 });
 
 export default router;

@@ -82,112 +82,110 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get(
-    "/",
-    query("limit").isInt({ gt: 0, max: 100 }).optional(),
-    query("offset").isInt({ min: 0 }).optional(),
-    query("fromUser").isMongoId().optional(),
-    query("orderBy").isObject().optional(),
-    query("fromDate").isISO8601().optional(),
-    validate,
-    async (req, res) => {
-        try {
-            const query: FilterQuery<BasePostClass> = {
-                isProcessing: false,
-                hidden: false
-            };
-            if (
-                typeof req.query?.fromUser === "string" &&
-                isValidObjectId(req.query.fromUser)
-            ) {
-                query.fromUser = req.query.fromUser;
-            }
-            if (
-                typeof req.query?.fromDate === "string" &&
-                !Number.isNaN(new Date(req.query.fromDate).valueOf())
-            ) {
-                query.createdAt = { $gt: new Date(req.query.fromDate) };
-            }
+  "/",
+  query("limit").isInt({ gt: 0, max: 100 }).optional(),
+  query("offset").isInt({ min: 0 }).optional(),
+  query("fromUser").isMongoId().optional(),
+  query("orderBy").isObject().optional(),
+  query("fromDate").isISO8601().optional(),
+  validate,
+  async (req, res) => {
+    try {
+      const query: FilterQuery<BasePostClass> = {
+        isProcessing: false,
+        hidden: false,
+      };
+      if (
+        typeof req.query?.fromUser === "string" &&
+        isValidObjectId(req.query.fromUser)
+      ) {
+        query.fromUser = req.query.fromUser;
+      }
+      if (
+        typeof req.query?.fromDate === "string" &&
+        !Number.isNaN(new Date(req.query.fromDate).valueOf())
+      ) {
+        query.createdAt = { $gt: new Date(req.query.fromDate) };
+      }
 
-            logger.debug("Get posts with query:");
-            logger.debug(query);
+      logger.debug("Get posts with query:");
+      logger.debug(query);
 
-            const postsQuery = BasePost.find(query).populate([
-                {
-                    path: "fromUser",
-                    select: "callsign name isDev isAdmin"
-                }
-            ]);
+      const postsQuery = BasePost.find(query).populate([
+        {
+          path: "fromUser",
+          select: "callsign name isDev isAdmin",
+        },
+      ]);
 
-            if (
-                typeof req.query?.limit === "string" &&
-                !Number.isNaN(parseInt(req.query.limit))
-            )
-                postsQuery.limit(parseInt(req.query.limit));
+      if (
+        typeof req.query?.limit === "string" &&
+        !Number.isNaN(parseInt(req.query.limit))
+      )
+        postsQuery.limit(parseInt(req.query.limit));
 
-            if (
-                typeof req.query?.offset === "string" &&
-                !Number.isNaN(parseInt(req.query.offset))
-            )
-                postsQuery.skip(parseInt(req.query.offset));
+      if (
+        typeof req.query?.offset === "string" &&
+        !Number.isNaN(parseInt(req.query.offset))
+      )
+        postsQuery.skip(parseInt(req.query.offset));
 
-            if (req.query.orderBy) {
-                logger.debug("Order posts by:");
-                logger.debug(req.query.orderBy);
-            }
+      if (req.query.orderBy) {
+        logger.debug("Order posts by:");
+        logger.debug(req.query.orderBy);
+      }
 
-            const posts = await postsQuery
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .sort((req.query.orderBy as any) || { createdAt: -1 })
-                .sort({ "comments.createdAt": -1 })
-                .exec();
+      const posts = await postsQuery
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .sort((req.query.orderBy as any) || { createdAt: -1 })
+        .sort({ "comments.createdAt": -1 })
+        .exec();
 
-            const comments = await Comment.find({
-                forPost: { $in: posts.map((p) => p._id) }
-            }).populate({
-                path: "fromUser",
-                select: "callsign name isDev isAdmin"
-            });
+      const comments = await Comment.find({
+        forPost: { $in: posts.map((p) => p._id) },
+      }).populate({
+        path: "fromUser",
+        select: "callsign name isDev isAdmin",
+      });
 
-            logger.debug("Fetched " + posts.length + " posts");
+      logger.debug("Fetched " + posts.length + " posts");
 
-            const callsigns = [
-                ...new Set(
-                    posts
-                        .map(
-                            (p) => (p.fromUser as unknown as UserDoc)?.callsign
-                        )
-                        .filter(Boolean)
-                )
-            ];
-            const promiseUrls = callsigns.map((c) => qrz.getInfo(c));
-            const users = await Promise.all(promiseUrls);
-            const urls = users.map((u) => u?.pictureUrl);
+      const callsigns = [
+        ...new Set(
+          posts
+            .map((p) => (p.fromUser as unknown as UserDoc)?.callsign)
+            .filter(Boolean),
+        ),
+      ];
+      const promiseUrls = callsigns.map((c) => qrz.getInfo(c));
+      const users = await Promise.all(promiseUrls);
+      const urls = users.map((u) => u?.pictureUrl);
 
-            const pps = callsigns.map((c, i) => ({
-                callsign: c,
-                url: urls[i]
-            }));
+      const pps = callsigns.map((c, i) => ({
+        callsign: c,
+        url: urls[i],
+      }));
 
-            const postsMapped = posts.map((p) => {
-                const _comments = comments.filter(
-                    (c) => c.forPost.toString() === p._id.toString()
-                );
-                return {
-                    ...p.toJSON(),
-                    comments: _comments
-                };
-            });
+      const postsMapped = posts.map((p) => {
+        const _comments = comments.filter(
+          (c) => c.forPost.toString() === p._id.toString(),
+        );
+        return {
+          ...p.toJSON(),
+          comments: _comments,
+        };
+      });
 
-            res.json({
-                posts: postsMapped,
-                pp: pps.filter((p) => p.url)
-            });
-        } catch (err) {
-            logger.error("Error in posts get");
-            logger.error(err);
-            return res.status(INTERNAL_SERVER_ERROR).json(createError());
-        }
+      res.json({
+        posts: postsMapped,
+        pp: pps.filter((p) => p.url),
+      });
+    } catch (err) {
+      logger.error("Error in posts get");
+      logger.error(err);
+      return res.status(INTERNAL_SERVER_ERROR).json(createError());
     }
+  },
 );
 
 export default router;

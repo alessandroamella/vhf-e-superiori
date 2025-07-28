@@ -8,7 +8,7 @@ import {
   FaCheckCircle,
   FaInfoCircle,
   FaPen,
-  FaTrash
+  FaTrash,
 } from "react-icons/fa";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import ReactPlaceholder from "react-placeholder";
@@ -37,9 +37,9 @@ const ViewBeacon = () => {
         iconAnchor: [10, 41],
         popupAnchor: [2, -40],
         iconUrl: "/mapicon/marker-icon.png",
-        shadowUrl: "/mapicon/marker-shadow.png"
+        shadowUrl: "/mapicon/marker-shadow.png",
       }),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const ViewBeacon = () => {
         console.log("Errore nel caricamento del beacon", err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setLoading(false);
@@ -75,7 +75,7 @@ const ViewBeacon = () => {
         _properties.length || "-"
       } modific${
         _properties.length === 1 ? "a" : "he"
-      }? Questa azione è irreversibile. Continuare?`
+      }? Questa azione è irreversibile. Continuare?`,
     );
     if (!confirm) return;
 
@@ -85,7 +85,7 @@ const ViewBeacon = () => {
     } catch (err) {
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
     }
   }
@@ -95,7 +95,7 @@ const ViewBeacon = () => {
   async function deleteEdit(properties) {
     const { _id, editAuthor } = properties;
     const confirm = window.confirm(
-      `Sei sicuro di voler eliminare queste modifiche di ${editAuthor?.callsign}? Questa azione è irreversibile. Continuare?`
+      `Sei sicuro di voler eliminare queste modifiche di ${editAuthor?.callsign}? Questa azione è irreversibile. Continuare?`,
     );
     if (!confirm) return;
 
@@ -108,7 +108,7 @@ const ViewBeacon = () => {
     } catch (err) {
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
     } finally {
       setDisabled(false);
@@ -118,7 +118,7 @@ const ViewBeacon = () => {
   async function approveEdit(properties) {
     const { _id, editAuthor } = properties;
     const confirm = window.confirm(
-      `Sei sicuro di voler approvare queste modifiche di ${editAuthor?.callsign}? Questa azione è irreversibile. Continuare?`
+      `Sei sicuro di voler approvare queste modifiche di ${editAuthor?.callsign}? Questa azione è irreversibile. Continuare?`,
     );
     if (!confirm) return;
 
@@ -132,7 +132,7 @@ const ViewBeacon = () => {
     } catch (err) {
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
     } finally {
       setDisabled(false);
@@ -273,7 +273,7 @@ const ViewBeacon = () => {
                           {formatInTimeZone(
                             new Date(properties.editDate),
                             "Europe/Rome",
-                            "dd/MM/yyyy 'alle' HH:mm"
+                            "dd/MM/yyyy 'alle' HH:mm",
                           )}
                         </div>
                       </div>

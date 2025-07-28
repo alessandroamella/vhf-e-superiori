@@ -7,12 +7,12 @@ import SwiperCore, { Navigation, Pagination } from "swiper/core";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { useTranslation } from "react-i18next";
 import { Swiper, SwiperSlide } from "swiper/react";
 import LazyPDFViewer from "../PdfViewer";
-import { useTranslation } from "react-i18next";
 
 const ProgettiGianni = () => {
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
   SwiperCore.use([Navigation, Pagination]);
   const documents = [
     "10wi4gbz",
@@ -21,12 +21,12 @@ const ProgettiGianni = () => {
     "7NFBI4GBZ",
     "11DX4GBZ",
     "11ww4gbz",
-    "11XX4GBZ"
-  ].map(e => `/gianni/${e}.pdf`);
+    "11XX4GBZ",
+  ].map((e) => `/gianni/${e}.pdf`);
 
   const [currentSlide, setCurrentSlide] = React.useState(0);
 
-  const handleSlideChange = swiper => {
+  const handleSlideChange = (swiper) => {
     setCurrentSlide(swiper.realIndex);
   };
 
@@ -40,7 +40,7 @@ const ProgettiGianni = () => {
         </Link>
 
         <h2 className="text-lg font-semibold dark:text-gray-200 mb-4">
-           {t('giannisProjects')}
+          {t("giannisProjects")}
         </h2>
         <Swiper
           navigation

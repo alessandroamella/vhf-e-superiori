@@ -1,19 +1,19 @@
 import {
-    DocumentType,
-    modelOptions,
-    pre,
-    prop,
-    Ref
+  DocumentType,
+  modelOptions,
+  pre,
+  prop,
+  Ref,
 } from "@typegoose/typegoose";
-import { User, UserClass } from "../../auth/models";
-import { EventClass, EventDoc } from "../../event/models";
 import sharp from "sharp";
-import EqslPic from "../../eqsl/eqsl";
 import { logger } from "../../../shared";
+import { User, UserClass } from "../../auth/models";
 import EmailService from "../../email";
+import EqslPic from "../../eqsl/eqsl";
+import { EventClass, EventDoc } from "../../event/models";
+import { location } from "../../location";
 import { qrz } from "../../qrz";
 import { Qso } from ".";
-import { location } from "../../location";
 
 /**
  * @swagger
@@ -105,235 +105,225 @@ import { location } from "../../location";
  */
 
 @modelOptions({
-    schemaOptions: { timestamps: true },
-    options: { customName: "Qso" }
+  schemaOptions: { timestamps: true },
+  options: { customName: "Qso" },
 })
 @pre<QsoClass>("save", async function () {
-    if ((!this.fromStationLat || !this.fromStationLon) && this.locator) {
-        const latLon = location.calculateLatLon(this.locator);
-        if (latLon) {
-            this.fromStationLat = latLon[0];
-            this.fromStationLon = latLon[1];
-        } else {
-            logger.warn(
-                `No lat/lon found for QSO ${this._id} with locator ${this.locator}`
-            );
-        }
-    } else if (!this.locator && this.fromStationLat && this.fromStationLon) {
-        this.locator =
-            location.calculateQth(this.fromStationLat, this.fromStationLon) ||
-            undefined;
+  if ((!this.fromStationLat || !this.fromStationLon) && this.locator) {
+    const latLon = location.calculateLatLon(this.locator);
+    if (latLon) {
+      this.fromStationLat = latLon[0];
+      this.fromStationLon = latLon[1];
+    } else {
+      logger.warn(
+        `No lat/lon found for QSO ${this._id} with locator ${this.locator}`,
+      );
     }
-    if (!this.fromStationCity || !this.fromStationProvince) {
-        if (!this.fromStationLat || !this.fromStationLon) {
-            logger.error("Can't reverse geocode QSO in pre hook for QSO:");
-            logger.error(this);
-            return;
-        }
-        const geocoded = await location.reverseGeocode(
-            this.fromStationLat,
-            this.fromStationLon
-        );
-        if (!geocoded) {
-            logger.error(
-                `No reverse geocoding found for QSO ${this._id} with lat ${this.fromStationLat} and lon ${this.fromStationLon}`
-            );
-            return;
-        }
-
-        const { city, province } = location.parseData(geocoded);
-
-        this.fromStationCity = city;
-        this.fromStationProvince = province;
-
-        logger.info(
-            `Reverse geocoded QSO ${this._id} with lat ${this.fromStationLat} and lon ${this.fromStationLon} to city ${city} and province ${province}`
-        );
+  } else if (!this.locator && this.fromStationLat && this.fromStationLon) {
+    this.locator =
+      location.calculateQth(this.fromStationLat, this.fromStationLon) ||
+      undefined;
+  }
+  if (!this.fromStationCity || !this.fromStationProvince) {
+    if (!this.fromStationLat || !this.fromStationLon) {
+      logger.error("Can't reverse geocode QSO in pre hook for QSO:");
+      logger.error(this);
+      return;
     }
-    if (!this.email || !this.toStationLat || !this.toStationLon) {
-        // find if already in db
-
-        const _callsigns = this.callsign.split("/");
-        _callsigns.sort((a, b) => b.length - a.length);
-        const callsignClean = _callsigns[0];
-
-        logger.debug(`Callsign ${this.callsign} cleaned ${callsignClean}`);
-
-        const user = await User.findOne({
-            callsign: callsignClean
-        });
-        if (user) {
-            this.toStation = user._id;
-            this.email = user.email;
-            this.toStationLat = user.lat;
-            this.toStationLon = user.lon;
-            if (!this.toStationLat ? user.lat : true) {
-                return;
-            }
-        }
-
-        // find qso with same callsign and event to copy email
-        const qso = await Qso.findOne({
-            callsign: callsignClean,
-            event: this.event,
-            email: { $exists: true }
-        });
-        if (qso) {
-            this.toStation = qso.toStation;
-            this.email = qso.email;
-            this.toStationLat = qso.toStationLat;
-            this.toStationLon = qso.toStationLon;
-            if (!this.toStationLat ? qso.toStationLat : true) {
-                return;
-            }
-        }
-
-        // last resort: try to scrape email from QRZ
-        const scraped = await qrz.getInfo(callsignClean);
-        if (scraped) {
-            this.email = scraped.email;
-            this.toStationLat = scraped.lat;
-            this.toStationLon = scraped.lon;
-            return;
-        }
-        logger.warn(
-            `No email or coordinates found for QSO ${this._id} with callsign ${this.callsign} cleaned ${callsignClean}`
-        );
+    const geocoded = await location.reverseGeocode(
+      this.fromStationLat,
+      this.fromStationLon,
+    );
+    if (!geocoded) {
+      logger.error(
+        `No reverse geocoding found for QSO ${this._id} with lat ${this.fromStationLat} and lon ${this.fromStationLon}`,
+      );
+      return;
     }
+
+    const { city, province } = location.parseData(geocoded);
+
+    this.fromStationCity = city;
+    this.fromStationProvince = province;
+
+    logger.info(
+      `Reverse geocoded QSO ${this._id} with lat ${this.fromStationLat} and lon ${this.fromStationLon} to city ${city} and province ${province}`,
+    );
+  }
+  if (!this.email || !this.toStationLat || !this.toStationLon) {
+    // find if already in db
+
+    const _callsigns = this.callsign.split("/");
+    _callsigns.sort((a, b) => b.length - a.length);
+    const callsignClean = _callsigns[0];
+
+    logger.debug(`Callsign ${this.callsign} cleaned ${callsignClean}`);
+
+    const user = await User.findOne({
+      callsign: callsignClean,
+    });
+    if (user) {
+      this.toStation = user._id;
+      this.email = user.email;
+      this.toStationLat = user.lat;
+      this.toStationLon = user.lon;
+      if (!this.toStationLat ? user.lat : true) {
+        return;
+      }
+    }
+
+    // find qso with same callsign and event to copy email
+    const qso = await Qso.findOne({
+      callsign: callsignClean,
+      event: this.event,
+      email: { $exists: true },
+    });
+    if (qso) {
+      this.toStation = qso.toStation;
+      this.email = qso.email;
+      this.toStationLat = qso.toStationLat;
+      this.toStationLon = qso.toStationLon;
+      if (!this.toStationLat ? qso.toStationLat : true) {
+        return;
+      }
+    }
+
+    // last resort: try to scrape email from QRZ
+    const scraped = await qrz.getInfo(callsignClean);
+    if (scraped) {
+      this.email = scraped.email;
+      this.toStationLat = scraped.lat;
+      this.toStationLon = scraped.lon;
+      return;
+    }
+    logger.warn(
+      `No email or coordinates found for QSO ${this._id} with callsign ${this.callsign} cleaned ${callsignClean}`,
+    );
+  }
 })
 export class QsoClass {
-    // fromStation is User ref
-    @prop({ required: true, ref: () => UserClass })
-    public fromStation!: Ref<UserClass>;
+  // fromStation is User ref
+  @prop({ required: true, ref: () => UserClass })
+  public fromStation!: Ref<UserClass>;
 
-    @prop({ required: false })
-    public fromStationCallsignOverride?: string;
+  @prop({ required: false })
+  public fromStationCallsignOverride?: string;
 
-    @prop({ required: false })
-    public fromStationLat?: number;
+  @prop({ required: false })
+  public fromStationLat?: number;
 
-    @prop({ required: false })
-    public fromStationLon?: number;
+  @prop({ required: false })
+  public fromStationLon?: number;
 
-    @prop({ required: true })
-    public fromStationCity!: string;
+  @prop({ required: true })
+  public fromStationCity!: string;
 
-    @prop({ required: true })
-    public fromStationProvince!: string;
+  @prop({ required: true })
+  public fromStationProvince!: string;
 
-    @prop({ required: true, minlength: 1, maxlength: 10, uppercase: true })
-    public callsign!: string; // without prefix or suffix
+  @prop({ required: true, minlength: 1, maxlength: 10, uppercase: true })
+  public callsign!: string; // without prefix or suffix
 
-    @prop({ required: false })
-    public locator?: string;
+  @prop({ required: false })
+  public locator?: string;
 
-    @prop({ required: false, ref: () => UserClass })
-    public toStation?: Ref<UserClass>;
+  @prop({ required: false, ref: () => UserClass })
+  public toStation?: Ref<UserClass>;
 
-    @prop({ required: false })
-    public email?: string;
+  @prop({ required: false })
+  public email?: string;
 
-    @prop({ required: false })
-    public toStationLat?: number;
+  @prop({ required: false })
+  public toStationLat?: number;
 
-    @prop({ required: false })
-    public toStationLon?: number;
+  @prop({ required: false })
+  public toStationLon?: number;
 
-    @prop({ required: true, default: 59 })
-    public rst!: number;
+  @prop({ required: true, default: 59 })
+  public rst!: number;
 
-    @prop({ required: true, ref: () => EventClass })
-    public event!: Ref<EventClass>;
+  @prop({ required: true, ref: () => EventClass })
+  public event!: Ref<EventClass>;
 
-    @prop({ required: false })
-    public frequency?: number; // in MHz
+  @prop({ required: false })
+  public frequency?: number; // in MHz
 
-    @prop({ required: true })
-    public band!: string;
+  @prop({ required: true })
+  public band!: string;
 
-    @prop({ required: true })
-    public mode!: string; // SSB, CW, FT8, etc
+  @prop({ required: true })
+  public mode!: string; // SSB, CW, FT8, etc
 
-    @prop({ required: false })
-    public imageHref?: string; // URL of the EQSL image
+  @prop({ required: false })
+  public imageHref?: string; // URL of the EQSL image
 
-    @prop({ required: true })
-    public qsoDate!: Date;
+  @prop({ required: true })
+  public qsoDate!: Date;
 
-    @prop({ required: true, default: false })
-    public emailSent!: boolean;
+  @prop({ required: true, default: false })
+  public emailSent!: boolean;
 
-    @prop({ required: false })
-    public emailSentDate?: Date;
+  @prop({ required: false })
+  public emailSentDate?: Date;
 
-    @prop({ required: false })
-    public notes?: string;
+  @prop({ required: false })
+  public notes?: string;
 
-    public async sendEqsl(
-        this: DocumentType<QsoClass>,
-        event: EventDoc,
-        eqslTemplateImgUrl: string,
-        eqslTemplateImgPath?: string
-    ): Promise<string> {
-        if (!this.email) {
-            throw new Error("No email found in sendEqsl for QSO " + this._id);
-        }
-
-        let eqslBuff: Buffer | null = null;
-
-        const fromStation = await User.findOne({
-            _id: this.fromStation
-        });
-        if (!fromStation) {
-            throw new Error(
-                "No fromStation found in sendEqsl for QSO " + this._id
-            );
-        }
-
-        if (!this.imageHref) {
-            if (!eqslTemplateImgPath) {
-                const eqslPic = new EqslPic(eqslTemplateImgUrl);
-                logger.debug(
-                    "Fetching eQSL template image for event " + event._id
-                );
-                await eqslPic.fetchImage();
-                const tempPath = await eqslPic.saveImageToFile();
-                eqslTemplateImgPath = tempPath;
-            }
-            if (!eqslTemplateImgPath) {
-                throw new Error(
-                    "No image file path found in sendEqsl for event " +
-                        event._id
-                );
-            }
-
-            const imgBuf = await sharp(eqslTemplateImgPath).toBuffer();
-            const eqslPic = new EqslPic(imgBuf);
-            logger.debug("Adding QSO info to image buffer for QSO " + this._id);
-            await eqslPic.addQsoInfo(
-                this,
-                fromStation,
-                eqslTemplateImgPath,
-                event
-            );
-            const href = await eqslPic.uploadImage(fromStation._id.toString());
-            this.imageHref = href;
-            logger.info(`Uploaded eQSL image to ${href} for QSO ${this._id}`);
-            await this.save();
-            eqslBuff = eqslPic.getImage();
-        }
-
-        await EmailService.sendEqslEmail(
-            this,
-            fromStation,
-            this.email,
-            event,
-            eqslBuff ?? undefined
-        );
-        this.emailSent = true;
-        this.emailSentDate = new Date();
-        await this.save();
-
-        return this.imageHref;
+  public async sendEqsl(
+    this: DocumentType<QsoClass>,
+    event: EventDoc,
+    eqslTemplateImgUrl: string,
+    eqslTemplateImgPath?: string,
+  ): Promise<string> {
+    if (!this.email) {
+      throw new Error("No email found in sendEqsl for QSO " + this._id);
     }
+
+    let eqslBuff: Buffer | null = null;
+
+    const fromStation = await User.findOne({
+      _id: this.fromStation,
+    });
+    if (!fromStation) {
+      throw new Error("No fromStation found in sendEqsl for QSO " + this._id);
+    }
+
+    if (!this.imageHref) {
+      if (!eqslTemplateImgPath) {
+        const eqslPic = new EqslPic(eqslTemplateImgUrl);
+        logger.debug("Fetching eQSL template image for event " + event._id);
+        await eqslPic.fetchImage();
+        const tempPath = await eqslPic.saveImageToFile();
+        eqslTemplateImgPath = tempPath;
+      }
+      if (!eqslTemplateImgPath) {
+        throw new Error(
+          "No image file path found in sendEqsl for event " + event._id,
+        );
+      }
+
+      const imgBuf = await sharp(eqslTemplateImgPath).toBuffer();
+      const eqslPic = new EqslPic(imgBuf);
+      logger.debug("Adding QSO info to image buffer for QSO " + this._id);
+      await eqslPic.addQsoInfo(this, fromStation, eqslTemplateImgPath, event);
+      const href = await eqslPic.uploadImage(fromStation._id.toString());
+      this.imageHref = href;
+      logger.info(`Uploaded eQSL image to ${href} for QSO ${this._id}`);
+      await this.save();
+      eqslBuff = eqslPic.getImage();
+    }
+
+    await EmailService.sendEqslEmail(
+      this,
+      fromStation,
+      this.email,
+      event,
+      eqslBuff ?? undefined,
+    );
+    this.emailSent = true;
+    this.emailSentDate = new Date();
+    await this.save();
+
+    return this.imageHref;
+  }
 }

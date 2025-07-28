@@ -17,7 +17,7 @@ const Flags = () => {
         ["FR", "France", "fr"], // Francia
         ["DE", "Deutschland", "de"], // Germania
         ["MT", "Malta", "mt"], // Malta
-        ["GB", "United Kingdom", "en"] // Aggiunto l'Inghilterra (bandiera e lingua)
+        ["GB", "United Kingdom", "en"], // Aggiunto l'Inghilterra (bandiera e lingua)
       ].map(([countryCode, countryName, languageCode]) => (
         <div
           key={countryCode}

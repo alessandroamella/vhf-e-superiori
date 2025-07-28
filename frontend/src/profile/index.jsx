@@ -2,7 +2,7 @@ import {
   Accordion,
   AccordionBody,
   AccordionHeader,
-  Typography
+  Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
 import { getDate, isAfter } from "date-fns";
@@ -18,37 +18,37 @@ import {
   Spinner,
   Table,
   TextInput,
-  Tooltip
+  Tooltip,
 } from "flowbite-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import ReactGoogleAutocomplete from "react-google-autocomplete";
 import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import {
   FaArrowAltCircleRight,
   FaCheck,
   FaExclamation,
   FaExternalLinkAlt,
   FaLink,
-  FaTrash
+  FaTrash,
 } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
 import {
   createSearchParams,
   Link,
   useNavigate,
-  useSearchParams
+  useSearchParams,
 } from "react-router";
 import { EventsContext, UserContext } from "../App";
 import { mapsApiKey } from "../constants/mapsApiKey";
 import { getErrorStr } from "../shared";
 import CallsignLoading from "../shared/CallsignLoading";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
-import { useTranslation } from "react-i18next";
 
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);
   const { events } = useContext(EventsContext);
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   const [locator, setLocator] = useState(null);
 
@@ -113,7 +113,7 @@ const Profile = () => {
     async function fetchLocator() {
       try {
         const { data } = await axios.get(
-          `/api/location/locator/${user.lat}/${user.lon}`
+          `/api/location/locator/${user.lat}/${user.lon}`,
         );
         console.log("locator", data);
         setLocator(data.locator);
@@ -130,7 +130,7 @@ const Profile = () => {
     e.preventDefault();
 
     if (newPw !== newPwConfirm) {
-      setPwError(t('passwordsNotMatching'));
+      setPwError(t("passwordsNotMatching"));
       return;
     }
 
@@ -139,18 +139,18 @@ const Profile = () => {
     try {
       await axios.post("/api/auth/changepw", {
         oldPassword: oldPw,
-        newPassword: newPw
+        newPassword: newPw,
       });
       setOldPw("");
       setNewPw("");
       setAlert({
         color: "success",
-        msg: t('resetPasswordSuccessSimple')
+        msg: t("resetPasswordSuccessSimple"),
       });
 
       window.scrollTo({
         top: 350,
-        behavior: "smooth"
+        behavior: "smooth",
       });
 
       setPwError(null);
@@ -167,7 +167,7 @@ const Profile = () => {
 
     if (!user) {
       console.error("user not found in changeData");
-      window.alert(t('errorUserNotFound'));
+      window.alert(t("errorUserNotFound"));
       return;
     }
 
@@ -187,11 +187,11 @@ const Profile = () => {
       const { data } = await axios.put("/api/auth/" + user._id, obj);
       console.log("data", data);
       if (data.email === user.email) {
-        setAlert({ color: "success", msg: t('dataSuccessfullyModified') });
+        setAlert({ color: "success", msg: t("dataSuccessfullyModified") });
       } else {
         setAlert({
           color: "success",
-          msg: t('verifyEmail')
+          msg: t("verifyEmail"),
         });
       }
       setUser(data);
@@ -203,7 +203,7 @@ const Profile = () => {
     } catch (err) {
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
     } finally {
       // scroll a bit up
@@ -222,10 +222,10 @@ const Profile = () => {
       await axios.delete("/api/joinrequest/" + deleteJoinRequest._id);
       setAlert({
         color: "success",
-        msg: t('partecipationSuccessfullyCanceled')
+        msg: t("partecipationSuccessfullyCanceled"),
       });
       setJoinRequests((jArr) =>
-        jArr.filter((j) => j._id !== deleteJoinRequest._id)
+        jArr.filter((j) => j._id !== deleteJoinRequest._id),
       );
       setDeleteJoinRequest(null);
     } catch (err) {
@@ -246,7 +246,7 @@ const Profile = () => {
       await axios.delete("/api/post/" + p._id);
       setAlert({
         color: "success",
-        msg: t('postSuccessfullyDeleted')
+        msg: t("postSuccessfullyDeleted"),
       });
       setUser({ ...user, posts: user.posts.filter((_p) => _p._id !== p._id) });
       setDeleteJoinRequest(null);
@@ -254,7 +254,7 @@ const Profile = () => {
       console.log("error in post delete", err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
     } finally {
       setDeleteDisabled(false);
@@ -269,8 +269,8 @@ const Profile = () => {
       return navigate({
         pathname: "/login",
         search: createSearchParams({
-          to: "/profile"
-        }).toString()
+          to: "/profile",
+        }).toString(),
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -287,7 +287,7 @@ const Profile = () => {
         const j = data
           .map((_j) => ({
             ..._j,
-            event: events.find((e) => e._id === _j.forEvent)
+            event: events.find((e) => e._id === _j.forEvent),
           }))
           .filter((_j) => _j.event);
         setJoinRequests(j);
@@ -295,7 +295,7 @@ const Profile = () => {
       } catch (err) {
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       }
     }
@@ -523,7 +523,7 @@ const Profile = () => {
                     {formatInTimeZone(
                       user.createdAt,
                       "Europe/Rome",
-                      "d MMMM yyyy"
+                      "d MMMM yyyy",
                     )}
                   </p>
                 )}
@@ -633,14 +633,14 @@ const Profile = () => {
                       <ReactGoogleAutocomplete
                         apiKey={mapsApiKey}
                         options={{
-                          types: ["geocode"]
+                          types: ["geocode"],
                         }}
                         onPlaceSelected={(place) => {
                           console.log("place", place);
                           const addr = place.formatted_address;
                           let cityIndex = place.address_components.findIndex(
                             (c) =>
-                              c.types.includes("administrative_area_level_3")
+                              c.types.includes("administrative_area_level_3"),
                           );
                           if (cityIndex === -1) {
                             cityIndex = 1;
@@ -795,8 +795,8 @@ const Profile = () => {
                           "Europe/Rome",
                           "📅 dd/MM/yyyy",
                           {
-                            locale: it
-                          }
+                            locale: it,
+                          },
                         )}
                       </p>
                       <p className="font-medium">
@@ -873,7 +873,7 @@ const Profile = () => {
                                 p.createdAt,
                                 "Europe/Rome",
                                 "dd MMM yyyy",
-                                { locale: itCH }
+                                { locale: itCH },
                               )}
                           </p>
                           <Button
@@ -956,7 +956,7 @@ const Profile = () => {
                                 {formatInTimeZone(
                                   new Date(qso.qsoDate),
                                   "Europe/Rome",
-                                  "dd/MM/yyyy HH:mm"
+                                  "dd/MM/yyyy HH:mm",
                                 )}
                               </Table.Cell>
                               <Table.Cell>{qso.locator}</Table.Cell>

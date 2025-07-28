@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response, Router } from "express";
-import passport from "passport";
 import { body, checkSchema } from "express-validator";
-import createSchema from "../schemas/createSchema";
-import { createError, validate } from "../../helpers";
-import { logger } from "../../../shared";
-import checkCaptcha from "../../middlewares/checkCaptcha";
 import { BAD_REQUEST } from "http-status";
+import passport from "passport";
+import { logger } from "../../../shared";
+import { createError, validate } from "../../helpers";
+import checkCaptcha from "../../middlewares/checkCaptcha";
 import returnUserWithPosts from "../../middlewares/returnUserWithPosts";
+import createSchema from "../schemas/createSchema";
 
 const router = Router();
 
@@ -78,53 +78,53 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.post(
-    "/",
-    checkSchema(createSchema),
-    body("token").isString().notEmpty(),
-    validate,
-    checkCaptcha,
-    async (req: Request, res: Response, next: NextFunction) => {
-        passport.authenticate(
-            "signup",
-            { session: false },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            async (_err: any, user: any) => {
-                if (_err || !user) {
-                    logger.debug("Error in user signup");
-                    logger.debug("_err");
-                    logger.debug(_err);
-                    logger.debug("user");
-                    logger.debug(user);
-                    return res
-                        .status(BAD_REQUEST)
-                        .json(createError(_err?.message || _err));
-                }
-                logger.debug("user");
-                logger.debug(user);
+  "/",
+  checkSchema(createSchema),
+  body("token").isString().notEmpty(),
+  validate,
+  checkCaptcha,
+  async (req: Request, res: Response, next: NextFunction) => {
+    passport.authenticate(
+      "signup",
+      { session: false },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async (_err: any, user: any) => {
+        if (_err || !user) {
+          logger.debug("Error in user signup");
+          logger.debug("_err");
+          logger.debug(_err);
+          logger.debug("user");
+          logger.debug(user);
+          return res
+            .status(BAD_REQUEST)
+            .json(createError(_err?.message || _err));
+        }
+        logger.debug("user");
+        logger.debug(user);
 
-                req.user = user;
+        req.user = user;
 
-                return next();
+        return next();
 
-                // return res.json(
-                //     (
-                //         await User.findOne(
-                //             { _id: user._id },
-                //             {
-                //                 password: 0,
-                //                 joinRequests: 0,
-                //                 verificationCode: 0,
-                //                 passwordResetCode: 0,
-                //                 __v: 0
-                //             }
-                //         )
-                //     )?.toObject()
-                // );
-            }
-        )(req, res, next);
-    },
-    (req: Request, res: Response, next: NextFunction) =>
-        returnUserWithPosts(req, res, next)
+        // return res.json(
+        //     (
+        //         await User.findOne(
+        //             { _id: user._id },
+        //             {
+        //                 password: 0,
+        //                 joinRequests: 0,
+        //                 verificationCode: 0,
+        //                 passwordResetCode: 0,
+        //                 __v: 0
+        //             }
+        //         )
+        //     )?.toObject()
+        // );
+      },
+    )(req, res, next);
+  },
+  (req: Request, res: Response, next: NextFunction) =>
+    returnUserWithPosts(req, res, next),
 );
 
 export default router;

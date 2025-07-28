@@ -48,7 +48,7 @@ const FileItem = React.memo(({ file, index, onDelete }) => {
 FileItem.propTypes = {
   file: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
-  onDelete: PropTypes.func.isRequired
+  onDelete: PropTypes.func.isRequired,
 };
 
 FileItem.displayName = "FileItem";
@@ -59,7 +59,7 @@ const FileUploader = ({
   disabled,
   color,
   maxPhotos,
-  maxVideos
+  maxVideos,
 }) => {
   const [toast, setToast] = useState(null);
 
@@ -69,10 +69,10 @@ const FileUploader = ({
    */
   const handleDrop = async (acceptedFiles) => {
     const currentPhotos = files.filter((file) =>
-      file.type.startsWith("image")
+      file.type.startsWith("image"),
     ).length;
     const currentVideos = files.filter((file) =>
-      file.type.startsWith("video")
+      file.type.startsWith("video"),
     ).length;
 
     let newPhotos = 0;
@@ -81,7 +81,7 @@ const FileUploader = ({
     // Calculate current total size of existing files
     const currentTotalSize = files.reduce(
       (total, file) => total + file.size,
-      0
+      0,
     );
     const maxTotalSize = 99.5 * 1024 * 1024; // 99.5MB in bytes
 
@@ -120,7 +120,7 @@ const FileUploader = ({
       setToast({
         type: "error",
         message: `I seguenti file superano il limite totale di 99.5MB: ${rejectedNames}. Spazio rimanente: ${remainingSpaceMB}MB`,
-        files: rejectedFiles.length
+        files: rejectedFiles.length,
       });
 
       // Auto-dismiss after 5 seconds
@@ -132,13 +132,13 @@ const FileUploader = ({
       (file) =>
         file.type === "image/heic" ||
         file.name.endsWith(".heic") ||
-        file.name.endsWith(".heif")
+        file.name.endsWith(".heif"),
     );
     const notHeicFiles = sizeFilteredFiles.filter(
       (file) =>
         file.type !== "image/heic" &&
         !file.name.endsWith(".heic") &&
-        !file.name.endsWith(".heif")
+        !file.name.endsWith(".heif"),
     );
 
     // convert heic files to jpg
@@ -147,7 +147,7 @@ const FileUploader = ({
       const convertedFile = await heic2any({
         blob: file,
         toType: "image/jpeg",
-        quality: 0.8
+        quality: 0.8,
       });
       const heic = [];
       Array.isArray(convertedFile)
@@ -176,9 +176,9 @@ const FileUploader = ({
       "video/mp4": [".mp4"],
       "video/quicktime": [".mov"],
       "video/x-msvideo": [".avi"],
-      "video/x-ms-wmv": [".wmv"]
+      "video/x-ms-wmv": [".wmv"],
     },
-    onDrop: handleDrop
+    onDrop: handleDrop,
   });
 
   // Calculate current total size for display
@@ -249,7 +249,7 @@ FileUploader.propTypes = {
   disabled: PropTypes.bool,
   color: PropTypes.string,
   maxPhotos: PropTypes.number,
-  maxVideos: PropTypes.number
+  maxVideos: PropTypes.number,
 };
 
 FileUploader.displayName = "FileUploader";

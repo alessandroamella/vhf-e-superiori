@@ -31,20 +31,20 @@ import { EventClass } from "../../event/models";
  *            description: Whether this join request was approved (send email)
  */
 @modelOptions({
-    schemaOptions: { timestamps: true },
-    options: { allowMixed: Severity.ERROR, customName: "JoinRequest" }
+  schemaOptions: { timestamps: true },
+  options: { allowMixed: Severity.ERROR, customName: "JoinRequest" },
 })
 export class JoinRequestClass {
-    @prop({ required: true, ref: "User" })
-    public fromUser!: Ref<"User">;
+  @prop({ required: true, ref: "User" })
+  public fromUser!: Ref<"User">;
 
-    @prop({ required: true, minlength: 1, maxlength: 300 })
-    public antenna!: string; // info about the antenna
+  @prop({ required: true, minlength: 1, maxlength: 300 })
+  public antenna!: string; // info about the antenna
 
-    @prop({ required: true, ref: () => EventClass })
-    public forEvent!: Ref<EventClass>;
+  @prop({ required: true, ref: () => EventClass })
+  public forEvent!: Ref<EventClass>;
 
-    // DEBUG send email
-    @prop({ required: true, default: false })
-    public isApproved!: boolean;
+  // DEBUG send email
+  @prop({ required: true, default: false })
+  public isApproved!: boolean;
 }

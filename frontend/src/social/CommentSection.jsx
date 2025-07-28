@@ -3,14 +3,13 @@ import { formatInTimeZone } from "date-fns-tz";
 import { Alert, Button as FlowbiteButton } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FaInfoCircle, FaTrash } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { createSearchParams, Link } from "react-router";
-import CallsignLoading from "../shared/CallsignLoading";
-
 import ReactMarkdown from "react-markdown";
+import { createSearchParams, Link } from "react-router";
 import remarkGfm from "remark-gfm";
-import { useTranslation } from "react-i18next";
+import CallsignLoading from "../shared/CallsignLoading";
 
 const Comment = ({
   comment,
@@ -23,7 +22,7 @@ const Comment = ({
   setReplyTo,
   setContent,
   formatInTimeZone,
-  onReply
+  onReply,
 }) => {
   const { post, pics } = useMemo(() => postExtended || {}, [postExtended]);
 
@@ -57,7 +56,7 @@ const Comment = ({
         components={{
           a: ({
             node: {
-              properties: { href }
+              properties: { href },
             },
             ...props
           }) => (
@@ -66,7 +65,7 @@ const Comment = ({
               {...props}
               className="text-blue-500 hover:text-blue-700 transition-colors font-semibold dark:text-red-500 dark:hover:text-red-400"
             />
-          )
+          ),
         }}
       >
         {contentWithMentions}
@@ -108,7 +107,7 @@ const Comment = ({
                       <CallsignLoading user={comment.fromUser} />
                     ) : (
                       <span className="text-gray-500 dark:text-gray-300">
-                        {t('userNotFound')}
+                        {t("userNotFound")}
                       </span>
                     )}
                   </Link>
@@ -140,14 +139,14 @@ const Comment = ({
               className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
               onClick={handleReplyClick}
             >
-              {t('reply')}
+              {t("reply")}
             </button>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
               {comment?.createdAt &&
                 formatInTimeZone(
                   comment?.createdAt,
                   "Europe/Rome",
-                  "dd/MM/yyyy HH:mm"
+                  "dd/MM/yyyy HH:mm",
                 )}
             </p>
           </div>
@@ -174,7 +173,7 @@ const Comment = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                {t('showReplies')}({comment.replies.length})
+                {t("showReplies")}({comment.replies.length})
               </>
             ) : (
               <>
@@ -190,7 +189,7 @@ const Comment = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                {t('hideReplies')}({comment.replies.length})
+                {t("hideReplies")}({comment.replies.length})
               </>
             )}
           </button>
@@ -231,19 +230,19 @@ Comment.propTypes = {
     _id: PropTypes.string.isRequired,
     fromUser: PropTypes.shape({
       callsign: PropTypes.string,
-      profilePic: PropTypes.string
+      profilePic: PropTypes.string,
     }),
     content: PropTypes.string,
     createdAt: PropTypes.string,
     replies: PropTypes.arrayOf(
       PropTypes.shape({
-        _id: PropTypes.string.isRequired
-      })
-    )
+        _id: PropTypes.string.isRequired,
+      }),
+    ),
   }).isRequired,
   user: PropTypes.shape({
     callsign: PropTypes.string,
-    isAdmin: PropTypes.bool
+    isAdmin: PropTypes.bool,
   }),
   postExtended: PropTypes.object,
   deleteComment: PropTypes.func.isRequired,
@@ -253,7 +252,7 @@ Comment.propTypes = {
   setReplyTo: PropTypes.func.isRequired,
   setContent: PropTypes.func.isRequired,
   formatInTimeZone: PropTypes.func.isRequired,
-  onReply: PropTypes.func
+  onReply: PropTypes.func,
 };
 
 const CommentsSection = ({
@@ -270,16 +269,16 @@ const CommentsSection = ({
   setContent,
   highlightedComment,
   replyTo,
-  setReplyTo
+  setReplyTo,
 }) => {
   const commentContainerRef = useRef(null);
   const commentInputRef = useRef(null);
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   function onReply() {
     commentInputRef.current?.focus();
     commentInputRef.current?.scrollIntoView({
-      behavior: "smooth"
+      behavior: "smooth",
     });
   }
 
@@ -290,7 +289,7 @@ const CommentsSection = ({
         className="comment-section p-4 border-t border-gray-100 dark:border-gray-700 flex flex-col w-full"
       >
         <h2 className="mb-1 text-xl font-semibold text-gray-700 dark:text-gray-300">
-          {t('comments')}
+          {t("comments")}
         </h2>
         {alert && (
           <Alert
@@ -329,14 +328,14 @@ const CommentsSection = ({
               <div className="flex gap-4 items-center mb-2">
                 <span className="text-gray-600 dark:text-gray-400">
                   <FaInfoCircle className="inline-block mr-1 mb-[2px]" />
-                   {t('respondingToCommentOf')}{" "}
+                  {t("respondingToCommentOf")}{" "}
                   <span className="font-semibold">
                     {comments.find((c) => c._id === replyTo)?.fromUser.callsign}
                   </span>
                 </span>
 
                 <Button size="sm" color="red" onClick={() => setReplyTo(null)}>
-                 {t('cancel')}
+                  {t("cancel")}
                 </Button>
               </div>
             )}
@@ -374,20 +373,20 @@ const CommentsSection = ({
             ref={commentInputRef}
             className="mt-4 mb-2 flex justify-center gap-2 bg-gray-50 dark:bg-gray-800 px-2 py-3 rounded items-center flex-col"
           >
-            <p>{t('loginForCommentin')}</p>
+            <p>{t("loginForCommentin")}</p>
             <FlowbiteButton
               as={Link}
               to={{
                 pathname: "/login",
                 search: createSearchParams({
-                  to: location.pathname
-                }).toString()
+                  to: location.pathname,
+                }).toString(),
               }}
               className="w-fit"
               size="lg"
               color="blue"
             >
-              {t('login')}
+              {t("login")}
             </FlowbiteButton>
           </div>
         )}
@@ -402,12 +401,12 @@ CommentsSection.propTypes = {
   comments: PropTypes.arrayOf(PropTypes.object).isRequired, // Define a more specific shape if possible
   alert: PropTypes.shape({
     color: PropTypes.string,
-    msg: PropTypes.string
+    msg: PropTypes.string,
   }),
   setAlert: PropTypes.func.isRequired,
   user: PropTypes.shape({
     callsign: PropTypes.string,
-    isAdmin: PropTypes.bool
+    isAdmin: PropTypes.bool,
   }),
   disabled: PropTypes.bool.isRequired,
   deleteComment: PropTypes.func.isRequired,
@@ -416,7 +415,7 @@ CommentsSection.propTypes = {
   setContent: PropTypes.func.isRequired,
   highlightedComment: PropTypes.string,
   replyTo: PropTypes.string,
-  setReplyTo: PropTypes.func.isRequired
+  setReplyTo: PropTypes.func.isRequired,
 };
 
 export default CommentsSection;

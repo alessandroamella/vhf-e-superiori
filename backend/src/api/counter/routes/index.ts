@@ -1,7 +1,6 @@
 import { Router } from "express";
-
-import getRoute from "./get";
 import createRoute from "./create";
+import getRoute from "./get";
 
 const router = Router();
 

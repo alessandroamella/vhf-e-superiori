@@ -41,65 +41,65 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.delete(
-    "/:_id",
-    param("_id").isMongoId(),
-    validate,
-    async (req: Request, res: Response) => {
-        const reqUser = req.user as unknown as UserDoc;
-        const isAdmin = reqUser.isAdmin;
-        try {
-            const comment = await Comment.findOne({
-                _id: req.params._id
-            }).populate({
-                path: "fromUser",
-                select: "callsign name isDev isAdmin"
-            });
+  "/:_id",
+  param("_id").isMongoId(),
+  validate,
+  async (req: Request, res: Response) => {
+    const reqUser = req.user as unknown as UserDoc;
+    const isAdmin = reqUser.isAdmin;
+    try {
+      const comment = await Comment.findOne({
+        _id: req.params._id,
+      }).populate({
+        path: "fromUser",
+        select: "callsign name isDev isAdmin",
+      });
 
-            if (!comment) {
-                logger.error("Comment not found");
-                return res
-                    .status(INTERNAL_SERVER_ERROR)
-                    .json(createError(Errors.COMMENT_NOT_FOUND));
-            }
-            if (
-                !isAdmin &&
-                comment.fromUser._id.toString() !== reqUser._id.toString()
-            ) {
-                logger.debug("Not authorized to delete comment");
-                return res
-                    .status(INTERNAL_SERVER_ERROR)
-                    .json(createError(Errors.COMMENT_NOT_OWNED));
-            }
+      if (!comment) {
+        logger.error("Comment not found");
+        return res
+          .status(INTERNAL_SERVER_ERROR)
+          .json(createError(Errors.COMMENT_NOT_FOUND));
+      }
+      if (
+        !isAdmin &&
+        comment.fromUser._id.toString() !== reqUser._id.toString()
+      ) {
+        logger.debug("Not authorized to delete comment");
+        return res
+          .status(INTERNAL_SERVER_ERROR)
+          .json(createError(Errors.COMMENT_NOT_OWNED));
+      }
 
-            // delete replies
-            const replies = await Comment.deleteMany({
-                _id: { $in: comment.replies }
-            });
+      // delete replies
+      const replies = await Comment.deleteMany({
+        _id: { $in: comment.replies },
+      });
 
-            // find if this comment was a reply to another comment
-            const parentComment = await Comment.findOne({
-                replies: comment._id
-            });
-            if (parentComment?.replies) {
-                parentComment.replies = parentComment.replies.filter(
-                    (reply) => reply.toString() !== comment._id.toString()
-                );
-                await parentComment.save();
-            }
+      // find if this comment was a reply to another comment
+      const parentComment = await Comment.findOne({
+        replies: comment._id,
+      });
+      if (parentComment?.replies) {
+        parentComment.replies = parentComment.replies.filter(
+          (reply) => reply.toString() !== comment._id.toString(),
+        );
+        await parentComment.save();
+      }
 
-            await comment.deleteOne();
+      await comment.deleteOne();
 
-            logger.info(
-                `Comment ${comment._id} deleted successfully, deleted ${replies.deletedCount} replies`
-            );
+      logger.info(
+        `Comment ${comment._id} deleted successfully, deleted ${replies.deletedCount} replies`,
+      );
 
-            res.json({ parentComment: parentComment?._id || null });
-        } catch (err) {
-            logger.error("Error while deleting comment");
-            logger.error(err);
-            res.status(INTERNAL_SERVER_ERROR).json(createError());
-        }
+      res.json({ parentComment: parentComment?._id || null });
+    } catch (err) {
+      logger.error("Error while deleting comment");
+      logger.error(err);
+      res.status(INTERNAL_SERVER_ERROR).json(createError());
     }
+  },
 );
 
 export default router;

@@ -1,10 +1,10 @@
 import { Request, Response, Router } from "express";
-import EventModel from "../models";
 import { checkSchema } from "express-validator";
-import createSchema from "../schemas/createSchema";
-import { createError, validate } from "../../helpers";
-import { logger } from "../../../shared";
 import { INTERNAL_SERVER_ERROR } from "http-status";
+import { logger } from "../../../shared";
+import { createError, validate } from "../../helpers";
+import EventModel from "../models";
+import createSchema from "../schemas/createSchema";
 
 const router = Router();
 
@@ -48,58 +48,58 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.post(
-    "/",
-    checkSchema(createSchema),
-    validate,
-    async (req: Request, res: Response) => {
-        try {
-            const {
-                name,
-                band,
-                description,
-                date,
-                logoUrl,
-                eqslUrl,
-                joinStart,
-                joinDeadline,
-                offsetCallsign,
-                offsetData,
-                offsetFrom
-            } = req.body;
-            logger.debug("Creating event with following params");
-            logger.debug({
-                name,
-                band,
-                description,
-                date,
-                logoUrl,
-                eqslUrl,
-                joinStart,
-                joinDeadline,
-                offsetCallsign,
-                offsetData,
-                offsetFrom
-            });
-            const event = await EventModel.create({
-                name,
-                band,
-                description,
-                date,
-                logoUrl,
-                eqslUrl,
-                joinStart,
-                joinDeadline,
-                offsetCallsign,
-                offsetData,
-                offsetFrom
-            });
-            res.json(event.toObject());
-        } catch (err) {
-            logger.error("Error while creating event");
-            logger.error(err);
-            res.status(INTERNAL_SERVER_ERROR).json(createError());
-        }
+  "/",
+  checkSchema(createSchema),
+  validate,
+  async (req: Request, res: Response) => {
+    try {
+      const {
+        name,
+        band,
+        description,
+        date,
+        logoUrl,
+        eqslUrl,
+        joinStart,
+        joinDeadline,
+        offsetCallsign,
+        offsetData,
+        offsetFrom,
+      } = req.body;
+      logger.debug("Creating event with following params");
+      logger.debug({
+        name,
+        band,
+        description,
+        date,
+        logoUrl,
+        eqslUrl,
+        joinStart,
+        joinDeadline,
+        offsetCallsign,
+        offsetData,
+        offsetFrom,
+      });
+      const event = await EventModel.create({
+        name,
+        band,
+        description,
+        date,
+        logoUrl,
+        eqslUrl,
+        joinStart,
+        joinDeadline,
+        offsetCallsign,
+        offsetData,
+        offsetFrom,
+      });
+      res.json(event.toObject());
+    } catch (err) {
+      logger.error("Error while creating event");
+      logger.error(err);
+      res.status(INTERNAL_SERVER_ERROR).json(createError());
     }
+  },
 );
 
 export default router;

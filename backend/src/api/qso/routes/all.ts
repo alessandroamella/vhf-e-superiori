@@ -73,63 +73,59 @@ const router = Router();
  *              $ref: '#/components/schemas/ResErr'
  */
 router.get(
-    "/",
-    query("limit").optional().isInt().toInt(),
-    query("offset").optional().isInt().toInt(),
-    query("event").optional().isMongoId(),
-    query("fromStation").optional().isMongoId(),
-    query("callsign").optional().isString(),
-    query("callsignAnywhere").optional().isString(),
-    validate,
-    async (req, res) => {
-        try {
-            const limit = parseInt(req.query.limit as string) as number;
-            const skip = parseInt(req.query.offset as string) as number;
+  "/",
+  query("limit").optional().isInt().toInt(),
+  query("offset").optional().isInt().toInt(),
+  query("event").optional().isMongoId(),
+  query("fromStation").optional().isMongoId(),
+  query("callsign").optional().isString(),
+  query("callsignAnywhere").optional().isString(),
+  validate,
+  async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) as number;
+      const skip = parseInt(req.query.offset as string) as number;
 
-            const query: FilterQuery<QsoClass> = {};
-            if (req.query.event) query.event = req.query.event;
-            if (req.query.fromStation)
-                query.fromStation = req.query.fromStation;
-            if (req.query.callsign) query.callsign = req.query.callsign;
-            if (req.query.callsignAnywhere) {
-                query.$or = [
-                    { callsign: req.query.callsignAnywhere },
-                    { fromStationCallsignOverride: req.query.callsignAnywhere },
-                    { "fromStation.callsign": req.query.callsignAnywhere }
-                ];
-            }
+      const query: FilterQuery<QsoClass> = {};
+      if (req.query.event) query.event = req.query.event;
+      if (req.query.fromStation) query.fromStation = req.query.fromStation;
+      if (req.query.callsign) query.callsign = req.query.callsign;
+      if (req.query.callsignAnywhere) {
+        query.$or = [
+          { callsign: req.query.callsignAnywhere },
+          { fromStationCallsignOverride: req.query.callsignAnywhere },
+          { "fromStation.callsign": req.query.callsignAnywhere },
+        ];
+      }
 
-            const qsoQuery = Qso.find(query);
-            if (limit) qsoQuery.limit(limit);
-            if (skip) qsoQuery.skip(skip);
+      const qsoQuery = Qso.find(query);
+      if (limit) qsoQuery.limit(limit);
+      if (skip) qsoQuery.skip(skip);
 
-            logger.debug(`QSOs all query: ${JSON.stringify(query)}`);
+      logger.debug(`QSOs all query: ${JSON.stringify(query)}`);
 
-            const qsos = await qsoQuery
-                .sort({ qsoDate: -1 })
-                .populate({
-                    path: "fromStation",
-                    select: "callsign isDev isAdmin"
-                })
-                .lean();
-            res.json(
-                qsos.map((e) => ({
-                    ...e,
-                    toLocator:
-                        e.toStationLat && e.toStationLon
-                            ? location.calculateQth(
-                                  e.toStationLat,
-                                  e.toStationLon
-                              )
-                            : undefined
-                }))
-            );
-        } catch (err) {
-            logger.error("Error in QSOs all");
-            logger.error(err);
-            return res.status(INTERNAL_SERVER_ERROR).json(createError());
-        }
+      const qsos = await qsoQuery
+        .sort({ qsoDate: -1 })
+        .populate({
+          path: "fromStation",
+          select: "callsign isDev isAdmin",
+        })
+        .lean();
+      res.json(
+        qsos.map((e) => ({
+          ...e,
+          toLocator:
+            e.toStationLat && e.toStationLon
+              ? location.calculateQth(e.toStationLat, e.toStationLon)
+              : undefined,
+        })),
+      );
+    } catch (err) {
+      logger.error("Error in QSOs all");
+      logger.error(err);
+      return res.status(INTERNAL_SERVER_ERROR).json(createError());
     }
+  },
 );
 
 export default router;

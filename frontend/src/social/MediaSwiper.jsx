@@ -3,12 +3,12 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import PropTypes from "prop-types";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper";
-import Zoom from "react-medium-image-zoom";
-import ReactPlayer from "react-player";
 import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import Zoom from "react-medium-image-zoom";
+import ReactPlayer from "react-player";
+import { Navigation, Pagination } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 const MediaSwiper = React.memo(({ postPictures, postVideos }) => (
   <Swiper
@@ -16,11 +16,11 @@ const MediaSwiper = React.memo(({ postPictures, postVideos }) => (
     slidesPerView="auto"
     navigation
     pagination={{
-      clickable: true
+      clickable: true,
     }}
     modules={[Navigation, Pagination]}
   >
-    {postPictures?.map(p => (
+    {postPictures?.map((p) => (
       <SwiperSlide className="my-auto" key={p}>
         <Zoom>
           <LazyLoadImage
@@ -31,7 +31,7 @@ const MediaSwiper = React.memo(({ postPictures, postVideos }) => (
         </Zoom>
       </SwiperSlide>
     ))}
-    {postVideos?.map(v => (
+    {postVideos?.map((v) => (
       <SwiperSlide className="my-auto" key={v}>
         <ReactPlayer controls width="100%" url={v} />
       </SwiperSlide>
@@ -41,7 +41,7 @@ const MediaSwiper = React.memo(({ postPictures, postVideos }) => (
 
 MediaSwiper.propTypes = {
   postPictures: PropTypes.array,
-  postVideos: PropTypes.array
+  postVideos: PropTypes.array,
 };
 
 MediaSwiper.displayName = "MediaSwiper";

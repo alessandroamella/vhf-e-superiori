@@ -17,7 +17,7 @@ const BlogPostViewer = () => {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   const { id } = useParams();
 
@@ -31,7 +31,7 @@ const BlogPostViewer = () => {
         console.log("Errore nel caricamento del post", err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setLoading(false);
@@ -49,7 +49,10 @@ const BlogPostViewer = () => {
   async function deletePost() {
     if (disabled) return;
 
-    const ok = window.confirm("Sei sicuro di voler eliminare questo post?");{t('callsign')}
+    const ok = window.confirm("Sei sicuro di voler eliminare questo post?");
+    {
+      t("callsign");
+    }
     if (!ok) return;
 
     setDisabled(true);
@@ -61,11 +64,11 @@ const BlogPostViewer = () => {
       console.log("Errore nell'eliminazione del post", err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
       window.scrollTo({
         top: 0,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     } finally {
       setDisabled(false);
@@ -141,7 +144,7 @@ const BlogPostViewer = () => {
                   new Date(post.createdAt),
                   "Europe/Rome",
                   "dd MMMM yyyy 'alle' HH:mm",
-                  { locale: it }
+                  { locale: it },
                 )}{" "}
                 da {post.fromUser?.callsign || "--"}
               </p>

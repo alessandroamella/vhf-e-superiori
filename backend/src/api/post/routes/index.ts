@@ -4,8 +4,8 @@ import isVerified from "../../middlewares/isVerified";
 
 import allRoute from "./all";
 import createRoute from "./create";
-import getRoute from "./get";
 import deleteRoute from "./delete";
+import getRoute from "./get";
 
 const router = Router();
 

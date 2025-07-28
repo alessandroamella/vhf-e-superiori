@@ -12,8 +12,8 @@ export function getErrorStr(str) {
     str instanceof Error
       ? str.message
       : typeof str === "string"
-      ? str
-      : str?.toString() || "UNKNOWN_ERROR";
+        ? str
+        : str?.toString() || "UNKNOWN_ERROR";
 
   const arr = raw.split(",").map((s) => s.trim());
 
@@ -22,9 +22,11 @@ export function getErrorStr(str) {
     return translation !== `errors.${key}`
       ? translation
       : typeof key === "string"
-      ? `Errore: ${key}`
-      : i18n.t("errors.UNKNOWN_ERROR") +
-        (key instanceof AxiosError ? ` (${key.status} - ${key.message})` : "");
+        ? `Errore: ${key}`
+        : i18n.t("errors.UNKNOWN_ERROR") +
+          (key instanceof AxiosError
+            ? ` (${key.status} - ${key.message})`
+            : "");
   });
 
   return translated

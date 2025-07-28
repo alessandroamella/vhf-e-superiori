@@ -3,7 +3,7 @@ import {
   Menu,
   MenuHandler,
   MenuItem,
-  MenuList
+  MenuList,
 } from "@material-tailwind/react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
@@ -19,7 +19,7 @@ const LanguageSelector = ({ className }) => {
     { code: "fr", name: "Français", countryCode: "FR" },
     { code: "de", name: "Deutsch", countryCode: "DE" },
     { code: "mt", name: "Malti", countryCode: "MT" },
-    { code: "en", name: "English", countryCode: "GB" }
+    { code: "en", name: "English", countryCode: "GB" },
   ];
 
   const handleLanguageChange = (languageCode) => {
@@ -71,7 +71,7 @@ const LanguageSelector = ({ className }) => {
 };
 
 LanguageSelector.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 export default LanguageSelector;

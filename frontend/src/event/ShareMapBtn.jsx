@@ -24,7 +24,7 @@ const ShareMapBtn = ({ event, qsos, user, setAlert }) => {
 
     try {
       const { data } = await axios.get(`/api/map/export-map/${event._id}`, {
-        responseType: "blob"
+        responseType: "blob",
       });
 
       // use share API
@@ -34,8 +34,8 @@ const ShareMapBtn = ({ event, qsos, user, setAlert }) => {
           .replace(/[^a-zA-Z0-9]/g, "")
           .toLowerCase()}.jpg`,
         {
-          type: "image/jpeg"
-        }
+          type: "image/jpeg",
+        },
       );
       if ("userActivation" in navigator && !navigator.userActivation.isActive) {
         setMustClickAgain(true);
@@ -47,7 +47,7 @@ const ShareMapBtn = ({ event, qsos, user, setAlert }) => {
           text: `Ho fatto ${qsos?.length || "-"} collegamenti all'evento ${
             event.name
           }! Partecipa anche tu al Radio Flash Mob su www.vhfesuperiori.eu`,
-          files: [file]
+          files: [file],
         });
       } else {
         // instead, download the file
@@ -59,7 +59,7 @@ const ShareMapBtn = ({ event, qsos, user, setAlert }) => {
         color: "failure",
         msg:
           "Errore nel download della mappa - " +
-          getErrorStr(err?.response?.data?.err)
+          getErrorStr(err?.response?.data?.err),
       });
     } finally {
       setIsLoadingShare(false);
@@ -93,8 +93,8 @@ const ShareMapBtn = ({ event, qsos, user, setAlert }) => {
           {isLoadingShare
             ? "Caricamento..."
             : mustClickAgain
-            ? "Clicca di nuovo"
-            : "Condividi mappa"}
+              ? "Clicca di nuovo"
+              : "Condividi mappa"}
         </Button>
       </div>
     )
@@ -105,13 +105,13 @@ const ShareMapBtn = ({ event, qsos, user, setAlert }) => {
 ShareMapBtn.propTypes = {
   event: PropTypes.shape({
     _id: PropTypes.string,
-    name: PropTypes.string
+    name: PropTypes.string,
   }),
   qsos: PropTypes.array,
   user: PropTypes.shape({
-    callsign: PropTypes.string
+    callsign: PropTypes.string,
   }),
-  setAlert: PropTypes.func
+  setAlert: PropTypes.func,
 };
 
 export default ShareMapBtn;

@@ -29,7 +29,7 @@ const Blog = () => {
         console.log("Errore nel caricamento dei post", err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setLoading(false);
@@ -78,7 +78,7 @@ const Blog = () => {
       >
         {blogPosts ? (
           <div className="mx-auto px-4 w-full md:w-5/6 mt-4 mb-24 min-h-[20vh]">
-            {blogPosts.map(post => (
+            {blogPosts.map((post) => (
               <div className="mb-4" key={post._id}>
                 <Link to={`/blog/${post._id}`}>
                   <Card
@@ -104,8 +104,8 @@ const Blog = () => {
                               new Date(),
                               {
                                 addSuffix: true,
-                                locale: it
-                              }
+                                locale: it,
+                              },
                             )}
                             {post.fromUser?.callsign && (
                               <>

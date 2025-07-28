@@ -12,10 +12,10 @@ import { FaArrowAltCircleRight, FaExternalLinkAlt } from "react-icons/fa";
 import Markdown from "react-markdown";
 import ReactPlaceholder from "react-placeholder";
 import {
-  Link,
   createSearchParams,
+  Link,
   useNavigate,
-  useSearchParams
+  useSearchParams,
 } from "react-router";
 import { UserContext } from "../App";
 import { mapsApiKey } from "../constants/mapsApiKey";
@@ -46,7 +46,7 @@ const OpenExternally = ({ doc }) => {
 };
 
 OpenExternally.propTypes = {
-  doc: PropTypes.string.isRequired
+  doc: PropTypes.string.isRequired,
 };
 
 const Signup = () => {
@@ -114,7 +114,7 @@ const Signup = () => {
   const placesWidget = usePlacesWidget({
     apiKey: mapsApiKey,
     options: {
-      types: ["geocode"]
+      types: ["geocode"],
     },
     onPlaceSelected: (place) => {
       if (!place) return;
@@ -125,7 +125,7 @@ const Signup = () => {
         return;
       }
       let cityIndex = place.address_components.findIndex((c) =>
-        c.types.includes("administrative_area_level_3")
+        c.types.includes("administrative_area_level_3"),
       );
       if (cityIndex === -1) {
         cityIndex = place.formatted_address.length <= 2 ? 0 : 1;
@@ -139,7 +139,7 @@ const Signup = () => {
       setLat(place.geometry.location.lat());
       setLon(place.geometry.location.lng());
     },
-    language: "it"
+    language: "it",
   });
   const mapsRef = placesWidget.ref;
 
@@ -167,8 +167,8 @@ const Signup = () => {
     try {
       const { data } = await axios.get("/api/qrz/" + callsign, {
         params: {
-          geocode: true
-        }
+          geocode: true,
+        },
       });
       console.log("QRZ data", data);
       if (!name) setName(data.name);
@@ -190,7 +190,7 @@ const Signup = () => {
     } catch (err) {
       console.log(
         "QRZ callsign fetch failed:",
-        err?.response?.data?.err || err
+        err?.response?.data?.err || err,
       );
     } finally {
       setDisabled(false);
@@ -213,7 +213,7 @@ const Signup = () => {
       if (!recaptchaValue) {
         window.scrollTo({
           top: 0,
-          behavior: "smooth"
+          behavior: "smooth",
         });
         return setAlert(t("verifyNotRobot"));
       }
@@ -224,7 +224,7 @@ const Signup = () => {
     if (password !== repeatPassword) {
       window.scrollTo({
         top: 0,
-        behavior: "smooth"
+        behavior: "smooth",
       });
       return setAlert(t("passwordsNotMatching"));
     }
@@ -237,7 +237,7 @@ const Signup = () => {
         password,
         phoneNumber,
         email,
-        token: recaptchaValue
+        token: recaptchaValue,
       };
       if (address) {
         obj.address = address;
@@ -254,25 +254,25 @@ const Signup = () => {
       removeCookie("email", { path: "/signup" });
       const { data } = await axios.post("/api/auth/login", {
         callsign,
-        password
+        password,
       });
       setUser(data);
       navigate(
         {
           pathname: searchParams.get("to") || "/",
           search: createSearchParams({
-            toconfirm: true
-          }).toString()
+            toconfirm: true,
+          }).toString(),
         },
         {
-          replace: true
-        }
+          replace: true,
+        },
       );
     } catch (err) {
       console.log("signup error", err);
       window.scrollTo({
         top: 0,
-        behavior: "smooth"
+        behavior: "smooth",
       });
       const str = err.response?.data?.err;
       if (typeof str === "string" && str.includes(",")) {
@@ -359,8 +359,8 @@ const Signup = () => {
             {
               sitekey: recaptchaSiteKey,
               theme:
-                localStorage.getItem("darkMode") === "true" ? "dark" : "light"
-            }
+                localStorage.getItem("darkMode") === "true" ? "dark" : "light",
+            },
           );
           console.log("ReCAPTCHA re-rendered");
         } catch (err) {
@@ -372,7 +372,7 @@ const Signup = () => {
     }
     setTimeout(() => {
       alertRef.current?.scrollIntoView({
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }, 100);
   }
@@ -435,7 +435,7 @@ const Signup = () => {
                   // replace non alphanumeric characters with empty string
                   onChange={(e) => {
                     setCallsign(
-                      e.target.value.toUpperCase().replace(/[^a-zA-Z0-9]/g, "")
+                      e.target.value.toUpperCase().replace(/[^a-zA-Z0-9]/g, ""),
                     );
                     setAvatar(null);
                   }}

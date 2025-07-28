@@ -7,7 +7,7 @@ function MapPrint(props) {
   const map = useMap();
   useEffect(() => {
     const control = L.easyPrint({
-      ...props
+      ...props,
     });
     map.addControl(control);
     return () => {

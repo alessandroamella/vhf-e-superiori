@@ -3,22 +3,22 @@ import {
   BoldItalicUnderlineToggles,
   CodeToggle,
   CreateLink,
-  diffSourcePlugin,
   DiffSourceToggleWrapper,
+  diffSourcePlugin,
   headingsPlugin,
-  imagePlugin,
   InsertImage,
   InsertTable,
   InsertThematicBreak,
+  imagePlugin,
+  ListsToggle,
   linkDialogPlugin,
   listsPlugin,
-  ListsToggle,
   MDXEditor,
   quotePlugin,
   tablePlugin,
   thematicBreakPlugin,
   toolbarPlugin,
-  UndoRedo
+  UndoRedo,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 import axios from "axios";
@@ -29,7 +29,7 @@ import {
   FileInput,
   Spinner,
   TextInput,
-  Tooltip
+  Tooltip,
 } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -53,7 +53,7 @@ const BlogPostEditor = ({ blogPost }) => {
 
   const [title, setTitle] = useState(blogPost?.title || cookies.title || "");
   const [contentMd, setContentMd] = useState(
-    blogPost?.contentMd || cookies.contentMd || ""
+    blogPost?.contentMd || cookies.contentMd || "",
   );
   const [_tag, _setTag] = useState("");
   const [tags, setTags] = useState(blogPost?.tags || cookies.tags || []);
@@ -73,8 +73,8 @@ const BlogPostEditor = ({ blogPost }) => {
       return navigate({
         pathname: "/login",
         search: createSearchParams({
-          to: "/blog/editor"
-        }).toString()
+          to: "/blog/editor",
+        }).toString(),
       });
     } else if (user && !user.isAdmin) {
       navigate("/blog", { replace: true });
@@ -93,7 +93,7 @@ const BlogPostEditor = ({ blogPost }) => {
     formData.append("contentMd", contentMd);
     formData.append("tags", JSON.stringify(tags));
     if (postPics) {
-      postPics.forEach(pic => {
+      postPics.forEach((pic) => {
         formData.append("content", pic);
       });
     }
@@ -101,7 +101,7 @@ const BlogPostEditor = ({ blogPost }) => {
       formData.append("postPic", postPic);
     } else {
       const ok = window.confirm(
-        "Non hai caricato un'immagine di copertina. Continuare?"
+        "Non hai caricato un'immagine di copertina. Continuare?",
       );
       if (!ok) {
         setDisabled(false);
@@ -112,8 +112,8 @@ const BlogPostEditor = ({ blogPost }) => {
     try {
       const { data } = await axios.post("/api/blog", formData, {
         headers: {
-          "Content-Type": "multipart/form-data"
-        }
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       // delete cookies by making them expire
@@ -126,11 +126,11 @@ const BlogPostEditor = ({ blogPost }) => {
       console.error(err?.response?.data?.err || err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
       window.scrollTo({
         top: 0,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     } finally {
       setDisabled(false);
@@ -163,7 +163,7 @@ const BlogPostEditor = ({ blogPost }) => {
     setPostPic(null);
   }
 
-  const handlePostPicChange = async event => {
+  const handlePostPicChange = async (event) => {
     const { files } = event.target;
     if (!files || files.length <= 0) return;
     else if (files.length > 1) {
@@ -223,7 +223,7 @@ const BlogPostEditor = ({ blogPost }) => {
                   placeholder="Tags"
                   required
                   value={_tag}
-                  onChange={e =>
+                  onChange={(e) =>
                     _setTag(e.target.value.replace(/[^0-9a-zA-Z\-.]/g, ""))
                   }
                   disabled={disabled}
@@ -240,13 +240,13 @@ const BlogPostEditor = ({ blogPost }) => {
                 </Button>
               </form>
               <div className="flex flex-wrap justify-center md:justify-start gap-2 items-center">
-                {tags.map(tag => (
+                {tags.map((tag) => (
                   <Badge
                     key={tag}
                     className="cursor-pointer"
                     icon={() => <FaTrash className="scale-75" />}
                     size="lg"
-                    onClick={() => setTags(tags.filter(t => t !== tag))}
+                    onClick={() => setTags(tags.filter((t) => t !== tag))}
                   >
                     {tag}
                   </Badge>
@@ -303,7 +303,7 @@ const BlogPostEditor = ({ blogPost }) => {
                 placeholder="Titolo"
                 required
                 value={title}
-                onChange={e => setTitle(e.target.value)}
+                onChange={(e) => setTitle(e.target.value)}
                 disabled={disabled}
                 minLength={1}
                 maxLength={100}
@@ -339,8 +339,8 @@ const BlogPostEditor = ({ blogPost }) => {
                         <InsertThematicBreak />
                         <ListsToggle />
                       </>
-                    )
-                  })
+                    ),
+                  }),
                 ]}
               />
             </div>
@@ -351,10 +351,10 @@ const BlogPostEditor = ({ blogPost }) => {
                   tags.length === 0
                     ? "Aggiungi dei tag al post"
                     : title.length === 0
-                    ? "Il titolo non può essere vuoto"
-                    : contentMd.length === 0
-                    ? "Il contenuto non può essere vuoto"
-                    : "Clicca per pubblicare il post"
+                      ? "Il titolo non può essere vuoto"
+                      : contentMd.length === 0
+                        ? "Il contenuto non può essere vuoto"
+                        : "Clicca per pubblicare il post"
                 }
               >
                 <Button
@@ -384,7 +384,7 @@ const BlogPostEditor = ({ blogPost }) => {
 };
 
 BlogPostEditor.propTypes = {
-  blogPost: PropTypes.object
+  blogPost: PropTypes.object,
 };
 
 BlogPostEditor.displayName = "BlogPostEditor";

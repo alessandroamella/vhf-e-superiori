@@ -4,12 +4,12 @@ import { BAD_REQUEST } from "http-status";
 import { createError } from ".";
 
 export const validate = (req: Request, res: Response, next: NextFunction) => {
-    const errors = validationResult(req);
-    if (errors.isEmpty()) {
-        return next();
-    }
+  const errors = validationResult(req);
+  if (errors.isEmpty()) {
+    return next();
+  }
 
-    return res
-        .status(BAD_REQUEST)
-        .json(createError([...new Set(errors.array().map(e => e.msg))].join()));
+  return res
+    .status(BAD_REQUEST)
+    .json(createError([...new Set(errors.array().map((e) => e.msg))].join()));
 };

@@ -55,52 +55,52 @@ import { Errors } from "../../errors";
  *            description: Document update date (handled by MongoDB)
  */
 @pre<BasePostClass>("save", function (next) {
-    // Controlla che ci sia almeno una foto o un video
-    if (
-        this.pictures.length === 0 &&
-        this.videos.length === 0 &&
-        this.isProcessing === false
-    ) {
-        logger.error("No content uploaded for post " + this._id);
-        next(new Error(Errors.NO_CONTENT));
-    } else {
-        next();
-    }
+  // Controlla che ci sia almeno una foto o un video
+  if (
+    this.pictures.length === 0 &&
+    this.videos.length === 0 &&
+    this.isProcessing === false
+  ) {
+    logger.error("No content uploaded for post " + this._id);
+    next(new Error(Errors.NO_CONTENT));
+  } else {
+    next();
+  }
 })
 @modelOptions({
-    schemaOptions: { timestamps: true },
-    options: { allowMixed: Severity.ERROR, customName: "BasePost" }
+  schemaOptions: { timestamps: true },
+  options: { allowMixed: Severity.ERROR, customName: "BasePost" },
 })
 export class BasePostClass {
-    @prop({ required: true, ref: UserClass })
-    public fromUser!: Ref<UserClass>;
+  @prop({ required: true, ref: UserClass })
+  public fromUser!: Ref<UserClass>;
 
-    @prop({ required: true, minlength: 1, maxlength: 300 })
-    public description!: string;
+  @prop({ required: true, minlength: 1, maxlength: 300 })
+  public description!: string;
 
-    @prop({
-        type: () => [String],
-        required: true,
-        validate: [
-            (v: unknown[]) => v.length >= 0 && v.length <= 5,
-            Errors.INVALID_PICS_NUM
-        ]
-    })
-    public pictures!: string[];
+  @prop({
+    type: () => [String],
+    required: true,
+    validate: [
+      (v: unknown[]) => v.length >= 0 && v.length <= 5,
+      Errors.INVALID_PICS_NUM,
+    ],
+  })
+  public pictures!: string[];
 
-    @prop({
-        type: () => [String],
-        required: true,
-        validate: [
-            (v: unknown[]) => v.length >= 0 && v.length <= 2,
-            Errors.INVALID_VIDS_NUM
-        ]
-    })
-    public videos!: string[];
+  @prop({
+    type: () => [String],
+    required: true,
+    validate: [
+      (v: unknown[]) => v.length >= 0 && v.length <= 2,
+      Errors.INVALID_VIDS_NUM,
+    ],
+  })
+  public videos!: string[];
 
-    @prop({ required: true, default: true })
-    public isProcessing!: boolean;
+  @prop({ required: true, default: true })
+  public isProcessing!: boolean;
 
-    @prop({ required: false, default: false })
-    public hidden?: boolean;
+  @prop({ required: false, default: false })
+  public hidden?: boolean;
 }

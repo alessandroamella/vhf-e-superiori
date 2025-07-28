@@ -1,17 +1,5 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useParams,
-  useSearchParams
-} from "react-router";
-import { ReadyContext, SplashContext } from "../App";
-import Splash from "../Splash";
-
-import FeedCard from "./FeedCard";
-
 import axios from "axios";
+import { getDate } from "date-fns";
 import {
   Alert,
   Avatar,
@@ -22,10 +10,21 @@ import {
   Modal,
   Spinner,
   Table,
-  Tooltip
+  Tooltip,
 } from "flowbite-react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import { FaArrowLeft, FaBackward, FaExternalLinkAlt } from "react-icons/fa";
+import { MapContainer, Polyline, TileLayer } from "react-leaflet";
+import ReactPlaceholder from "react-placeholder";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router";
 import {
   EmailIcon,
   EmailShareButton,
@@ -36,24 +35,21 @@ import {
   TwitterIcon,
   TwitterShareButton,
   WhatsappIcon,
-  WhatsappShareButton
+  WhatsappShareButton,
 } from "react-share";
-
-import { MapContainer, Polyline, TileLayer } from "react-leaflet";
-
-import { getDate } from "date-fns";
-import ReactPlaceholder from "react-placeholder";
+import { ReadyContext, SplashContext } from "../App";
+import Splash from "../Splash";
 import { getErrorStr } from "../shared";
 import CallsignLoading from "../shared/CallsignLoading";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import MapPrint from "../shared/MapPrint";
 import StationMapMarker from "../shared/StationMapMarker";
-import { useTranslation } from "react-i18next";
+import FeedCard from "./FeedCard";
 
 const ViewPublished = () => {
   const { splashPlayed } = useContext(SplashContext);
   const { ready } = useContext(ReadyContext);
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -71,19 +67,22 @@ const ViewPublished = () => {
   useEffect(() => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth"
+      behavior: "smooth",
     });
   }, []);
 
   useEffect(() => {
     if (isFakeLoading) {
-      setTimeout(() => {
-        setShowMap(true);
-        setIsFakeLoading(false);
-        setTimeout(() => {
-          document.getElementById("user-map-container")?.scrollIntoView();
-        }, 200);
-      }, 100 + Math.floor(Math.random() * 900));
+      setTimeout(
+        () => {
+          setShowMap(true);
+          setIsFakeLoading(false);
+          setTimeout(() => {
+            document.getElementById("user-map-container")?.scrollIntoView();
+          }, 200);
+        },
+        100 + Math.floor(Math.random() * 900),
+      );
     }
   }, [isFakeLoading]);
 
@@ -97,11 +96,11 @@ const ViewPublished = () => {
         console.error(err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
         window.scrollTo({
           top: 0,
-          behavior: "smooth"
+          behavior: "smooth",
         });
       } finally {
         setLoaded(true);
@@ -116,14 +115,17 @@ const ViewPublished = () => {
     if (!user?.qsos) return;
     return user.qsos.filter(
       (e) =>
-        e.fromStationLat && e.fromStationLon && e.toStationLat && e.toStationLon
+        e.fromStationLat &&
+        e.fromStationLon &&
+        e.toStationLat &&
+        e.toStationLon,
     );
   }, [user]);
 
   useEffect(() => {
     if (!validQsos) return;
     const events = [...new Set(validQsos.map((e) => e.event._id))].map(
-      (e) => validQsos.find((q) => q.event._id === e).event
+      (e) => validQsos.find((q) => q.event._id === e).event,
     );
     setMappedEvents(events);
   }, [validQsos]);
@@ -154,7 +156,7 @@ const ViewPublished = () => {
 
     const _points = []; // {callsign, locator, lat, lon}[]
     const filtered = validQsos.filter((e) =>
-      !_eventToFilter ? true : e.event._id === _eventToFilter
+      !_eventToFilter ? true : e.event._id === _eventToFilter,
     );
 
     for (const qso of filtered) {
@@ -170,7 +172,7 @@ const ViewPublished = () => {
             qso.callsign,
           locator: qso.fromLocator || qso.locator,
           lat: from[0],
-          lon: from[1]
+          lon: from[1],
         });
       }
       if (to.every((e) => !isNaN(e))) {
@@ -178,14 +180,14 @@ const ViewPublished = () => {
           callsign: qso.callsign,
           locator: qso.locator,
           lat: to[0],
-          lon: to[1]
+          lon: to[1],
         });
       }
     }
 
     // remove duplicates (same lat and lon)
     const points = _points.filter(
-      (e, i, a) => a.findIndex((t) => t.lat === e.lat && t.lon === e.lon) === i
+      (e, i, a) => a.findIndex((t) => t.lat === e.lat && t.lon === e.lon) === i,
     );
 
     return points;
@@ -201,7 +203,7 @@ const ViewPublished = () => {
           e.fromStationLat &&
           e.fromStationLon &&
           e.toStationLat &&
-          e.toStationLon
+          e.toStationLon,
       );
 
     return lines;
@@ -219,13 +221,18 @@ const ViewPublished = () => {
 
   // const [showQsosModal, setShowQsosModal] = useState(false);
 
-  const socialTitle = user ? t('qsoByCallsign', { callsign: user?.callsign }) : t('viewQSO');
+  const socialTitle = user
+    ? t("qsoByCallsign", { callsign: user?.callsign })
+    : t("viewQSO");
   const socialBody =
     socialTitle +
     " " +
     (validQsos?.length
-      ? t('viewQSOWithCount', { count: validQsos.length, callsign: user?.callsign })
-      : t('viewAllQSO'));
+      ? t("viewQSOWithCount", {
+          count: validQsos.length,
+          callsign: user?.callsign,
+        })
+      : t("viewAllQSO"));
 
   const location = useLocation();
   const curUrl = "https://" + window.location.hostname + location.pathname;
@@ -233,7 +240,9 @@ const ViewPublished = () => {
   return (
     <>
       <Helmet>
-        <title>{user?.callsign || callsign} - {t("vhfAndHigher")}</title>
+        <title>
+          {user?.callsign || callsign} - {t("vhfAndHigher")}
+        </title>
       </Helmet>
       {!splashPlayed && <Splash ready={ready} />}
 
@@ -317,7 +326,7 @@ const ViewPublished = () => {
                       {formatInTimeZone(
                         new Date(qso.qsoDate),
                         "Europe/Rome",
-                        "dd/MM/yyyy HH:mm"
+                        "dd/MM/yyyy HH:mm",
                       )}
                     </Table.Cell>
                     <Table.Cell>{qso.band || qso.frequency}</Table.Cell>
@@ -409,7 +418,7 @@ const ViewPublished = () => {
                         {formatInTimeZone(
                           user.createdAt,
                           "Europe/Rome",
-                          "d MMMM yyyy"
+                          "d MMMM yyyy",
                         )}
                       </p>
                     )}
@@ -490,7 +499,7 @@ const ViewPublished = () => {
                           (
                             _eventToFilter &&
                             validQsos?.find(
-                              (e) => e.event._id === _eventToFilter
+                              (e) => e.event._id === _eventToFilter,
                             )
                           )?.event?.name || "Tutti i miei QSO"
                         }
@@ -500,7 +509,7 @@ const ViewPublished = () => {
                         color="light"
                       >
                         <Dropdown.Item onClick={() => setEventToFilter(null)}>
-                        {t("all")}({validQsos?.length})
+                          {t("all")}({validQsos?.length})
                         </Dropdown.Item>
                         {mappedEvents?.map((e) => (
                           <Dropdown.Item
@@ -519,7 +528,7 @@ const ViewPublished = () => {
                     </div>
                     <Button onClick={() => setShowQsosModal(true)}>
                       <FaExternalLinkAlt className="inline mr-1" />
-                      <span className="mr-1">{t("viewQSOsOf")}</span>{" "} 
+                      <span className="mr-1">{t("viewQSOsOf")}</span>{" "}
                       <CallsignLoading user={user} />
                     </Button>
                   </div>
@@ -556,7 +565,7 @@ const ViewPublished = () => {
                             key={line._id}
                             positions={[
                               [line.fromStationLat, line.fromStationLon],
-                              [line.toStationLat, line.toStationLon]
+                              [line.toStationLat, line.toStationLon],
                             ]}
                             color="blue"
                             weight={2} // make a bit thinner
@@ -608,12 +617,11 @@ const ViewPublished = () => {
                           {_eventToFilter && (
                             <span>
                               {" "}
-                              {t("forEvent")}
-                              {" "}
+                              {t("forEvent")}{" "}
                               <strong>
                                 {
                                   mappedEvents?.find(
-                                    (e) => e._id === _eventToFilter
+                                    (e) => e._id === _eventToFilter,
                                   )?.name
                                 }
                               </strong>

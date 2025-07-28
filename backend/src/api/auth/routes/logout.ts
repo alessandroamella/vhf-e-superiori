@@ -16,11 +16,11 @@ const router = Router();
  *        description: Logged out
  */
 router.post("/", async (req, res) => {
-    res.clearCookie(AuthOptions.AUTH_COOKIE_NAME, {
-        httpOnly: true,
-        signed: true
-    });
-    res.sendStatus(OK);
+  res.clearCookie(AuthOptions.AUTH_COOKIE_NAME, {
+    httpOnly: true,
+    signed: true,
+  });
+  res.sendStatus(OK);
 });
 
 export default router;

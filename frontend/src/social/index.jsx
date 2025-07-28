@@ -1,24 +1,20 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Helmet } from "react-helmet";
-import { Link, useNavigate, useSearchParams } from "react-router";
-import { ReadyContext, SplashContext } from "../App";
-import Splash from "../Splash";
-
-import FeedCard from "./FeedCard";
-
 import axios from "axios";
 import { Alert, Button, Spinner, TextInput } from "flowbite-react";
 import { orderBy, uniqBy } from "lodash";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { FaPlus, FaUserTag } from "react-icons/fa";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { Link, useNavigate, useSearchParams } from "react-router";
+import { ReadyContext, SplashContext } from "../App";
+import Splash from "../Splash";
 import MenuContent from "../sideMenu/MenuContent";
-import { useTranslation } from "react-i18next";
+import FeedCard from "./FeedCard";
 
 const Social = () => {
   const { splashPlayed } = useContext(SplashContext);
   const { ready } = useContext(ReadyContext);
-  const { t } = useTranslation(); 
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -41,31 +37,35 @@ const Social = () => {
       console.log(
         "fetching posts from " + cursor + " to " + (cursor + cursorLimit),
         " fromDate: ",
-        fromDate
+        fromDate,
       );
       const { data } = await axios.get("/api/post", {
         params: {
           limit: cursorLimit,
           offset: cursor,
-          ...(fromDate && { fromDate })
-        }
+          ...(fromDate && { fromDate }),
+        },
       });
       console.log("new posts", data, "\nall posts", [...posts, ...data.posts]);
       if (data.posts.length > 0) {
         console.log("setting posts");
         setPosts(
-          orderBy(uniqBy([...data.posts, ...posts], "_id"), "createdAt", "desc")
+          orderBy(
+            uniqBy([...data.posts, ...posts], "_id"),
+            "createdAt",
+            "desc",
+          ),
         );
       } else {
         console.log("no new posts");
       }
       if (data.pp.length) {
         setProfilePictures(
-          uniqBy([...profilePictures, ...data.pp], "callsign")
+          uniqBy([...profilePictures, ...data.pp], "callsign"),
         );
         console.log("new pps", profilePictures, "\nall pps", [
           ...profilePictures,
-          ...data.pp
+          ...data.pp,
         ]);
       } else {
         console.log("no new profile pictures");
@@ -79,9 +79,10 @@ const Social = () => {
         setSearchParams(searchParams);
       }
     },
-    [cursor, posts, profilePictures, searchParams, setSearchParams]
+    [cursor, posts, profilePictures, searchParams, setSearchParams],
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: this is a callback that should not change
   useEffect(() => {
     console.log("fetching posts from cursor", cursor);
     fetchPosts();
@@ -94,17 +95,20 @@ const Social = () => {
   useEffect(() => {
     if (!posts || posts.length === 0) return;
     let didFirstFetch = false;
-    const fetchPostsInterval = setInterval(() => {
-      if (!didFirstFetch) {
-        // skip first fetch
-        didFirstFetch = true;
-        return;
-      }
-      const firstDate = hasCreated ? null : posts[0].createdAt;
-      console.log("fetching posts from ", firstDate);
-      fetchPosts(firstDate);
-      // every 10 sec
-    }, (hasCreated ? 5 : 15) * 1000);
+    const fetchPostsInterval = setInterval(
+      () => {
+        if (!didFirstFetch) {
+          // skip first fetch
+          didFirstFetch = true;
+          return;
+        }
+        const firstDate = hasCreated ? null : posts[0].createdAt;
+        console.log("fetching posts from ", firstDate);
+        fetchPosts(firstDate);
+        // every 10 sec
+      },
+      (hasCreated ? 5 : 15) * 1000,
+    );
 
     return () => clearInterval(fetchPostsInterval);
   }, [fetchPosts, posts, hasCreated]);
@@ -125,7 +129,6 @@ const Social = () => {
   }, [scrollTo, posts]);
 
   const filteredPosts = useMemo(() => {
-
     if (!posts) return [];
     return posts.filter(
       (p) =>
@@ -134,8 +137,8 @@ const Social = () => {
           filterCallsign
             ?.replace(/[^a-zA-Z0-9/]/g, "")
             ?.trim()
-            .toUpperCase()
-        )
+            .toUpperCase(),
+        ),
     );
   }, [filterCallsign, posts]);
 
@@ -179,7 +182,6 @@ const Social = () => {
             </p>
 
             <p>{t("contentsInElaboration")}</p>
-
           </Alert>
         )}
 
@@ -202,7 +204,7 @@ const Social = () => {
             className="text-xl text-white font-bold flex items-center gap-2"
           >
             <FaPlus />
-             {t("insertPhotoVideo")}
+            {t("insertPhotoVideo")}
           </Link>
         </Button>
 
@@ -265,7 +267,7 @@ const Social = () => {
                     <p>{t("noPostsYet")}</p>
                   ) : (
                     <p>
-                       {t("noPostWithCallSign")} &quot;
+                      {t("noPostWithCallSign")} &quot;
                       <strong>{filterCallsign}</strong>&quot;
                     </p>
                   )}

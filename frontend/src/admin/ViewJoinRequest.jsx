@@ -8,7 +8,7 @@ import {
   FaDownload,
   FaExclamation,
   FaStamp,
-  FaTrash
+  FaTrash,
 } from "react-icons/fa";
 import { Link } from "react-router";
 import { getErrorStr } from "../shared";
@@ -20,14 +20,14 @@ const ViewJoinRequest = ({
   joinRequests,
   setJoinRequests,
   setAlert,
-  showEvent
+  showEvent,
 }) => {
   async function approveJoinRequests(j) {
     if (
       !window.confirm(
         `Vuoi ${
           j.isApproved ? "ANNULLARE" : "APPROVARE"
-        } la richiesta di partecipazione con ID ${j._id}?`
+        } la richiesta di partecipazione con ID ${j._id}?`,
       )
     ) {
       return;
@@ -37,18 +37,18 @@ const ViewJoinRequest = ({
       await axios.post("/api/joinrequest/" + j._id);
       console.log("approved joinRequest", j);
       const _joinRequests = [
-        ...joinRequests.filter(_j => _j._id !== j._id),
-        { ...j, isApproved: !j.isApproved, updatedAt: new Date() }
+        ...joinRequests.filter((_j) => _j._id !== j._id),
+        { ...j, isApproved: !j.isApproved, updatedAt: new Date() },
       ];
       _joinRequests.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
       );
       setJoinRequests(_joinRequests);
     } catch (err) {
       console.log(err.response.data);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
     } finally {
       setDisabled(false);
@@ -58,7 +58,7 @@ const ViewJoinRequest = ({
   async function deleteJoinRequests(j) {
     if (
       !window.confirm(
-        "Vuoi ELIMINARE la richiesta di partecipazione con ID " + j._id + "?"
+        "Vuoi ELIMINARE la richiesta di partecipazione con ID " + j._id + "?",
       )
     ) {
       return;
@@ -68,12 +68,12 @@ const ViewJoinRequest = ({
     try {
       await axios.delete("/api/joinrequest/" + j._id);
       console.log("deleted joinRequest", j);
-      setJoinRequests([...joinRequests.filter(_j => _j._id !== j._id)]);
+      setJoinRequests([...joinRequests.filter((_j) => _j._id !== j._id)]);
     } catch (err) {
       console.log(err.response.data);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
     } finally {
       setDisabled(false);
@@ -109,7 +109,7 @@ const ViewJoinRequest = ({
           </Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
-          {joinRequests?.map(j => (
+          {joinRequests?.map((j) => (
             <Table.Row key={j._id}>
               <Table.Cell className="whitespace-nowrap font-medium">
                 <Link
@@ -159,8 +159,8 @@ const ViewJoinRequest = ({
                   "Europe/Rome",
                   "d MMM yyyy HH:mm",
                   {
-                    locale: it
-                  }
+                    locale: it,
+                  },
                 )}
               </Table.Cell>
               <Table.Cell className="max-w-xs dark:text-gray-300">
@@ -229,7 +229,7 @@ ViewJoinRequest.propTypes = {
   joinRequests: PropTypes.array,
   setJoinRequests: PropTypes.func,
   setAlert: PropTypes.func,
-  showEvent: PropTypes.bool
+  showEvent: PropTypes.bool,
 };
 
 ViewJoinRequest.displayName = "ViewJoinRequest";

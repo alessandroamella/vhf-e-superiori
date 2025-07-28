@@ -42,19 +42,19 @@ import { UserClass } from "../../auth/models";
  *            description: Document update date (handled by MongoDB)
  */
 @modelOptions({
-    schemaOptions: { timestamps: true },
-    options: { customName: "Comment" }
+  schemaOptions: { timestamps: true },
+  options: { customName: "Comment" },
 })
 export class CommentClass {
-    @prop({ required: true, ref: UserClass })
-    public fromUser!: Ref<UserClass>;
+  @prop({ required: true, ref: UserClass })
+  public fromUser!: Ref<UserClass>;
 
-    @prop({ required: true, ref: "Post" })
-    public forPost!: Ref<"Post">;
+  @prop({ required: true, ref: "Post" })
+  public forPost!: Ref<"Post">;
 
-    @prop({ required: false, ref: () => CommentClass, default: [] })
-    public replies?: Ref<CommentClass>[];
+  @prop({ required: false, ref: () => CommentClass, default: [] })
+  public replies?: Ref<CommentClass>[];
 
-    @prop({ required: true, minlength: 1, maxlength: 300 })
-    public content!: string;
+  @prop({ required: true, minlength: 1, maxlength: 300 })
+  public content!: string;
 }
