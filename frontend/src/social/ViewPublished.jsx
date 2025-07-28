@@ -143,12 +143,11 @@ const ViewPublished = () => {
     setIsFakeLoading(true);
   };
 
-  // on start
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we want to run this only once
   useEffect(() => {
     if (searchParams.get("event")) {
       setIsFakeLoading(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const qsoPoints = useMemo(() => {

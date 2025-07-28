@@ -3,6 +3,7 @@ import { it } from "date-fns/locale";
 import { Alert, Button, Spinner } from "flowbite-react";
 import { useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import { FaBackward, FaTrash } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Markdown from "react-markdown";

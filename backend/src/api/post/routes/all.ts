@@ -135,9 +135,41 @@ router.get(
         logger.debug(req.query.orderBy);
       }
 
+      // Parse orderBy parameter and ensure it's a valid sort object
+      let sortOrder: Record<string, 1 | -1> = { createdAt: -1 };
+      if (
+        req.query.orderBy &&
+        typeof req.query.orderBy === "object" &&
+        !Array.isArray(req.query.orderBy)
+      ) {
+        try {
+          // Convert ParsedQs to a proper sort object
+          const orderByObj = req.query.orderBy as unknown as Record<
+            string,
+            string | number
+          >;
+          const validSortOrder: Record<string, 1 | -1> = {};
+
+          for (const [key, value] of Object.entries(orderByObj)) {
+            if (
+              typeof key === "string" &&
+              (value === 1 || value === -1 || value === "1" || value === "-1")
+            ) {
+              validSortOrder[key] =
+                typeof value === "string" ? (parseInt(value) as 1 | -1) : value;
+            }
+          }
+
+          if (Object.keys(validSortOrder).length > 0) {
+            sortOrder = validSortOrder;
+          }
+        } catch {
+          logger.warn("Invalid orderBy parameter, using default sort");
+        }
+      }
+
       const posts = await postsQuery
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .sort((req.query.orderBy as any) || { createdAt: -1 })
+        .sort(sortOrder)
         .sort({ "comments.createdAt": -1 })
         .exec();
 

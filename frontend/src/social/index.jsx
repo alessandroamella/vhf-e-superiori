@@ -120,12 +120,12 @@ const Social = () => {
   const [hasMore, setHasMore] = useState(true);
 
   const scrollTo = searchParams.get("scrollTo");
+  // biome-ignore lint/correctness/useExhaustiveDependencies: this is a one-time effect to scroll to a post when the component mounts or when the posts change
   useEffect(() => {
     if (!posts || !scrollTo) return;
 
     document.getElementById("post-" + scrollTo)?.scrollIntoView();
     searchParams.delete("scrollTo");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollTo, posts]);
 
   const filteredPosts = useMemo(() => {

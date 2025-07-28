@@ -112,7 +112,7 @@ const CreateEditEventModal = ({
     resetPicture();
     resetEqsl();
     setAlert(null);
-  }, []);
+  }, [resetEqsl, resetPicture]);
 
   useEffect(() => {
     if (!eventEditing) {
@@ -129,8 +129,7 @@ const CreateEditEventModal = ({
         populateForm(e);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showModal, eventEditing]);
+  }, [showModal, eventEditing, events, populateForm, resetForm]);
 
   const { events } = useContext(EventsContext);
 
@@ -440,15 +439,15 @@ const CreateEditEventModal = ({
     setIsEditingOffset(false);
   };
 
-  function resetPicture() {
+  const resetPicture = useCallback(() => {
     if (pictureInputRef.current) pictureInputRef.current.value = null;
     setUploadedPic(null);
-  }
+  }, []);
 
-  function resetEqsl() {
+  const resetEqsl = useCallback(() => {
     if (eqslInputRef.current) eqslInputRef.current.value = null;
     setEqslPic(null);
-  }
+  }, []);
 
   async function copyText() {
     if (copyTimeout) clearTimeout(copyTimeout);
@@ -751,7 +750,6 @@ const CreateEditEventModal = ({
                       copied ? "success" : copiedError ? "failure" : "light"
                     }
                     onClick={copyText}
-                    onChange={() => {}}
                     value={
                       window.location.origin + "/qsomanager/" + eventEditing
                     }

@@ -10,7 +10,7 @@
     "build": "pnpm run --filter=* build",
     "build:frontend": "pnpm --filter @vhf-e-superiori/frontend build",
     "build:backend": "pnpm --filter @vhf-e-superiori/backend build",
-    "lint": "pnpm biome check --fix",
+    "check": "pnpm biome check --fix",
     "clean": "pnpm run --parallel clean",
     "start:backend": "pnpm --filter @vhf-e-superiori/backend start",
     "start:frontend-server": "pnpm --filter @vhf-e-superiori/frontend-server start",

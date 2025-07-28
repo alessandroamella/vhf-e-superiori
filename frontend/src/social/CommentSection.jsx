@@ -11,6 +11,15 @@ import { createSearchParams, Link } from "react-router";
 import remarkGfm from "remark-gfm";
 import CallsignLoading from "../shared/CallsignLoading";
 
+// Function to process mentions and create links
+const processMentions = (text) => {
+  if (!text) return text;
+  const mentionRegex = /@([a-zA-Z0-9]{5,6})\b/g;
+  return text.replace(mentionRegex, (match, callsign) => {
+    return `[@${callsign}](/u/${callsign})`;
+  });
+};
+
 const Comment = ({
   comment,
   user,
@@ -34,17 +43,10 @@ const Comment = ({
     onReply();
   };
 
+  const { t } = useTranslation();
+
   const toggleReplies = () => {
     setIsRepliesCollapsed(!isRepliesCollapsed);
-  };
-
-  // Function to process mentions and create links
-  const processMentions = (text) => {
-    if (!text) return text;
-    const mentionRegex = /@([a-zA-Z0-9]{5,6})\b/g;
-    return text.replace(mentionRegex, (match, callsign) => {
-      return `[@${callsign}](/u/${callsign})`;
-    });
   };
 
   const renderContent = useMemo(() => {

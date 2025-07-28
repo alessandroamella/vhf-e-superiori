@@ -68,8 +68,8 @@ router.post(
   async (req, res, next) => {
     passport.authenticate(
       "login",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      async (_err: any, user: any) => {
+      // biome-ignore lint/suspicious/noExplicitAny: we know user is an any type here
+      async (_err: unknown, user: any) => {
         logger.debug("Logging in callsign " + user?.callsign);
         try {
           if (_err || !user) {

@@ -12,7 +12,7 @@ import {
   TextInput,
 } from "flowbite-react";
 import PropTypes from "prop-types";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { FaInfo } from "react-icons/fa";
 import { Link } from "react-router";
@@ -66,7 +66,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
     }
   }
 
-  function isBetweenDates() {
+  const isBetweenDates = useCallback(() => {
     if (
       isBefore(new Date(), new Date(event.joinStart)) ||
       isAfter(new Date(), new Date(event.joinDeadline))
@@ -76,7 +76,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
       return false;
     }
     return true;
-  }
+  }, [event]);
 
   const [alreadyJoined, setAlreadyJoined] = useState(null);
   useEffect(() => {
@@ -98,8 +98,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
     }
 
     checkIfJoined();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [event]);
+  }, [event, isBetweenDates]);
 
   useEffect(() => {
     if (!alreadyJoined) return;
@@ -115,7 +114,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
     if (!isBetweenDates()) setDisabled(false);
     28;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [event]);
+  }, [event, isBetweenDates, joinableEvents]);
 
   const noEventsToJoin = useMemo(() => {
     if (!Array.isArray(joinableEvents)) return false;

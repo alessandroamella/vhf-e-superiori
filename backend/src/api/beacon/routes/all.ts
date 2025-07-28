@@ -2,7 +2,12 @@ import { Router } from "express";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
 import { createError, validate } from "../../helpers";
-import { Beacon, BeaconDocWithProp, BeaconProperties } from "../models";
+import {
+  Beacon,
+  BeaconLean,
+  BeaconLeanWithProp,
+  BeaconProperties,
+} from "../models";
 
 const router = Router();
 
@@ -37,10 +42,9 @@ const router = Router();
  */
 router.get("/", validate, async (req, res) => {
   try {
-    const beacons: BeaconDocWithProp[] = (await Beacon.find()
-      .sort("callsign")
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .lean()) as any;
+    const beacons: BeaconLean[] = await Beacon.find().sort("callsign").lean();
+    const beaconsWithProps: BeaconLeanWithProp[] = [];
+
     for (const beacon of beacons) {
       const propsArr = await BeaconProperties.find(
         {
@@ -65,10 +69,14 @@ router.get("/", validate, async (req, res) => {
         logger.error(beacon);
         return res.status(INTERNAL_SERVER_ERROR).json(createError());
       }
-      beacon.properties = props;
+      const beaconWithProps: BeaconLeanWithProp = {
+        ...beacon,
+        properties: props,
+      };
+      beaconsWithProps.push(beaconWithProps);
     }
     // sort beacons by prop frequency, in ascending order
-    beacons.sort((a, b) => {
+    beaconsWithProps.sort((a, b) => {
       if (!a.properties || !b.properties) {
         logger.warn(`Beacon ${a._id} or ${b._id} has no properties`);
         return 0;
@@ -76,7 +84,7 @@ router.get("/", validate, async (req, res) => {
       return a.properties.frequency - b.properties.frequency;
     });
 
-    res.json(beacons);
+    res.json(beaconsWithProps);
   } catch (err) {
     logger.error("Error in Beacons all");
     logger.error(err);

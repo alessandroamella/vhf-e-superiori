@@ -87,7 +87,7 @@ router.post(
     passport.authenticate(
       "signup",
       { session: false },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // biome-ignore lint/suspicious/noExplicitAny: we know user is an any type here
       async (_err: any, user: any) => {
         if (_err || !user) {
           logger.debug("Error in user signup");

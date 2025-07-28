@@ -1,4 +1,3 @@
-// AdminManager.jsx
 import { Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { isFuture } from "date-fns";
@@ -67,7 +66,7 @@ const AdminManager = () => {
 
   const isFetchingUsers = useRef(false);
 
-  async function getUsers() {
+  const getUsers = useCallback(async () => {
     if (isFetchingUsers.current) return;
     isFetchingUsers.current = true;
 
@@ -86,7 +85,7 @@ const AdminManager = () => {
     } finally {
       isFetchingUsers.current = false;
     }
-  }
+  }, []);
 
   const isFetchingPosts = useRef(false);
 
@@ -111,7 +110,7 @@ const AdminManager = () => {
     }
     getUsers();
     getPosts();
-  }, []);
+  }, [getUsers]);
 
   useEffect(() => {
     if (!events) return;

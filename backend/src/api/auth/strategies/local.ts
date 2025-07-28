@@ -76,8 +76,7 @@ passport.use(
           isVerified: false,
           verificationCode: bcrypt.hashSync(verificationCode, 10),
           joinRequests: [],
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any;
+        } as Partial<UserDoc>;
 
         if (address) {
           obj.address = address;

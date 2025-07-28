@@ -140,8 +140,7 @@ router.put(
         name,
         email,
         phoneNumber,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any;
+      } as Partial<UserDoc>;
       if (address) {
         obj.address = address;
         obj.lat = lat;
@@ -201,8 +200,7 @@ router.put(
       }
 
       if (curUser._id === user._id) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        req.user = user.toObject() as any;
+        req.user = user.toObject() as UserDoc;
       }
 
       return returnUserWithPosts(

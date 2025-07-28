@@ -19,6 +19,7 @@ const ViewPost = () => {
 
   const [postExtended, setPostExtended] = useState(null);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we want to run this only once
   useEffect(() => {
     async function loadPost() {
       try {
@@ -46,7 +47,6 @@ const ViewPost = () => {
       }
     }
     loadPost();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const navigate = useNavigate();

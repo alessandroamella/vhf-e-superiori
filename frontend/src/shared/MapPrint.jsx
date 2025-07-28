@@ -14,7 +14,7 @@ function MapPrint(props) {
       map.removeControl(control);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map]);
+  }, [map, props]);
 
   return null;
 }

@@ -2,7 +2,14 @@ import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Avatar, Card, Label, TextInput, Tooltip } from "flowbite-react";
 import PropTypes from "prop-types";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useCookies } from "react-cookie";
 import { usePlacesWidget } from "react-google-autocomplete";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -75,8 +82,7 @@ const Signup = () => {
       console.log("fetching QRZ data");
       fetchQrz();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [cookies.callsign, fetchQrz]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", (event) => {
@@ -95,7 +101,7 @@ const Signup = () => {
     setCookie("phoneNumber", phoneNumber, { path: "/signup", maxAge: 60 * 5 });
     setCookie("email", email, { path: "/signup", maxAge: 60 * 5 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [callsign, name, phoneNumber, email]);
+  }, [callsign, name, phoneNumber, email, setCookie]);
 
   const captchaRef = useRef();
   const alertRef = useRef();
@@ -159,7 +165,7 @@ const Signup = () => {
     fetchLocator();
   }, [lat, lon]);
 
-  async function fetchQrz() {
+  const fetchQrz = useCallback(async () => {
     if (callsign.length < 1 || callsign.length > 10) return;
 
     setDisabled(true);
@@ -196,7 +202,7 @@ const Signup = () => {
       setDisabled(false);
       setTimeout(setInputFocus, 100);
     }
-  }
+  }, [callsign, name, email, address, setInputFocus]);
 
   async function signup(e, recaptchaValue) {
     e?.preventDefault();

@@ -52,6 +52,7 @@ const Homepage = () => {
   // const [isZoomed, setIsZoomed] = useState(false);
   const [zoomedImg, setZoomedImg] = useState(null);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we want to run this only once
   const handleZoomChange = useCallback((shouldZoom, zoomImg) => {
     console.log({ shouldZoom, zoomedImg });
     if (!shouldZoom) {
@@ -59,7 +60,6 @@ const Homepage = () => {
     } else {
       setZoomedImg(zoomImg);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getNumbersFromString = useCallback(
@@ -85,11 +85,11 @@ const Homepage = () => {
     }
   }, [searchParams]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we want to run this only once
   useEffect(() => {
     setTimeout(() => {
       setSplashPlayed(true);
     }, 4000 + 3500);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const navigate = useNavigate();
@@ -119,6 +119,7 @@ const Homepage = () => {
     }
   }, [events]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we want to run this only once
   const posters = useMemo(() => {
     if (!Array.isArray(events)) return null;
     const _inverted = [...events];

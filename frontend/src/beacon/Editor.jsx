@@ -140,7 +140,7 @@ const BeaconEditor = () => {
     }
     getBeacon();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, navigate]);
 
   const { user } = useContext(UserContext);
   const isEditing = !!id; // true if id is not null (i.e. we are editing a beacon)
@@ -155,7 +155,7 @@ const BeaconEditor = () => {
         }).toString(),
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, id, navigate]);
 
   // callsign
   const [callsign, setCallsign] = useState("");

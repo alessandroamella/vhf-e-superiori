@@ -62,6 +62,7 @@ const NewPost = () => {
 
   const navigate = useNavigate();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we want to run this only once
   useEffect(() => {
     if (user === null)
       return navigate({
@@ -76,7 +77,6 @@ const NewPost = () => {
       setShowVerificationModal(true);
       return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const handleVerificationModalClose = () => {

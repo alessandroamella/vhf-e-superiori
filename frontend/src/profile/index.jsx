@@ -273,7 +273,7 @@ const Profile = () => {
         }).toString(),
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, navigate]);
 
   const [isFetchingJoinRequests, setIsFetchingJoinRequests] = useState(false);
 
@@ -302,7 +302,7 @@ const Profile = () => {
 
     fetchJoinRequests();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [joinRequests, events, user]);
+  }, [joinRequests, events, user, isFetchingJoinRequests]);
 
   const [deleteJoinRequest, setDeleteJoinRequest] = useState(false);
   const [deleteJoinRequestDisabled, setDeleteJoinRequestDisabled] =

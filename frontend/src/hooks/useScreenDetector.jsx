@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const useScreenDetector = () => {
   const [width, setWidth] = useState(window.innerWidth);
 
-  const handleWindowSizeChange = () => {
+  const handleWindowSizeChange = useCallback(() => {
     setWidth(window.innerWidth);
-  };
+  }, []);
 
   useEffect(() => {
     window.addEventListener("resize", handleWindowSizeChange);
@@ -13,7 +13,7 @@ export const useScreenDetector = () => {
     return () => {
       window.removeEventListener("resize", handleWindowSizeChange);
     };
-  }, []);
+  }, [handleWindowSizeChange]);
 
   const isMobile = width <= 768;
   const isTablet = width <= 1024;

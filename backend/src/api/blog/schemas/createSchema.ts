@@ -21,7 +21,7 @@ const createSchema: Schema = {
         if (typeof tags === "string") {
           try {
             parsed = JSON.parse(tags);
-          } catch (e) {
+          } catch (_e) {
             return false;
           }
 

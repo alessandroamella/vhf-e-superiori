@@ -49,13 +49,20 @@ import MapWatermark from "../shared/MapWatermark";
 import StationMapMarker from "../shared/StationMapMarker";
 import ShareMapBtn from "./ShareMapBtn";
 
+function getAdifKey(qso, index) {
+  return JSON.stringify({
+    callsign: qso.callsign,
+    index,
+  });
+}
+
 const QsoManager = () => {
   const { user } = useContext(UserContext);
 
   const alertContainerRef = useRef(null);
-  const scrollToAlert = () => {
+  const scrollToAlert = useCallback(() => {
     alertContainerRef.current?.scrollIntoView();
-  };
+  }, []);
 
   const [disabled, setDisabled] = useState(true);
   const [alert, _setAlert] = useState(null);
@@ -65,7 +72,7 @@ const QsoManager = () => {
       _setAlert(alert);
       if (alert) scrollToAlert();
     },
-    [_setAlert],
+    [scrollToAlert],
   );
 
   const [fromStation, setFromStation] = useState(null);
@@ -105,7 +112,7 @@ const QsoManager = () => {
       }
     }
     if (user?.isAdmin && !users) getUsers();
-  }, [event, setAlert, user, users]);
+  }, [setAlert, user, users]);
 
   const getQsos = useCallback(async () => {
     try {
@@ -156,7 +163,7 @@ const QsoManager = () => {
       if (!qsos) getQsos();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [event, id, qsos, user]);
+  }, [event, id, qsos, user, getQsos, setAlert]);
 
   useEffect(() => {
     if (user === null) {
@@ -364,7 +371,7 @@ const QsoManager = () => {
 
     fetchLocator();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isManuallySettingLocator, locator, user]);
+  }, [isManuallySettingLocator, locator, user, formattedAddress]);
 
   const callsignRef = useRef(null);
 
@@ -547,13 +554,6 @@ const QsoManager = () => {
 
   const [page, setPage] = useState(0); // 0 = pre data, 1 = insert qso
 
-  function getAdifKey(qso, index) {
-    return JSON.stringify({
-      callsign: qso.callsign,
-      index,
-    });
-  }
-
   const importAdif = useCallback(
     async (_adifFile) => {
       if (!_adifFile) return;
@@ -671,16 +671,17 @@ const QsoManager = () => {
       lon,
       province,
       setAlert,
+      resetAdif,
     ],
   );
 
-  function resetAdif() {
+  const resetAdif = useCallback(() => {
     if (adifInputRef.current) {
       adifInputRef.current.value = null;
       setHasFile(false);
     }
     setAdifFile(null);
-  }
+  }, []);
 
   const [selectedQsos, setSelectedQsos] = useState([]);
   function selectQso(qso, checked) {
@@ -822,7 +823,7 @@ const QsoManager = () => {
 
     updateLocator();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locator, isManuallySettingLocator, event]);
+  }, [locator, isManuallySettingLocator, event, setAlert, setCookie]);
 
   useEffect(() => {
     setAllPredataInserted(locator && formattedAddress);
@@ -844,7 +845,7 @@ const QsoManager = () => {
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [autocompleteRef]);
+  }, []);
 
   return user === null ? (
     <Navigate

@@ -186,7 +186,7 @@ const Rankings = () => {
       }
     }
     getQsos();
-  }, [event, id, setAlert, user]);
+  }, [event, user]);
 
   const { pathname } = useLocation();
   const curUrl = useMemo(() => {

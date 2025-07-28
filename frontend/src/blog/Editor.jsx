@@ -80,7 +80,7 @@ const BlogPostEditor = ({ blogPost }) => {
       navigate("/blog", { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, navigate]);
 
   async function submit(e) {
     e.preventDefault();
