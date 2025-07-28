@@ -70,7 +70,7 @@ router.post(
       "login",
       // biome-ignore lint/suspicious/noExplicitAny: we know user is an any type here
       async (_err: unknown, user: any) => {
-        logger.debug("Logging in callsign " + user?.callsign);
+        logger.debug(`Logging in callsign ${user?.callsign}`);
         try {
           if (_err || !user) {
             if (_err) {
@@ -105,7 +105,7 @@ router.post(
 
             req.user = user;
 
-            logger.debug("Logged in callsign " + user.callsign);
+            logger.debug(`Logged in callsign ${user.callsign}`);
 
             return next();
           });

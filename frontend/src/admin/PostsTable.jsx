@@ -49,7 +49,7 @@ const PostsTable = ({
               </Table.Cell>
               <Table.Cell>
                 <Tooltip content={u.description}>
-                  <Link to={"/social/" + u._id}>
+                  <Link to={`/social/${u._id}`}>
                     <span className="line-clamp-3">{u.description}</span>
                   </Link>
                 </Tooltip>

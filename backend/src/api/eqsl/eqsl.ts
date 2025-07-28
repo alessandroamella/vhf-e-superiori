@@ -1,9 +1,9 @@
+import { spawn } from "node:child_process";
+import { existsSync } from "node:fs";
+import { readFile, unlink } from "node:fs/promises";
+import path from "node:path";
 import axios, { isAxiosError } from "axios";
-import { spawn } from "child_process";
-import { existsSync } from "fs";
-import { readFile, unlink } from "fs/promises";
 import moment from "moment";
-import path from "path";
 import sharp from "sharp";
 import { v4 as uuidv4 } from "uuid";
 import { envs, logger } from "../../shared";
@@ -44,7 +44,7 @@ class EqslPic {
     }
 
     try {
-      let imageBuffer;
+      let imageBuffer: Buffer;
       if (this.href === this.logoMinUrl) {
         logger.debug(`Href is ${this.logoMinUrl}, using local image`);
         const imagePath = path.join(process.cwd(), "images", "logo-min.png");
@@ -63,9 +63,9 @@ class EqslPic {
         .toBuffer();
       this.image = minifiedImg;
 
-      logger.debug("Fetched eQSL image from " + this.href);
+      logger.debug(`Fetched eQSL image from ${this.href}`);
     } catch (err) {
-      logger.error("Error fetching eQSL image from " + this.href);
+      logger.error(`Error fetching eQSL image from ${this.href}`);
       logger.error(isAxiosError(err) ? err?.response?.data : err);
       throw err;
     }
@@ -106,7 +106,7 @@ class EqslPic {
     const filePath =
       templatePath ?? path.join(tempDir, `eqsl-${epoch}-${guid}.png`); // eQSL card template
     if (!templatePath) await this.saveImageToFile(filePath);
-    logger.debug("Saved eQSL image to file " + filePath);
+    logger.debug(`Saved eQSL image to file ${filePath}`);
 
     const text2 = `Data:${moment(qso.qsoDate).format(
       "DD-MM-YYYY",
@@ -117,7 +117,7 @@ class EqslPic {
     // offset2 should be height / 2.35
     const { height } = await sharp(filePath).metadata();
     const offset2 = height ? Math.round(Math.min(height, 1920) / 2.15) : 460;
-    logger.debug("Offset2: " + offset2);
+    logger.debug(`Offset2: ${offset2}`);
 
     const text3 = `Da: ${
       qso.fromStationCallsignOverride || fromStation.callsign
@@ -151,11 +151,11 @@ class EqslPic {
       "#423b0c", // text stroke color 3
     ];
     logger.debug("Calling ImageMagick to add text to eQSL image with args: ");
-    logger.debug('"' + args.join('" "') + '"');
+    logger.debug(`"${args.join('" "')}"`);
 
     // check that filePath exists
     if (!existsSync(filePath)) {
-      logger.error("eQSL card template file does not exist at " + filePath);
+      logger.error(`eQSL card template file does not exist at ${filePath}`);
     }
     const proc = spawn(path.join(process.cwd(), "scripts/gen_image.sh"), args);
     await new Promise<void>((resolve, reject) => {
@@ -177,7 +177,7 @@ class EqslPic {
         if (code === 0) {
           resolve();
         } else {
-          reject(new Error("ImageMagick exited with code " + code));
+          reject(new Error(`ImageMagick exited with code ${code}`));
         }
       });
     });
@@ -186,10 +186,10 @@ class EqslPic {
     this.image = img;
 
     if (!templatePath) {
-      logger.debug("Deleting temp template eQSL image file at " + filePath);
+      logger.debug(`Deleting temp template eQSL image file at ${filePath}`);
       await unlink(filePath);
     }
-    logger.debug("Deleting temp out eQSL image file at " + tempPath);
+    logger.debug(`Deleting temp out eQSL image file at ${tempPath}`);
     await unlink(outPath);
 
     logger.debug("Added text to eQSL image");
@@ -218,7 +218,7 @@ class EqslPic {
 
     const mimeType = "image/jpeg";
 
-    logger.info("Uploading EQSL pic file to S3 named " + fileName);
+    logger.info(`Uploading EQSL pic file to S3 named ${fileName}`);
     try {
       const awsPath = await s3Client.uploadFile({
         fileName: s3Client.generateFileName({
@@ -234,12 +234,12 @@ class EqslPic {
             : "eqsl",
       });
       if (!awsPath) throw new Error("No awsPath in eQSL picture upload");
-      logger.info("eQSL picture file uploaded: " + awsPath);
+      logger.info(`eQSL picture file uploaded: ${awsPath}`);
       this.href = awsPath;
       this.image = null;
       return awsPath;
     } catch (err) {
-      logger.error("Error uploading eQSL picture file: " + filePath);
+      logger.error(`Error uploading eQSL picture file: ${filePath}`);
       logger.error(err);
       throw err;
     }
@@ -254,9 +254,9 @@ class EqslPic {
         filePath: this.href,
         bucket: envs.AWS_BUCKET_NAME,
       });
-      logger.info("Deleted eQSL image from S3: " + this.href);
+      logger.info(`Deleted eQSL image from S3: ${this.href}`);
     } catch (err) {
-      logger.error("Error deleting eQSL image from S3: " + this.href);
+      logger.error(`Error deleting eQSL image from S3: ${this.href}`);
       logger.error(err);
       throw err;
     }

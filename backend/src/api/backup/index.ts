@@ -1,10 +1,10 @@
+import { spawn } from "node:child_process";
+import { createWriteStream, existsSync } from "node:fs";
+import { mkdir, rm } from "node:fs/promises";
+import { basename, join } from "node:path";
+import { cwd } from "node:process";
 import axios, { isAxiosError } from "axios";
-import { spawn } from "child_process";
 import { toJSON } from "flatted";
-import { createWriteStream, existsSync } from "fs";
-import { mkdir, rm } from "fs/promises";
-import { basename, join } from "path";
-import { cwd } from "process";
 import { v4 as uuidv4 } from "uuid";
 import { envs, logger } from "../../shared";
 import { BasePost } from "../post/models";
@@ -68,7 +68,7 @@ class Backup {
       cwd(),
       envs.BASE_TEMP_DIR,
       envs.MONGODUMP_FOLDER,
-      uuidv4() + ".zip",
+      `${uuidv4()}.zip`,
     );
     logger.info(`Zipping ${dirPath} to ${zipPath}`);
     // const proc = spawn("zip", ["-r", zipPath, dirPath], { cwd: dirPath });
@@ -114,7 +114,7 @@ class Backup {
     const dbPath = await this.backupDb();
     const files = await this.downloadPostsFiles(dbPath);
 
-    logger.info("Files downloaded: " + files.length + " to " + dbPath);
+    logger.info(`Files downloaded: ${files.length} to ${dbPath}`);
 
     if (files.length === 0) {
       logger.error("No files downloaded in createBackup");
@@ -125,7 +125,7 @@ class Backup {
     const zipPath = await this.zipDb(dbPath);
     await rm(dbPath, { recursive: true });
 
-    logger.info("Backup complete: " + zipPath);
+    logger.info(`Backup complete: ${zipPath}`);
 
     return { dbPath, zipPath, files };
   }

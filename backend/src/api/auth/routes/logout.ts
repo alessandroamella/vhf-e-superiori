@@ -15,7 +15,7 @@ const router = Router();
  *      '200':
  *        description: Logged out
  */
-router.post("/", async (req, res) => {
+router.post("/", async (_req, res) => {
   res.clearCookie(AuthOptions.AUTH_COOKIE_NAME, {
     httpOnly: true,
     signed: true,

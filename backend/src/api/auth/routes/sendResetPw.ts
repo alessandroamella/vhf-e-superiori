@@ -62,7 +62,7 @@ router.post(
         email: req.body.email,
       });
       if (!user) {
-        logger.debug("Email " + req.body.email + " not found in send reset pw");
+        logger.debug(`Email ${req.body.email} not found in send reset pw`);
         return res.sendStatus(OK);
       }
 
@@ -76,7 +76,7 @@ router.post(
 
       await EmailService.sendResetPwMail(user, passwordResetCode);
 
-      logger.debug("User " + user.callsign + " sent reset pw request");
+      logger.debug(`User ${user.callsign} sent reset pw request`);
 
       res.sendStatus(OK);
     } catch (err) {

@@ -3,7 +3,7 @@ import { param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import moment from "moment";
 import { logger } from "../../../shared";
-import { User, UserDoc } from "../../auth/models";
+import { User } from "../../auth/models";
 import { Errors } from "../../errors";
 import EventModel from "../../event/models";
 import { createError, validate } from "../../helpers";

@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
 import { param } from "express-validator";
 import { logger } from "../../../shared";
-import type { UserDoc } from "../../auth/models";
 import { Errors } from "../../errors";
 import Event from "../../event/models";
 import { createError, validate } from "../../helpers";

@@ -11,11 +11,11 @@ const EqslRedirect = () => {
   useEffect(() => {
     if (!id) return;
 
-    console.log("Redirecting to /qso/" + id);
-    navigate("/qso/" + id);
+    console.log(`Redirecting to /qso/${id}`);
+    navigate(`/qso/${id}`);
   }, [id, navigate]);
 
-  return <></>;
+  return null; // No UI needed, just a redirect
 };
 
 export default EqslRedirect;

@@ -121,7 +121,7 @@ const BlogPostEditor = ({ blogPost }) => {
       setCookie("contentMd", "", { path: "/", expires: new Date(0) });
       setCookie("tags", "", { path: "/", expires: new Date(0) });
 
-      navigate("/blog/" + data._id, { replace: true });
+      navigate(`/blog/${data._id}`, { replace: true });
     } catch (err) {
       console.error(err?.response?.data?.err || err);
       setAlert({

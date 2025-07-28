@@ -11,7 +11,7 @@ async function populateUser(req: Request, res: Response, next: NextFunction) {
     { session: false },
     // biome-ignore lint/suspicious/noExplicitAny: we know user is an any type here
     async (_err: any, user: any) => {
-      logger.debug("populateUser for callsign " + user?.callsign);
+      logger.debug(`populateUser for callsign ${user?.callsign}`);
 
       if (_err) {
         logger.error("Error while authenticating in populateUser");
@@ -49,7 +49,7 @@ async function populateUser(req: Request, res: Response, next: NextFunction) {
           updatedAt: userWithTimestamps.updatedAt.toISOString(),
           _id: foundUser._id.toString(),
         } as unknown as typeof req.user;
-        logger.debug("populateUser successful for user " + foundUser.callsign);
+        logger.debug(`populateUser successful for user ${foundUser.callsign}`);
       } else req.user = undefined;
       next();
     },

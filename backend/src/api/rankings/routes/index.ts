@@ -176,7 +176,7 @@ router.get(
   param("_id").isMongoId().withMessage(Errors.INVALID_OBJECT_ID),
   validate,
   async (req, res) => {
-    logger.debug("Getting rankings for event: " + req.params._id);
+    logger.debug(`Getting rankings for event: ${req.params._id}`);
 
     let event: EventDoc;
     try {
@@ -273,7 +273,7 @@ router.get(
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  */
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
   logger.debug("Getting rankings for current solar year");
 
   const startOfYear = moment().startOf("year");

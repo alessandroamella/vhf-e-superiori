@@ -39,7 +39,7 @@ const StationMapMarker = ({
         <h3 className="text-center font-semibold block">{callsign}</h3>
         {/* )} */}
         <p className="my-0 text-gray-500">
-          {locator || lat?.toFixed(5) + ", " + lon?.toFixed(5)}
+          {locator || `${lat?.toFixed(5)}, ${lon?.toFixed(5)}`}
         </p>
       </Popup>
     </Marker>

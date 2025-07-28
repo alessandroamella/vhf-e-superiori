@@ -81,7 +81,7 @@ const ViewEvent = () => {
       if (!event) return;
 
       try {
-        await axios.get("/api/joinrequest/event/" + event._id);
+        await axios.get(`/api/joinrequest/event/${event._id}`);
         setAlreadyJoined(true);
       } catch (err) {
         console.log("checkIfJoined error", err);
@@ -150,6 +150,7 @@ const ViewEvent = () => {
                     href="/docs/Regolamento_FLASH_MOB_2023_01_23.pdf"
                     target="_blank"
                     className="underline"
+                    rel="noopener"
                   >
                     regolamento
                   </a>

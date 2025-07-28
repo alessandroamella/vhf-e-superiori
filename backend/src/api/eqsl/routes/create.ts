@@ -4,7 +4,7 @@ import { body } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "http-status";
 import moment from "moment";
 import { logger } from "../../../shared/logger";
-import { User, UserDoc } from "../../auth/models";
+import { User } from "../../auth/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import JoinRequest from "../../joinRequest/models";

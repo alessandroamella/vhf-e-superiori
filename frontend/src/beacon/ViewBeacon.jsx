@@ -125,7 +125,7 @@ const ViewBeacon = () => {
     setDisabled(true);
 
     try {
-      await axios.put("/api/beacon/approve/" + _id);
+      await axios.put(`/api/beacon/approve/${_id}`);
       const { data } = await axios.get(`/api/beacon/${id}`);
       setProperties(data.properties);
       setPropIndex(data.properties.length - 1);

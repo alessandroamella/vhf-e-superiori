@@ -31,7 +31,7 @@ export function createServer() {
   //     qrzRoutes
   // );
 
-  app.use("*", (req, res) =>
+  app.use("*", (_req, res) =>
     res.status(NOT_FOUND).json(createError(Errors.URL_NOT_FOUND)),
   );
 

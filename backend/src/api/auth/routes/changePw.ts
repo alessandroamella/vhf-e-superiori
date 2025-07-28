@@ -5,7 +5,7 @@ import { INTERNAL_SERVER_ERROR, OK, UNAUTHORIZED } from "http-status";
 import { logger } from "../../../shared/logger";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
-import { User, UserDoc } from "../models";
+import { User } from "../models";
 
 const router = Router();
 
@@ -81,7 +81,7 @@ router.post(
       user.password = await bcrypt.hash(plainPw, salt);
       await user.save();
 
-      logger.debug("User " + user.callsign + " changed password");
+      logger.debug(`User ${user.callsign} changed password`);
 
       res.sendStatus(OK);
     } catch (err) {

@@ -62,7 +62,7 @@ const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
     setDeleteDisabled(true);
 
     try {
-      await axios.delete("/api/post/" + p._id);
+      await axios.delete(`/api/post/${p._id}`);
       setAlert({
         color: "success",
         msg: "Post eliminato con successo",

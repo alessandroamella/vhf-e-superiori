@@ -32,7 +32,7 @@ function ChangeView({ center, markers }) {
   const map = useMap();
   map.setView({ lng: center.lon, lat: center.lat }, 5);
 
-  let markerBounds = latLngBounds([]);
+  const markerBounds = latLngBounds([]);
   if (markers.length && markers.length > 0) {
     markers.forEach((marker) => {
       markerBounds.extend([marker.lat, marker.lon]);
@@ -57,7 +57,7 @@ const Qso = () => {
   useEffect(() => {
     async function getQso() {
       try {
-        const { data } = await axios.get("/api/qso/" + id);
+        const { data } = await axios.get(`/api/qso/${id}`);
         console.log("qso", data);
         if (!data || !data?.callsign) {
           throw new Error("QSO non trovato");
@@ -219,8 +219,7 @@ const Qso = () => {
                 )}
               </ReactPlaceholder>
 
-              {qso &&
-              qso.fromStation &&
+              {qso?.fromStation &&
               qso.fromStationLat &&
               qso.fromStationLon &&
               qso.toStationLat &&

@@ -189,7 +189,7 @@ class Location {
   }
 
   public calculateLatLon(qth: string): [number, number] | null {
-    if (qth.length != 4 && qth.length != 6) {
+    if (qth.length !== 4 && qth.length !== 6) {
       logger.debug("The QTH locator must be 4 or 6 charcters long");
       return null;
     } // Verify string length: only 4 and 6 character strings are accepted.
@@ -211,7 +211,7 @@ class Location {
     }
 
     if (
-      qth.length == 6 &&
+      qth.length === 6 &&
       (qth.charAt(4) < "A" ||
         qth.charAt(4) > "X" ||
         qth.charAt(5) < "A" ||
@@ -228,12 +228,12 @@ class Location {
     let lon = Location.str_chr_up.indexOf(qth.charAt(0)) * 20; // 1st digit: 20deg longitude slot.
     lat += Location.str_num.indexOf(qth.charAt(3)) * 1; // 4th digit: 1deg latitude slot.
     lon += Location.str_num.indexOf(qth.charAt(2)) * 2; // 3rd digit: 2deg longitude slot.
-    if (qth.length == 6) {
+    if (qth.length === 6) {
       lat += (Location.str_chr_up.indexOf(qth.charAt(5)) * 2.5) / 60; // 6th digit: 2.5min latitude slot.
       lon += (Location.str_chr_up.indexOf(qth.charAt(4)) * 5) / 60; // 5th digit: 5min longitude slot.
     }
 
-    if (qth.length == 4) {
+    if (qth.length === 4) {
       // Get coordinates of the center of the square.
       lat += 0.5 * 1;
       lon += 0.5 * 2;

@@ -68,7 +68,7 @@ router.post(
         _id: req.body.user,
       });
       if (!user) {
-        logger.debug("User " + req.body._id + " not found in reset pw");
+        logger.debug(`User ${req.body._id} not found in reset pw`);
         return res.status(BAD_REQUEST).json(createError(Errors.USER_NOT_FOUND));
       } else if (!user.passwordResetCode) {
         logger.debug("User password reset code undefined for reset pw");
@@ -86,8 +86,8 @@ router.post(
         logger.debug("Password reset code match");
         user.passwordResetCode = undefined;
         const salt = await bcrypt.genSalt(10);
-        (user.password = await bcrypt.hash(req.body.newPassword, salt)),
-          await user.save();
+        user.password = await bcrypt.hash(req.body.newPassword, salt);
+        await user.save();
         return res.sendStatus(OK);
       } else {
         logger.debug("Password reset code fail");

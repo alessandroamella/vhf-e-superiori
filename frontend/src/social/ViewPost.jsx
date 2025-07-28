@@ -23,7 +23,7 @@ const ViewPost = () => {
   useEffect(() => {
     async function loadPost() {
       try {
-        const { data } = await axios.get("/api/post/" + id);
+        const { data } = await axios.get(`/api/post/${id}`);
         console.log("post", data);
         setPostExtended({ post: data.post, pics: data.pps || {} });
       } catch (err) {
@@ -59,7 +59,7 @@ const ViewPost = () => {
     setDeleteDisabled(true);
 
     try {
-      await axios.delete("/api/post/" + p._id);
+      await axios.delete(`/api/post/${p._id}`);
       setAlert({
         color: "success",
         msg: "Post eliminato con successo",

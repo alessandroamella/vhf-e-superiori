@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "http-status";
 import { logger } from "../../shared";
-import { User, UserDoc } from "../auth/models";
+import { User } from "../auth/models";
 import { Errors } from "../errors";
 import { createError } from "../helpers";
 import { location } from "../location";

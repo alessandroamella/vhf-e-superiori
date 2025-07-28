@@ -26,7 +26,7 @@ const BlogPostViewer = () => {
     async function getBlogPost() {
       setLoading(true);
       try {
-        const { data } = await axios.get("/api/blog/" + id);
+        const { data } = await axios.get(`/api/blog/${id}`);
         setPost(data);
       } catch (err) {
         console.log("Errore nel caricamento del post", err);
@@ -51,14 +51,12 @@ const BlogPostViewer = () => {
     if (disabled) return;
 
     const ok = window.confirm("Sei sicuro di voler eliminare questo post?");
-    {
-      t("callsign");
-    }
+    t("callsign");
     if (!ok) return;
 
     setDisabled(true);
     try {
-      await axios.delete("/api/blog/" + id);
+      await axios.delete(`/api/blog/${id}`);
       window.alert("Post eliminato con successo");
       navigate(-1);
     } catch (err) {

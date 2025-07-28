@@ -184,7 +184,7 @@ const Profile = () => {
         obj.province = province;
       }
       console.log("obj", obj);
-      const { data } = await axios.put("/api/auth/" + user._id, obj);
+      const { data } = await axios.put(`/api/auth/${user._id}`, obj);
       console.log("data", data);
       if (data.email === user.email) {
         setAlert({ color: "success", msg: t("dataSuccessfullyModified") });
@@ -219,7 +219,7 @@ const Profile = () => {
     setJoinRequestDeleteError(null);
 
     try {
-      await axios.delete("/api/joinrequest/" + deleteJoinRequest._id);
+      await axios.delete(`/api/joinrequest/${deleteJoinRequest._id}`);
       setAlert({
         color: "success",
         msg: t("partecipationSuccessfullyCanceled"),
@@ -243,7 +243,7 @@ const Profile = () => {
     setDeleteDisabled(true);
 
     try {
-      await axios.delete("/api/post/" + p._id);
+      await axios.delete(`/api/post/${p._id}`);
       setAlert({
         color: "success",
         msg: t("postSuccessfullyDeleted"),
@@ -315,7 +315,7 @@ const Profile = () => {
     <>
       <Helmet>
         <title>
-          Profilo{user?.callsign ? " di " + user.callsign : ""} - VHF e
+          Profilo{user?.callsign ? ` di ${user.callsign}` : ""} - VHF e
           superiori
         </title>
       </Helmet>
@@ -429,7 +429,7 @@ const Profile = () => {
                 Sei sicuro di annullare la tua richiesta di partecipazione a:
               </p>
               <Link
-                to={"/event/" + deleteJoinRequest?.event?._id}
+                to={`/event/${deleteJoinRequest?.event?._id}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-2xl font-bold underline flex items-center"
@@ -500,7 +500,7 @@ const Profile = () => {
           <div>
             {user ? (
               <div className="flex flex-col mb-8">
-                <Link to={`/u/` + user?.callsign} className="mb-2">
+                <Link to={`/u/${user?.callsign}`} className="mb-2">
                   <Typography
                     variant="h1"
                     className="dark:text-white flex items-center"
@@ -787,7 +787,7 @@ const Profile = () => {
                   joinRequests.map((j) => (
                     <Card key={j._id} className="mb-2">
                       <h6 className="text-xl font-bold tracking-tight text-gray-900 hover:underline">
-                        <Link to={"/event/" + j.event._id}>{j.event.name}</Link>
+                        <Link to={`/event/${j.event._id}`}>{j.event.name}</Link>
                       </h6>
                       <p className="font-normal text-gray-700 dark:text-gray-100 -mt-2">
                         {formatInTimeZone(
@@ -810,7 +810,7 @@ const Profile = () => {
                       </p>
 
                       {j.isApproved && (
-                        <Link to={"/qsomanager/" + j.event._id}>
+                        <Link to={`/qsomanager/${j.event._id}`}>
                           <Button>
                             <div className="flex items-center gap-1 transition-colors">
                               <FaExternalLinkAlt />
@@ -861,7 +861,7 @@ const Profile = () => {
                       <ListGroup.Item key={p._id}>
                         <div className="flex items-center gap-1 w-full">
                           <Link
-                            to={"/social/" + p._id}
+                            to={`/social/${p._id}`}
                             className="w-fit hover:scale-105 transition-transform flex items-center gap-1 p-1"
                           >
                             <FaLink className="text-gray-500 dark:text-gray-400" />

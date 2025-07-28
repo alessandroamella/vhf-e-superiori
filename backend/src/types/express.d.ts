@@ -1,4 +1,4 @@
-import { FlattenMaps, LeanDocument, Types } from "mongoose";
+import { FlattenMaps, LeanDocument } from "mongoose";
 import type { UserDoc } from "../api/auth/models";
 
 // Override Express Request interface

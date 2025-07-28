@@ -64,7 +64,7 @@ const EditUserModal = ({
 
     setDisabled(true);
     try {
-      await axios.put("/api/auth/" + userEditing._id, userEditing);
+      await axios.put(`/api/auth/${userEditing._id}`, userEditing);
       await getUsers();
       setUserEditing(null);
     } catch (err) {

@@ -70,7 +70,7 @@ import { logger } from "../../../shared";
     this.phoneNumber,
     "IT",
   )!.formatInternational();
-  logger.debug("Parsed phone number: " + this.phoneNumber);
+  logger.debug(`Parsed phone number: ${this.phoneNumber}`);
 })
 export class UserClass {
   @prop({ required: true, minlength: 1, maxlength: 10, uppercase: true })

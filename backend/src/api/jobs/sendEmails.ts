@@ -1,6 +1,6 @@
+import { unlink } from "node:fs/promises";
 import { isDocument } from "@typegoose/typegoose";
 import { CronJob } from "cron";
-import { unlink } from "fs/promises";
 import { logger } from "../../shared";
 import EqslPic from "../eqsl/eqsl";
 import type { EventDoc } from "../event/models";

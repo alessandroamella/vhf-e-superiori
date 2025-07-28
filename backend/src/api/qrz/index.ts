@@ -71,7 +71,7 @@ class Qrz {
 
       logger.info("Logged in to QRZ XML");
       logger.debug(
-        "Logged in with key: " + this.getProp(json.QRZDatabase.Session[0].Key),
+        `Logged in with key: ${this.getProp(json.QRZDatabase.Session[0].Key)}`,
       );
 
       return json.QRZDatabase.Session[0].Key[0];

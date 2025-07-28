@@ -89,7 +89,7 @@ const ViewPublished = () => {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const { data } = await axios.get("/api/auth/" + callsign);
+        const { data } = await axios.get(`/api/auth/${callsign}`);
         console.log("user", data);
         setUser(data);
       } catch (err) {
@@ -162,7 +162,7 @@ const ViewPublished = () => {
       const from = [qso.fromStationLat, qso.fromStationLon];
       const to = [qso.toStationLat, qso.toStationLon];
 
-      if (from.every((e) => !isNaN(e))) {
+      if (from.every((e) => !Number.isNaN(e))) {
         _points.push({
           callsign:
             qso.fromStationCallsignOverride ||
@@ -174,7 +174,7 @@ const ViewPublished = () => {
           lon: from[1],
         });
       }
-      if (to.every((e) => !isNaN(e))) {
+      if (to.every((e) => !Number.isNaN(e))) {
         _points.push({
           callsign: qso.callsign,
           locator: qso.locator,
@@ -234,7 +234,7 @@ const ViewPublished = () => {
       : t("viewAllQSO"));
 
   const location = useLocation();
-  const curUrl = "https://" + window.location.hostname + location.pathname;
+  const curUrl = `https://${window.location.hostname}${location.pathname}`;
 
   return (
     <>
@@ -433,7 +433,7 @@ const ViewPublished = () => {
           )}
           {loaded ? (
             <div>
-              {user?.posts ? (
+              {user?.posts && (
                 <div className="p-0 md:p-5 gap-2 grid grid-cols-1 md:grid-cols-2">
                   {user.posts.map((p) => (
                     <FeedCard
@@ -446,8 +446,6 @@ const ViewPublished = () => {
                     />
                   ))}
                 </div>
-              ) : (
-                <></>
               )}
               {!showMap && (
                 <div className="my-2 flex justify-center">
@@ -480,7 +478,7 @@ const ViewPublished = () => {
                 rows={10}
                 ready={!isFakeLoading}
               />
-              {user && showMap ? (
+              {user && showMap && (
                 <div
                   id="user-map-container"
                   className="drop-shadow-lg flex flex-col items-center gap-2 relative"
@@ -546,9 +544,14 @@ const ViewPublished = () => {
                           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         />
 
-                        {qsoPoints?.map((point, i) => (
+                        {qsoPoints?.map((point) => (
                           <StationMapMarker
-                            key={i}
+                            key={
+                              point.callsign +
+                              point.locator +
+                              point.lat +
+                              point.lon
+                            }
                             callsign={point.callsign}
                             locator={point.locator}
                             lat={point.lat}
@@ -633,8 +636,6 @@ const ViewPublished = () => {
                     </Card>
                   )}
                 </div>
-              ) : (
-                <></>
               )}
             </div>
           ) : (

@@ -1,7 +1,6 @@
 import { Request, Response, Router } from "express";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared";
-import type { UserDoc } from "../../auth/models";
 import { createError } from "../../helpers";
 import JoinRequest from "../models";
 

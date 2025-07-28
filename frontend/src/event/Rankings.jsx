@@ -327,7 +327,7 @@ const Rankings = () => {
 
                 {/* <Tabs.Group> */}
                 {["Cacciatori", "Attivatori"].map((tab, i) => (
-                  <Tabs.Item title={tab} key={i}>
+                  <Tabs.Item title={tab} key={tab}>
                     <h1 className="text-4xl md:text-5xl uppercase text-red-500 font-bold text-center mt-8 mb-8 animate-pulse">
                       Classifica {tab}
                     </h1>

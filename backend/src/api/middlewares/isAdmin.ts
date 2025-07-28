@@ -9,7 +9,7 @@ async function isAdmin(req: Request, res: Response, next: NextFunction) {
   const user = req.user as Partial<UserDoc> | undefined;
 
   logger.debug(
-    "Running isAdmin for user " + user?.callsign + " = " + !!user?.isAdmin,
+    `Running isAdmin for user ${user?.callsign} = ${!!user?.isAdmin}`,
   );
   if (user?.isAdmin) return next();
   return res.status(UNAUTHORIZED).json(createError(Errors.NOT_AN_ADMIN));

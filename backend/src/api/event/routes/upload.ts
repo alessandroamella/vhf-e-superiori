@@ -1,12 +1,11 @@
+import { unlink } from "node:fs/promises";
+import path from "node:path";
 import { Request, Response, Router } from "express";
 import fileUpload from "express-fileupload";
 import { query } from "express-validator";
-import { unlink } from "fs/promises";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from "http-status";
-import path from "path";
 import sharp from "sharp";
 import { logger } from "../../../shared";
-import type { UserDoc } from "../../auth/models";
 import { s3Client } from "../../aws";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
@@ -102,7 +101,7 @@ router.post(
       logger.debug("Tried to upload 0 files to event");
       return res.status(BAD_REQUEST).json(createError(Errors.NO_CONTENT));
     } else if (fileArr.length > 1) {
-      logger.debug("Tried to upload " + fileArr.length + " files to event");
+      logger.debug(`Tried to upload ${fileArr.length} files to event`);
       return res.status(BAD_REQUEST).json(createError(Errors.TOO_MANY_FILES));
     }
 
@@ -115,13 +114,13 @@ router.post(
 
     logger.debug(`Checking file ${f.name} MIME type`);
     if (!allowedMimeTypes.includes(f.mimetype)) {
-      logger.debug("File MIME type not allowed for file " + f.name);
+      logger.debug(`File MIME type not allowed for file ${f.name}`);
       await unlink(f.tempFilePath);
       return res
         .status(BAD_REQUEST)
         .json(createError(Errors.INVALID_FILE_MIME_TYPE));
     } else if (f.size > 10 * 1024 * 1024) {
-      logger.debug("File size too big for file " + f.name);
+      logger.debug(`File size too big for file ${f.name}`);
       await unlink(f.tempFilePath);
       return res
         .status(BAD_REQUEST)
@@ -154,7 +153,7 @@ router.post(
     }
 
     let awsPath: string;
-    logger.info("Uploading event pic file to S3 named " + f.name);
+    logger.info(`Uploading event pic file to S3 named ${f.name}`);
     try {
       awsPath = await s3Client.uploadFile({
         fileName: s3Client.generateFileName({
@@ -166,15 +165,15 @@ router.post(
         folder: req.query.isEqsl ? "eqsl" : "posters",
       });
       if (!awsPath) throw new Error("No awsPath in event picture upload");
-      logger.info("Event picture file uploaded: " + f.name);
+      logger.info(`Event picture file uploaded: ${f.name}`);
     } catch (err) {
-      logger.error("Error uploading event picture file: " + f.name);
+      logger.error(`Error uploading event picture file: ${f.name}`);
       logger.error(err);
       await unlink(f.tempFilePath);
       return res.status(INTERNAL_SERVER_ERROR).json(createError());
     }
 
-    logger.info("Uploaded event picture file: " + awsPath);
+    logger.info(`Uploaded event picture file: ${awsPath}`);
     return res.json({ path: awsPath });
   },
 );

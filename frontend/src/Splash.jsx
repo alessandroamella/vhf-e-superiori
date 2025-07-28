@@ -42,22 +42,23 @@ const Splash = ({ ready }) => {
           alt="Logo"
           className="w-96 max-w-[50vw]"
         />
-        <>
-          <motion.h1
-            className="font-bold text-3xl md:text-5xl ml-0 flex overflow-hidden"
-            aria-label={text}
-          >
-            {text.split("").map((char, index) => (
-              <motion.span
-                key={`${char}-${index}`}
-                variants={character}
-                className="inline-block"
-              >
-                {char === " " ? "\u00A0" : char} {/* Render space correctly */}
-              </motion.span>
-            ))}
-          </motion.h1>
-        </>
+        <motion.h1
+          className="font-bold text-3xl md:text-5xl ml-0 flex overflow-hidden"
+          aria-label={text}
+        >
+          {text.split("").map((char, index) => (
+            <motion.span
+              key={`${char}-${
+                // biome-ignore lint/suspicious/noArrayIndexKey: here elements are static
+                index
+              }`}
+              variants={character}
+              className="inline-block"
+            >
+              {char === " " ? "\u00A0" : char} {/* Render space correctly */}
+            </motion.span>
+          ))}
+        </motion.h1>
       </div>
     </motion.div>
   );

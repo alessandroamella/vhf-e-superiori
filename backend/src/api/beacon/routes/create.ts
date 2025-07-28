@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { checkSchema } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared";
-import { User, UserDoc } from "../../auth/models";
+import { User } from "../../auth/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import { Beacon, BeaconProperties } from "../models";

@@ -5,7 +5,7 @@ import { createError } from "../helpers";
 
 const router = Router();
 
-router.use("*", (req, res) =>
+router.use("*", (_req, res) =>
   res.status(NOT_FOUND).json(createError(Errors.URL_NOT_FOUND)),
 );
 

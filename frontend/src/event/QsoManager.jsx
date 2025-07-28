@@ -145,7 +145,7 @@ const QsoManager = () => {
   useEffect(() => {
     async function getEvent() {
       try {
-        const { data } = await axios.get("/api/event/" + id);
+        const { data } = await axios.get(`/api/event/${id}`);
         console.log("event", data);
         setEvent(data);
       } catch (err) {
@@ -345,7 +345,7 @@ const QsoManager = () => {
       if (!_locator && !isManuallySettingLocator && !formattedAddress) {
         try {
           const { data } = await axios.get(
-            "/api/autocomplete/" + user.callsign.replaceAll("/", "%2F"),
+            `/api/autocomplete/${user.callsign.replaceAll("/", "%2F")}`,
           );
           console.log("fetched locator from user callsign", data);
           _locator = data.locator;
@@ -464,7 +464,7 @@ const QsoManager = () => {
       } catch (err) {
         console.log(err.response?.data?.err || err);
         window.alert(
-          "ERRORE crea QSO: " + getErrorStr(err?.response?.data?.err || err),
+          `ERRORE crea QSO: ${getErrorStr(err?.response?.data?.err || err)}`,
         );
 
         // setAlert({
@@ -516,7 +516,7 @@ const QsoManager = () => {
     autocompleteTimeout.current = setTimeout(async () => {
       try {
         const { data } = await axios.get(
-          "/api/autocomplete/" + callsign.replaceAll("/", "%2F"),
+          `/api/autocomplete/${callsign.replaceAll("/", "%2F")}`,
         );
         console.log("autocomplete", data);
         if (data.callsign !== callsign) {
@@ -597,6 +597,14 @@ const QsoManager = () => {
 
   const [isImportingAdif, setIsImportingAdif] = useState(false);
 
+  const resetAdif = useCallback(() => {
+    if (adifInputRef.current) {
+      adifInputRef.current.value = null;
+      setHasFile(false);
+    }
+    setAdifFile(null);
+  }, []);
+
   const importAdifSubmit = useCallback(
     async (e) => {
       e.preventDefault();
@@ -644,7 +652,7 @@ const QsoManager = () => {
         setTimeout(() => {
           setAlert({
             color: "success",
-            msg: data.length + " QSO importati con successo",
+            msg: `${data.length} QSO importati con successo`,
           });
           setDisabled(false);
         }, 690);
@@ -675,14 +683,6 @@ const QsoManager = () => {
     ],
   );
 
-  const resetAdif = useCallback(() => {
-    if (adifInputRef.current) {
-      adifInputRef.current.value = null;
-      setHasFile(false);
-    }
-    setAdifFile(null);
-  }, []);
-
   const [selectedQsos, setSelectedQsos] = useState([]);
   function selectQso(qso, checked) {
     if (checked) {
@@ -707,7 +707,7 @@ const QsoManager = () => {
     const deleted = [];
     try {
       for (const qso of selectedQsos) {
-        await axios.delete("/api/qso/" + qso);
+        await axios.delete(`/api/qso/${qso}`);
         deleted.push(qso);
       }
       console.log("deleted", deleted);
@@ -758,7 +758,7 @@ const QsoManager = () => {
       console.log("forceSendEqsl for qso", q._id, q);
 
       try {
-        const { data } = await axios.get("/api/eqsl/forcesend/" + q._id);
+        const { data } = await axios.get(`/api/eqsl/forcesend/${q._id}`);
         console.log("OK forceSendEqsl for qso", q._id, data);
         setQsos(
           qsos.map((qso) =>
@@ -1065,129 +1065,121 @@ const QsoManager = () => {
                             locatorLoading ? (
                               <Spinner className="dark:text-white dark:fill-white" />
                             ) : (
-                              <>
-                                <div className="flex flex-col md:flex-row justify-center items-center gap-4">
-                                  {user.isAdmin && users && (
-                                    <div>
-                                      <Label
-                                        htmlFor="fromStation"
-                                        value="Da stazione attivatrice*"
-                                      />
-                                      <Dropdown
-                                        label={fromStation.callsign}
-                                        disabled={disabled}
-                                        id="fromStation"
-                                        required
-                                        color="light"
-                                      >
-                                        {users.map((u) => (
-                                          <Dropdown.Item
-                                            key={u._id}
-                                            onClick={() => setFromStation(u)}
+                              <div className="flex flex-col md:flex-row justify-center items-center gap-4">
+                                {user.isAdmin && users && (
+                                  <div>
+                                    <Label
+                                      htmlFor="fromStation"
+                                      value="Da stazione attivatrice*"
+                                    />
+                                    <Dropdown
+                                      label={fromStation.callsign}
+                                      disabled={disabled}
+                                      id="fromStation"
+                                      required
+                                      color="light"
+                                    >
+                                      {users.map((u) => (
+                                        <Dropdown.Item
+                                          key={u._id}
+                                          onClick={() => setFromStation(u)}
+                                        >
+                                          <span
+                                            className={
+                                              u._id === fromStation._id
+                                                ? "font-bold"
+                                                : ""
+                                            }
                                           >
-                                            <span
-                                              className={
-                                                u._id === fromStation._id
-                                                  ? "font-bold"
-                                                  : ""
-                                              }
-                                            >
-                                              {u.callsign}
-                                            </span>
-                                          </Dropdown.Item>
-                                        ))}
-                                      </Dropdown>
-                                      <p className="flex items-center dark:text-gray-200 gap-1 md:mt-2">
-                                        <FaInfoCircle />
-                                        Vedi questo in quanto sei un{" "}
-                                        <span className="font-bold">
-                                          amministratore
-                                        </span>
-                                      </p>
-                                    </div>
-                                  )}
+                                            {u.callsign}
+                                          </span>
+                                        </Dropdown.Item>
+                                      ))}
+                                    </Dropdown>
+                                    <p className="flex items-center dark:text-gray-200 gap-1 md:mt-2">
+                                      <FaInfoCircle />
+                                      Vedi questo in quanto sei un{" "}
+                                      <span className="font-bold">
+                                        amministratore
+                                      </span>
+                                    </p>
+                                  </div>
+                                )}
 
-                                  <div className="flex flex-col md:flex-row gap-4 items-center md:items-start">
-                                    <div>
+                                <div className="flex flex-col md:flex-row gap-4 items-center md:items-start">
+                                  <div>
+                                    <Label
+                                      htmlFor="callsignOverride"
+                                      value="Tuo nominativo"
+                                    />
+                                    <TextInput
+                                      id="callsignOverride"
+                                      color={
+                                        callsignOverride ? "success" : "warning"
+                                      }
+                                      value={callsignOverride}
+                                      onChange={(e) =>
+                                        setCallsignOverride(
+                                          e.target.value.toUpperCase(),
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                  <div
+                                    className={`${
+                                      formattedAddress ? "" : "mb-7"
+                                    } flex items-center gap-2`}
+                                  >
+                                    <div className="w-full">
                                       <Label
-                                        htmlFor="callsignOverride"
-                                        value="Tuo nominativo"
+                                        htmlFor="locator"
+                                        value="Tuo locatore"
                                       />
                                       <TextInput
-                                        id="callsignOverride"
                                         color={
-                                          callsignOverride
+                                          locator?.length === 6 &&
+                                          formattedAddress
                                             ? "success"
-                                            : "warning"
+                                            : formattedAddress === false
+                                              ? "info"
+                                              : "warning"
                                         }
-                                        value={callsignOverride}
-                                        onChange={(e) =>
-                                          setCallsignOverride(
-                                            e.target.value.toUpperCase(),
-                                          )
+                                        disabled={disabled}
+                                        id="locator"
+                                        label="Tuo locatore"
+                                        helperText={
+                                          (formattedAddress !== false &&
+                                            formattedAddress) ||
+                                          "Locatore non valido"
                                         }
+                                        minLength={6}
+                                        maxLength={6}
+                                        placeholder="Locatore..."
+                                        value={locator}
+                                        onChange={(e) => {
+                                          setLocator(e.target.value);
+                                          setCookie("locator", e.target.value, {
+                                            path: "/qsomanager",
+                                            maxAge: 60 * 60 * 4,
+                                          });
+                                          if (e.target.value.length !== 6) {
+                                            setFormattedAddress(null);
+                                          }
+                                        }}
                                       />
                                     </div>
-                                    <div
-                                      className={`${
-                                        formattedAddress ? "" : "mb-7"
-                                      } flex items-center gap-2`}
-                                    >
-                                      <div className="w-full">
-                                        <Label
-                                          htmlFor="locator"
-                                          value="Tuo locatore"
-                                        />
-                                        <TextInput
-                                          color={
-                                            locator?.length === 6 &&
-                                            formattedAddress
-                                              ? "success"
-                                              : formattedAddress === false
-                                                ? "info"
-                                                : "warning"
-                                          }
-                                          disabled={disabled}
-                                          id="locator"
-                                          label="Tuo locatore"
-                                          helperText={
-                                            (formattedAddress !== false &&
-                                              formattedAddress) ||
-                                            "Locatore non valido"
-                                          }
-                                          minLength={6}
-                                          maxLength={6}
-                                          placeholder="Locatore..."
-                                          value={locator}
-                                          onChange={(e) => {
-                                            setLocator(e.target.value);
-                                            setCookie(
-                                              "locator",
-                                              e.target.value,
-                                              {
-                                                path: "/qsomanager",
-                                                maxAge: 60 * 60 * 4,
-                                              },
-                                            );
-                                            if (e.target.value.length !== 6) {
-                                              setFormattedAddress(null);
-                                            }
-                                          }}
-                                        />
-                                      </div>
 
-                                      <Button
-                                        color="gray"
-                                        onClick={geolocalize}
-                                        disabled={disabled}
-                                        className="mb-1"
-                                      >
-                                        <FaMapMarkerAlt className="text-xl" />
-                                      </Button>
-                                    </div>
+                                    <Button
+                                      color="gray"
+                                      onClick={geolocalize}
+                                      disabled={disabled}
+                                      className="mb-1"
+                                    >
+                                      <FaMapMarkerAlt className="text-xl" />
+                                    </Button>
                                   </div>
                                 </div>
-                              </>
+                              </div>
                             )
                           ) : (
                             <div className="sticky flex flex-col gap-2 items-center">
@@ -1591,11 +1583,11 @@ const QsoManager = () => {
                                                       : q.emailSent
                                                         ? "⚠️ eQSL già inviata, usa per reinviarla" +
                                                           (q.email
-                                                            ? " a " + q.email
+                                                            ? ` a ${q.email}`
                                                             : "")
                                                         : "Usa il pulsante per forzare l'invio" +
                                                           (q.email
-                                                            ? " a " + q.email
+                                                            ? ` a ${q.email}`
                                                             : "")
                                               }
                                             >

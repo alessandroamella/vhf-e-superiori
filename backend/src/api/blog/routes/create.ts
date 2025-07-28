@@ -1,11 +1,11 @@
+import { stat, unlink } from "node:fs/promises";
 import { Request, Response, Router } from "express";
 import fileUpload from "express-fileupload";
 import { checkSchema } from "express-validator";
-import { stat, unlink } from "fs/promises";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import sharp from "sharp";
 import { logger } from "../../../shared";
-import { User, UserDoc } from "../../auth/models";
+import { User } from "../../auth/models";
 import { s3Client as s3 } from "../../aws";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
@@ -81,7 +81,7 @@ router.post(
       if (!user) {
         throw new Error("User not found in blog post create");
       } else if (!user.isAdmin) {
-        logger.warn("Non-admin tried to create a blog post: " + user._id);
+        logger.warn(`Non-admin tried to create a blog post: ${user._id}`);
         return res.status(BAD_REQUEST).json(createError(Errors.NOT_AN_ADMIN));
       }
 
@@ -102,7 +102,7 @@ router.post(
 
         if (originalSizeKb > 1024 * 3) {
           logger.debug(`Compressing picture ${f.tempFilePath}`);
-          const minifiedPath = f.tempFilePath + ".min.jpg";
+          const minifiedPath = `${f.tempFilePath}.min.jpg`;
           await sharp(f.tempFilePath)
             .jpeg({ quality: 80 })
             .toFile(f.tempFilePath);
@@ -136,10 +136,10 @@ router.post(
         );
 
         if (f.md5 === postPic?.md5) {
-          logger.debug("Setting post pic to " + awsPath);
+          logger.debug(`Setting post pic to ${awsPath}`);
           blogPost.image = awsPath;
         }
-        logger.debug("Adding file to post: " + awsPath);
+        logger.debug(`Adding file to post: ${awsPath}`);
         blogPost.fileContents.push(awsPath);
       }
 

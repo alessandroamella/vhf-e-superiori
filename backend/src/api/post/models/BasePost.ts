@@ -61,7 +61,7 @@ import { Errors } from "../../errors";
     this.videos.length === 0 &&
     this.isProcessing === false
   ) {
-    logger.error("No content uploaded for post " + this._id);
+    logger.error(`No content uploaded for post ${this._id}`);
     next(new Error(Errors.NO_CONTENT));
   } else {
     next();

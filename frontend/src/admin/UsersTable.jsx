@@ -103,7 +103,7 @@ const UsersTable = ({
           </div>
           <div className="hidden md:flex items-center p-4 w-64">
             <a
-              href={"mailto:" + u.email}
+              href={`mailto:${u.email}`}
               className="text-red-500 hover:text-red-600 transition-colors"
             >
               {u.email}
@@ -111,7 +111,7 @@ const UsersTable = ({
           </div>
           <div className="hidden md:flex items-center p-4 w-32">
             <a
-              href={"tel:" + u.phoneNumber}
+              href={`tel:${u.phoneNumber}`}
               className="text-red-500 hover:text-red-600 transition-colors"
             >
               {u.phoneNumber}

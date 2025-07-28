@@ -35,10 +35,10 @@ const router = Router();
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  */
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
   try {
     const views = await CounterView.estimatedDocumentCount();
-    logger.debug("Total views: " + views);
+    logger.debug(`Total views: ${views}`);
     res.json({
       views,
       date: new Date(),

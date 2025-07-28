@@ -1,11 +1,11 @@
+import { stat, unlink } from "node:fs/promises";
 import { Request, Response, Router } from "express";
 import fileUpload from "express-fileupload";
 import { checkSchema } from "express-validator";
-import { stat, unlink } from "fs/promises";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import sharp from "sharp";
 import { logger } from "../../../shared";
-import { User, UserDoc } from "../../auth/models";
+import { User } from "../../auth/models";
 import { s3Client as s3 } from "../../aws";
 import VideoCompressor from "../../compressor";
 import { Errors } from "../../errors";
@@ -158,7 +158,7 @@ router.post(
 
         if (originalSizeKb > 1024 * 3) {
           logger.debug(`Compressing picture ${p}`);
-          const minifiedPath = p + ".min.jpg";
+          const minifiedPath = `${p}.min.jpg`;
           await sharp(p).jpeg({ quality: 80 }).toFile(minifiedPath);
 
           const newStat = await stat(minifiedPath);
@@ -180,7 +180,7 @@ router.post(
 
       for (const v of vidTempPaths) {
         logger.debug(`Compressing video ${v}`);
-        const compressedPath = v + ".compressed.mp4";
+        const compressedPath = `${v}.compressed.mp4`;
         const compressor = new VideoCompressor(v, compressedPath);
         await compressor.compress();
 

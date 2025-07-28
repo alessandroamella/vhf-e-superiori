@@ -5,7 +5,7 @@ import { Errors } from "../errors";
 import { createError } from "../helpers";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   let isUserError =
     err instanceof (Error as never) &&
     err.message in Errors &&

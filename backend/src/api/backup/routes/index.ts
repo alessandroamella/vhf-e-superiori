@@ -31,7 +31,7 @@ const router = Router();
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  */
-router.get("/", isLoggedIn, isAdmin, validate, async (req, res) => {
+router.get("/", isLoggedIn, isAdmin, validate, async (_req, res) => {
   try {
     const _backup = await backup.createBackup();
     if (!_backup) {

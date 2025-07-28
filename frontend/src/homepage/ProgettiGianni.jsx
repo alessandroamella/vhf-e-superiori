@@ -31,38 +31,36 @@ const ProgettiGianni = () => {
   };
 
   return (
-    <>
-      <div className="px-4 select-none md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
-        <Link to="/">
-          <Button className="mb-2">
-            <FaHome />
-          </Button>
-        </Link>
+    <div className="px-4 select-none md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
+      <Link to="/">
+        <Button className="mb-2">
+          <FaHome />
+        </Button>
+      </Link>
 
-        <h2 className="text-lg font-semibold dark:text-gray-200 mb-4">
-          {t("giannisProjects")}
-        </h2>
-        <Swiper
-          navigation
-          pagination
-          spaceBetween={10}
-          slidesPerView={1}
-          loop={true}
-          className="mx-auto"
-          onSlideChange={handleSlideChange}
-          currentSlide={currentSlide}
-        >
-          {documents.map((pdf, i) => (
-            <SwiperSlide key={i}>
-              <LazyPDFViewer
-                pdfName={pdf}
-                shouldRender={Math.abs(currentSlide - i) < 2}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
-    </>
+      <h2 className="text-lg font-semibold dark:text-gray-200 mb-4">
+        {t("giannisProjects")}
+      </h2>
+      <Swiper
+        navigation
+        pagination
+        spaceBetween={10}
+        slidesPerView={1}
+        loop={true}
+        className="mx-auto"
+        onSlideChange={handleSlideChange}
+        currentSlide={currentSlide}
+      >
+        {documents.map((pdf, i) => (
+          <SwiperSlide key={pdf}>
+            <LazyPDFViewer
+              pdfName={pdf}
+              shouldRender={Math.abs(currentSlide - i) < 2}
+            />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
   );
 };
 

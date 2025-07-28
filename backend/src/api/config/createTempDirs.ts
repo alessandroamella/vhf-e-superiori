@@ -1,6 +1,6 @@
-import { existsSync, mkdirSync } from "fs";
-import { join } from "path";
-import { cwd } from "process";
+import { existsSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
+import { cwd } from "node:process";
 import { envs, logger } from "../../shared";
 
 // create temp dirs based on BASE_TEMP_DIR for all env vars ending with '_folder' or '_dir'
@@ -27,10 +27,10 @@ export function createTempDirs() {
   ]) {
     const tempDir = join(cwd(), dir);
     if (!existsSync(tempDir)) {
-      logger.info("Creating temp dir: " + tempDir);
+      logger.info(`Creating temp dir: ${tempDir}`);
       mkdirSync(tempDir, { recursive: true });
     } else {
-      logger.debug("Temp dir already exists: " + tempDir);
+      logger.debug(`Temp dir already exists: ${tempDir}`);
     }
   }
 

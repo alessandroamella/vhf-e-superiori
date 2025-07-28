@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 import { createLogger, format, transports } from "winston";
 
 const { combine, timestamp, colorize, printf, errors, label, json } = format;

@@ -86,6 +86,8 @@ const BeaconEditor = () => {
 
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (!id) {
       // if id is null, we are creating a new beacon
@@ -131,7 +133,7 @@ const BeaconEditor = () => {
         //   msg: getErrorStr(err?.response?.data?.err)
         // });
         window.alert(
-          "Errore nel caricamento del beacon: " + err?.response?.data?.err,
+          `Errore nel caricamento del beacon: ${err?.response?.data?.err}`,
         );
         navigate("/beacon");
       } finally {
@@ -151,7 +153,7 @@ const BeaconEditor = () => {
       navigate({
         pathname: "/login",
         search: createSearchParams({
-          to: "/beacon/editor" + (id ? `?id=${id}` : ""),
+          to: `/beacon/editor${id ? `?id=${id}` : ""}`,
         }).toString(),
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -177,8 +179,6 @@ const BeaconEditor = () => {
   const [isLocatorFocused, setIsLocatorFocused] = useState(false);
 
   const [disabled, setDisabled] = useState(!canEdit);
-
-  const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -220,7 +220,7 @@ const BeaconEditor = () => {
         const res = await axios.post("/api/beacon", data);
         _id = res.data._id;
       }
-      navigate("/beacon/" + _id, { replace: true });
+      navigate(`/beacon/${_id}`, { replace: true });
     } catch (err) {
       setAlert({
         color: "failure",

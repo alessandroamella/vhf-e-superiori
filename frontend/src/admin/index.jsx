@@ -149,20 +149,20 @@ const AdminManager = () => {
       setShowModal(false);
       return;
     }
-    const e = events && events?.find((e) => e._id === eventEditing);
+    const e = events?.find((e) => e._id === eventEditing);
     if (e) editEventModal(e);
   }, [editEventModal, eventEditing, events]);
 
   const [isDeleting, setIsDeleting] = useState(false);
   async function deletePost(j) {
-    if (!window.confirm("Vuoi ELIMINARE il post con ID " + j._id + "?")) {
+    if (!window.confirm(`Vuoi ELIMINARE il post con ID ${j._id}?`)) {
       return;
     }
 
     console.log("delete post", j);
     setIsDeleting(true);
     try {
-      await axios.delete("/api/post/" + j._id);
+      await axios.delete(`/api/post/${j._id}`);
       console.log("delete post", j._id);
       const _posts = [...posts];
       const i = _posts.findIndex((_j) => _j._id === j._id);
@@ -456,7 +456,7 @@ const AdminManager = () => {
                         <Card
                           className="cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-700 hover:scale-105 transition-all"
                           key={e._id}
-                          onClick={() => navigate("/blog/edit/" + e._id)}
+                          onClick={() => navigate(`/blog/edit/${e._id}`)}
                         >
                           <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                             {e.title}

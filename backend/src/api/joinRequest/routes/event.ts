@@ -2,7 +2,6 @@ import { Request, Response, Router } from "express";
 import { param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared";
-import type { UserDoc } from "../../auth/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import JoinRequest from "../models";

@@ -50,7 +50,7 @@ router.get(
   validate,
   async (req, res) => {
     try {
-      logger.debug("Getting QSO by _id " + req.params._id);
+      logger.debug(`Getting QSO by _id ${req.params._id}`);
       const qso = await Qso.findById(req.params._id, {
         emailSentDate: 0,
         emailSent: 0,
@@ -65,7 +65,8 @@ router.get(
         .populate({ path: "event", select: "name date" })
         .lean();
 
-      let fromLocator, toLocator;
+      let fromLocator: string | null = null;
+      let toLocator: string | null = null;
       if (qso?.fromStationLat && qso?.fromStationLon) {
         fromLocator = location.calculateQth(
           qso?.fromStationLat,

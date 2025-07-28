@@ -180,7 +180,7 @@ router.get(
         select: "callsign name isDev isAdmin",
       });
 
-      logger.debug("Fetched " + posts.length + " posts");
+      logger.debug(`Fetched ${posts.length} posts`);
 
       const callsigns = [
         ...new Set(

@@ -47,7 +47,7 @@ const SectionHref = ({ href, wip, children }) => {
       {children}
     </a>
   ) : (
-    <SectionLink to={"/" + href}>{children}</SectionLink>
+    <SectionLink to={`/${href}`}>{children}</SectionLink>
   );
 };
 

@@ -29,7 +29,7 @@ const router = Router();
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  */
-router.get("/", validate, async (req, res) => {
+router.get("/", validate, async (_req, res) => {
   try {
     const users = await User.find(
       { isAdmin: true },

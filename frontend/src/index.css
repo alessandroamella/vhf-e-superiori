@@ -153,6 +153,10 @@ input[type="radio"]:checked,
   background-color: currentColor !important;
 }
 
+nav ul {
+  @apply list-none;
+}
+
 div[data-testid="flowbite-tooltip"] ul {
   padding-left: 0;
   margin-top: 0;
@@ -161,10 +165,6 @@ div[data-testid="flowbite-tooltip"] ul {
 
 video {
   max-height: inherit;
-}
-
-nav ul {
-  @apply list-none;
 }
 
 .markdown * {

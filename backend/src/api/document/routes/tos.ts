@@ -1,5 +1,5 @@
+import path from "node:path";
 import { Router } from "express";
-import path from "path";
 
 const router = Router();
 
@@ -20,7 +20,7 @@ const router = Router();
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  */
-router.get("/", (req, res) => {
+router.get("/", (_req, res) => {
   res.sendFile("tos.md", { root: path.join(process.cwd(), "documents") });
 });
 

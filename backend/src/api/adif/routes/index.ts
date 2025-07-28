@@ -1,11 +1,10 @@
+import { readFile, unlink, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { AdifFormatter, AdifParser, SimpleAdif } from "adif-parser-ts";
-
 import { Router } from "express";
 import { body, query } from "express-validator";
-import { readFile, unlink, writeFile } from "fs/promises";
 import { BAD_REQUEST } from "http-status";
 import moment from "moment";
-import path from "path";
 import { envs } from "../../../shared";
 import { logger } from "../../../shared/logger";
 import { User, UserDoc } from "../../auth/models";
@@ -166,11 +165,11 @@ router.post(
       const qsos = [];
       for (const [i, q] of parsed.records.entries()) {
         if (exclude.some((e) => e.callsign === q.call && e.index === i)) {
-          logger.debug("Excluding QSO with " + q.call);
+          logger.debug(`Excluding QSO with ${q.call}`);
           continue;
         }
 
-        let lat, lon;
+        let lat: number | undefined, lon: number | undefined;
         if (q.address && save) {
           const fromLocator =
             q.gridsquare && location.calculateLatLon(q.gridsquare);
@@ -194,7 +193,7 @@ router.post(
           }
         }
 
-        let locator;
+        let locator: string | null = null;
         try {
           locator = location.calculateQth(
             parseInt(req.body.fromStationLat),
@@ -216,7 +215,7 @@ router.post(
           frequency: q.freq,
           band: q.band,
           qsoDate: moment(
-            q.qso_date + "-" + q.time_on,
+            `${q.qso_date}-${q.time_on}`,
             "YYYYMMDD-HHmmss", // date is YYYYMMDD, time is HHMMSS
           ).toDate(),
           toStationLat: lat,
@@ -234,7 +233,7 @@ router.post(
         qsos.push(qso);
       }
 
-      logger.debug("Parsed ADIF with " + qsos.length + " QSOs");
+      logger.debug(`Parsed ADIF with ${qsos.length} QSOs`);
 
       res.json(qsos);
     } catch (err) {

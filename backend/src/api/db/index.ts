@@ -26,7 +26,7 @@ mongoose.connection.on("disconnected", () => {
 
 (async () => {
   try {
-    logger.debug("Connect to MongoDB at " + envs.MONGODB_URI);
+    logger.debug(`Connect to MongoDB at ${envs.MONGODB_URI}`);
     await mongoose.connect(envs.MONGODB_URI, {});
     // logger.info("Connected to MongoDB");
   } catch (err) {

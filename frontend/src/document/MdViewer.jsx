@@ -25,22 +25,20 @@ const MdViewer = () => {
   }, [name]);
 
   return (
-    <>
-      <Card className="md:mx-4 lg:mx-6 shadow">
-        {error ? (
-          <Alert color="failure">{error}</Alert>
-        ) : (
-          <ReactPlaceholder
-            showLoadingAnimation
-            type="text"
-            rows={10}
-            ready={!!doc}
-          >
-            <Markdown className="markdown dark:text-white">{doc}</Markdown>
-          </ReactPlaceholder>
-        )}
-      </Card>
-    </>
+    <Card className="md:mx-4 lg:mx-6 shadow">
+      {error ? (
+        <Alert color="failure">{error}</Alert>
+      ) : (
+        <ReactPlaceholder
+          showLoadingAnimation
+          type="text"
+          rows={10}
+          ready={!!doc}
+        >
+          <Markdown className="markdown dark:text-white">{doc}</Markdown>
+        </ReactPlaceholder>
+      )}
+    </Card>
   );
 };
 

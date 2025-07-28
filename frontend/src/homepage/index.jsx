@@ -128,7 +128,7 @@ const Homepage = () => {
     return _inverted
       .filter((e) => e.logoUrl && !e.logoUrl.endsWith("logo-min.png"))
       .map((e) => ({
-        alt: "Locandina " + e.i,
+        alt: `Locandina ${e.i}`,
         image: e.logoUrl,
         content: (
           <ControlledZoom
@@ -178,7 +178,7 @@ const Homepage = () => {
     for (const e of _events) {
       console.log("event to try to show", e);
       try {
-        const { data } = await axios.get("/api/joinrequest/event/" + e._id);
+        const { data } = await axios.get(`/api/joinrequest/event/${e._id}`);
         if (!data?.isApproved) {
           console.log("join request to show not found or not approved", data);
           continue;
@@ -387,8 +387,8 @@ const Homepage = () => {
                     </p>
 
                     <ul className="list-disc list-inside">
-                      {scoringItems.map((text, idx) => (
-                        <li key={idx}>{text}</li>
+                      {scoringItems.map((text) => (
+                        <li key={text}>{text}</li>
                       ))}
                     </ul>
 
@@ -424,9 +424,9 @@ const Homepage = () => {
                                   >
                                     <Table.Cell className="py-2 pr-2 whitespace-nowrap font-medium text-gray-900 dark:text-white max-w-[6.5rem] text-ellipsis overflow-hidden">
                                       {getNumbersFromString(e.name).length > 0
-                                        ? getNumbersFromString(e.name)
+                                        ? `${getNumbersFromString(e.name)
                                             .join("")
-                                            .substring(0, 2) + "°"
+                                            .substring(0, 2)}°`
                                         : e.name}
                                     </Table.Cell>
                                     <Table.Cell className="py-2">
@@ -470,7 +470,7 @@ const Homepage = () => {
                           🏆 {t("scoreboard")} {rankingsEventToShow.name}
                         </h2>
                         <Link
-                          to={"/rankings/" + rankingsEventToShow._id}
+                          to={`/rankings/${rankingsEventToShow._id}`}
                           className="underline decoration-dotted hover:text-black transition-colors"
                         >
                           <Button className="text-md mt-4">
@@ -633,7 +633,7 @@ const Homepage = () => {
 
                         {cardEvent.logoUrl && (
                           <Link
-                            to={"/qsomanager/" + cardEvent._id}
+                            to={`/qsomanager/${cardEvent._id}`}
                             className="underline decoration-dotted hover:text-black transition-colors"
                           >
                             <LazyLoadImage
@@ -646,7 +646,7 @@ const Homepage = () => {
                         <h2 className="text-2xl font-bold">{cardEvent.name}</h2>
 
                         <Link
-                          to={"/qsomanager/" + cardEvent._id}
+                          to={`/qsomanager/${cardEvent._id}`}
                           className="underline decoration-dotted hover:text-black transition-colors"
                         >
                           <Button color="blue" className="text-lg mt-4">
@@ -671,7 +671,7 @@ const Homepage = () => {
                         {admins ? (
                           admins.map((e) => (
                             <Link
-                              to={"/u/" + e.callsign}
+                              to={`/u/${e.callsign}`}
                               key={e}
                               className="block font-bold text-lg text-gray-700 hover:text-black dark:text-gray-200 dark:hover:text-white transition-colors"
                             >

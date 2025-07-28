@@ -3,7 +3,6 @@ import axios from "axios";
 import { NextFunction, Request, Response } from "express";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { envs, logger } from "../../shared";
-import type { UserDoc } from "../auth/models";
 import { Errors } from "../errors";
 import { createError } from "../helpers";
 
@@ -14,25 +13,28 @@ async function checkCaptcha(
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void | Response> {
+): Promise<undefined | Response> {
   try {
     // if admin, skip
-    if (req.user?.isAdmin) return next();
+    if (req.user?.isAdmin) {
+      next();
+      return;
+    }
 
     const ip = req.socket.remoteAddress;
     logger.debug("Checking CAPTCHA to");
     logger.debug(
       `https://www.google.com/recaptcha/api/siteverify?secret=${
         envs.RECAPTCHA_SECRET
-      }&response=${req.body.token}${ip ? "&remoteip=" + ip : ""}`,
+      }&response=${req.body.token}${ip ? `&remoteip=${ip}` : ""}`,
     );
     const res = await axios.post(
       `https://www.google.com/recaptcha/api/siteverify?secret=${
         envs.RECAPTCHA_SECRET
-      }&response=${req.body.token}${ip ? "&remoteip=" + ip : ""}`,
+      }&response=${req.body.token}${ip ? `&remoteip=${ip}` : ""}`,
     );
     if (res.status !== OK) throw new Error(Errors.CAPTCHA_FAILED);
-    return next();
+    next();
   } catch (err) {
     if (err instanceof Error && err.message === Errors.CAPTCHA_FAILED) {
       logger.debug("Captcha fail");

@@ -153,7 +153,9 @@ const FileUploader = ({
       Array.isArray(convertedFile)
         ? heic.push(...convertedFile)
         : heic.push(convertedFile);
-      heic.forEach((f) => (f.name = uuidv4() + ".jpg"));
+      for (const f of heic) {
+        f.name = `${uuidv4()}.jpg`;
+      }
       convertedFiles.push(...heic);
     }
 

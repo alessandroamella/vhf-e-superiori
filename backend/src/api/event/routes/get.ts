@@ -3,7 +3,6 @@ import { param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { FilterQuery } from "mongoose";
 import { logger } from "../../../shared";
-import type { UserDoc } from "../../auth/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import JoinRequest, { JoinRequestClass } from "../../joinRequest/models";

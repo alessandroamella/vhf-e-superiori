@@ -4,7 +4,7 @@ import { param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND } from "http-status";
 import { logger } from "../../../shared/logger";
 import type { UserDoc } from "../../auth/models";
-import { Comment, CommentDoc } from "../../comment/models";
+import { Comment } from "../../comment/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import { qrz } from "../../qrz";
@@ -85,7 +85,7 @@ router.get(
         return res.status(BAD_REQUEST).json(createError(Errors.USER_NOT_FOUND));
       }
 
-      logger.debug("Fetched post " + post?._id);
+      logger.debug(`Fetched post ${post?._id}`);
 
       const replyIds =
         (await Comment.distinct("replies"))?.filter((id) => id) || [];

@@ -1,3 +1,4 @@
+import { readFile, unlink } from "node:fs/promises";
 import {
   DeleteObjectCommand,
   DeleteObjectsCommand,
@@ -8,7 +9,6 @@ import {
   S3Client as S3ClientV3,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { readFile, unlink } from "fs/promises";
 import mime from "mime-types";
 import moment from "moment";
 import randomstring from "randomstring";
@@ -112,7 +112,7 @@ export class S3Client {
   }: {
     filePath: string;
   }): Promise<boolean> {
-    logger.debug("Deleting temp file at " + filePath);
+    logger.debug(`Deleting temp file at ${filePath}`);
     try {
       await unlink(filePath);
       return true;

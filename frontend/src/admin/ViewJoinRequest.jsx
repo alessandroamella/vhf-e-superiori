@@ -34,7 +34,7 @@ const ViewJoinRequest = ({
     }
     setDisabled(true);
     try {
-      await axios.post("/api/joinrequest/" + j._id);
+      await axios.post(`/api/joinrequest/${j._id}`);
       console.log("approved joinRequest", j);
       const _joinRequests = [
         ...joinRequests.filter((_j) => _j._id !== j._id),
@@ -58,7 +58,7 @@ const ViewJoinRequest = ({
   async function deleteJoinRequests(j) {
     if (
       !window.confirm(
-        "Vuoi ELIMINARE la richiesta di partecipazione con ID " + j._id + "?",
+        `Vuoi ELIMINARE la richiesta di partecipazione con ID ${j._id}?`,
       )
     ) {
       return;
@@ -66,7 +66,7 @@ const ViewJoinRequest = ({
 
     setDisabled(true);
     try {
-      await axios.delete("/api/joinrequest/" + j._id);
+      await axios.delete(`/api/joinrequest/${j._id}`);
       console.log("deleted joinRequest", j);
       setJoinRequests([...joinRequests.filter((_j) => _j._id !== j._id)]);
     } catch (err) {
@@ -122,7 +122,7 @@ const ViewJoinRequest = ({
               <Table.Cell>
                 <Tooltip content={j.fromUser.email}>
                   <a
-                    href={"mailto:" + j.fromUser.email}
+                    href={`mailto:${j.fromUser.email}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
@@ -133,7 +133,7 @@ const ViewJoinRequest = ({
               </Table.Cell>
               <Table.Cell>
                 <a
-                  href={"tel:" + j.fromUser.phoneNumber}
+                  href={`tel:${j.fromUser.phoneNumber}`}
                   className="text-red-400 hover:text-black dark:hover:text-red-200 transition-colors"
                 >
                   {j.fromUser.phoneNumber}

@@ -5,7 +5,7 @@ import { Errors } from "../errors";
 import { createError } from "../helpers";
 
 async function isVerified(req: Request, res: Response, next: NextFunction) {
-  logger.debug("Running isVerified for user " + req?.user?.callsign);
+  logger.debug(`Running isVerified for user ${req?.user?.callsign}`);
   if (req?.user?.isVerified) return next();
   return res.status(UNAUTHORIZED).json(createError(Errors.USER_NOT_VERIFIED));
 }

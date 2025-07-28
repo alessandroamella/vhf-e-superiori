@@ -16,7 +16,7 @@ const createSchema: Schema = {
     custom: {
       // tags should be a string array that must be parsed from JSON
       options: (tags: unknown) => {
-        let parsed;
+        let parsed: string[] | undefined;
 
         if (typeof tags === "string") {
           try {

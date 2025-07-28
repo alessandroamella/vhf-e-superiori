@@ -129,7 +129,7 @@ const ViewPostContent = React.memo(({ postExtended, hideComments }) => {
       setDisabled(true);
 
       try {
-        const { data } = await axios.delete("/api/comment/" + comment._id);
+        const { data } = await axios.delete(`/api/comment/${comment._id}`);
         setAlert({
           color: "success",
           msg: "Commento eliminato con successo",

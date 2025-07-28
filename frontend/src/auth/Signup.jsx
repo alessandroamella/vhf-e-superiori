@@ -32,7 +32,7 @@ import { getErrorStr } from "../shared";
 const useFocus = () => {
   const htmlElRef = useRef(null);
   const setFocus = () => {
-    htmlElRef.current && htmlElRef.current.focus();
+    htmlElRef.current?.focus();
   };
 
   return [htmlElRef, setFocus];
@@ -101,7 +101,7 @@ const Signup = () => {
     setDisabled(true);
 
     try {
-      const { data } = await axios.get("/api/qrz/" + callsign, {
+      const { data } = await axios.get(`/api/qrz/${callsign}`, {
         params: {
           geocode: true,
         },

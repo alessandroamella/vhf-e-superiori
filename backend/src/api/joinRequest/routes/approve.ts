@@ -58,7 +58,7 @@ router.post(
           .status(BAD_REQUEST)
           .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
       } else if (!isDocument(j.forEvent)) {
-        logger.error("Event not found with join request " + j._id);
+        logger.error(`Event not found with join request ${j._id}`);
         return res
           .status(BAD_REQUEST)
           .json(createError(Errors.EVENT_NOT_FOUND));

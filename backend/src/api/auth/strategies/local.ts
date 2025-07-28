@@ -27,7 +27,7 @@ passport.use(
           "IT",
         )!.formatInternational();
 
-        logger.info("Signing up " + callsign + " with email " + email);
+        logger.info(`Signing up ${callsign} with email ${email}`);
         logger.debug(
           "Checking if callsign " +
             callsign +
@@ -37,7 +37,7 @@ passport.use(
             phoneNumber +
             " already exists",
         );
-        logger.debug("Password = " + password);
+        logger.debug(`Password = ${password}`);
         const exists = await User.findOne({
           $or: [{ callsign }, { email }, { phoneNumber }],
         });
@@ -48,11 +48,11 @@ passport.use(
         }
 
         const { address, lat, lon, city, province } = req.body;
-        logger.debug("Address: " + address);
-        logger.debug("Lat: " + lat);
-        logger.debug("Lon: " + lon);
-        logger.debug("City: " + city);
-        logger.debug("Province: " + province);
+        logger.debug(`Address: ${address}`);
+        logger.debug(`Lat: ${lat}`);
+        logger.debug(`Lon: ${lon}`);
+        logger.debug(`City: ${city}`);
+        logger.debug(`Province: ${province}`);
 
         if (address && (!lat || !lon || !city || !province)) {
           return done(new Error(Errors.INVALID_LOCATION));
@@ -100,7 +100,7 @@ passport.use(
 
         logger.debug(user);
 
-        logger.info(req.body.callsign + " signed up!");
+        logger.info(`${req.body.callsign} signed up!`);
         return done(null, user);
       } catch (err) {
         logger.debug("Error signing up user");

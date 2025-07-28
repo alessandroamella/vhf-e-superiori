@@ -35,7 +35,7 @@ const Social = () => {
   const fetchPosts = useCallback(
     async (fromDate) => {
       console.log(
-        "fetching posts from " + cursor + " to " + (cursor + cursorLimit),
+        `fetching posts from ${cursor} to ${cursor + cursorLimit}`,
         " fromDate: ",
         fromDate,
       );
@@ -124,7 +124,7 @@ const Social = () => {
   useEffect(() => {
     if (!posts || !scrollTo) return;
 
-    document.getElementById("post-" + scrollTo)?.scrollIntoView();
+    document.getElementById(`post-${scrollTo}`)?.scrollIntoView();
     searchParams.delete("scrollTo");
   }, [scrollTo, posts]);
 
@@ -250,7 +250,7 @@ const Social = () => {
                   <div className="p-0 md:p-5 xl:grid xl:grid-cols-2 xl:gap-x-4">
                     {filteredPosts.map((p) => (
                       <FeedCard
-                        id={"post-" + p._id}
+                        id={`post-${p._id}`}
                         setAlert={setAlert}
                         key={p._id}
                         post={p}

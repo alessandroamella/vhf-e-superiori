@@ -1,8 +1,8 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
+import { access, readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
 import ejs from "ejs";
-import { access, readFile, writeFile } from "fs/promises";
 import moment from "moment";
-import path from "path";
 import puppeteer from "puppeteer-core";
 import sharp from "sharp";
 import { envs, logger } from "../../shared";

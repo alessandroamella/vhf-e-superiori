@@ -88,7 +88,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
       setDisabled(true);
       setClosable(true);
       try {
-        await axios.get("/api/joinrequest/event/" + event._id);
+        await axios.get(`/api/joinrequest/event/${event._id}`);
         setAlreadyJoined(true);
       } catch (err) {
         console.log("checkIfJoined error", err);
@@ -113,7 +113,6 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
     if (!event) return;
     if (!isBetweenDates()) setDisabled(false);
     28;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event, isBetweenDates, joinableEvents]);
 
   const noEventsToJoin = useMemo(() => {
@@ -141,18 +140,16 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                 className="dark:text-gray-300"
                 label="Evento per cui fare richiesta"
                 disabled={!joinableEvents || (disabled && !closable)}
-                value={joinableEvents && joinableEvents[0].name}
+                value={joinableEvents?.[0].name}
               >
-                {joinableEvents &&
-                  joinableEvents.map((e) => (
-                    <Option key={e._id} onClick={() => setEvent(e)}>
-                      {e.name}{" "}
-                      <span className="text-gray-400">
-                        ({formatInTimeZone(e.date, "Europe/Rome", "dd/MM/yyyy")}
-                        )
-                      </span>
-                    </Option>
-                  ))}
+                {joinableEvents?.map((e) => (
+                  <Option key={e._id} onClick={() => setEvent(e)}>
+                    {e.name}{" "}
+                    <span className="text-gray-400">
+                      ({formatInTimeZone(e.date, "Europe/Rome", "dd/MM/yyyy")})
+                    </span>
+                  </Option>
+                ))}
               </Select>
             </div>
           )}
@@ -266,6 +263,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                       href="/docs/Regolamento_FLASH_MOB_2023_01_23.pdf"
                       target="_blank"
                       className="underline"
+                      rel="noopener"
                     >
                       {t("rules")}
                     </a>

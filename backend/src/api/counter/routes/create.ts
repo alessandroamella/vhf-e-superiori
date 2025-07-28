@@ -2,7 +2,6 @@ import { Router } from "express";
 import { body } from "express-validator";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
-import type { UserDoc } from "../../auth/models";
 import { createError, validate } from "../../helpers";
 import CounterView from "../models";
 
@@ -46,10 +45,10 @@ router.post("/", body("ip").isIP().optional(), validate, async (req, res) => {
       date: new Date(),
     });
 
-    logger.debug("New view req.body.ip = " + req.body.ip + ", ip = " + ip);
+    logger.debug(`New view req.body.ip = ${req.body.ip}, ip = ${ip}`);
 
     const views = await CounterView.estimatedDocumentCount();
-    logger.debug("Total views: " + views);
+    logger.debug(`Total views: ${views}`);
     res.json({
       views,
       date: new Date(),

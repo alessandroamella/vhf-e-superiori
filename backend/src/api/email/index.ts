@@ -1,10 +1,10 @@
+import { readFile, unlink } from "node:fs/promises";
+import path from "node:path";
 import ejs from "ejs";
-import { readFile, unlink } from "fs/promises";
 import { getDistance } from "geolib";
 import moment from "moment-timezone";
 import nodemailer from "nodemailer";
 import Mail from "nodemailer/lib/mailer";
-import path from "path";
 import { envs, logger } from "../../shared";
 import type { UserDoc } from "../auth/models";
 import type { CommentDoc } from "../comment/models";
@@ -61,10 +61,11 @@ export class EmailService {
       EmailService.transporter.verify((err, success): void => {
         if (err) {
           logger.error(err);
-          return reject(err);
+          reject(err);
+        } else {
+          logger.info(`Email ready: ${success}`);
+          resolve();
         }
-        logger.info("Email ready: " + success);
-        return resolve();
       });
     });
   }
@@ -124,7 +125,7 @@ export class EmailService {
     };
 
     await EmailService.sendMail(message);
-    logger.info("New admin mail sent to user " + newAdmin.callsign);
+    logger.info(`New admin mail sent to user ${newAdmin.callsign}`);
   }
 
   public static async sendVerifyMail(
@@ -248,7 +249,7 @@ export class EmailService {
     };
 
     await EmailService.sendMail(message);
-    logger.info("Join request mail sent to admin for user " + user.callsign);
+    logger.info(`Join request mail sent to admin for user ${user.callsign}`);
   }
 
   /*
@@ -292,7 +293,7 @@ export class EmailService {
         " at email: " +
         forUser.email +
         (parentComment
-          ? " as reply of parent comment " + parentComment._id
+          ? ` as reply of parent comment ${parentComment._id}`
           : ""),
     );
   }
@@ -309,7 +310,7 @@ export class EmailService {
       throw new Error("Qso has no imageHref");
     }
     logger.debug(
-      "Sending eQSL email to " + toEmail + " with imageHref: " + qso.imageHref,
+      `Sending eQSL email to ${toEmail} with imageHref: ${qso.imageHref}`,
     );
     const eqslPic = new EqslPic(qso.imageHref);
     await eqslPic.fetchImage(eqslBuffer);
@@ -368,9 +369,7 @@ export class EmailService {
     };
 
     await EmailService.sendMail(message);
-    logger.info(
-      "eQSL mail sent to user " + qso.callsign + " at email: " + toEmail,
-    );
+    logger.info(`eQSL mail sent to user ${qso.callsign} at email: ${toEmail}`);
     await unlink(filePath);
   }
 }

@@ -15,7 +15,7 @@ const LazyPDFViewer = ({ pdfName, shouldRender }) => {
           file={pdfName}
           onLoadSuccess={({ numPages }) => setNumPages(numPages)}
         >
-          {Array.from(new Array(numPages), (el, index) => (
+          {Array.from(new Array(numPages), (_el, index) => (
             <Page
               key={`page_${index + 1}`}
               pageNumber={index + 1}

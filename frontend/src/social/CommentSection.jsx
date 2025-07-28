@@ -15,7 +15,7 @@ import CallsignLoading from "../shared/CallsignLoading";
 const processMentions = (text) => {
   if (!text) return text;
   const mentionRegex = /@([a-zA-Z0-9]{5,6})\b/g;
-  return text.replace(mentionRegex, (match, callsign) => {
+  return text.replace(mentionRegex, (_match, callsign) => {
     return `[@${callsign}](/u/${callsign})`;
   });
 };

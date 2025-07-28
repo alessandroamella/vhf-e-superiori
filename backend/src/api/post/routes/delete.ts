@@ -8,7 +8,6 @@ import {
   UNAUTHORIZED,
 } from "http-status";
 import { logger } from "../../../shared";
-import type { UserDoc } from "../../auth/models";
 import { s3Client } from "../../aws";
 import { Comment } from "../../comment/models";
 import { Errors } from "../../errors";
@@ -72,7 +71,7 @@ router.delete(
         const reqUser = req.user;
         const user = post.fromUser;
 
-        logger.debug("Delete post isAdmin: " + reqUser?.isAdmin);
+        logger.debug(`Delete post isAdmin: ${reqUser?.isAdmin}`);
         logger.debug(
           `Delete post _id match: ${user._id.toString()} === ${typeof reqUser?._id?.toString()} (${
             user._id.toString() === reqUser?._id?.toString()
@@ -103,7 +102,7 @@ router.delete(
         return parts.slice(-2).join("/");
       });
       logger.info(
-        "Post delete deleting files from S3: " + filePaths.join(", "),
+        `Post delete deleting files from S3: ${filePaths.join(", ")}`,
       );
       s3Client.deleteMultiple({ filePaths });
 

@@ -57,14 +57,14 @@ const CreateEditEventModal = ({
   const [name, setName] = useState("");
   const [band, setBand] = useState("");
   const [date, setDate] = useState(
-    new Date().toISOString().slice(0, -14) + "T10:00",
+    `${new Date().toISOString().slice(0, -14)}T10:00`,
   );
   const [joinStart, setJoinStart] = useState(
     new Date(`${getYear(new Date())}/01/01`).toISOString().slice(0, -14) +
       "T00:00",
   );
   const [joinDeadline, setJoinDeadline] = useState(
-    new Date().toISOString().slice(0, -14) + "T10:00",
+    `${new Date().toISOString().slice(0, -14)}T10:00`,
   );
   const [logoUrl, setLogoUrl] = useState("/logo-min.png");
   const [eqslUrl, setEqslUrl] = useState("/logo-min.png");
@@ -133,9 +133,9 @@ const CreateEditEventModal = ({
   const resetForm = useCallback(() => {
     setName("");
     setBand("");
-    setDate(new Date().toISOString().slice(0, -14) + "T10:00");
-    setJoinStart(new Date("2023/01/01").toISOString().slice(0, -14) + "T00:00");
-    setJoinDeadline(new Date().toISOString().slice(0, -14) + "T10:00");
+    setDate(`${new Date().toISOString().slice(0, -14)}T10:00`);
+    setJoinStart(`${new Date("2023/01/01").toISOString().slice(0, -14)}T00:00`);
+    setJoinDeadline(`${new Date().toISOString().slice(0, -14)}T10:00`);
     setLogoUrl("/logo-min.png");
     setEqslUrl("/logo-min.png");
     setEqslExample(null);
@@ -163,7 +163,7 @@ const CreateEditEventModal = ({
     if (!showModal) {
       resetForm();
     } else if (eventEditing) {
-      const e = events && events.find((e) => e._id === eventEditing);
+      const e = events?.find((e) => e._id === eventEditing);
       if (e) {
         populateForm(e);
       }
@@ -239,7 +239,7 @@ const CreateEditEventModal = ({
     } catch (err) {
       console.log(err.response?.data?.err || err);
       window.alert(
-        "ERRORE crea evento: " + getErrorStr(err?.response?.data?.err || err),
+        `ERRORE crea evento: ${getErrorStr(err?.response?.data?.err || err)}`,
       );
     } finally {
       setDisabled(false);
@@ -326,7 +326,7 @@ const CreateEditEventModal = ({
     } catch (err) {
       console.log(err);
       window.alert(
-        "ERRORE upload immagine: " + getErrorStr(err?.response?.data?.err),
+        `ERRORE upload immagine: ${getErrorStr(err?.response?.data?.err)}`,
       );
       return null;
     }
@@ -390,7 +390,7 @@ const CreateEditEventModal = ({
           '\nRICORDA DI PREMERE IL TASTO "Applica modifiche"',
       );
     } catch (err) {
-      window.alert("ERRORE upload immagine (outer): " + getErrorStr(err));
+      window.alert(`ERRORE upload immagine (outer): ${getErrorStr(err)}`);
     } finally {
       setDisabled(false);
     }
@@ -435,7 +435,7 @@ const CreateEditEventModal = ({
         await renderEqslExample(data.path);
       }
     } catch (err) {
-      window.alert("ERRORE upload immagine (outer): " + getErrorStr(err));
+      window.alert(`ERRORE upload immagine (outer): ${getErrorStr(err)}`);
     } finally {
       setDisabled(false);
     }
@@ -480,7 +480,7 @@ const CreateEditEventModal = ({
       console.log("eqsl preview", res2.data);
       setEqslExample(res2.data.href);
     } catch (err) {
-      window.alert("ERRORE render EQSL: " + getErrorStr(err));
+      window.alert(`ERRORE render EQSL: ${getErrorStr(err)}`);
     } finally {
       setDisabled(false);
     }
@@ -489,7 +489,7 @@ const CreateEditEventModal = ({
   const applyOffset = async () => {
     if (
       [tempOffsetCallsign, tempOffsetData, tempOffsetFrom].some((e) =>
-        isNaN(parseInt(e)),
+        Number.isNaN(parseInt(e)),
       )
     ) {
       window.alert(
@@ -519,7 +519,7 @@ const CreateEditEventModal = ({
     }, 1000);
     try {
       await navigator.clipboard.writeText(
-        window.location.origin + "/qsomanager/" + eventEditing,
+        `${window.location.origin}/qsomanager/${eventEditing}`,
       );
       setCopied(true);
       setCopiedError(false);
@@ -535,7 +535,7 @@ const CreateEditEventModal = ({
     setJoinRequests(null);
     try {
       const { data } = await axios.get(
-        "/api/joinrequest/eventadmin/" + eventId,
+        `/api/joinrequest/eventadmin/${eventId}`,
       );
       console.log("joinRequests", data);
 
@@ -812,9 +812,7 @@ const CreateEditEventModal = ({
                       copied ? "success" : copiedError ? "failure" : "light"
                     }
                     onClick={copyText}
-                    value={
-                      window.location.origin + "/qsomanager/" + eventEditing
-                    }
+                    value={`${window.location.origin}/qsomanager/${eventEditing}`}
                   />
                   <Button
                     onClick={copyText}
@@ -832,14 +830,14 @@ const CreateEditEventModal = ({
                 </div>
                 <div className="flex items-center flex-col md:flex-row justify-center gap-2 md:gap-6 mt-4">
                   <Link
-                    to={"/qsomanager/" + eventEditing}
+                    to={`/qsomanager/${eventEditing}`}
                     className="flex items-center gap-2 hover:text-red-600 transition-colors"
                   >
                     <FaExternalLinkAlt />
                     <span>Apri QSO Manager</span>
                   </Link>
                   <Link
-                    to={"/rankings/" + eventEditing}
+                    to={`/rankings/${eventEditing}`}
                     className="flex items-center gap-2 hover:text-red-600 transition-colors"
                   >
                     <FaExternalLinkAlt />

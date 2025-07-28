@@ -37,7 +37,7 @@ const createSchema: Schema = {
         try {
           return parsePhoneNumber(v, "IT")!.formatInternational();
         } catch (err) {
-          logger.debug("Error while parsing phone number: " + err);
+          logger.debug(`Error while parsing phone number: ${err}`);
           return v;
         }
       },

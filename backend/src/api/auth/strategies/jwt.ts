@@ -33,7 +33,7 @@ passport.use(
       const { expiration } = token;
 
       if (Date.now() > expiration) {
-        logger.debug("JWT error " + Errors.LOGIN_TOKEN_EXPIRED);
+        logger.debug(`JWT error ${Errors.LOGIN_TOKEN_EXPIRED}`);
         done(new Error(Errors.LOGIN_TOKEN_EXPIRED), false);
       }
 
