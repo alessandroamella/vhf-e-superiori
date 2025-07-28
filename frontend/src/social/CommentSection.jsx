@@ -375,7 +375,7 @@ const CommentsSection = ({
             ref={commentInputRef}
             className="mt-4 mb-2 flex justify-center gap-2 bg-gray-50 dark:bg-gray-800 px-2 py-3 rounded items-center flex-col"
           >
-            <p>{t("loginForCommentin")}</p>
+            <p>{t("loginForCommenting")}</p>
             <FlowbiteButton
               as={Link}
               to={{

@@ -202,7 +202,7 @@ const MenuContent = ({ isSideBar }) => {
       {user === null ? (
         <>
           <SectionLink to="/login" redirectBack>
-            <FaSignInAlt /> <span>{t("enterCallSign")}</span>
+            <FaSignInAlt /> <span>{t("enterWithCallsign")}</span>
           </SectionLink>
           <SectionLink to="/signup" redirectBack>
             <FaUserPlus /> <span>{t("signUp")}</span>
