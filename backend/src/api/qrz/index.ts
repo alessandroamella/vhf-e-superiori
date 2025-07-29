@@ -209,7 +209,7 @@ class Qrz {
       if (axios.isAxiosError(err)) {
         logger.error(err.response?.data || err.response || err);
       } else {
-        logger.error(err);
+        logger.error((err as Error)?.message || err);
       }
       if (json) {
         logger.error("JSON was:");
