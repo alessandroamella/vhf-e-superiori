@@ -13,7 +13,6 @@ function MapPrint(props) {
     return () => {
       map.removeControl(control);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, props]);
 
   return null;

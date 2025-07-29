@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Router } from "express";
 import { param } from "express-validator";
 import { isValidObjectId } from "mongoose";

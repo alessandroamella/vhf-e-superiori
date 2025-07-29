@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { NextFunction, Request, Response } from "express";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";

@@ -20,7 +20,6 @@ const BurgerMenu = () => {
     if (joinOpen) {
       setSidebarOpen(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [joinOpen, setSidebarOpen]);
 
   return (

@@ -74,7 +74,6 @@ const UsersTable = ({
     </>
   );
 
-  // eslint-disable-next-line react/prop-types
   const RowRenderer = ({ index, style }) => {
     const u = filteredUsers[index];
 

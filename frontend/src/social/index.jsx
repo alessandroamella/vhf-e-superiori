@@ -87,7 +87,6 @@ const Social = () => {
     console.log("fetching posts from cursor", cursor);
     fetchPosts();
     // don't listen for orderBy: there will be a useEffect to reset cursor
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cursor]);
 
   const hasCreated = searchParams.get("created");

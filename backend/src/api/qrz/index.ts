@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import axios, { AxiosInstance } from "axios";
 import { CronJob } from "cron";
 import moment from "moment-timezone";
@@ -207,7 +206,9 @@ class Qrz {
     } catch (err) {
       logger.error("Error while fetching info from qrz.com");
       if (axios.isAxiosError(err)) {
-        logger.error(err.response?.data || err.response || err);
+        logger.error(
+          err.response?.data || err.response || err.code || err.message,
+        );
       } else {
         logger.error((err as Error)?.message || err);
       }

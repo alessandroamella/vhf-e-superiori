@@ -143,7 +143,6 @@ const Homepage = () => {
           </ControlledZoom>
         ),
       }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events, zoomedImg]);
 
   const [eventJoining, setEventJoining] = useState(null);

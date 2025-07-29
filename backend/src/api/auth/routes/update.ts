@@ -176,9 +176,7 @@ router.put(
 
       if (oldEmail !== email && !newUser.isAdmin) {
         logger.debug(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           `User ${user.callsign} update: email was "${
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             user.email
           }", now is "${email}"`,
         );

@@ -141,7 +141,6 @@ const BeaconEditor = () => {
       }
     }
     getBeacon();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, navigate]);
 
   const { user } = useContext(UserContext);
@@ -156,7 +155,6 @@ const BeaconEditor = () => {
           to: `/beacon/editor${id ? `?id=${id}` : ""}`,
         }).toString(),
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, id, navigate]);
 
   // callsign

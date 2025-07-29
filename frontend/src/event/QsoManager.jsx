@@ -160,7 +160,6 @@ const QsoManager = () => {
       if (!event) getEvent();
       if (!qsos) getQsos();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event, id, qsos, user, getQsos, setAlert]);
 
   useEffect(() => {
@@ -368,7 +367,6 @@ const QsoManager = () => {
     }
 
     fetchLocator();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isManuallySettingLocator, locator, user, formattedAddress]);
 
   const callsignRef = useRef(null);
@@ -820,7 +818,6 @@ const QsoManager = () => {
     }
 
     updateLocator();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locator, isManuallySettingLocator, event, setAlert, setCookie]);
 
   useEffect(() => {

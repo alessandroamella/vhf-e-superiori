@@ -272,7 +272,6 @@ const Profile = () => {
           to: "/profile",
         }).toString(),
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate]);
 
   const [isFetchingJoinRequests, setIsFetchingJoinRequests] = useState(false);
@@ -301,7 +300,6 @@ const Profile = () => {
     }
 
     fetchJoinRequests();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [joinRequests, events, user, isFetchingJoinRequests]);
 
   const [deleteJoinRequest, setDeleteJoinRequest] = useState(false);

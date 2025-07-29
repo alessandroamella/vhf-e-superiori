@@ -79,7 +79,6 @@ const BlogPostEditor = ({ blogPost }) => {
     } else if (user && !user.isAdmin) {
       navigate("/blog", { replace: true });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate]);
 
   async function submit(e) {
