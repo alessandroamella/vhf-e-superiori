@@ -3,6 +3,7 @@ import { param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
 import { logger } from "../../../shared/logger";
 import { createError, validate } from "../../helpers";
+import { BeaconCache } from "../cache";
 import { Beacon, BeaconProperties } from "../models";
 
 const router = Router();
@@ -49,6 +50,9 @@ router.delete("/:_id", param("_id").isMongoId(), validate, async (req, res) => {
       forBeacon: _beacon._id,
     });
     await _beacon.deleteOne();
+
+    // Invalidate cache since beacon was deleted
+    BeaconCache.invalidateBeacon(req.params._id);
 
     res.sendStatus(OK);
   } catch (err) {
@@ -103,6 +107,10 @@ router.delete(
       }
 
       await props.deleteOne();
+
+      // Invalidate cache since beacon properties were deleted
+      BeaconCache.invalidateAll();
+
       res.sendStatus(OK);
     } catch (err) {
       logger.error("Error in Beacons all");

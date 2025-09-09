@@ -3,6 +3,7 @@ import { param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
 import { createError, validate } from "../../helpers";
+import { BeaconCache } from "../cache";
 import { Beacon, BeaconDocWithProps, BeaconProperties } from "../models";
 
 const router = Router();
@@ -44,6 +45,13 @@ const router = Router();
  */
 router.get("/:id", param("id").isMongoId(), validate, async (req, res) => {
   try {
+    // Try to get from cache first
+    const cachedBeacon = BeaconCache.getBeacon(req.params.id);
+    if (cachedBeacon) {
+      logger.debug(`Returning cached beacon ${req.params.id}`);
+      return res.json(cachedBeacon);
+    }
+
     // lean so we can add properties to the object
     const _beacon = await Beacon.findOne({ _id: req.params.id }).lean();
     if (!_beacon) {
@@ -68,6 +76,9 @@ router.get("/:id", param("id").isMongoId(), validate, async (req, res) => {
     }
     const beacon = _beacon as BeaconDocWithProps;
     beacon.properties = props;
+
+    // Cache the result
+    BeaconCache.setBeacon(req.params.id, beacon);
 
     res.json(beacon);
   } catch (err) {

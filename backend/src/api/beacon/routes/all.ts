@@ -2,6 +2,7 @@ import { Router } from "express";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
 import { createError, validate } from "../../helpers";
+import { BeaconCache } from "../cache";
 import {
   Beacon,
   BeaconLean,
@@ -42,6 +43,13 @@ const router = Router();
  */
 router.get("/", validate, async (_req, res) => {
   try {
+    // Try to get from cache first
+    const cachedBeacons = BeaconCache.getAllBeacons();
+    if (cachedBeacons) {
+      logger.debug("Returning cached beacons");
+      return res.json(cachedBeacons);
+    }
+
     const beacons: BeaconLean[] = await Beacon.find().sort("callsign").lean();
     const beaconsWithProps: BeaconLeanWithProp[] = [];
 
@@ -83,6 +91,9 @@ router.get("/", validate, async (_req, res) => {
       }
       return a.properties.frequency - b.properties.frequency;
     });
+
+    // Cache the result
+    BeaconCache.setAllBeacons(beaconsWithProps);
 
     res.json(beaconsWithProps);
   } catch (err) {

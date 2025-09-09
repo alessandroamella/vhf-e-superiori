@@ -5,6 +5,7 @@ import { logger } from "../../../shared";
 import { User } from "../../auth/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
+import { BeaconCache } from "../cache";
 import { Beacon, BeaconProperties } from "../models";
 import updateSchema from "../schemas/updateSchema";
 
@@ -121,6 +122,9 @@ router.put(
       }
 
       await beaconProps.save();
+
+      // Invalidate cache since beacon properties changed
+      BeaconCache.invalidateBeacon(req.params._id);
 
       res.sendStatus(OK);
     } catch (err) {

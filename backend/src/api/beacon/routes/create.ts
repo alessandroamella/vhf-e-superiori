@@ -5,6 +5,7 @@ import { logger } from "../../../shared";
 import { User } from "../../auth/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
+import { BeaconCache } from "../cache";
 import { Beacon, BeaconProperties } from "../models";
 import createSchema from "../schemas/createSchema";
 
@@ -121,6 +122,9 @@ router.post(
 
       await beaconProps.save();
       await beacon.save();
+
+      // Invalidate cache since we added a new beacon
+      BeaconCache.invalidateAllBeacons();
 
       // TODO invia mail di conferma
 
