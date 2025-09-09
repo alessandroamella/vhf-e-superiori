@@ -196,8 +196,8 @@ class Qrz {
         data: mappedData,
         expiry: moment().add(1, "hour"),
       };
-      logger.debug(
-        `Cached data for ${callsign} until ${this.cachedData[
+      logger.info(
+        `Cached data for ${callsign} (email: ${mappedData.email || "--none--"}) until ${this.cachedData[
           callsign.toUpperCase()
         ].expiry.format()}`,
       );

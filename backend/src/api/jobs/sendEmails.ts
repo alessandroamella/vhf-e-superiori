@@ -16,7 +16,13 @@ async function getEmailForQso(qso: QsoDoc): Promise<string | null> {
     return qso.email;
   }
 
-  const callsign = qso.callsign.split("/")[0]; // Use the main part of the callsign
+  // get the longest part of the callsign (in case of slashes)
+  // e.g. "F/IU4QSG/P" -> "IU4QSG"
+  const callsign =
+    qso.callsign.split("/").sort((a, b) => {
+      // sort by length
+      return b.length - a.length;
+    })[0] || qso.callsign;
   const qrzInfo = await qrz.getInfo(callsign);
 
   if (qrzInfo?.email) {
@@ -63,7 +69,7 @@ async function sendEqslEmail(): Promise<void> {
     const qsos = await Qso.find({ emailSent: false })
       .populate("fromStation")
       .populate("event")
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 }) // process the most recent QSOs first
       .limit(LIMIT_PER_DAY)
       .exec();
 
