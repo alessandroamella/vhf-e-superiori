@@ -21,7 +21,7 @@ export class EmailService {
   private static transporter: nodemailer.Transporter | null = null;
 
   private static adminEmails = Array.from(
-    Array(parseInt(envs.TOT_ADMIN_EMAILS)).keys(),
+    Array(parseInt(envs.TOT_ADMIN_EMAILS, 10)).keys(),
   ).map((i) => process.env[`ADMIN_EMAIL_${i}`] as string);
 
   private static async loadMailFromFile(

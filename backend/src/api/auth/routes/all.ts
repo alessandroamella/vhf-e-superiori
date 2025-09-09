@@ -60,7 +60,7 @@ router.get(
   validate,
   async (req, res) => {
     try {
-      const limit = parseInt(req.query.limit as string) as number;
+      const limit = parseInt(req.query.limit as string, 10) as number;
       const users = User.find(
         {},
         {

@@ -120,15 +120,15 @@ router.get(
 
       if (
         typeof req.query?.limit === "string" &&
-        !Number.isNaN(parseInt(req.query.limit))
+        !Number.isNaN(parseInt(req.query.limit, 10))
       )
-        postsQuery.limit(parseInt(req.query.limit));
+        postsQuery.limit(parseInt(req.query.limit, 10));
 
       if (
         typeof req.query?.offset === "string" &&
-        !Number.isNaN(parseInt(req.query.offset))
+        !Number.isNaN(parseInt(req.query.offset, 10))
       )
-        postsQuery.skip(parseInt(req.query.offset));
+        postsQuery.skip(parseInt(req.query.offset, 10));
 
       if (req.query.orderBy) {
         logger.debug("Order posts by:");
@@ -156,7 +156,9 @@ router.get(
               (value === 1 || value === -1 || value === "1" || value === "-1")
             ) {
               validSortOrder[key] =
-                typeof value === "string" ? (parseInt(value) as 1 | -1) : value;
+                typeof value === "string"
+                  ? (parseInt(value, 10) as 1 | -1)
+                  : value;
             }
           }
 

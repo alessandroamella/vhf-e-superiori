@@ -67,8 +67,8 @@ router.get(
   validate,
   async (req, res) => {
     try {
-      const limit = parseInt(req.query.limit as string) as number;
-      const skip = parseInt(req.query.offset as string) as number;
+      const limit = parseInt(req.query.limit as string, 10) as number;
+      const skip = parseInt(req.query.offset as string, 10) as number;
 
       const query: FilterQuery<BlogPostClass> = {};
       if (req.query.fromUser) query.fromUser = req.query.fromUser;

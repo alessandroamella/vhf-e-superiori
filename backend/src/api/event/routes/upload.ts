@@ -128,7 +128,7 @@ router.post(
     }
 
     // Minify images here
-    const quality = parseInt(req.query.quality as string) || 69;
+    const quality = parseInt(req.query.quality as string, 10) || 69;
 
     try {
       const minifiedImg = await sharp(f.tempFilePath)

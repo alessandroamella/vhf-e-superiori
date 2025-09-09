@@ -196,8 +196,8 @@ router.post(
         let locator: string | null = null;
         try {
           locator = location.calculateQth(
-            parseInt(req.body.fromStationLat),
-            parseInt(req.body.fromStationLon),
+            parseInt(req.body.fromStationLat, 10),
+            parseInt(req.body.fromStationLon, 10),
           );
         } catch (err) {
           logger.debug("Error while calculating locator");
@@ -208,8 +208,8 @@ router.post(
           fromStation: user._id,
           fromStationCity: req.body.fromStationCity,
           fromStationProvince: req.body.fromStationProvince,
-          fromStationLat: parseInt(req.body.fromStationLat),
-          fromStationLon: parseInt(req.body.fromStationLon),
+          fromStationLat: parseInt(req.body.fromStationLat, 10),
+          fromStationLon: parseInt(req.body.fromStationLon, 10),
           callsign: q.call,
           mode: q.mode,
           frequency: q.freq,
@@ -223,7 +223,7 @@ router.post(
           event: event._id,
           notes: q.comment,
           locator: q.gridsquare || locator,
-          rst: parseInt(q.rst_sent) || 59,
+          rst: parseInt(q.rst_sent, 10) || 59,
           email: q.email,
         }).populate({
           path: "fromStation",

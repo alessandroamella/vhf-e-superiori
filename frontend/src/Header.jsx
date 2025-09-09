@@ -68,30 +68,48 @@ const Header = () => {
   return (
     <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-2 md:px-8">
       <div className="flex flex-col lg:flex-row md:items-center gap-4">
-        <Link
-          to="/"
-          className="flex gap-2 items-center hover:scale-105 transition-transform w-fit"
-        >
+        <div className="flex items-center gap-4 w-full">
           <LazyLoadImage
             className="w-20 md:w-36"
             src="/logo-min.png"
             alt="Logo"
           />
-          <h1
-            className={`font-bold text-xl md:text-3xl block text-red-500 ${
-              isHome ? "underline" : ""
-            } dark:text-white`}
-          >
-            www.vhfesuperiori.eu
-          </h1>
-        </Link>
-        <div className="md:flex hidden">
-          <Flags />
+          <div className="flex flex-col gap-2 w-full">
+            <div className="flex items-center gap-">
+              <Link
+                to="/"
+                className="hover:scale-105 transition-transform w-fit"
+              >
+                <h1
+                  className={`font-bold text-xl md:text-3xl block text-red-500 ${
+                    isHome ? "underline" : ""
+                  } dark:text-white`}
+                >
+                  www.vhfesuperiori.eu
+                </h1>
+              </Link>
+              <div className="md:flex hidden">
+                <Flags />
+              </div>
+            </div>
+            {/* AirScout Italia and Progetti antenne buttons on same row */}
+            <div className="flex gap-4 w-full justify-center">
+              <AirscoutBtn />
+
+              <Button
+                as={Link}
+                to="/antenne-gianni"
+                className="mb-2 bg-[#A0CFE7] hover:bg-[##87b0c4] dark:bg-[#6b8c9c] dark:hover:bg-[#536c78] text-black dark:text-white font-bold uppercase min-w-[120px]"
+              >
+                <div className="flex flex-col items-center justify-center leading-tight">
+                  <span className="tracking-wide">Progetti antenne Yagi</span>
+                  <span className="tracking-widest">I4GBZ</span>
+                </div>
+              </Button>
+            </div>
+          </div>
         </div>
         <div className="mx-auto md:ml-auto md:mr-16 lg:mr-20 scale-125 flex items-center gap-4">
-          {/* AirScout Italia button */}
-          <AirscoutBtn />
-
           <form
             action="https://www.paypal.com/donate"
             method="post"

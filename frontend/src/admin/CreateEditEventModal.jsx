@@ -489,7 +489,7 @@ const CreateEditEventModal = ({
   const applyOffset = async () => {
     if (
       [tempOffsetCallsign, tempOffsetData, tempOffsetFrom].some((e) =>
-        Number.isNaN(parseInt(e)),
+        Number.isNaN(parseInt(e, 10)),
       )
     ) {
       window.alert(
@@ -498,9 +498,9 @@ const CreateEditEventModal = ({
       return;
     }
 
-    setOffsetCallsign(parseInt(tempOffsetCallsign));
-    setOffsetData(parseInt(tempOffsetData));
-    setOffsetFrom(parseInt(tempOffsetFrom));
+    setOffsetCallsign(parseInt(tempOffsetCallsign, 10));
+    setOffsetData(parseInt(tempOffsetData, 10));
+    setOffsetFrom(parseInt(tempOffsetFrom, 10));
     setIsEditingOffset(false);
 
     await renderEqslExample(
