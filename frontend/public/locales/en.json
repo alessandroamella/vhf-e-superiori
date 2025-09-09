@@ -172,6 +172,7 @@
   "postSuccessfullyDeleted": "Post successfully deleted",
   "enableLightMode": "Enable light mode",
   "enableDarkMode": "Enable dark mode",
+  "gianniAntennas": "Gianni's Antennas (I4GBZ)",
   "errors": {
     "USER_NOT_FOUND": "User not found. It might have been deleted",
     "INVALID_PW": "Invalid password",

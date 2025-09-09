@@ -172,6 +172,7 @@
   "postSuccessfullyDeleted": "Post eliminato con successo",
   "enableLightMode": "Abilita modalità chiara",
   "enableDarkMode": "Abilita modalità scura",
+  "gianniAntennas": "Antenne di Gianni I4GBZ",
   "errors": {
     "USER_NOT_FOUND": "Utente non trovato. Potrebbe essere stato cancellato",
     "INVALID_PW": "Password non valida",
