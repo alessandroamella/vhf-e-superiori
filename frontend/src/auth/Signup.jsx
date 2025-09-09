@@ -58,7 +58,7 @@ OpenExternally.propTypes = {
 
 const Signup = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["signupcache"]);
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const [avatar, setAvatar] = useState(null);
 
@@ -407,7 +407,10 @@ const Signup = () => {
   return (
     <>
       <Helmet>
-        <title>{t("signupVhf") || "Signup"} - VHF e Superiori</title>
+        <title>
+          {i18n.exists("signupVhf") ? t("signupVhf") : "Signup"} - VHF e
+          Superiori
+        </title>
       </Helmet>
       {user &&
         navigate(searchParams.get("to") || "/profile", { replace: true })}

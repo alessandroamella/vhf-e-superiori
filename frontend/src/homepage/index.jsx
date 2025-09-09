@@ -43,7 +43,7 @@ const Homepage = () => {
   const { events } = useContext(EventsContext);
   const { splashPlayed, setSplashPlayed } = useContext(SplashContext);
   const { ready } = useContext(ReadyContext);
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const [alert, setAlert] = useState(null);
 
@@ -276,7 +276,9 @@ const Homepage = () => {
   return (
     <>
       <Helmet>
-        <title> {t("mainTitle")}</title>
+        <title>
+          {i18n.exists("mainTitle") ? t("mainTitle") : "Main Title"}
+        </title>
       </Helmet>
       {!splashPlayed && <Splash ready={ready} />}
 

@@ -197,13 +197,16 @@ const AntenneGianni = () => {
     link.click();
   };
 
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   return (
     <>
       <Helmet>
         <title>
-          {t("gianniAntennas") || "Antenne Gianni I4GBZ"} - VHF e Superiori
+          {i18n.exists("gianniAntennas")
+            ? t("gianniAntennas")
+            : "Antenne di Gianni I4GBZ"}{" "}
+          - VHF e Superiori
         </title>
       </Helmet>
 

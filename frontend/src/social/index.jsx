@@ -141,14 +141,16 @@ const Social = () => {
     );
   }, [filterCallsign, posts]);
 
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   return (
     <>
       {!splashPlayed && <Splash ready={ready} />}
 
       <Helmet>
-        <title>{t("social")} - VHF e Superiori</title>
+        <title>
+          {i18n.exists("social") ? t("social") : "Social"} - VHF e Superiori
+        </title>
         <meta
           name="description"
           content="Visualizza e condividi foto e video con gli altri piloti"

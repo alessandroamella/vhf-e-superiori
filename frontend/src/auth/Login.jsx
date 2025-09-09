@@ -13,7 +13,7 @@ import { getErrorStr } from "../shared";
 const Login = () => {
   const [callsign, setCallsign] = useState("");
   const [password, setPassword] = useState("");
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const loginFormRef = useRef();
   const emailRef = useRef();
@@ -144,7 +144,9 @@ const Login = () => {
   return (
     <>
       <Helmet>
-        <title>{t("loginVhf" || "Login")} - VHF e Superiori</title>
+        <title>
+          {i18n.exists("loginVhf") ? t("loginVhf") : "Login"} - VHF e Superiori
+        </title>
       </Helmet>
       {user &&
         navigate(searchParams.get("to") || "/profile", { replace: true })}

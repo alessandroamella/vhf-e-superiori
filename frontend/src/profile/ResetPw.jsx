@@ -11,7 +11,7 @@ const ResetPw = () => {
   const [pw, setPw] = useState("");
   const [alert, setAlert] = useState(null);
   const [disabled, setDisabled] = useState(false);
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const [searchParams] = useSearchParams();
 
@@ -47,7 +47,11 @@ const ResetPw = () => {
   return (
     <>
       <Helmet>
-        <title>{t("vhfResetPassword")}</title>
+        <title>
+          {i18n.exists("vhfResetPassword")
+            ? t("vhfResetPassword")
+            : "Reset Password"}
+        </title>
       </Helmet>
       <div className="p-4 h-full flex flex-col justify-center items-center">
         <Typography variant="h1" className="dark:text-white mb-2">
