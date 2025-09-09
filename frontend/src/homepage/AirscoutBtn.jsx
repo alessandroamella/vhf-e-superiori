@@ -27,7 +27,7 @@ const AirscoutBtn = () => {
       href={user ? url : `/login?to=/&openairscout=true`}
       target={user ? "_blank" : undefined}
       rel={user ? "noopener noreferrer" : undefined}
-      className="mb-2 bg-[#fe8f44] hover:bg-[#fb7c2b] dark:bg-[#fe8f44] dark:hover:bg-[#fb7c2b] text-black font-bold uppercase min-w-[120px]"
+      className="m-0 p-0 md:p-2 bg-[#fe8f44] hover:bg-[#fb7c2b] dark:bg-[#fe8f44] dark:hover:bg-[#fb7c2b] text-black font-bold uppercase min-w-[120px]"
     >
       <div className="flex flex-col items-center justify-center leading-tight">
         <span className="tracking-wide">AirScout</span>

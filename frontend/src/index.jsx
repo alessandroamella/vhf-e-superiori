@@ -7,6 +7,7 @@ import Signup from "./auth/Signup";
 import ViewEvent from "./event/ViewEvent";
 import Homepage from "./homepage";
 import "./index.css";
+import AntenneGianni from "./antenna/AntenneGianni";
 // import Regolamento from "./homepage/Regolamento";
 // import Info from "./homepage/Info";
 import BeaconHomepage from "./beacon";
@@ -79,6 +80,7 @@ const AppRoutes = () => {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/editor" element={<BlogPostEditor />} />
           <Route path="/blog/:id" element={<BlogPostViewer />} />
+          <Route path="/antenne-gianni" element={<AntenneGianni />} />
           <Route path="*" element={<NotFoundPage />} />
           {/* <Route
           path="contacts/:contactId"

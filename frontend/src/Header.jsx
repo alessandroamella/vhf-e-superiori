@@ -68,13 +68,13 @@ const Header = () => {
   return (
     <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-2 md:px-8">
       <div className="flex flex-col lg:flex-row md:items-center gap-4">
-        <div className="flex items-center gap-4 w-full">
+        <div className="flex items-center gap-4">
           <LazyLoadImage
             className="w-20 md:w-36"
             src="/logo-min.png"
             alt="Logo"
           />
-          <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-col gap-2">
             <div className="flex items-center gap-">
               <Link
                 to="/"
@@ -88,18 +88,18 @@ const Header = () => {
                   www.vhfesuperiori.eu
                 </h1>
               </Link>
-              <div className="md:flex hidden">
+              <div className="hidden md:flex md:ml-4">
                 <Flags />
               </div>
             </div>
             {/* AirScout Italia and Progetti antenne buttons on same row */}
-            <div className="flex gap-4 w-full justify-center">
+            <div className="flex gap-2 md:gap-4 md:justify-start">
               <AirscoutBtn />
 
               <Button
                 as={Link}
                 to="/antenne-gianni"
-                className="mb-2 bg-[#A0CFE7] hover:bg-[##87b0c4] dark:bg-[#6b8c9c] dark:hover:bg-[#536c78] text-black dark:text-white font-bold uppercase min-w-[120px]"
+                className="bg-[#A0CFE7] m-0 p-0 hover:bg-[##87b0c4] dark:bg-[#6b8c9c] dark:hover:bg-[#536c78] text-black dark:text-white font-bold uppercase min-w-[120px]"
               >
                 <div className="flex flex-col items-center justify-center leading-tight">
                   <span className="tracking-wide">Progetti antenne Yagi</span>

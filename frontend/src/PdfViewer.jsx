@@ -1,28 +1,15 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
 import { MediaBlock } from "react-placeholder/lib/placeholders";
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-
 const LazyPDFViewer = ({ pdfName, shouldRender }) => {
-  const [numPages, setNumPages] = useState(null);
-
   return (
     <div className="bg-white p-4 rounded-lg shadow-md">
       {shouldRender ? (
-        <Document
-          file={pdfName}
-          onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-        >
-          {Array.from(new Array(numPages), (_el, index) => (
-            <Page
-              key={`page_${index + 1}`}
-              pageNumber={index + 1}
-              className="border border-gray-300 rounded-lg shadow-md my-4 overflow-auto max-h-[69vh] max-w-[80vw] min-w-full mx-auto p-1"
-            />
-          ))}
-        </Document>
+        <iframe
+          src={pdfName}
+          className="w-full h-[69vh] border border-gray-300 rounded-lg"
+          title="PDF Viewer"
+        />
       ) : (
         <MediaBlock
           type="media"
