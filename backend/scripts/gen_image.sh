@@ -42,8 +42,8 @@ height=$((width * original_height / original_width))
 
 bg_image_2="$bg_image-resize.jpg"
 
-# Ridimensiona l'immagine di sfondo con compressione ottimizzata
-magick "$bg_image" -resize "$width"x"$height" -quality 85 "$bg_image_2"
+# Ridimensiona l'immagine di sfondo
+magick "$bg_image" -resize "$width"x"$height" "$bg_image_2"
 
 # Aggiungi il primo testo con ombra
 magick -size "$width"x"$height" xc:none -fill "$font_color" -font "$font_path" \
@@ -56,14 +56,8 @@ magick "$temp_image" -fill "$font_color2" -font "$font_path2" -pointsize "$font_
 # Aggiungi il terzo testo senza ombra
 magick "$temp_image" -fill "$font_color3" -font "$font_path3" -pointsize "$font_size3" -gravity center -stroke "$stroke_color3" -strokewidth 1 -annotate +0+"$offset3" "$text3" "$temp_image"
 
-composite -gravity center -dissolve 100% -geometry +0+0 "$temp_image" "$bg_image_2" -quality 80 -compress JPEG temp_composite.jpg
-
-# Scale down the final output for smaller file size while maintaining quality
-final_width=1280
-final_height=$((final_width * height / width))
-magick temp_composite.jpg -resize "$final_width"x"$final_height" -quality 75 "$final_image"
+composite -gravity center -dissolve 100% -geometry +0+0 "$temp_image" "$bg_image_2" "$final_image"
 
 # Rimuovi l'immagine temporanea
 rm "$temp_image"
 rm "$bg_image_2"
-rm temp_composite.jpg
