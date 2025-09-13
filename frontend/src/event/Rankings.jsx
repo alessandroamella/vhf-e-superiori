@@ -1,4 +1,5 @@
 import axios from "axios";
+import { isBefore } from "date-fns";
 import { it } from "date-fns/locale";
 import {
   Alert,
@@ -46,7 +47,14 @@ const EventList = () => {
       try {
         const { data } = await axios.get("/api/event");
         console.log("events:", data);
-        setEvents(orderBy(data, ["date"], ["desc"]));
+        setEvents(
+          orderBy(
+            // only past events
+            data.filter((e) => isBefore(new Date(e.date), new Date())),
+            ["date"],
+            ["desc"],
+          ),
+        );
       } catch (err) {
         setAlertEvents({
           color: "failure",
