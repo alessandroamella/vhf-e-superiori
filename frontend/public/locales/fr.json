@@ -170,6 +170,23 @@
   "verifyEmail": "Vérifiez votre nouvelle adresse e-mail en cliquant sur le lien dans l'e-mail reçu",
   "partecipationSuccessfullyCanceled": "Participation annulée avec succès",
   "postSuccessfullyDeleted": "Publication supprimée avec succès",
+  "gianni": {
+    "pageTitle": "Antennes de Gianni I4GBZ",
+    "mainTitle": "PROJETS D'ANTENNES YAGI PAR I4GBZ",
+    "dedication": "À LA MÉMOIRE D'UN AMI QUI A DÉDIÉ SA VIE AVEC PASSION À LA CONCEPTION D'ANTENNES YAGI, CERTAINS DE RÉALISER SON SOUHAIT, NOUS PARTAGEONS TOUS SES PROJETS AVEC CHACUN.",
+    "selectFrequency": "Sélectionnez la fréquence",
+    "antennasForBand": "Antennes {{band}} MHz",
+    "projectsFor": "Projets pour {{band}} MHz ({{count}} fichiers)",
+    "open": "Ouvrir",
+    "view": "Afficher",
+    "download": "Télécharger",
+    "mobileMessage": "Sur les appareils mobiles ou lorsque la visionneuse PDF n'est pas prise en charge, les PDF s'ouvriront dans un nouvel onglet.",
+    "clickOpenToView": "Cliquez sur \"Ouvrir\" pour afficher un PDF.",
+    "openInNewTab": "Ouvrir dans un nouvel onglet",
+    "pdfLoadError": "Impossible d'afficher le PDF dans le navigateur.",
+    "pdfViewerTitle": "Visionneuse PDF - {{filename}}",
+    "selectPdfToView": "Sélectionnez un PDF pour l'afficher."
+  },
   "errors": {
     "USER_NOT_FOUND": "Utilisateur introuvable. Il a peut-être été supprimé",
     "INVALID_PW": "Mot de passe non valide",

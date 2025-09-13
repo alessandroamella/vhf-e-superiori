@@ -1,21 +1,16 @@
 import axios from "axios";
 import { Alert, Button, Spinner, TextInput } from "flowbite-react";
 import { orderBy, uniqBy } from "lodash";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { FaPlus, FaUserTag } from "react-icons/fa";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { ReadyContext, SplashContext } from "../App";
-import Splash from "../Splash";
 import MenuContent from "../sideMenu/MenuContent";
 import FeedCard from "./FeedCard";
 
 const Social = () => {
-  const { splashPlayed } = useContext(SplashContext);
-  const { ready } = useContext(ReadyContext);
-
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [alert, setAlert] = useState(null);
@@ -145,8 +140,6 @@ const Social = () => {
 
   return (
     <>
-      {!splashPlayed && <Splash ready={ready} />}
-
       <Helmet>
         <title>
           {i18n.exists("social") ? t("social") : "Social"} - VHF e Superiori

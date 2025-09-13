@@ -10,6 +10,7 @@ const AntenneGianni = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [pdfViewerSupported, setPdfViewerSupported] = useState(true);
   const [pdfLoadError, setPdfLoadError] = useState(false);
+  const { t } = useTranslation();
 
   // Check if device is mobile and PDF viewer support
   useEffect(() => {
@@ -174,10 +175,8 @@ const AntenneGianni = () => {
   };
 
   const handlePdfSelect = (filename) => {
-    // Reset error state
     setPdfLoadError(false);
 
-    // On mobile or when PDF viewer is not supported, open externally
     if (isMobile || !pdfViewerSupported) {
       openPdfExternal(filename);
     } else {
@@ -197,16 +196,12 @@ const AntenneGianni = () => {
     link.click();
   };
 
-  const { i18n, t } = useTranslation();
-
   return (
     <>
       <Helmet>
         <title>
-          {i18n.exists("gianniAntennas")
-            ? t("gianniAntennas")
-            : "Antenne di Gianni I4GBZ"}{" "}
-          - VHF e Superiori
+          {t("gianni.pageTitle", { defaultValue: "Antenne di Gianni I4GBZ" })} -
+          VHF e Superiori
         </title>
       </Helmet>
 
@@ -215,13 +210,11 @@ const AntenneGianni = () => {
           {/* Dedication */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-8">
             <h1 className="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-white">
-              PROGETTI ANTENNE YAGI I4GBZ
+              {t("gianni.mainTitle")}
             </h1>
             <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-6 rounded">
               <p className="text-lg font-semibold text-center text-gray-700 dark:text-gray-200 italic">
-                NEL VIVO RICORDO DI UN AMICO CHE HA DEDICATO LA VITA CON
-                PASSIONE ALLA PROGETTAZIONE DI ANTENNE YAGI, CERTI DI FARE LA
-                SUA VOLONTÀ, CONDIVIDIAMO CON TUTTI I SUOI PROGETTI
+                {t("gianni.dedication")}
               </p>
             </div>
           </div>
@@ -229,7 +222,7 @@ const AntenneGianni = () => {
           {/* Band Selection */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
             <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">
-              Seleziona la frequenza
+              {t("gianni.selectFrequency")}
             </h2>
             <div className="flex flex-wrap justify-center gap-4">
               {Object.keys(pdfFiles).map((band) => (
@@ -243,7 +236,7 @@ const AntenneGianni = () => {
                   size="lg"
                   className="min-w-[150px]"
                 >
-                  Antenne {band} MHz
+                  {t("gianni.antennasForBand", { band })}
                 </Button>
               ))}
             </div>
@@ -253,8 +246,10 @@ const AntenneGianni = () => {
             {/* PDF List */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
               <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
-                Progetti per {selectedBand} MHz ({pdfFiles[selectedBand].length}{" "}
-                file)
+                {t("gianni.projectsFor", {
+                  band: selectedBand,
+                  count: pdfFiles[selectedBand].length,
+                })}
               </h3>
               <div className="max-h-96 overflow-y-auto">
                 <div className="space-y-2">
@@ -282,8 +277,8 @@ const AntenneGianni = () => {
                             <FiEye className="w-3 h-3 mr-1" />
                           )}
                           {isMobile || !pdfViewerSupported
-                            ? "Apri"
-                            : "Visualizza"}
+                            ? t("gianni.open")
+                            : t("gianni.view")}
                         </Button>
                         <Button
                           size="xs"
@@ -291,7 +286,7 @@ const AntenneGianni = () => {
                           onClick={() => downloadPdf(filename)}
                         >
                           <FiDownload className="w-3 h-3 mr-1" />
-                          Scarica
+                          {t("gianni.download")}
                         </Button>
                       </div>
                     </div>
@@ -305,12 +300,9 @@ const AntenneGianni = () => {
               {isMobile || !pdfViewerSupported ? (
                 <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
                   <FiExternalLink className="w-12 h-12 mb-4" />
-                  <p className="text-center">
-                    Su dispositivi mobili o quando il visualizzatore PDF non è
-                    supportato, i PDF si apriranno in una nuova scheda
-                  </p>
+                  <p className="text-center">{t("gianni.mobileMessage")}</p>
                   <p className="text-sm text-center mt-2">
-                    Clicca su "Apri" per visualizzare un PDF
+                    {t("gianni.clickOpenToView")}
                   </p>
                 </div>
               ) : selectedPdf ? (
@@ -325,7 +317,7 @@ const AntenneGianni = () => {
                       onClick={() => openPdfExternal(selectedPdf)}
                     >
                       <FiExternalLink className="w-3 h-3 mr-1" />
-                      Apri in nuova scheda
+                      {t("gianni.openInNewTab")}
                     </Button>
                   </div>
                   <div className="border rounded overflow-hidden">
@@ -333,24 +325,25 @@ const AntenneGianni = () => {
                       <div className="flex flex-col items-center justify-center h-96 bg-gray-50 dark:bg-gray-700">
                         <FiExternalLink className="w-12 h-12 mb-4 text-gray-400" />
                         <p className="text-gray-600 dark:text-gray-300 mb-4 text-center">
-                          Impossibile visualizzare il PDF nel browser
+                          {t("gianni.pdfLoadError")}
                         </p>
                         <Button
                           color="blue"
                           onClick={() => openPdfExternal(selectedPdf)}
                         >
                           <FiExternalLink className="w-4 h-4 mr-2" />
-                          Apri in nuova scheda
+                          {t("gianni.openInNewTab")}
                         </Button>
                       </div>
                     ) : (
                       <iframe
                         src={`https://vhfesuperiori.s3.eu-central-1.amazonaws.com/antenne-gianni/${selectedBand}/${selectedPdf}`}
                         className="w-full h-96"
-                        title={`PDF Viewer - ${selectedPdf}`}
+                        title={t("gianni.pdfViewerTitle", {
+                          filename: selectedPdf,
+                        })}
                         onError={() => setPdfLoadError(true)}
                         onLoad={(e) => {
-                          // Check if iframe content loaded successfully
                           try {
                             const iframeDoc = e.target.contentDocument;
                             if (
@@ -366,8 +359,6 @@ const AntenneGianni = () => {
                               setPdfLoadError(true);
                             }
                           } catch (error) {
-                            // Cross-origin restrictions prevent access, but that's expected
-                            // PDF likely loaded successfully if we get here
                             console.log(
                               "PDF loaded, cross-origin access restricted,",
                               error,
@@ -380,7 +371,7 @@ const AntenneGianni = () => {
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
-                  Seleziona un PDF per visualizzarlo
+                  {t("gianni.selectPdfToView")}
                 </div>
               )}
             </div>

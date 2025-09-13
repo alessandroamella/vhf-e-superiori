@@ -169,6 +169,23 @@
   "verifyEmail": "Ivverifika l-email il-ġdida billi tikklikkja fuq il-link fil-messaġġ",
   "partecipationSuccessfullyCanceled": "Parteċipazzjoni kkanċellata b'suċċess",
   "postSuccessfullyDeleted": "Post imħassar b'suċċess",
+  "gianni": {
+    "pageTitle": "Antenni ta' Gianni I4GBZ",
+    "mainTitle": "PROĠETTI TA' ANTENNI YAGI MINN I4GBZ",
+    "dedication": "F'TIFKIRA GĦAŻIŻA TA' ĦABIB LI DEDIKA ĦAJTU B'PASSJONI GĦAD-DISINN TA' ANTENNI YAGI, B'ĊERTEZZA LI QED INWETTQU X-XEWQA TIEGĦU, NAQSmu L-PROĠETTI KOLLHA TIEGĦU MA' KULĦADD.",
+    "selectFrequency": "Agħżel il-frekwenza",
+    "antennasForBand": "Antenni ta' {{band}} MHz",
+    "projectsFor": "Proġetti għal {{band}} MHz ({{count}} fajls)",
+    "open": "Iftaħ",
+    "view": "Ara",
+    "download": "Niżżel",
+    "mobileMessage": "Fuq apparat mobbli jew meta l-viewer tal-PDF ma jkunx appoġġjat, il-PDFs jinfetħu f'tab ġdida.",
+    "clickOpenToView": "Ikklikkja \"Iftaħ\" biex tara PDF.",
+    "openInNewTab": "Iftaħ f'tab ġdida",
+    "pdfLoadError": "Ma setax jintwera l-PDF fil-browser.",
+    "pdfViewerTitle": "Viewer tal-PDF - {{filename}}",
+    "selectPdfToView": "Agħżel PDF biex tarah."
+  },
   "errors": {
     "USER_NOT_FOUND": "Utent ma nstabx. Jista' jkun tħassar",
     "INVALID_PW": "Password invalida",

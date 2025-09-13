@@ -9,12 +9,13 @@ i18n
   .use(initReactI18next) // collega i18next con React
   .init({
     fallbackLng: "it", // lingua di fallback se non trovata
-    debug: true,
+    debug: false,
     interpolation: {
       escapeValue: false, // React già fa l'escaping
     },
     react: {
-      useSuspense: false, // per evitare problemi con il caricamento
+      // useSuspense: false, // per evitare problemi con il caricamento
+      useSuspense: true, // per evitare problemi con il caricamento
     },
     backend: {
       loadPath: "/locales/{{lng}}.json", // Ora carica da "public/locales"

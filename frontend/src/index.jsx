@@ -32,11 +32,11 @@ import "leaflet/dist/leaflet.css";
 import "react-medium-image-zoom/dist/styles.css";
 import "react-placeholder/lib/reactPlaceholder.css";
 
+import { Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import {
   EventsContext,
   JoinOpenContext,
-  ReadyContext,
   SidebarOpenContext,
   SplashContext,
   UserContext,
@@ -46,48 +46,53 @@ import BlogPostEditor from "./blog/Editor";
 import BlogPostViewer from "./blog/View";
 import Layout from "./Layout";
 import NotFoundPage from "./NotFound";
+import SplashLoader, { SplashWrapper } from "./SplashLoader";
 
 import "./i18n/i18n";
 
 const AppRoutes = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Homepage />} />
-          <Route path="/progetti-gianni" element={<ProgettiGianni />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/social" element={<Social />} />
-          <Route path="/social/new" element={<NewPost />} />
-          <Route path="/u/:callsign" element={<ViewPublished />} />
-          <Route path="/social/:id" element={<ViewPost />} />
-          <Route path="/eventmanager" element={<AdminManager />} />
-          <Route path="/qsomanager/:id" element={<QsoManager />} />
-          <Route path="/rankings" element={<Rankings />} />
-          <Route path="/rankings/:id" element={<Rankings />} />
-          <Route path="/eqsl/:id" element={<EqslRedirect />} />
-          <Route path="/qso/:id" element={<Qso />} />
-          {/* <Route path="/regolamento" element={<Regolamento />} /> */}
-          {/* <Route path="/info" element={<Info />} /> */}
-          <Route path="/resetpw" element={<ResetPw />} />
-          <Route path="/event/:id" element={<ViewEvent />} />
-          <Route path="/document/:name" element={<MdViewer />} />
-          <Route path="/beacon" element={<BeaconHomepage />} />
-          <Route path="/beacon/editor" element={<BeaconEditor />} />
-          <Route path="/beacon/:id" element={<ViewBeacon />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/editor" element={<BlogPostEditor />} />
-          <Route path="/blog/:id" element={<BlogPostViewer />} />
-          <Route path="/antenne-gianni" element={<AntenneGianni />} />
-          <Route path="*" element={<NotFoundPage />} />
-          {/* <Route
-          path="contacts/:contactId"
-          element={<Contact />}
-        /> */}
-        </Route>
-      </Routes>
+      <SplashWrapper>
+        <Suspense fallback={<SplashLoader />}>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Homepage />} />
+              <Route path="/progetti-gianni" element={<ProgettiGianni />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/social" element={<Social />} />
+              <Route path="/social/new" element={<NewPost />} />
+              <Route path="/u/:callsign" element={<ViewPublished />} />
+              <Route path="/social/:id" element={<ViewPost />} />
+              <Route path="/eventmanager" element={<AdminManager />} />
+              <Route path="/qsomanager/:id" element={<QsoManager />} />
+              <Route path="/rankings" element={<Rankings />} />
+              <Route path="/rankings/:id" element={<Rankings />} />
+              <Route path="/eqsl/:id" element={<EqslRedirect />} />
+              <Route path="/qso/:id" element={<Qso />} />
+              {/* <Route path="/regolamento" element={<Regolamento />} /> */}
+              {/* <Route path="/info" element={<Info />} /> */}
+              <Route path="/resetpw" element={<ResetPw />} />
+              <Route path="/event/:id" element={<ViewEvent />} />
+              <Route path="/document/:name" element={<MdViewer />} />
+              <Route path="/beacon" element={<BeaconHomepage />} />
+              <Route path="/beacon/editor" element={<BeaconEditor />} />
+              <Route path="/beacon/:id" element={<ViewBeacon />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/editor" element={<BlogPostEditor />} />
+              <Route path="/blog/:id" element={<BlogPostViewer />} />
+              <Route path="/antenne-gianni" element={<AntenneGianni />} />
+              <Route path="*" element={<NotFoundPage />} />
+              {/* <Route
+              path="contacts/:contactId"
+              element={<Contact />}
+            /> */}
+            </Route>
+          </Routes>
+        </Suspense>
+      </SplashWrapper>
     </BrowserRouter>
   );
 };
@@ -96,18 +101,9 @@ export const App = () => {
   const [user, setUser] = useState(false);
   const [events, setEvents] = useState(false);
   const [splashPlayed, setSplashPlayed] = useState(false);
-  const [ready, setReady] = useState(false);
   const [joinOpen, setJoinOpen] = useState(false);
   const [views, setViews] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    if (window.location.pathname === "/") {
-      setTimeout(() => {
-        setReady(true);
-      }, 4000);
-    } else setReady(true);
-  }, []);
 
   const isFetchingUser = useRef(false);
 
@@ -214,22 +210,20 @@ export const App = () => {
       <UserContext.Provider value={{ user, setUser }}>
         <EventsContext.Provider value={{ events, setEvents }}>
           <SplashContext.Provider value={{ splashPlayed, setSplashPlayed }}>
-            <ReadyContext.Provider value={{ ready, setReady }}>
-              <JoinOpenContext.Provider
-                value={{
-                  joinOpen,
-                  setJoinOpen,
-                }}
-              >
-                <ViewsContext.Provider value={{ views }}>
-                  <SidebarOpenContext.Provider
-                    value={{ sidebarOpen, setSidebarOpen }}
-                  >
-                    <AppRoutes />
-                  </SidebarOpenContext.Provider>
-                </ViewsContext.Provider>
-              </JoinOpenContext.Provider>
-            </ReadyContext.Provider>
+            <JoinOpenContext.Provider
+              value={{
+                joinOpen,
+                setJoinOpen,
+              }}
+            >
+              <ViewsContext.Provider value={{ views }}>
+                <SidebarOpenContext.Provider
+                  value={{ sidebarOpen, setSidebarOpen }}
+                >
+                  <AppRoutes />
+                </SidebarOpenContext.Provider>
+              </ViewsContext.Provider>
+            </JoinOpenContext.Provider>
           </SplashContext.Provider>
         </EventsContext.Provider>
       </UserContext.Provider>

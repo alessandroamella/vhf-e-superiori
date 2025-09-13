@@ -12,7 +12,7 @@ import {
   Table,
   Tooltip,
 } from "flowbite-react";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { FaArrowLeft, FaBackward, FaExternalLinkAlt } from "react-icons/fa";
@@ -37,8 +37,6 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import { ReadyContext, SplashContext } from "../App";
-import Splash from "../Splash";
 import { getErrorStr } from "../shared";
 import CallsignLoading from "../shared/CallsignLoading";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
@@ -47,8 +45,6 @@ import StationMapMarker from "../shared/StationMapMarker";
 import FeedCard from "./FeedCard";
 
 const ViewPublished = () => {
-  const { splashPlayed } = useContext(SplashContext);
-  const { ready } = useContext(ReadyContext);
   const { t } = useTranslation();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -241,7 +237,6 @@ const ViewPublished = () => {
       <Helmet>
         <title>{user?.callsign || callsign} - VHF e Superiori</title>
       </Helmet>
-      {!splashPlayed && <Splash ready={ready} />}
 
       <Modal
         position="center"

@@ -1,12 +1,10 @@
 import { useContext, useEffect } from "react";
 import { reveal as BurgerMenuComponent } from "react-burger-menu";
 import { useLocation } from "react-router";
-import { JoinOpenContext, ReadyContext, SidebarOpenContext } from "../App";
+import { JoinOpenContext, SidebarOpenContext } from "../App";
 import MenuContent from "./MenuContent";
 
 const BurgerMenu = () => {
-  const { ready } = useContext(ReadyContext);
-
   const { sidebarOpen, setSidebarOpen } = useContext(SidebarOpenContext);
   const { joinOpen } = useContext(JoinOpenContext);
 
@@ -26,17 +24,15 @@ const BurgerMenu = () => {
     <div
       className={`${window.location.pathname === "/social" ? "md:hidden" : ""}`}
     >
-      {ready && (
-        <BurgerMenuComponent
-          right
-          pageWrapId={"page-wrap"}
-          outerContainerId={"outer-container"}
-          isOpen={sidebarOpen}
-          onStateChange={(state) => setSidebarOpen(state.isOpen)}
-        >
-          <MenuContent />
-        </BurgerMenuComponent>
-      )}
+      <BurgerMenuComponent
+        right
+        pageWrapId={"page-wrap"}
+        outerContainerId={"outer-container"}
+        isOpen={sidebarOpen}
+        onStateChange={(state) => setSidebarOpen(state.isOpen)}
+      >
+        <MenuContent />
+      </BurgerMenuComponent>
     </div>
   );
 };
