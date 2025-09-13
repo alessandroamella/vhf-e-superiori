@@ -1,5 +1,5 @@
 import axios from "axios";
-import { isBefore } from "date-fns";
+import { isAfter, isBefore } from "date-fns";
 import { it } from "date-fns/locale";
 import {
   Alert,
@@ -50,7 +50,11 @@ const EventList = () => {
         setEvents(
           orderBy(
             // only past events
-            data.filter((e) => isBefore(new Date(e.date), new Date())),
+            data.filter(
+              (e) =>
+                isBefore(new Date(e.date), new Date()) &&
+                isAfter(new Date(e.date), new Date("2024-01-01")),
+            ),
             ["date"],
             ["desc"],
           ),
