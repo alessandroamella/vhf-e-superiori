@@ -191,6 +191,48 @@
     "shareOnSocialMedia": "Condividi sui social media",
     "poweredBy": "Orgogliosamente alimentato da"
   },
+  "rankings": {
+    "filterByEvent": "Nach Ereignis filtern",
+    "annualRankings": "Jahresranglisten - Jahr {{year}}",
+    "qsoLoadError": "Fehler beim Laden der QSOs",
+    "pageTitle": {
+      "event": "{{name}} - Ranglisten - VHF und höher",
+      "year": "Jahr {{year}} - Ranglisten - VHF und höher"
+    },
+    "qsoModal": {
+      "title": "QSOs von",
+      "close": "Schließen",
+      "table": {
+        "activator": "Aktivierer",
+        "callsign": "Rufzeichen",
+        "date": "Datum",
+        "frequency": "Frequenz",
+        "mode": "Modus",
+        "locator": "Locator",
+        "rst": "RST",
+        "error": "-- Fehler --"
+      }
+    },
+    "mainTitle_event": "Ranglisten für",
+    "mainTitle_year": "Ranglisten für das Jahr",
+    "tabs": {
+      "hunters": "Jäger",
+      "activators": "Aktivierer"
+    },
+    "rankingTitle": "{{type}}-Rangliste",
+    "table": {
+      "position": "Position",
+      "callsign": "Rufzeichen",
+      "points": "Punkte"
+    },
+    "noQsosFound": "Keine QSOs gefunden",
+    "social": {
+      "title_event": "Ranglisten {{name}} - VHF und höher",
+      "title_year": "Ranglisten {{year}} - VHF und höher",
+      "bodyEvent": "Ranglisten für das Ereignis {{name}} - {{date}} - VHF und höher",
+      "bodyYear": "Ranglisten für das Jahr {{year}} - VHF und höher"
+    }
+  },
   "errors": {
     "USER_NOT_FOUND": "Benutzer nicht gefunden. Er wurde möglicherweise gelöscht",
     "INVALID_PW": "Ungültiges Passwort",

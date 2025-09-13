@@ -12,6 +12,7 @@ import {
 import { orderBy } from "lodash";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import { FaExclamationTriangle } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
 import { useLocation, useNavigate, useParams } from "react-router";
@@ -38,21 +39,13 @@ const EventList = () => {
   const [alertEvents, setAlertEvents] = useState(null);
   const navigate = useNavigate();
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     async function fetchEvents() {
       try {
         const { data } = await axios.get("/api/event");
         console.log("events:", data);
-        // // debug
-        // const debugEvents = [
-        //   ...data,
-        //   ...data,
-        //   ...data,
-        //   ...data,
-        //   ...data,
-        //   ...data,
-        // ].map((e, i) => ({ ...e, _id: e._id + i }));
-        // setEvents(orderBy(debugEvents, ["date"], ["desc"]));
         setEvents(orderBy(data, ["date"], ["desc"]));
       } catch (err) {
         setAlertEvents({
@@ -85,7 +78,7 @@ const EventList = () => {
   return (
     <div className="mb-8">
       <h2 className="text-2xl font-bold mb-4 dark:text-white">
-        Filtra per Evento
+        {t("rankings.filterByEvent")}
       </h2>
       <ListGroup className="max-h-56 overflow-auto">
         <ListGroup.Item
@@ -93,7 +86,7 @@ const EventList = () => {
           className="uppercase font-bold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-700 text-red-500 dark:text-red-400"
         >
           <span className="uppercase">
-            Classifiche annuali - anno {new Date().getFullYear()}
+            {t("rankings.annualRankings", { year: new Date().getFullYear() })}
           </span>
         </ListGroup.Item>
         {events?.map((event) => (
@@ -123,6 +116,8 @@ const Rankings = () => {
   const [userRankings, setUserRankings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState(null);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function getData() {
@@ -157,15 +152,22 @@ const Rankings = () => {
 
   const year = new Date().getFullYear();
 
-  const socialTitle = `Classifiche ${event?.name || year} - VHF e superiori`;
+  const socialTitle = t("rankings.social.title", {
+    context: event ? "event" : "year",
+    name: event?.name,
+    year,
+  });
   const socialBody = event
-    ? `Classifiche dell'evento ${event.name} - ${formatInTimeZone(
-        new Date(event.date),
-        "Europe/Rome",
-        "dd MMMM yyyy",
-        { locale: it },
-      )} - VHF e superiori`
-    : `Classifiche dell'anno ${year} - VHF e superiori`;
+    ? t("rankings.social.bodyEvent", {
+        name: event.name,
+        date: formatInTimeZone(
+          new Date(event.date),
+          "Europe/Rome",
+          "dd MMMM yyyy",
+          { locale: it },
+        ),
+      })
+    : t("rankings.social.bodyYear", { year });
 
   const [showRankings, setShowRankings] = useState(null);
 
@@ -187,7 +189,7 @@ const Rankings = () => {
         data.sort((b, a) => new Date(a.qsoDate) - new Date(b.qsoDate));
         setQsos(data);
       } catch (err) {
-        console.log("Errore nel caricamento dei QSO", err);
+        console.log(t("rankings.qsoLoadError"), err);
         setAlert({
           color: "failure",
           msg: getErrorStr(err?.response?.data?.err),
@@ -197,19 +199,21 @@ const Rankings = () => {
       }
     }
     getQsos();
-  }, [event, user]);
+  }, [event, user, t]);
 
   const { pathname } = useLocation();
   const curUrl = useMemo(() => {
     return `${window.location.origin}${pathname}`;
   }, [pathname]);
 
+  const pageTitle = event
+    ? t("rankings.pageTitle.event", { name: event.name })
+    : t("rankings.pageTitle.year", { year });
+
   return (
     <>
       <Helmet>
-        <title>
-          {event ? event.name : `Anno ${year}`} - Classifiche - VHF e superiori
-        </title>
+        <title>{pageTitle}</title>
       </Helmet>
       <Modal
         position="center"
@@ -218,7 +222,7 @@ const Rankings = () => {
         size="6xl"
       >
         <Modal.Header>
-          QSO di <strong>{showRankings}</strong>
+          {t("rankings.qsoModal.title")} <strong>{showRankings}</strong>
         </Modal.Header>
         <Modal.Body>
           <div className="w-full flex flex-col gap-4 max-h-[60vh]">
@@ -234,13 +238,27 @@ const Rankings = () => {
                 .map((r) => (
                   <Table striped key={r.callsign}>
                     <Table.Head>
-                      <Table.HeadCell>Attivatore</Table.HeadCell>
-                      <Table.HeadCell>Nominativo</Table.HeadCell>
-                      <Table.HeadCell>Data</Table.HeadCell>
-                      <Table.HeadCell>Frequenza</Table.HeadCell>
-                      <Table.HeadCell>Modo</Table.HeadCell>
-                      <Table.HeadCell>Locatore</Table.HeadCell>
-                      <Table.HeadCell>RST</Table.HeadCell>
+                      <Table.HeadCell>
+                        {t("rankings.qsoModal.table.activator")}
+                      </Table.HeadCell>
+                      <Table.HeadCell>
+                        {t("rankings.qsoModal.table.callsign")}
+                      </Table.HeadCell>
+                      <Table.HeadCell>
+                        {t("rankings.qsoModal.table.date")}
+                      </Table.HeadCell>
+                      <Table.HeadCell>
+                        {t("rankings.qsoModal.table.frequency")}
+                      </Table.HeadCell>
+                      <Table.HeadCell>
+                        {t("rankings.qsoModal.table.mode")}
+                      </Table.HeadCell>
+                      <Table.HeadCell>
+                        {t("rankings.qsoModal.table.locator")}
+                      </Table.HeadCell>
+                      <Table.HeadCell>
+                        {t("rankings.qsoModal.table.rst")}
+                      </Table.HeadCell>
                     </Table.Head>
                     <Table.Body>
                       {r.qsos.map((qso) => (
@@ -250,7 +268,8 @@ const Rankings = () => {
                           className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >
                           <Table.Cell>
-                            {qso.fromStation?.callsign || "-- errore --"}
+                            {qso.fromStation?.callsign ||
+                              t("rankings.qsoModal.table.error")}
                           </Table.Cell>
                           <Table.Cell className="font-semibold">
                             {qso.callsign}
@@ -282,7 +301,7 @@ const Rankings = () => {
               type="button"
               onClick={() => setShowRankings(null)}
             >
-              Chiudi
+              {t("rankings.qsoModal.close")}
             </Button>
           </div>
         </Modal.Footer>
@@ -313,7 +332,9 @@ const Rankings = () => {
             {stationRankings && userRankings && (
               <div className="w-full flex flex-col gap-4">
                 <h1 className="text-3xl md:text-4xl">
-                  Classifiche {event ? "di" : "dell'anno"}{" "}
+                  {t("rankings.mainTitle", {
+                    context: event ? "event" : "year",
+                  })}{" "}
                   <span className="font-bold">{event ? event.name : year}</span>
                   {event && (
                     <>
@@ -337,18 +358,27 @@ const Rankings = () => {
                 </div>
 
                 {/* <Tabs.Group> */}
-                {["Cacciatori", "Attivatori"].map((tab, i) => (
+                {[
+                  t("rankings.tabs.hunters"),
+                  t("rankings.tabs.activators"),
+                ].map((tab, i) => (
                   <Tabs.Item title={tab} key={tab}>
                     <h1 className="text-4xl md:text-5xl uppercase text-red-500 font-bold text-center mt-8 mb-8 animate-pulse">
-                      Classifica {tab}
+                      {t("rankings.rankingTitle", { type: tab })}
                     </h1>
                     {(i === 1 ? stationRankings : userRankings).length > 0 ? (
                       <div className="max-h-[60vh] md:max-h-[80vh] overflow-y-auto">
                         <Table striped className="text-2xl">
                           <Table.Head>
-                            <Table.HeadCell>Posizione</Table.HeadCell>
-                            <Table.HeadCell>Nominativo</Table.HeadCell>
-                            <Table.HeadCell>Punti</Table.HeadCell>
+                            <Table.HeadCell>
+                              {t("rankings.table.position")}
+                            </Table.HeadCell>
+                            <Table.HeadCell>
+                              {t("rankings.table.callsign")}
+                            </Table.HeadCell>
+                            <Table.HeadCell>
+                              {t("rankings.table.points")}
+                            </Table.HeadCell>
                           </Table.Head>
                           <Table.Body>
                             {(i === 1 ? stationRankings : userRankings).map(
@@ -375,7 +405,7 @@ const Rankings = () => {
                     ) : (
                       <Alert color="gray" className="text-center">
                         <FaExclamationTriangle className="inline-block mr-1 mb-1" />
-                        Nessun collegamento trovato
+                        {t("rankings.noQsosFound")}
                       </Alert>
                     )}
                   </Tabs.Item>

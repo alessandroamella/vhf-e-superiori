@@ -191,6 +191,48 @@
     "shareOnSocialMedia": "Partager sur les réseaux sociaux",
     "poweredBy": "Fièrement propulsé par"
   },
+  "rankings": {
+    "filterByEvent": "Filtrer par Événement",
+    "annualRankings": "Classements annuels - année {{year}}",
+    "qsoLoadError": "Erreur de chargement des QSO",
+    "pageTitle": {
+      "event": "{{name}} - Classements - VHF et plus",
+      "year": "Année {{year}} - Classements - VHF et plus"
+    },
+    "qsoModal": {
+      "title": "QSO de",
+      "close": "Fermer",
+      "table": {
+        "activator": "Activateur",
+        "callsign": "Indicatif",
+        "date": "Date",
+        "frequency": "Fréquence",
+        "mode": "Mode",
+        "locator": "Locator",
+        "rst": "RST",
+        "error": "-- erreur --"
+      }
+    },
+    "mainTitle_event": "Classements de",
+    "mainTitle_year": "Classements de l'année",
+    "tabs": {
+      "hunters": "Chasseurs",
+      "activators": "Activateurs"
+    },
+    "rankingTitle": "Classement {{type}}",
+    "table": {
+      "position": "Position",
+      "callsign": "Indicatif",
+      "points": "Points"
+    },
+    "noQsosFound": "Aucun QSO trouvé",
+    "social": {
+      "title_event": "Classements {{name}} - VHF et plus",
+      "title_year": "Classements {{year}} - VHF et plus",
+      "bodyEvent": "Classements de l'événement {{name}} - {{date}} - VHF et plus",
+      "bodyYear": "Classements de l'année {{year}} - VHF et plus"
+    }
+  },
   "errors": {
     "USER_NOT_FOUND": "Utilisateur introuvable. Il a peut-être été supprimé",
     "INVALID_PW": "Mot de passe non valide",

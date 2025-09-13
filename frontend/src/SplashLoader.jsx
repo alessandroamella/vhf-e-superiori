@@ -46,8 +46,22 @@ const SplashWrapper = ({ children }) => {
 
   return (
     <>
-      {/* Show children when translations are loaded AND animation starts (ready=true) */}
-      {translationsLoaded && ready && children}
+      {/* Load children as soon as translations are ready, but keep them hidden until ready */}
+      {translationsLoaded && (
+        <div
+          style={{
+            visibility: ready ? "visible" : "hidden",
+            position: showSplash ? "fixed" : "static",
+            top: showSplash ? "0" : "auto",
+            left: showSplash ? "0" : "auto",
+            width: showSplash ? "100%" : "auto",
+            height: showSplash ? "100vh" : "auto",
+            overflow: showSplash ? "hidden" : "auto",
+          }}
+        >
+          {children}
+        </div>
+      )}
       {/* Show splash overlay on top */}
       {showSplash && <Splash ready={ready} />}
     </>

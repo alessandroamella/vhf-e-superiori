@@ -190,6 +190,48 @@
     "shareOnSocialMedia": "Aqsam fuq il-midja soċjali",
     "poweredBy": "Bil-kburija mħaddma minn"
   },
+  "rankings": {
+    "filterByEvent": "Iffiltra skont l-Avveniment",
+    "annualRankings": "Klassifiki Annwali - sena {{year}}",
+    "qsoLoadError": "Żball fit-tagħbija tal-QSOs",
+    "pageTitle": {
+      "event": "{{name}} - Klassifiki - VHF u aktar",
+      "year": "Sena {{year}} - Klassifiki - VHF u aktar"
+    },
+    "qsoModal": {
+      "title": "QSOs ta'",
+      "close": "Agħlaq",
+      "table": {
+        "activator": "Attivatur",
+        "callsign": "Sinjal tas-Sejħa",
+        "date": "Data",
+        "frequency": "Frekwenza",
+        "mode": "Mod",
+        "locator": "Lokatur",
+        "rst": "RST",
+        "error": "-- żball --"
+      }
+    },
+    "mainTitle_event": "Klassifiki għal",
+    "mainTitle_year": "Klassifiki għas-sena",
+    "tabs": {
+      "hunters": "Kaċċaturi",
+      "activators": "Attivaturi"
+    },
+    "rankingTitle": "Klassifika {{type}}",
+    "table": {
+      "position": "Pożizzjoni",
+      "callsign": "Sinjal tas-Sejħa",
+      "points": "Punti"
+    },
+    "noQsosFound": "Ma nstab l-ebda QSO",
+    "social": {
+      "title_event": "Klassifiki {{name}} - VHF u aktar",
+      "title_year": "Klassifiki {{year}} - VHF u aktar",
+      "bodyEvent": "Klassifiki tal-avveniment {{name}} - {{date}} - VHF u aktar",
+      "bodyYear": "Klassifiki għas-sena {{year}} - VHF u aktar"
+    }
+  },
   "errors": {
     "USER_NOT_FOUND": "Utent ma nstabx. Jista' jkun tħassar",
     "INVALID_PW": "Password invalida",

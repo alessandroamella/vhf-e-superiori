@@ -14,6 +14,9 @@
     "Hunters receive 2 points for contacting an Activator and 1 point for all other connections."
   ],
   "event": "The event is not a competition but aims to increase the number of stations operating on VHF e Superiori bands in a participatory, non-competitive spirit.",
+  "shareMap": "Share Map",
+  "clickAgain": "Click Again",
+  "loading": "Loading...",
   "calendar": "Calendar",
   "edition": "Edition",
   "band": "Band",
@@ -206,7 +209,6 @@
     "yourMap": "Your Map",
     "generatedQsoMap": "Generated QSO Map",
     "downloadMap": "Download Map",
-    "shareMap": "Share Map",
     "shareMapText": "I generated my QSO map from ADIF on vhfesuperiori.eu!",
     "shareMapTextBody": "Hi! I just generated a beautiful map of my QSOs from ADIF for {event} on vhfesuperiori.eu. You can do it too!",
     "shareApiNotSupported": "The native sharing function is not supported by your browser, you can download the image.",
@@ -219,6 +221,48 @@
     "yourGeneratedMap": "Your Generated Map",
     "shareOnSocialMedia": "Share on social media",
     "poweredBy": "Proudly powered by"
+  },
+  "rankings": {
+    "filterByEvent": "Filter by Event",
+    "annualRankings": "Annual Rankings - year {{year}}",
+    "qsoLoadError": "Error loading QSOs",
+    "pageTitle": {
+      "event": "{{name}} - Rankings - VHF and up",
+      "year": "Year {{year}} - Rankings - VHF and up"
+    },
+    "qsoModal": {
+      "title": "QSOs of",
+      "close": "Close",
+      "table": {
+        "activator": "Activator",
+        "callsign": "Callsign",
+        "date": "Date",
+        "frequency": "Frequency",
+        "mode": "Mode",
+        "locator": "Locator",
+        "rst": "RST",
+        "error": "-- error --"
+      }
+    },
+    "mainTitle_event": "Rankings for",
+    "mainTitle_year": "Rankings for the year",
+    "tabs": {
+      "hunters": "Hunters",
+      "activators": "Activators"
+    },
+    "rankingTitle": "{{type}} Ranking",
+    "table": {
+      "position": "Position",
+      "callsign": "Callsign",
+      "points": "Points"
+    },
+    "noQsosFound": "No QSOs found",
+    "social": {
+      "title_event": "{{name}} Rankings - VHF and up",
+      "title_year": "{{year}} Rankings - VHF and up",
+      "bodyEvent": "Rankings for the event {{name}} - {{date}} - VHF and up",
+      "bodyYear": "Rankings for the year {{year}} - VHF and up"
+    }
   },
   "errors": {
     "USER_NOT_FOUND": "User not found. It might have been deleted",

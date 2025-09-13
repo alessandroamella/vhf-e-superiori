@@ -581,7 +581,7 @@ const GenerateMapPublicPage = () => {
                       className="flex-1 sm:flex-none"
                     >
                       <FaShareAlt className="mr-2 mt-[3px]" />
-                      {t("generateMap.shareMap")}
+                      {t("shareMap")}
                     </Button>
                   </div>
 

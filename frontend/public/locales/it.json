@@ -13,7 +13,10 @@
     "Per gli Attivatori 2 punti per ogni collegamento.",
     "Per i Cacciatori 2 punti se collegano un Attivatore e 1 punto per tutti gli altri collegamenti."
   ],
+  "shareMap": "Condividi mappa",
+  "clickAgain": "Clicca di nuovo",
   "event": "L'evento non è una gara ma ha lo scopo di aumentare il numero di stazioni operanti sulle bande VHF e Superiori con uno spirito partecipativo e non competitivo.",
+  "loading": "Caricamento...",
   "calendar": "Calendario",
   "edition": "Edizione",
   "band": "Banda",
@@ -206,7 +209,6 @@
     "yourMap": "La tua Mappa",
     "generatedQsoMap": "Mappa QSO Generata",
     "downloadMap": "Scarica mappa",
-    "shareMap": "Condividi mappa",
     "shareMapText": "Ho generato la mia mappa QSO da ADIF su vhfesuperiori.eu!",
     "shareMapTextBody": "Ciao! Ho appena generato una mappa dei miei QSO da ADIF per {event} su vhfesuperiori.eu. Puoi farlo anche tu!",
     "shareApiNotSupported": "La funzione di condivisione nativa non è supportata dal tuo browser, puoi scaricare l'immagine.",
@@ -221,6 +223,48 @@
     "poweredBy": "Sviluppato da",
     "dropAdifFile": "Rilascia qui il tuo file ADIF...",
     "dragOrClickAdif": "Trascina qui il tuo file ADIF, o clicca per selezionarlo."
+  },
+  "rankings": {
+    "filterByEvent": "Filtra per Evento",
+    "annualRankings": "Classifiche annuali - anno {{year}}",
+    "qsoLoadError": "Errore nel caricamento dei QSO",
+    "pageTitle": {
+      "event": "{{name}} - Classifiche - VHF e superiori",
+      "year": "Anno {{year}} - Classifiche - VHF e superiori"
+    },
+    "qsoModal": {
+      "title": "QSO di",
+      "close": "Chiudi",
+      "table": {
+        "activator": "Attivatore",
+        "callsign": "Nominativo",
+        "date": "Data",
+        "frequency": "Frequenza",
+        "mode": "Modo",
+        "locator": "Locatore",
+        "rst": "RST",
+        "error": "-- errore --"
+      }
+    },
+    "mainTitle_event": "Classifiche di",
+    "mainTitle_year": "Classifiche dell'anno",
+    "tabs": {
+      "hunters": "Cacciatori",
+      "activators": "Attivatori"
+    },
+    "rankingTitle": "Classifica {{type}}",
+    "table": {
+      "position": "Posizione",
+      "callsign": "Nominativo",
+      "points": "Punti"
+    },
+    "noQsosFound": "Nessun collegamento trovato",
+    "social": {
+      "title_event": "Classifiche {{name}} - VHF e superiori",
+      "title_year": "Classifiche {{year}} - VHF e superiori",
+      "bodyEvent": "Classifiche dell'evento {{name}} - {{date}} - VHF e superiori",
+      "bodyYear": "Classifiche dell'anno {{year}} - VHF e superiori"
+    }
   },
   "errors": {
     "USER_NOT_FOUND": "Utente non trovato. Potrebbe essere stato cancellato",

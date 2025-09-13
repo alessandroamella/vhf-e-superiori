@@ -3,12 +3,15 @@ import { saveAs } from "file-saver";
 import { Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FaShareAlt, FaWhatsapp } from "react-icons/fa";
 import { getErrorStr } from "../shared";
 
 const ShareMapBtn = ({ event, qsos, user, setAlert }) => {
   const [isLoadingShare, setIsLoadingShare] = useState(false);
   const [mustClickAgain, setMustClickAgain] = useState(false);
+
+  const { t } = useTranslation();
 
   const canShare = useMemo(() => {
     return !!navigator.canShare;
@@ -88,10 +91,10 @@ const ShareMapBtn = ({ event, qsos, user, setAlert }) => {
             <FaShareAlt className="mr-2 mt-[4px]" />
           )}{" "}
           {isLoadingShare
-            ? "Caricamento..."
+            ? t("loading")
             : mustClickAgain
-              ? "Clicca di nuovo"
-              : "Condividi mappa"}
+              ? t("clickAgain")
+              : t("shareMap")}
         </Button>
       </div>
     )
