@@ -236,7 +236,7 @@
   "beacons": {
     "pageTitle": "Balises - VHF e Superiori",
     "add": "Ajouter une balise",
-    "bandTitle": "Bande {band} MHz",
+    "bandTitle": "Bande {{band}} MHz",
     "table": {
       "callsign": "Indicatif",
       "name": "Nom",
@@ -249,7 +249,7 @@
       "qtf": "QTF",
       "power": "Puissance"
     },
-    "loadError": "Erreur lors du chargement des balises : {error}",
+    "loadError": "Erreur lors du chargement des balises : {{error}}",
     "noBeacons": "Aucune balise trouvée"
   },
   "errors": {

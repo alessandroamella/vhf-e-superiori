@@ -235,7 +235,7 @@
   "beacons": {
     "pageTitle": "Beacons - VHF e Superiori",
     "add": "Żid beacon",
-    "bandTitle": "Banda {band} MHz",
+    "bandTitle": "Banda {{band}} MHz",
     "table": {
       "callsign": "Sinjal tas-sejħa",
       "name": "Isem",
@@ -248,7 +248,7 @@
       "qtf": "QTF",
       "power": "Qawwa"
     },
-    "loadError": "Żball fit-tagħbija tal-beacons: {error}",
+    "loadError": "Żball fit-tagħbija tal-beacons: {{error}}",
     "noBeacons": "L-ebda beacon misjub"
   },
   "errors": {

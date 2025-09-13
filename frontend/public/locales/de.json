@@ -236,7 +236,7 @@
   "beacons": {
     "pageTitle": "Baken - VHF e Superiori",
     "add": "Bake hinzufügen",
-    "bandTitle": "Band {band} MHz",
+    "bandTitle": "Band {{band}} MHz",
     "table": {
       "callsign": "Rufzeichen",
       "name": "Name",
@@ -249,7 +249,7 @@
       "qtf": "QTF",
       "power": "Leistung"
     },
-    "loadError": "Fehler beim Laden der Baken: {error}",
+    "loadError": "Fehler beim Laden der Baken: {{error}}",
     "noBeacons": "Keine Baken gefunden"
   },
   "errors": {

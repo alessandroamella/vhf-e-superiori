@@ -269,7 +269,7 @@
   "beacons": {
     "pageTitle": "Beacon - VHF e Superiori",
     "add": "Aggiungi beacon",
-    "bandTitle": "Banda {band} MHz",
+    "bandTitle": "Banda {{band}} MHz",
     "table": {
       "callsign": "Nominativo",
       "name": "Nome",
@@ -282,7 +282,7 @@
       "qtf": "QTF",
       "power": "Potenza"
     },
-    "loadError": "Errore nel caricamento dei beacon: {error}",
+    "loadError": "Errore nel caricamento dei beacon: {{error}}",
     "noBeacons": "Nessun beacon presente"
   },
   "errors": {

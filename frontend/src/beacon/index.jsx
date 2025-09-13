@@ -106,7 +106,7 @@ const BeaconHomepage = () => {
               </ReactPlaceholder>
             }
             {bands.map((band) => (
-              <div key={band} className="mt-4">
+              <div key={{ band }} className="mt-4">
                 <ReactPlaceholder
                   showLoadingAnimation
                   type="text"
