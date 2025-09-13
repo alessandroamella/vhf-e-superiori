@@ -155,7 +155,7 @@ const Header = () => {
           {/* giallo con testo nero (bianco in dark) */}
           <Link
             to="/generate-map"
-            className="bg-yellow-400 text-black dark:text-white font-bold px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors w-full text-center block"
+            className="bg-[#FFFE69] text-black font-bold px-4 py-2 rounded-lg hover:bg-[#dedd52] transition-colors w-full text-center block"
           >
             {t("generateMap.generateYourMap")}
           </Link>
