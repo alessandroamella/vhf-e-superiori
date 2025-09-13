@@ -86,10 +86,7 @@ const AppRoutes = () => {
               <Route path="/blog/:id" element={<BlogPostViewer />} />
               <Route path="/antenne-gianni" element={<AntenneGianni />} />
               {/* NUOVA ROTTA */}
-              <Route
-                path="/generate-adif-map"
-                element={<GenerateMapPublicPage />}
-              />
+              <Route path="/generate-map" element={<GenerateMapPublicPage />} />
               <Route path="*" element={<NotFoundPage />} />
               {/* <Route
               path="contacts/:contactId"

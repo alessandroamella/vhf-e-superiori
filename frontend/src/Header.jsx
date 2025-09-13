@@ -149,7 +149,7 @@ const Header = () => {
         )}
         <LinkButton to="/rankings">{t("scoreboards")}</LinkButton>
         <div className="relative col-span-2 lg:col-span-1">
-          <LinkButton to="/generate-adif-map">
+          <LinkButton to="/generate-map">
             {t("generateMap.generateYourMap")}
           </LinkButton>
           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse z-10">
