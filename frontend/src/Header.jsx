@@ -6,7 +6,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link, useLocation } from "react-router";
 import { UserContext } from "./App";
 import Flags from "./Flags";
-import AirscoutBtn from "./homepage/AirscoutBtn";
+import LogoBtns from "./homepage/LogoBtns";
 
 const LinkButton = ({ to, children, keepCurrent }) => {
   const location = useLocation();
@@ -92,20 +92,8 @@ const Header = () => {
                 <Flags />
               </div>
             </div>
-            {/* AirScout Italia and Progetti antenne buttons on same row */}
-            <div className="flex gap-2 md:gap-4 md:justify-start">
-              <AirscoutBtn />
-
-              <Button
-                as={Link}
-                to="/antenne-gianni"
-                className="bg-[#A0CFE7] m-0 p-0 hover:bg-[##87b0c4] dark:bg-[#6b8c9c] dark:hover:bg-[#536c78] text-black dark:text-white font-bold uppercase min-w-[120px]"
-              >
-                <div className="flex flex-col items-center justify-center leading-tight">
-                  <span className="tracking-wide">Progetti antenne Yagi</span>
-                  <span className="tracking-widest">I4GBZ</span>
-                </div>
-              </Button>
+            <div className="hidden md:block">
+              <LogoBtns />
             </div>
           </div>
         </div>
@@ -142,6 +130,9 @@ const Header = () => {
         </div>
       </div>
       <div className="mt-4 grid grid-cols-2 lg:grid-cols-5 gap-2 justify-items-center">
+        <div className="block md:hidden col-span-2 w-full">
+          <LogoBtns />
+        </div>
         <LinkButton to="/social">{t("photoVideo")}</LinkButton>
         <LinkButton to="/beacon">{t("beacon")}</LinkButton>
         {user === false ? (
@@ -157,7 +148,7 @@ const Header = () => {
           </LinkButton>
         )}
         <LinkButton to="/rankings">{t("scoreboards")}</LinkButton>
-        <div className="relative">
+        <div className="relative col-span-2 lg:col-span-1">
           <LinkButton to="/generate-adif-map">
             {t("generateMap.generateYourMap")}
           </LinkButton>
