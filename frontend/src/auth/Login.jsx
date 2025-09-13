@@ -1,8 +1,8 @@
+import { Turnstile } from "@marsidev/react-turnstile";
 import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
 import { useContext, useEffect, useRef, useState } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router";
@@ -42,6 +42,7 @@ const Login = () => {
 
   const { user, setUser } = useContext(UserContext);
 
+  const alertRef = useRef();
   const captchaRef = useRef();
 
   async function sendResetPw(e) {
@@ -50,7 +51,7 @@ const Login = () => {
     let token;
 
     try {
-      token = captchaRef.current.getValue();
+      token = captchaRef.current.getResponse();
     } catch (err) {
       console.log("captcha error", err);
       loginFormRef.current?.scrollIntoView({
@@ -141,6 +142,23 @@ const Login = () => {
 
   const loginInput = useRef(null);
 
+  async function handleReCaptchaError(err) {
+    console.log("ReCAPTCHA error", err, "\nReCAPTCHA ref:", captchaRef.current);
+
+    if (captchaRef.current?.isExpired()) {
+      // Reset if expired
+      captchaRef.current.reset();
+      setAlert(t("verifyNotRobot"));
+    } else {
+      setAlert(t("recaptchaError"));
+    }
+    setTimeout(() => {
+      alertRef.current?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 100);
+  }
+
   return (
     <>
       <Helmet>
@@ -176,6 +194,7 @@ const Login = () => {
               className="mb-6 dark:text-black"
               color={alert.color}
               onDismiss={() => setAlert(null)}
+              ref={alertRef}
             >
               <span>{alert.msg}</span>
             </Alert>
@@ -259,7 +278,11 @@ const Login = () => {
                   autoFocus
                 />
                 <div className="my-4" />
-                <ReCAPTCHA sitekey={recaptchaSiteKey} ref={captchaRef} />
+                <Turnstile
+                  siteKey={recaptchaSiteKey}
+                  ref={captchaRef}
+                  onError={handleReCaptchaError}
+                />
                 <div className="my-4" />
                 <div className="flex justify-center gap-4">
                   <Button

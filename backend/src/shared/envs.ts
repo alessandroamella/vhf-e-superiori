@@ -12,7 +12,7 @@ export const envs = cleanEnv(
     MONGODB_URI: str(),
     QRZ_USERNAME: str(),
     QRZ_PASSWORD: str(),
-    RECAPTCHA_SECRET: str(),
+    TURNSTILE_SECRET: str(),
     MAIL_SERVER: str(),
     MAIL_USERNAME: str(),
     MAIL_PASSWORD: str(),

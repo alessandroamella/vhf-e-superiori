@@ -1,3 +1,4 @@
+import { Turnstile } from "@marsidev/react-turnstile";
 import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Avatar, Card, Label, TextInput, Tooltip } from "flowbite-react";
@@ -12,7 +13,6 @@ import {
 } from "react";
 import { useCookies } from "react-cookie";
 import { usePlacesWidget } from "react-google-autocomplete";
-import ReCAPTCHA from "react-google-recaptcha";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { FaArrowAltCircleRight, FaExternalLinkAlt } from "react-icons/fa";
@@ -230,7 +230,7 @@ const Signup = () => {
 
     if (!recaptchaValue) {
       try {
-        recaptchaValue = captchaRef.current.getValue();
+        recaptchaValue = captchaRef.current.getResponse();
       } catch (err) {
         return handleReCaptchaError(err);
       }
@@ -353,47 +353,11 @@ const Signup = () => {
 
   async function handleReCaptchaError(err) {
     console.log("ReCAPTCHA error", err, "\nReCAPTCHA ref:", captchaRef.current);
-    if (
-      err instanceof Error &&
-      err.message.includes("reCAPTCHA client element has been removed")
-    ) {
-      let widgetId;
-      try {
-        const res = await window.grecaptcha.getResponse();
-        console.log("getResponse", res);
-        return signup(null, res);
-      } catch (err) {
-        console.log("getResponse failed:", err);
-      }
-      try {
-        console.log("getWidgetId");
-        widgetId = captchaRef.current.getWidgetId();
-        console.log("widgetId", widgetId);
-      } catch (err) {
-        console.log("getWidgetId failed:", err);
-      }
-      try {
-        console.log("getWidgetId");
-        console.log("resetting ReCAPTCHA");
-        window.grecaptcha.reset(widgetId);
-        console.log("ReCAPTCHA reset");
-      } catch (err) {
-        console.log("ReCAPTCHA reset failed:", err, "\ntrying to re-render it");
-        try {
-          console.log("re-rendering ReCAPTCHA");
-          window.grecaptcha.render(
-            document.querySelector(".recaptcha-backup-wrapper"),
-            {
-              sitekey: recaptchaSiteKey,
-              theme:
-                localStorage.getItem("darkMode") === "true" ? "dark" : "light",
-            },
-          );
-          console.log("ReCAPTCHA re-rendered");
-        } catch (err) {
-          console.log("ReCAPTCHA re-render failed:", err);
-        }
-      }
+
+    if (captchaRef.current?.isExpired()) {
+      // Reset if expired
+      captchaRef.current.reset();
+      setAlert(t("verifyNotRobot"));
     } else {
       setAlert(t("recaptchaError"));
     }
@@ -648,8 +612,8 @@ const Signup = () => {
             )}
             <div className="my-4" />
             <div className="recaptcha-backup-wrapper" />
-            <ReCAPTCHA
-              sitekey={recaptchaSiteKey}
+            <Turnstile
+              siteKey={recaptchaSiteKey}
               ref={captchaRef}
               onError={handleReCaptchaError}
             />
