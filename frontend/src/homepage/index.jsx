@@ -76,12 +76,6 @@ const Homepage = () => {
     }
   }, [searchParams]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setSplashPlayed(true);
-    }, 4000 + 3500);
-  }, []);
-
   const navigate = useNavigate();
 
   useEffect(() => {
