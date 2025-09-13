@@ -1,216 +1,216 @@
-# Privacy Policy
+# Informativa sulla Privacy
 
-Last updated: March 05, 2024
+Ultimo aggiornamento: 05 marzo 2024
 
-This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.
+La presente Informativa sulla Privacy descrive le Nostre politiche e procedure sulla raccolta, l'uso e la divulgazione delle Vostre informazioni quando utilizzate il Servizio e Vi informa sui Vostri diritti alla privacy e su come la legge Vi protegge.
 
-We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy. This Privacy Policy has been created with the help of the [Privacy Policy Generator](https://www.privacypolicies.com/privacy-policy-generator/).
-You also agree to the Terms and Conditions of the Service, available at [Terms and Conditions](https://www.vhfesuperiori.eu/document/tos).
+Utilizziamo i Vostri dati personali per fornire e migliorare il Servizio. Utilizzando il Servizio, l'Utente accetta la raccolta e l'utilizzo delle informazioni in conformità con la presente Informativa sulla Privacy. La presente Informativa sulla Privacy è stata creata con l'aiuto del [Generatore di Informative sulla Privacy](https://www.privacypolicies.com/privacy-policy-generator/).
+Accettate anche i Termini e le Condizioni del Servizio, disponibili su [Termini e Condizioni](https://www.vhfesuperiori.eu/document/tos).
 
-## Interpretation and Definitions
+## Interpretazione e Definizioni
 
-### Interpretation
+### Interpretazione
 
-The words of which the initial letter is capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.
+Le parole la cui lettera iniziale è maiuscola hanno un significato definito alle seguenti condizioni. Le seguenti definizioni avranno lo stesso significato indipendentemente dal fatto che appaiano al singolare o al plurale.
 
-### Definitions
+### Definizioni
 
-For the purposes of this Privacy Policy:
+Ai fini della presente Informativa sulla Privacy:
 
--   **Account** means a unique account created for You to access our Service or parts of our Service.
--   **Affiliate** means an entity that controls, is controlled by or is under common control with a party, where "control" means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for election of directors or other managing authority.
+-   **Account** si intende un account unico creato per Voi per accedere al nostro Servizio o a parti del nostro Servizio.
+-   **Affiliata** si intende un'entità che controlla, è controllata da o è sotto il controllo comune di una parte, dove per "controllo" si intende la proprietà del 50% o più delle azioni, delle partecipazioni o di altri titoli che danno diritto di voto per l'elezione di amministratori o di altra autorità di gestione.
 
--   **Company** (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to VHF e superiori.
+-   **Società** (indicata come "la Società", "Noi", "Ci" o "Nostro" nel presente Accordo) si riferisce a VHF e superiori.
 
--   **Cookies** are small files that are placed on Your computer, mobile device or any other device by a website, containing the details of Your browsing history on that website among its many uses.
+-   **Cookie** sono piccoli file che vengono inseriti nel Vostro computer, dispositivo mobile o qualsiasi altro dispositivo da un sito web, contenenti i dettagli della Vostra cronologia di navigazione su quel sito web tra i suoi molteplici usi.
 
--   **Country** refers to: Italy
+-   **Paese** si riferisce a: Italia
 
--   **Device** means any device that can access the Service such as a computer, a cellphone or a digital tablet.
+-   **Dispositivo** si intende qualsiasi dispositivo in grado di accedere al Servizio, come un computer, un telefono cellulare o un tablet digitale.
 
--   **Personal Data** is any information that relates to an identified or identifiable individual.
+-   **Dati Personali** sono qualsiasi informazione che si riferisce a un individuo identificato o identificabile.
 
--   **Service** refers to the Website.
+-   **Servizio** si riferisce al Sito Web.
 
--   **Service Provider** means any natural or legal person who processes the data on behalf of the Company. It refers to third-party companies or individuals employed by the Company to facilitate the Service, to provide the Service on behalf of the Company, to perform services related to the Service or to assist the Company in analyzing how the Service is used.
+-   **Fornitore di Servizi** si intende qualsiasi persona fisica o giuridica che elabora i dati per conto della Società. Si riferisce a società di terze parti o a persone fisiche impiegate dalla Società per facilitare il Servizio, per fornire il Servizio per conto della Società, per eseguire servizi relativi al Servizio o per assistere la Società nell'analisi di come viene utilizzato il Servizio.
 
--   **Usage Data** refers to data collected automatically, either generated by the use of the Service or from the Service infrastructure itself (for example, the duration of a page visit).
+-   **Dati di Utilizzo** si riferiscono ai dati raccolti automaticamente, generati dall'uso del Servizio o dall'infrastruttura del Servizio stessa (ad esempio, la durata di una visita a una pagina).
 
--   **Website** refers to VHF e superiori, accessible from [https://www.vhfesuperiori.eu/](https://www.vhfesuperiori.eu/)
+-   **Sito Web** si riferisce a VHF e superiori, accessibile da [https://www.vhfesuperiori.eu/](https://www.vhfesuperiori.eu/)
 
--   **Webmaster** refers to the individual or individuals responsible for maintaining and managing the platform. You may contact the Webmaster at the email address provided in the "Contact Us" section of this document.
+-   **Webmaster** si riferisce alla persona o alle persone responsabili della manutenzione e della gestione della piattaforma. È possibile contattare il Webmaster all'indirizzo e-mail fornito nella sezione "Contattaci" di questo documento.
 
--   **You** means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.
+-   **Voi** si intende la persona che accede o utilizza il Servizio, o la società, o altra persona giuridica per conto della quale tale persona accede o utilizza il Servizio, a seconda dei casi.
 
-## Collecting and Using Your Personal Data
+## Raccolta e utilizzo dei Vostri Dati Personali
 
-### Types of Data Collected
+### Tipi di Dati Raccolti
 
-#### Personal Data
+#### Dati Personali
 
-While using Our Service, We may ask You to provide Us with certain personally identifiable information that can be used to contact or identify You. Personally identifiable information may include, but is not limited to:
+Durante l'utilizzo del Nostro Servizio, potremmo chiederVi di fornirci alcune informazioni di identificazione personale che possono essere utilizzate per contattarVi o identificarVi. Le informazioni di identificazione personale possono includere, ma non sono limitate a:
 
--   Ham radio callsign
--   Locator
--   Email address
--   First name and last name
--   Phone number
--   Address, State, Province, ZIP/Postal code, City
+-   Nominativo radioamatoriale
+-   Locatore
+-   Indirizzo email
+-   Nome e cognome
+-   Numero di telefono
+-   Indirizzo, Stato, Provincia, CAP/Codice postale, Città
 
--   Usage Data
+-   Dati di Utilizzo
 
-#### Usage Data
+#### Dati di Utilizzo
 
-Usage Data is collected automatically when using the Service.
+I Dati di Utilizzo vengono raccolti automaticamente durante l'utilizzo del Servizio.
 
-Usage Data may include information such as Your Device's Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data.
+I Dati di Utilizzo possono includere informazioni quali l'indirizzo del Protocollo Internet del Vostro Dispositivo (ad es. indirizzo IP), il tipo di browser, la versione del browser, le pagine del nostro Servizio che visitate, l'ora e la data della Vostra visita, il tempo trascorso su tali pagine, identificatori univoci del dispositivo e altri dati diagnostici.
 
-When You access the Service by or through a mobile device, We may collect certain information automatically, including, but not limited to, the type of mobile device You use, Your mobile device unique ID, the IP address of Your mobile device, Your mobile operating system, the type of mobile Internet browser You use, unique device identifiers and other diagnostic data.
+Quando accedete al Servizio da o tramite un dispositivo mobile, potremmo raccogliere automaticamente alcune informazioni, tra cui, a titolo esemplificativo ma non esaustivo, il tipo di dispositivo mobile che utilizzate, l'ID univoco del Vostro dispositivo mobile, l'indirizzo IP del Vostro dispositivo mobile, il Vostro sistema operativo mobile, il tipo di browser Internet mobile che utilizzate, identificatori univoci del dispositivo e altri dati diagnostici.
 
-We may also collect information that Your browser sends whenever You visit our Service or when You access the Service by or through a mobile device.
+Potremmo anche raccogliere informazioni che il Vostro browser invia ogni volta che visitate il nostro Servizio o quando accedete al Servizio da o tramite un dispositivo mobile.
 
-#### Tracking Technologies and Cookies
+#### Tecnologie di Tracciamento e Cookie
 
-We use Cookies and similar tracking technologies to track the activity on Our Service and store certain information. Tracking technologies used are beacons, tags, and scripts to collect and track information and to improve and analyze Our Service. The technologies We use may include:
+Utilizziamo Cookie e tecnologie di tracciamento simili per tracciare l'attività sul Nostro Servizio e memorizzare determinate informazioni. Le tecnologie di tracciamento utilizzate sono beacon, tag e script per raccogliere e tracciare informazioni e per migliorare e analizzare il Nostro Servizio. Le tecnologie che utilizziamo possono includere:
 
--   **Cookies or Browser Cookies.** A cookie is a small file placed on Your Device. You can instruct Your browser to refuse all Cookies or to indicate when a Cookie is being sent. However, if You do not accept Cookies, You may not be able to use some parts of our Service. Unless you have adjusted Your browser setting so that it will refuse Cookies, our Service may use Cookies.
--   **Web Beacons.** Certain sections of our Service and our emails may contain small electronic files known as web beacons (also referred to as clear gifs, pixel tags, and single-pixel gifs) that permit the Company, for example, to count users who have visited those pages or opened an email and for other related website statistics (for example, recording the popularity of a certain section and verifying system and server integrity).
+-   **Cookie o Cookie del Browser.** Un cookie è un piccolo file inserito sul Vostro Dispositivo. Potete istruire il Vostro browser a rifiutare tutti i Cookie o a indicare quando un Cookie viene inviato. Tuttavia, se non accettate i Cookie, potreste non essere in grado di utilizzare alcune parti del nostro Servizio. A meno che non abbiate regolato le impostazioni del Vostro browser in modo da rifiutare i Cookie, il nostro Servizio potrebbe utilizzare i Cookie.
+-   **Web Beacon.** Alcune sezioni del nostro Servizio e le nostre e-mail possono contenere piccoli file elettronici noti come web beacon (chiamati anche clear gif, pixel tag e single-pixel gif) che consentono alla Società, ad esempio, di contare gli utenti che hanno visitato tali pagine o aperto un'e-mail e per altre statistiche relative al sito web (ad esempio, registrando la popolarità di una determinata sezione e verificando l'integrità del sistema e del server).
 
-Cookies can be "Persistent" or "Session" Cookies. Persistent Cookies remain on Your personal computer or mobile device when You go offline, while Session Cookies are deleted as soon as You close Your web browser. Learn more about cookies on the [Privacy Policies website](https://www.privacypolicies.com/blog/privacy-policy-template/#Use_Of_Cookies_Log_Files_And_Tracking) article.
+I cookie possono essere "Persistenti" o di "Sessione". I Cookie Persistenti rimangono sul Vostro computer personale o dispositivo mobile quando andate offline, mentre i Cookie di Sessione vengono eliminati non appena chiudete il Vostro browser web. Per saperne di più sui cookie, consultate l'articolo del sito [Privacy Policies](https://www.privacypolicies.com/blog/privacy-policy-template/#Use_Of_Cookies_Log_Files_And_Tracking).
 
-We use both Session and Persistent Cookies for the purposes set out below:
+Utilizziamo sia i Cookie di Sessione che quelli Persistenti per gli scopi indicati di seguito:
 
--   **Necessary / Essential Cookies**
+-   **Cookie Necessari / Essenziali**
 
-    Type: Session Cookies
+    Tipo: Cookie di Sessione
 
-    Administered by: Us
+    Amministrati da: Noi
 
-    Purpose: These Cookies are essential to provide You with services available through the Website and to enable You to use some of its features. They help to authenticate users and prevent fraudulent use of user accounts. Without these Cookies, the services that You have asked for cannot be provided, and We only use these Cookies to provide You with those services.
+    Scopo: Questi Cookie sono essenziali per fornirVi i servizi disponibili attraverso il Sito Web e per consentirVi di utilizzare alcune delle sue funzionalità. Aiutano ad autenticare gli utenti e a prevenire l'uso fraudolento degli account utente. Senza questi Cookie, i servizi che avete richiesto non possono essere forniti e utilizziamo questi Cookie solo per fornirVi tali servizi.
 
--   **Functionality Cookies**
+-   **Cookie di Funzionalità**
 
-    Type: Persistent Cookies
+    Tipo: Cookie Persistenti
 
-    Administered by: Us
+    Amministrati da: Noi
 
-    Purpose: These Cookies allow us to remember choices You make when You use the Website, such as remembering your login details or language preference. The purpose of these Cookies is to provide You with a more personal experience and to avoid You having to re-enter your preferences every time You use the Website, or save your entered data in forms for the next time you visit the website, in order to make the user experience more comfortable.
+    Scopo: Questi Cookie ci consentono di ricordare le scelte che fate quando utilizzate il Sito Web, come ricordare i Vostri dati di accesso o la preferenza della lingua. Lo scopo di questi Cookie è quello di fornirVi un'esperienza più personale e di evitarVi di dover reinserire le Vostre preferenze ogni volta che utilizzate il Sito Web, o di salvare i dati inseriti nei moduli per la Vostra prossima visita, al fine di rendere l'esperienza utente più confortevole.
 
--   **Google Analytics Cookies**
+-   **Cookie di Google Analytics**
 
-    Type: Persistent Cookies
+    Tipo: Cookie Persistenti
 
-    Administered by: Google
+    Amministrati da: Google
 
-    Purpose: These Cookies are used to collect information about how You interact with our Website. We use the information to compile reports and to help us improve our Website. The Cookies collect information in a way that does not directly identify anyone, including the number of visitors to the Website and blog, where visitors have come to the Website from and the pages they visited. If You'd like to opt out of Google Analytics tracking, please visit the [Google Analytics Opt-out Browser Add-on](https://tools.google.com/dlpage/gaoptout).
+    Scopo: Questi Cookie vengono utilizzati per raccogliere informazioni su come interagite con il nostro Sito Web. Utilizziamo le informazioni per compilare report e per aiutarci a migliorare il nostro Sito Web. I Cookie raccolgono informazioni in un modo che non identifica direttamente nessuno, incluso il numero di visitatori del Sito Web e del blog, da dove i visitatori sono arrivati al Sito Web e le pagine che hanno visitato. Se desiderate disattivare il tracciamento di Google Analytics, visitate il componente aggiuntivo del browser per la [disattivazione di Google Analytics](https://tools.google.com/dlpage/gaoptout).
 
-### Use of Your Personal Data
+### Utilizzo dei Vostri Dati Personali
 
-The Company may use Personal Data for the following purposes:
+La Società può utilizzare i Dati Personali per i seguenti scopi:
 
--   **To provide and maintain our Service**, including to monitor the usage of our Service.
--   **To manage Your Account:** to manage Your registration as a user of the Service. The Personal Data You provide can give You access to different functionalities of the Service that are available to You as a registered user.
--   **For the performance of a contract:** the development, compliance and undertaking of the purchase contract for the products, items or services You have purchased or of any other contract with Us through the Service.
--   **To contact You:** To contact You by email, telephone calls, SMS, or other equivalent forms of electronic communication, such as a mobile application's push notifications regarding updates or informative communications related to the functionalities, products or contracted services, including the security updates, when necessary or reasonable for their implementation.
--   **To provide You** with news, special offers and general information about other goods, services and events which we offer that are similar to those that you have already purchased or enquired about unless You have opted not to receive such information.
--   **To manage Your requests:** To attend and manage Your requests to Us.
+-   **Per fornire e mantenere il nostro Servizio**, incluso il monitoraggio dell'utilizzo del nostro Servizio.
+-   **Per gestire il Vostro Account:** per gestire la Vostra registrazione come utente del Servizio. I Dati Personali che fornite possono darVi accesso a diverse funzionalità del Servizio che sono disponibili per Voi come utente registrato.
+-   **Per l'esecuzione di un contratto:** lo sviluppo, l'adempimento e l'esecuzione del contratto di acquisto per i prodotti, gli articoli o i servizi che avete acquistato o di qualsiasi altro contratto con Noi attraverso il Servizio.
+-   **Per contattarVi:** per contattarVi tramite e-mail, telefonate, SMS o altre forme equivalenti di comunicazione elettronica, come le notifiche push di un'applicazione mobile riguardanti aggiornamenti o comunicazioni informative relative alle funzionalità, ai prodotti o ai servizi contrattati, inclusi gli aggiornamenti di sicurezza, quando necessario o ragionevole per la loro implementazione.
+-   **Per fornirVi** notizie, offerte speciali e informazioni generali su altri beni, servizi ed eventi che offriamo simili a quelli che avete già acquistato o richiesto, a meno che non abbiate scelto di non ricevere tali informazioni.
+-   **Per gestire le Vostre richieste:** per rispondere e gestire le Vostre richieste a Noi.
 
--   **For business transfers:** We may use Your information to evaluate or conduct a merger, divestiture, restructuring, reorganization, dissolution, or other sale or transfer of some or all of Our assets, whether as a going concern or as part of bankruptcy, liquidation, or similar proceeding, in which Personal Data held by Us about our Service users is among the assets transferred.
--   **For other purposes**: We may use Your information for other purposes, such as data analysis, identifying usage trends, determining the effectiveness of our promotional campaigns and to evaluate and improve our Service, products, services, marketing and your experience.
+-   **Per trasferimenti aziendali:** potremmo utilizzare le Vostre informazioni per valutare o condurre una fusione, cessione, ristrutturazione, riorganizzazione, scioglimento o altra vendita o trasferimento di alcuni o tutti i Nostri beni, sia come azienda in attività che come parte di un fallimento, liquidazione o procedimento simile, in cui i Dati Personali da Noi detenuti sugli utenti del nostro Servizio sono tra i beni trasferiti.
+-   **Per altri scopi**: potremmo utilizzare le Vostre informazioni per altri scopi, come l'analisi dei dati, l'identificazione delle tendenze di utilizzo, la determinazione dell'efficacia delle nostre campagne promozionali e per valutare e migliorare il nostro Servizio, i prodotti, i servizi, il marketing e la Vostra esperienza.
 
-We may share Your personal information in the following situations:
+Potremmo condividere le Vostre informazioni personali nelle seguenti situazioni:
 
--   **With Service Providers:** We may share Your personal information with Service Providers to monitor and analyze the use of our Service, to contact You.
--   **For business transfers:** We may share or transfer Your personal information in connection with, or during negotiations of, any merger, sale of Company assets, financing, or acquisition of all or a portion of Our business to another company.
--   **With Affiliates:** We may share Your information with Our affiliates, in which case we will require those affiliates to honor this Privacy Policy. Affiliates include Our parent company and any other subsidiaries, joint venture partners or other companies that We control or that are under common control with Us.
--   **With business partners:** We may share Your information with Our business partners to offer You certain products, services or promotions.
--   **With other users:** when You share personal information or otherwise interact in the public areas with other users, such information may be viewed by all users and may be publicly distributed outside.
--   **With Your consent**: We may disclose Your personal information for any other purpose with Your consent.
+-   **Con i Fornitori di Servizi:** Potremmo condividere le Vostre informazioni personali con i Fornitori di Servizi per monitorare e analizzare l'uso del nostro Servizio, per contattarVi.
+-   **Per trasferimenti aziendali:** Potremmo condividere o trasferire le Vostre informazioni personali in relazione a, o durante le negoziazioni di, qualsiasi fusione, vendita di beni della Società, finanziamento o acquisizione di tutta o parte della Nostra attività a un'altra società.
+-   **Con le Affiliate:** Potremmo condividere le Vostre informazioni con le Nostre affiliate, nel qual caso richiederemo a tali affiliate di onorare la presente Informativa sulla Privacy. Le affiliate includono la Nostra società madre e qualsiasi altra controllata, partner di joint venture o altre società che controlliamo o che sono sotto il nostro comune controllo.
+-   **Con i partner commerciali:** Potremmo condividere le Vostre informazioni con i Nostri partner commerciali per offrirVi determinati prodotti, servizi o promozioni.
+-   **Con altri utenti:** quando condividete informazioni personali o interagite in altro modo nelle aree pubbliche con altri utenti, tali informazioni possono essere visualizzate da tutti gli utenti e possono essere distribuite pubblicamente all'esterno.
+-   **Con il Vostro consenso**: Potremmo divulgare le Vostre informazioni personali per qualsiasi altro scopo con il Vostro consenso.
 
-### Retention of Your Personal Data
+### Conservazione dei Vostri Dati Personali
 
-The Company will retain Your Personal Data only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use Your Personal Data to the extent necessary to comply with our legal obligations (for example, if we are required to retain your data to comply with applicable laws), resolve disputes, and enforce our legal agreements and policies.
+La Società conserverà i Vostri Dati Personali solo per il tempo necessario agli scopi indicati nella presente Informativa sulla Privacy. Conserveremo e utilizzeremo i Vostri Dati Personali nella misura necessaria per adempiere ai nostri obblighi legali (ad esempio, se siamo tenuti a conservare i Vostri dati per conformarci alle leggi applicabili), risolvere controversie e far rispettare i nostri accordi e le nostre politiche legali.
 
-The Company will also retain Usage Data for internal analysis purposes. Usage Data is generally retained for a shorter period of time, except when this data is used to strengthen the security or to improve the functionality of Our Service, or We are legally obligated to retain this data for longer time periods.
+La Società conserverà inoltre i Dati di Utilizzo per scopi di analisi interna. I Dati di Utilizzo sono generalmente conservati per un periodo di tempo più breve, tranne quando questi dati vengono utilizzati per rafforzare la sicurezza o per migliorare la funzionalità del Nostro Servizio, o quando siamo legalmente obbligati a conservare questi dati per periodi di tempo più lunghi.
 
-### Transfer of Your Personal Data
+### Trasferimento dei Vostri Dati Personali
 
-Your information, including Personal Data, is processed at the Company's operating offices and in any other places where the parties involved in the processing are located. It means that this information may be transferred to — and maintained on — computers located outside of Your state, province, country or other governmental jurisdiction where the data protection laws may differ than those from Your jurisdiction.
+Le Vostre informazioni, inclusi i Dati Personali, vengono elaborate presso le sedi operative della Società e in qualsiasi altro luogo in cui si trovino le parti coinvolte nell'elaborazione. Ciò significa che queste informazioni possono essere trasferite e mantenute su computer situati al di fuori del Vostro stato, provincia, paese o altra giurisdizione governativa in cui le leggi sulla protezione dei dati possono essere diverse da quelle della Vostra giurisdizione.
 
-Your consent to this Privacy Policy followed by Your submission of such information represents Your agreement to that transfer.
+Il Vostro consenso alla presente Informativa sulla Privacy seguito dalla Vostra presentazione di tali informazioni rappresenta il Vostro accordo a tale trasferimento.
 
-The Company will take all steps reasonably necessary to ensure that Your data is treated securely and in accordance with this Privacy Policy and no transfer of Your Personal Data will take place to an organization or a country unless there are adequate controls in place including the security of Your data and other personal information.
+La Società adotterà tutte le misure ragionevolmente necessarie per garantire che i Vostri dati siano trattati in modo sicuro e in conformità con la presente Informativa sulla Privacy e nessun trasferimento dei Vostri Dati Personali avrà luogo verso un'organizzazione o un paese a meno che non vi siano controlli adeguati in atto, inclusa la sicurezza dei Vostri dati e di altre informazioni personali.
 
-### Delete Your Personal Data
+### Cancellazione dei Vostri Dati Personali
 
-You have the right to delete or request that We assist in deleting the Personal Data that We have collected about You.
+Avete il diritto di cancellare o richiedere che Noi Vi assistiamo nella cancellazione dei Dati Personali che abbiamo raccolto su di Voi.
 
-Our Service may give You the ability to delete certain information about You from within the Service.
+Il nostro Servizio potrebbe darVi la possibilità di cancellare determinate informazioni su di Voi dall'interno del Servizio.
 
-You may update, amend, or delete Your information at any time by signing in to Your Account, if you have one, and visiting the account settings section that allows you to manage Your personal information. You may also contact Us to request access to, correct, or delete any personal information that You have provided to Us.
+Potete aggiornare, modificare o cancellare le Vostre informazioni in qualsiasi momento accedendo al Vostro Account, se ne avete uno, e visitando la sezione delle impostazioni dell'account che Vi consente di gestire le Vostre informazioni personali. Potete anche contattarci per richiedere l'accesso, la correzione o la cancellazione di qualsiasi informazione personale che ci avete fornito.
 
-Please note, however, that We may need to retain certain information when we have a legal obligation or lawful basis to do so.
+Si prega di notare, tuttavia, che potremmo aver bisogno di conservare determinate informazioni quando abbiamo un obbligo legale o una base legale per farlo.
 
-### Disclosure of Your Personal Data
+### Divulgazione dei Vostri Dati Personali
 
-#### Business Transactions
+#### Transazioni Commerciali
 
-If the Company is involved in a merger, acquisition or asset sale, Your Personal Data may be transferred. We will provide notice before Your Personal Data is transferred and becomes subject to a different Privacy Policy.
+Se la Società è coinvolta in una fusione, acquisizione o vendita di beni, i Vostri Dati Personali potrebbero essere trasferiti. Forniremo un preavviso prima che i Vostri Dati Personali vengano trasferiti e diventino soggetti a una diversa Informativa sulla Privacy.
 
-#### Law enforcement
+#### Applicazione della legge
 
-Under certain circumstances, the Company may be required to disclose Your Personal Data if required to do so by law or in response to valid requests by public authorities (e.g. a court or a government agency).
+In determinate circostanze, la Società potrebbe essere tenuta a divulgare i Vostri Dati Personali se richiesto dalla legge o in risposta a richieste valide da parte di autorità pubbliche (ad es. un tribunale o un'agenzia governativa).
 
-#### Other legal requirements
+#### Altri requisiti legali
 
-The Company may disclose Your Personal Data in the good faith belief that such action is necessary to:
+La Società può divulgare i Vostri Dati Personali in buona fede ritenendo che tale azione sia necessaria per:
 
--   Comply with a legal obligation
--   Protect and defend the rights or property of the Company
--   Prevent or investigate possible wrongdoing in connection with the Service
--   Protect the personal safety of Users of the Service or the public
--   Protect against legal liability
+-   Adempiere a un obbligo legale
+-   Proteggere e difendere i diritti o la proprietà della Società
+-   Prevenire o indagare su possibili illeciti in relazione al Servizio
+-   Proteggere la sicurezza personale degli Utenti del Servizio o del pubblico
+-   Proteggersi da responsabilità legali
 
-### Security of Your Personal Data
+### Sicurezza dei Vostri Dati Personali
 
-The security of Your Personal Data is important to Us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While We strive to use commercially acceptable means to protect Your Personal Data, We cannot guarantee its absolute security.
+La sicurezza dei Vostri Dati Personali è importante per Noi, ma ricordate che nessun metodo di trasmissione su Internet o metodo di archiviazione elettronica è sicuro al 100%. Sebbene ci sforziamo di utilizzare mezzi commercialmente accettabili per proteggere i Vostri Dati Personali, non possiamo garantirne l'assoluta sicurezza.
 
-### Data Visibility to Administrators
+### Visibilità dei Dati agli Amministratori
 
-Your privacy is important to us. Please be aware that certain data you submit or generate on this platform, including personally identifiable information and posts, may be accessible to administrators and the Webmaster for the purpose of maintaining and managing the platform.
+La vostra privacy è importante per noi. Siate consapevoli che alcuni dati che inviate o generate su questa piattaforma, comprese le informazioni di identificazione personale e i post, possono essere accessibili agli amministratori e al Webmaster allo scopo di mantenere e gestire la piattaforma.
 
-By using this platform, you acknowledge and consent to the potential visibility of your data by administrators and the Webmaster in accordance with this privacy policy. Occasionally, a list of administrators may be provided on the homepage; however, please note that this list may not always be updated, and it is not guaranteed to include all individuals who have access to your data. If you have any concerns regarding the handling of your data, please contact us.
+Utilizzando questa piattaforma, riconoscete e acconsentite alla potenziale visibilità dei vostri dati da parte degli amministratori e del Webmaster in conformità con questa informativa sulla privacy. Occasionalmente, un elenco di amministratori può essere fornito sulla homepage; tuttavia, si prega di notare che questo elenco potrebbe non essere sempre aggiornato e non è garantito che includa tutte le persone che hanno accesso ai vostri dati. Se avete dubbi sulla gestione dei vostri dati, vi preghiamo di contattarci.
 
-### Obtaining Your Personal Data
+### Ottenere i Vostri Dati Personali
 
-You have the right to obtain a copy of Your Personal Data that We hold about You and to confirm that We are processing it lawfully.
+Avete il diritto di ottenere una copia dei Vostri Dati Personali che deteniamo su di Voi e di confermare che li stiamo trattando legalmente.
 
-Please contact the Webmaster to request access to Your Personal Data.
+Si prega di contattare il Webmaster per richiedere l'accesso ai Vostri Dati Personali.
 
-## Children's Privacy
+## Privacy dei Minori
 
-Our Service does not address anyone under the age of 13. We do not knowingly collect personally identifiable information from anyone under the age of 13. If You are a parent or guardian and You are aware that Your child has provided Us with Personal Data, please contact Us. If We become aware that We have collected Personal Data from anyone under the age of 13 without verification of parental consent, We take steps to remove that information from Our servers.
+Il nostro Servizio non si rivolge a nessuno di età inferiore ai 13 anni. Non raccogliamo consapevolmente informazioni di identificazione personale da nessuno di età inferiore ai 13 anni. Se siete un genitore o un tutore e siete consapevoli che Vostro figlio ci ha fornito Dati Personali, Vi preghiamo di contattarci. Se veniamo a conoscenza del fatto che abbiamo raccolto Dati Personali da chiunque abbia meno di 13 anni senza la verifica del consenso dei genitori, adottiamo misure per rimuovere tali informazioni dai nostri server.
 
-If We need to rely on consent as a legal basis for processing Your information and Your country requires consent from a parent, We may require Your parent's consent before We collect and use that information.
+Se dobbiamo fare affidamento sul consenso come base legale per il trattamento delle Vostre informazioni e il Vostro paese richiede il consenso di un genitore, potremmo richiedere il consenso di Vostro genitore prima di raccogliere e utilizzare tali informazioni.
 
-## Links to Other Websites
+## Link ad altri Siti Web
 
-Our Service may contain links to other websites that are not operated by Us. If You click on a third party link, You will be directed to that third party's site. We strongly advise You to review the Privacy Policy of every site You visit.
+Il nostro Servizio può contenere link ad altri siti web che non sono gestiti da Noi. Se cliccate su un link di terze parti, sarete indirizzati al sito di tale terza parte. Vi consigliamo vivamente di rivedere l'Informativa sulla Privacy di ogni sito che visitate.
 
-We have no control over and assume no responsibility for the content, privacy policies or practices of any third party sites or services.
+Non abbiamo alcun controllo e non ci assumiamo alcuna responsabilità per il contenuto, le politiche sulla privacy o le pratiche di siti o servizi di terze parti.
 
-## Changes to this Privacy Policy
+## Modifiche alla presente Informativa sulla Privacy
 
-We may update Our Privacy Policy from time to time. We may (but are not required to) notify You of any changes by posting the new Privacy Policy on this page.
+Potremmo aggiornare la Nostra Informativa sulla Privacy di volta in volta. Potremmo (ma non siamo obbligati a) notificarVi eventuali modifiche pubblicando la nuova Informativa sulla Privacy su questa pagina.
 
-You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.
+Si consiglia di rivedere periodicamente la presente Informativa sulla Privacy per eventuali modifiche. Le modifiche alla presente Informativa sulla Privacy sono efficaci quando vengono pubblicate su questa pagina.
 
-## Contact Us
+## Contattaci
 
-If you have any questions about this Privacy Policy, You can contact us:
+Se avete domande sulla presente Informativa sulla Privacy, potete contattarci:
 
--   By email: [alexlife@tiscali.it](mailto:alexlife@tiscali.it)
+-   Tramite email: [alexlife@tiscali.it](mailto:alexlife@tiscali.it)
 
-You can also contact the Webmaster:
+Potete anche contattare il Webmaster:
 
--   By email: [alessandro@bitrey.dev](mailto:alessandro@bitrey.dev)
+-   Tramite email: [alessandro@bitrey.dev](mailto:alessandro@bitrey.dev)
