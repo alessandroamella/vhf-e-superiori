@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
@@ -8,7 +9,7 @@ import { UserContext } from "./App";
 import Flags from "./Flags";
 import LogoBtns from "./homepage/LogoBtns";
 
-const LinkButton = ({ to, children, keepCurrent, color }) => {
+const LinkButton = ({ to, children, keepCurrent, className }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
@@ -22,8 +23,8 @@ const LinkButton = ({ to, children, keepCurrent, color }) => {
     <Button
       as={Link}
       to={{ pathname: to, search: searchParams.toString() }}
-      color={isActive ? "purple" : color || "info"}
-      className="uppercase w-full"
+      color={isActive ? "purple" : "info"}
+      className={classNames(`uppercase w-full`, className)}
     >
       {children}
     </Button>
@@ -152,7 +153,11 @@ const Header = () => {
         <LinkButton to="/rankings">{t("scoreboards")}</LinkButton>
 
         <div className="relative col-span-2 lg:col-span-1">
-          <LinkButton to="/generate-map" color="yellow">
+          {/* sfondo giallo scritta nera */}
+          <LinkButton
+            to="/generate-map"
+            className="!bg-yellow-400 text-black hover:!bg-yellow-300 dark:text-white dark:!bg-yellow-500 dark:hover:!bg-yellow-400"
+          >
             {t("generateMap.generateYourMap")}
           </LinkButton>
           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse z-10">
