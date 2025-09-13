@@ -238,7 +238,7 @@ const GenerateMapPublicPage = () => {
     const blob = await response.blob();
     const file = new File(
       [blob],
-      `mappa-${savedValues.adifFileName.replace(".adi", "")}.jpg`,
+      `mappa-${savedValues.adifFileName.split(".").slice(0, -1).join(".")}.jpg`,
       { type: "image/jpeg" },
     );
 
@@ -262,7 +262,8 @@ const GenerateMapPublicPage = () => {
       // setAlert({ color: "info", msg: t("generateMap.shareApiNotSupported") });
 
       // download it
-      handleDownloadMap();
+      console.log("Sharing not supported, downloading instead:", shareData);
+      saveAs(file);
     }
   };
 
@@ -584,71 +585,6 @@ const GenerateMapPublicPage = () => {
                       {t("shareMap")}
                     </Button>
                   </div>
-
-                  {/* Social Share Section */}
-                  {/* <div className="text-center">
-                    <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">
-                      {t("generateMap.shareOnSocialMedia")}
-                    </p>
-                    <div className="flex justify-center gap-3 flex-wrap">
-                      <FacebookShareButton
-                        url={generatedMapUrl}
-                        quote={
-                          savedValues.eventTitle ||
-                          t("generateMap.generatedQsoMap")
-                        }
-                        hashtag="#vhfesuperiori"
-                        className="transition-transform hover:scale-110"
-                      >
-                        <FacebookIcon size={40} round />
-                      </FacebookShareButton>
-                      <TwitterShareButton
-                        url={generatedMapUrl}
-                        title={
-                          savedValues.eventTitle ||
-                          t("generateMap.generatedQsoMap")
-                        }
-                        hashtags={["vhfesuperiori"]}
-                        className="transition-transform hover:scale-110"
-                      >
-                        <TwitterIcon size={40} round />
-                      </TwitterShareButton>
-                      <WhatsappShareButton
-                        url={generatedMapUrl}
-                        title={
-                          savedValues.eventTitle ||
-                          t("generateMap.generatedQsoMap")
-                        }
-                        className="transition-transform hover:scale-110"
-                      >
-                        <WhatsappIcon size={40} round />
-                      </WhatsappShareButton>
-                      <TelegramShareButton
-                        url={generatedMapUrl}
-                        title={
-                          savedValues.eventTitle ||
-                          t("generateMap.generatedQsoMap")
-                        }
-                        className="transition-transform hover:scale-110"
-                      >
-                        <TelegramIcon size={40} round />
-                      </TelegramShareButton>
-                      <EmailShareButton
-                        url={generatedMapUrl}
-                        subject={
-                          savedValues.eventTitle ||
-                          t("generateMap.generatedQsoMap")
-                        }
-                        body={t("generateMap.shareMapTextBody", {
-                          callsign: savedValues.operatorCallsign || "un utente",
-                          event: savedValues.eventTitle || "la mia mappa ADIF",
-                        })}
-                        className="transition-transform hover:scale-110"
-                      >
-                        <EmailIcon size={40} round />
-                      </EmailShareButton>
-                    </div>
-                  </div> */}
 
                   {/* Footer Note */}
                   <div className="text-center pt-6 border-t border-gray-200 dark:border-gray-700">
