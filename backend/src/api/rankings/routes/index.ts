@@ -295,7 +295,8 @@ router.get("/", async (_req, res) => {
     {
       date: {
         $gte: startOfYear.toDate(),
-        $lte: endOfYear.toDate(),
+        // $lte: endOfYear.toDate(),
+        $lte: new Date(), // up to now
       },
     },
     { _id: 1 },
