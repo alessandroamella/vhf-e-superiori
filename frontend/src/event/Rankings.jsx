@@ -9,6 +9,7 @@ import {
   Table,
   Tabs,
 } from "flowbite-react";
+import { orderBy } from "lodash";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { FaExclamationTriangle } from "react-icons/fa";
@@ -42,7 +43,17 @@ const EventList = () => {
       try {
         const { data } = await axios.get("/api/event");
         console.log("events:", data);
-        setEvents(data);
+        // // debug
+        // const debugEvents = [
+        //   ...data,
+        //   ...data,
+        //   ...data,
+        //   ...data,
+        //   ...data,
+        //   ...data,
+        // ].map((e, i) => ({ ...e, _id: e._id + i }));
+        // setEvents(orderBy(debugEvents, ["date"], ["desc"]));
+        setEvents(orderBy(data, ["date"], ["desc"]));
       } catch (err) {
         setAlertEvents({
           color: "failure",
@@ -76,7 +87,7 @@ const EventList = () => {
       <h2 className="text-2xl font-bold mb-4 dark:text-white">
         Filtra per Evento
       </h2>
-      <ListGroup>
+      <ListGroup className="max-h-56 overflow-auto">
         <ListGroup.Item
           onClick={() => navigate("/rankings")}
           className="uppercase font-bold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-700 text-red-500 dark:text-red-400"
@@ -316,7 +327,7 @@ const Rankings = () => {
                   )}
                 </h1>
 
-                <div className="w-fit mt-8 mx-auto -mb-4">
+                <div className="w-fit mt-2 mx-auto -mb-4">
                   <ShareMapBtn
                     event={event}
                     user={user}

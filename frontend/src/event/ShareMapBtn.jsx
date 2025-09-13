@@ -71,9 +71,6 @@ const ShareMapBtn = ({ event, qsos, user, setAlert }) => {
     user &&
     !!qsos?.length && (
       <div className="relative">
-        <div className="absolute text-2xl font-bold tracking-tight left-4 right-4 text-center -top-9 text-black bg-yellow-200 animate-pulse">
-          ↓ Novità ↓
-        </div>
         <Button
           color="green"
           size="lg"

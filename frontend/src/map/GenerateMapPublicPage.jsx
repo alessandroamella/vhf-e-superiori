@@ -15,6 +15,7 @@ import {
   FaRegTimesCircle,
   FaShareAlt,
 } from "react-icons/fa";
+import { MdRepeat } from "react-icons/md";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { UserContext } from "../App";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
@@ -258,7 +259,10 @@ const GenerateMapPublicPage = () => {
         setAlert({ color: "failure", msg: t("generateMap.shareError") });
       }
     } else {
-      setAlert({ color: "info", msg: t("generateMap.shareApiNotSupported") });
+      // setAlert({ color: "info", msg: t("generateMap.shareApiNotSupported") });
+
+      // download it
+      handleDownloadMap();
     }
   };
 
@@ -277,6 +281,12 @@ const GenerateMapPublicPage = () => {
       msg: t("errors.CAPTCHA_FAILED"),
     });
     setTurnstileToken(null);
+  };
+
+  const resetCaptcha = () => {
+    turnstileRef.current?.reset();
+    setTurnstileToken(null);
+    setAlert(null);
   };
 
   return (
@@ -306,6 +316,12 @@ const GenerateMapPublicPage = () => {
               >
                 <FaExclamationCircle className="inline mr-2 scale-110 mb-[1px]" />
                 <span>{alert.msg}</span>
+
+                {alert.msg === t("errors.CAPTCHA_FAILED") && (
+                  <Button className="inline-block ml-4" onClick={resetCaptcha}>
+                    <MdRepeat />{" "}
+                  </Button>
+                )}
               </Alert>
             </div>
           )}
