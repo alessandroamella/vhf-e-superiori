@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import { Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
@@ -9,7 +8,7 @@ import { UserContext } from "./App";
 import Flags from "./Flags";
 import LogoBtns from "./homepage/LogoBtns";
 
-const LinkButton = ({ to, children, keepCurrent, className, disableColor }) => {
+const LinkButton = ({ to, children, keepCurrent }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
@@ -23,8 +22,8 @@ const LinkButton = ({ to, children, keepCurrent, className, disableColor }) => {
     <Button
       as={Link}
       to={{ pathname: to, search: searchParams.toString() }}
-      color={isActive ? "purple" : disableColor ? undefined : "info"}
-      className={classNames(`uppercase w-full`, className)}
+      color={isActive ? "purple" : "info"}
+      className="uppercase w-full h-fit"
     >
       {children}
     </Button>
@@ -132,7 +131,7 @@ const Header = () => {
           </form>
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-2 lg:grid-cols-5 gap-2 justify-items-center">
+      <div className="mt-4 grid grid-cols-2 lg:grid-cols-5 gap-2 justify-items-center items-center">
         <div className="block md:hidden col-span-2 w-full">
           <LogoBtns />
         </div>
@@ -152,15 +151,14 @@ const Header = () => {
         )}
         <LinkButton to="/rankings">{t("scoreboards")}</LinkButton>
 
-        <div className="relative col-span-2 lg:col-span-1">
-          {/* sfondo giallo scritta nera */}
-          <LinkButton
+        <div className="relative col-span-2 lg:col-span-1 w-full">
+          {/* giallo con testo nero (bianco in dark) */}
+          <Link
             to="/generate-map"
-            className="!bg-yellow-400 text-black hover:!bg-yellow-300 dark:text-white dark:!bg-yellow-500 dark:hover:!bg-yellow-400"
-            disableColor
+            className="bg-yellow-400 text-black dark:text-white font-bold px-4 py-2 rounded-lg hover:bg-yellow-300 transition-colors w-full text-center block"
           >
             {t("generateMap.generateYourMap")}
-          </LinkButton>
+          </Link>
           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse z-10">
             {t("new")}
           </span>
