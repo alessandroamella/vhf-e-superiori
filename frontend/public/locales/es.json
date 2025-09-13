@@ -196,8 +196,8 @@
     "annualRankings": "Clasificaciones anuales - año {{year}}",
     "qsoLoadError": "Error al cargar los QSO",
     "pageTitle": {
-      "event": "{{name}} - Clasificaciones - VHF y superiores",
-      "year": "Año {{year}} - Clasificaciones - VHF y superiores"
+      "event": "{{name}} - Clasificaciones - VHF e Superiori",
+      "year": "Año {{year}} - Clasificaciones - VHF e Superiori"
     },
     "qsoModal": {
       "title": "QSO de",
@@ -227,10 +227,10 @@
     },
     "noQsosFound": "No se encontraron QSO",
     "social": {
-      "title_event": "Clasificaciones de {{name}} - VHF y superiores",
-      "title_year": "Clasificaciones de {{year}} - VHF y superiores",
-      "bodyEvent": "Clasificaciones del evento {{name}} - {{date}} - VHF y superiores",
-      "bodyYear": "Clasificaciones del año {{year}} - VHF y superiores"
+      "title_event": "Clasificaciones de {{name}} - VHF e Superiori",
+      "title_year": "Clasificaciones de {{year}} - VHF e Superiori",
+      "bodyEvent": "Clasificaciones del evento {{name}} - {{date}} - VHF e Superiori",
+      "bodyYear": "Clasificaciones del año {{year}} - VHF e Superiori"
     }
   },
   "errors": {

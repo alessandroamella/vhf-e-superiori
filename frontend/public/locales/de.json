@@ -1,6 +1,6 @@
 {
   "firstPoster": "Erstes Flash-Mob-Plakat",
-  "mainTitle": "VHF e Superiori – Amateurfunk-Flashmob",
+  "mainTitle": "VHF e Superiori - Amateurfunk-Flashmob",
   "bornFrom": "Entstanden aus einer Idee von <1>IU4JJJ</1> Pietro Cerrone, Mitglied des VHF-und-höher-Chats, der sie <3>IZ5RNF</3> Alessandro Ronca, dem Gründer der Gruppe, vorschlug.",
   "workGroup": "Die Idee wurde begrüßt und eine Arbeitsgruppe wurde mit der Zusammenarbeit von <1><0>IC8TEM</0> Costantino Cerrotta</1> (<3>FT8ACTIVITY</3>) gegründet.",
   "firstEvent": "Nach der Festlegung von Methoden und Zeitplan organisierte die Gruppe die erste Veranstaltung, die auf verschiedenen sozialen Plattformen als Funktionstest für Organisation und Management beworben wurde.",
@@ -196,8 +196,8 @@
     "annualRankings": "Jahresranglisten - Jahr {{year}}",
     "qsoLoadError": "Fehler beim Laden der QSOs",
     "pageTitle": {
-      "event": "{{name}} - Ranglisten - VHF und höher",
-      "year": "Jahr {{year}} - Ranglisten - VHF und höher"
+      "event": "{{name}} - Ranglisten - VHF e Superiori",
+      "year": "Jahr {{year}} - Ranglisten - VHF e Superiori"
     },
     "qsoModal": {
       "title": "QSOs von",
@@ -227,10 +227,10 @@
     },
     "noQsosFound": "Keine QSOs gefunden",
     "social": {
-      "title_event": "Ranglisten {{name}} - VHF und höher",
-      "title_year": "Ranglisten {{year}} - VHF und höher",
-      "bodyEvent": "Ranglisten für das Ereignis {{name}} - {{date}} - VHF und höher",
-      "bodyYear": "Ranglisten für das Jahr {{year}} - VHF und höher"
+      "title_event": "Ranglisten {{name}} - VHF e Superiori",
+      "title_year": "Ranglisten {{year}} - VHF e Superiori",
+      "bodyEvent": "Ranglisten für das Ereignis {{name}} - {{date}} - VHF e Superiori",
+      "bodyYear": "Ranglisten für das Jahr {{year}} - VHF e Superiori"
     }
   },
   "errors": {

@@ -227,8 +227,8 @@
     "annualRankings": "Annual Rankings - year {{year}}",
     "qsoLoadError": "Error loading QSOs",
     "pageTitle": {
-      "event": "{{name}} - Rankings - VHF and up",
-      "year": "Year {{year}} - Rankings - VHF and up"
+      "event": "{{name}} - Rankings - VHF e Superiori",
+      "year": "Year {{year}} - Rankings - VHF e Superiori"
     },
     "qsoModal": {
       "title": "QSOs of",
@@ -258,10 +258,10 @@
     },
     "noQsosFound": "No QSOs found",
     "social": {
-      "title_event": "{{name}} Rankings - VHF and up",
-      "title_year": "{{year}} Rankings - VHF and up",
-      "bodyEvent": "Rankings for the event {{name}} - {{date}} - VHF and up",
-      "bodyYear": "Rankings for the year {{year}} - VHF and up"
+      "title_event": "{{name}} Rankings - VHF e Superiori",
+      "title_year": "{{year}} Rankings - VHF e Superiori",
+      "bodyEvent": "Rankings for the event {{name}} - {{date}} - VHF e Superiori",
+      "bodyYear": "Rankings for the year {{year}} - VHF e Superiori"
     }
   },
   "errors": {

@@ -1,7 +1,7 @@
 {
   "firstPoster": "Première affiche du flash mob",
-  "mainTitle": "VHF et au-delà - Flash Mob Radioamateur",
-  "bornFrom": "Né d'une idée de <1>IU4JJJ</1> Pietro Cerrone, membre du chat VHF et au-delà, qui l'a proposée à <3>IZ5RNF</3> Alessandro Ronca, le créateur du groupe.",
+  "mainTitle": "VHF e Superiori - Flash Mob Radioamateur",
+  "bornFrom": "Né d'une idée de <1>IU4JJJ</1> Pietro Cerrone, membre du chat VHF e Superiori, qui l'a proposée à <3>IZ5RNF</3> Alessandro Ronca, le créateur du groupe.",
   "workGroup": "L'idée a été accueillie favorablement et un groupe de travail a été créé avec la collaboration de <1><0>IC8TEM</0> Costantino Cerrotta</1> (<3>FT8ACTIVITY</3>).",
   "firstEvent": "Après avoir défini les méthodes et le calendrier, le groupe a planifié le premier événement, promu sur diverses plateformes sociales comme test de fonctionnalité, d'organisation et de gestion.",
   "inspiration": "Inspiré du concept même de \"flash mob\", qui vise à rassembler le plus grand nombre de personnes pendant un court laps de temps via email et réseaux sociaux – d'où le nom.",
@@ -47,7 +47,7 @@
   "results": "Fier du résultat et du fait que le groupe remplissait sa mission, Alessandro a continué à inviter de nouveaux opérateurs, un par un. Lorsqu'on a approché les 200 membres, la gestion du chat est devenue chronophage.",
   "adminsNominated": "Il a alors décidé de nommer des administrateurs pour soutenir le développement, selon des critères de couverture territoriale, de compétence, de disponibilité et de vision partagée. Les administrateurs sont devenus rapidement essentiels, servant de référents régionaux pour les nouveaux membres. La division actuelle reste : nord, centre, centre-sud et sud. De nouveaux amis ont rejoint et repris leurs activités radio.",
   "stationsIncreasing": "Au fil du temps, le nombre de stations actives et de contacts a connu une croissance exponentielle, tant au quotidien que durant les événements. L'enthousiasme et la passion pour ce loisir continuent d'attirer toujours plus d'amateurs. Au 10 mars 2025, le groupe compte plus de 700 membres venant d'Italie, Espagne, Suisse, France, Croatie, Malte, Bulgarie, Serbie et d'autres pays.",
-  "websiteCreation": "Cette grande participation a conduit à la création de ce site, destiné à diffuser la passion pour ces bandes au-delà de l'Italie et dans toute l'Europe. Je tiens à remercier personnellement chacun d'entre vous pour avoir rejoint ce projet et partagé cette idée. Chaque opérateur contribue à ramener de plus en plus d'amateurs sur les bandes VHF et au-delà.",
+  "websiteCreation": "Cette grande participation a conduit à la création de ce site, destiné à diffuser la passion pour ces bandes au-delà de l'Italie et dans toute l'Europe. Je tiens à remercier personnellement chacun d'entre vous pour avoir rejoint ce projet et partagé cette idée. Chaque opérateur contribue à ramener de plus en plus d'amateurs sur les bandes VHF e Superiori.",
   "thankYouForContributing": "UN GRAND MERCI POUR VOTRE CONTRIBUTION, SANS LAQUELLE IL N'AURait PAS ÉTÉ POSSIBLE DE RÉUNIR AUTANT DE PASSIONNÉS POUR PARTAGER LA RADIO.",
   "acceptedActivator": "Vous avez été accepté comme station activatrice",
   "participateHunter": "Participer en tant que chasseur",
@@ -196,8 +196,8 @@
     "annualRankings": "Classements annuels - année {{year}}",
     "qsoLoadError": "Erreur de chargement des QSO",
     "pageTitle": {
-      "event": "{{name}} - Classements - VHF et plus",
-      "year": "Année {{year}} - Classements - VHF et plus"
+      "event": "{{name}} - Classements - VHF e Superiori",
+      "year": "Année {{year}} - Classements - VHF e Superiori"
     },
     "qsoModal": {
       "title": "QSO de",
@@ -227,10 +227,10 @@
     },
     "noQsosFound": "Aucun QSO trouvé",
     "social": {
-      "title_event": "Classements {{name}} - VHF et plus",
-      "title_year": "Classements {{year}} - VHF et plus",
-      "bodyEvent": "Classements de l'événement {{name}} - {{date}} - VHF et plus",
-      "bodyYear": "Classements de l'année {{year}} - VHF et plus"
+      "title_event": "Classements {{name}} - VHF e Superiori",
+      "title_year": "Classements {{year}} - VHF e Superiori",
+      "bodyEvent": "Classements de l'événement {{name}} - {{date}} - VHF e Superiori",
+      "bodyYear": "Classements de l'année {{year}} - VHF e Superiori"
     }
   },
   "errors": {

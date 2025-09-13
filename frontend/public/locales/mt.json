@@ -1,7 +1,7 @@
 {
   "firstPoster": "L-ewwel poster tal-flash mob",
-  "mainTitle": "VHF u 'l fuq - Flash Mob tal-Radju Amatatur",
-  "bornFrom": "Twieldu minn ideja ta' <1>IU4JJJ</1> Pietro Cerrone, membru tal-chat VHF u 'l fuq, li ppropona l-idea lil <3>IZ5RNF</3> Alessandro Ronca, il-kreatur tal-grupp.",
+  "mainTitle": "VHF e Superiori - Flash Mob tal-Radju Amatatur",
+  "bornFrom": "Twieldu minn ideja ta' <1>IU4JJJ</1> Pietro Cerrone, membru tal-chat VHF e Superiori, li ppropona l-idea lil <3>IZ5RNF</3> Alessandro Ronca, il-kreatur tal-grupp.",
   "workGroup": "L-idea ġiet milqugħa u grupp ta' ħidma ġie ffurmat bil-kollaborazzjoni ta' <1><0>IC8TEM</0> Costantino Cerrotta</1> (<3>FT8ACTIVITY</3>).",
   "firstEvent": "Wara li ġiet definita l-metodu u l-iskeda, il-grupp ippjana l-ewwel avveniment, li ġie promoss fuq pjattaformi soċjali varji bħala test ta' funzjonalità, organizzazzjoni u ġestjoni.",
   "inspiration": "Ispirat mill-kunċett tal-flash mob, li għandu l-għan li jġib flimkien kemm jista' jkun nies għal perjodu qasir ta' żmien bl-użu ta' email u soċjali - għalhekk l-isem.",
@@ -195,8 +195,8 @@
     "annualRankings": "Klassifiki Annwali - sena {{year}}",
     "qsoLoadError": "Żball fit-tagħbija tal-QSOs",
     "pageTitle": {
-      "event": "{{name}} - Klassifiki - VHF u aktar",
-      "year": "Sena {{year}} - Klassifiki - VHF u aktar"
+      "event": "{{name}} - Klassifiki - VHF e Superiori",
+      "year": "Sena {{year}} - Klassifiki - VHF e Superiori"
     },
     "qsoModal": {
       "title": "QSOs ta'",
@@ -226,10 +226,10 @@
     },
     "noQsosFound": "Ma nstab l-ebda QSO",
     "social": {
-      "title_event": "Klassifiki {{name}} - VHF u aktar",
-      "title_year": "Klassifiki {{year}} - VHF u aktar",
-      "bodyEvent": "Klassifiki tal-avveniment {{name}} - {{date}} - VHF u aktar",
-      "bodyYear": "Klassifiki għas-sena {{year}} - VHF u aktar"
+      "title_event": "Klassifiki {{name}} - VHF e Superiori",
+      "title_year": "Klassifiki {{year}} - VHF e Superiori",
+      "bodyEvent": "Klassifiki tal-avveniment {{name}} - {{date}} - VHF e Superiori",
+      "bodyYear": "Klassifiki għas-sena {{year}} - VHF e Superiori"
     }
   },
   "errors": {
