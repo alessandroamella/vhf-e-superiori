@@ -12,16 +12,16 @@ const Flags = () => {
   return (
     <div className="flex gap-2">
       {[
-        ["IT", "Italia", "it"], // Italia
-        ["ES", "España", "es"], // Spagna
-        ["FR", "France", "fr"], // Francia
-        ["DE", "Deutschland", "de"], // Germania
-        ["MT", "Malta", "mt"], // Malta
-        ["GB", "United Kingdom", "en"], // Aggiunto l'Inghilterra (bandiera e lingua)
+        ["IT", "Italiano", "it"],
+        ["ES", "Español", "es"],
+        ["FR", "Français", "fr"],
+        ["DE", "Deutsch", "de"],
+        ["MT", "Malti", "mt"],
+        ["GB", "English", "en"],
       ].map(([countryCode, countryName, languageCode]) => (
         <div
           key={countryCode}
-          className="cursor-pointer"
+          className="cursor-pointer hover:scale-110 transition-all hover:shadow-lg dark:shadow-white"
           onClick={() => handleLanguageChange(languageCode)}
         >
           <Flag
