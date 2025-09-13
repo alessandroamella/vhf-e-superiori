@@ -69,11 +69,13 @@ const Header = () => {
     <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-2 md:px-8">
       <div className="flex flex-col lg:flex-row md:items-center gap-4">
         <div className="flex items-center gap-4">
-          <LazyLoadImage
-            className="w-20 md:w-36"
-            src="/logo-min.png"
-            alt="Logo"
-          />
+          <Link to="/">
+            <LazyLoadImage
+              className="w-20 md:w-36 cursor-pointer hover:scale-105 transition-transform"
+              src="/logo-min.png"
+              alt="Logo"
+            />
+          </Link>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-">
               <Link

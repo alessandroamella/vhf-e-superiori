@@ -526,7 +526,9 @@ const BeaconEditor = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col w-full items-center mt-8">
+              <hr className="my-6 bg-gray-500 dark:bg-gray-400" />
+
+              <div className="flex flex-col w-full items-center mt-4">
                 <div className="flex flex-col md:flex-row justify-center gap-2 md:gap-8 items-center mb-2">
                   <div>
                     <h2 className="text-2xl font-bold">Posizione</h2>
@@ -543,7 +545,7 @@ const BeaconEditor = () => {
                     Geolocalizza
                   </Button>
                 </div>
-                <div className="drop-shadow-lg flex justify-center relative w-full">
+                <div className="drop-shadow-lg flex justify-center relative mt-2 w-full">
                   <MapContainer center={[lat, lon]} zoom={13}>
                     <TileLayer
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

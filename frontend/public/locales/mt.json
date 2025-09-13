@@ -52,7 +52,7 @@
   "participateHunter": "Parteċipa bħala Cacciatore",
   "for": "għall",
   "photoVideo": "Ritratti / Video",
-  "beacon": "Bħala",
+  "beacon": "Beacon",
   "profileOf": "Profil ta",
   "enterWithCallsign": "Imla l-call sign tiegħek",
   "scoreboards": "Leadiershibs",
@@ -231,6 +231,25 @@
       "bodyEvent": "Klassifiki tal-avveniment {{name}} - {{date}} - VHF e Superiori",
       "bodyYear": "Klassifiki għas-sena {{year}} - VHF e Superiori"
     }
+  },
+  "beacons": {
+    "pageTitle": "Beacons - VHF e Superiori",
+    "add": "Żid beacon",
+    "bandTitle": "Banda {band} MHz",
+    "table": {
+      "callsign": "Sinjal tas-sejħa",
+      "name": "Isem",
+      "frequency": "Frekwenza",
+      "qth": "QTH",
+      "locator": "Locator",
+      "hamsl": "HAMSL",
+      "antenna": "Antenna",
+      "mode": "Mod",
+      "qtf": "QTF",
+      "power": "Qawwa"
+    },
+    "loadError": "Żball fit-tagħbija tal-beacons: {error}",
+    "noBeacons": "L-ebda beacon misjub"
   },
   "errors": {
     "USER_NOT_FOUND": "Utent ma nstabx. Jista' jkun tħassar",

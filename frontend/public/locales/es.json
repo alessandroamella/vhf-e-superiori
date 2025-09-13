@@ -233,6 +233,25 @@
       "bodyYear": "Clasificaciones del año {{year}} - VHF e Superiori"
     }
   },
+  "beacons": {
+    "pageTitle": "Balizas - VHF e Superiori",
+    "add": "Añadir baliza",
+    "bandTitle": "Banda {band} MHz",
+    "table": {
+      "callsign": "Indicativo",
+      "name": "Nombre",
+      "frequency": "Frecuencia",
+      "qth": "QTH",
+      "locator": "Localizador",
+      "hamsl": "HAMSL",
+      "antenna": "Antena",
+      "mode": "Modo",
+      "qtf": "QTF",
+      "power": "Potencia"
+    },
+    "loadError": "Error al cargar las balizas: {error}",
+    "noBeacons": "No se encontraron balizas"
+  },
   "errors": {
     "USER_NOT_FOUND": "Usuario no encontrado. Podría haber sido eliminado",
     "INVALID_PW": "Contraseña inválida",

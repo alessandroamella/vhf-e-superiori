@@ -233,6 +233,25 @@
       "bodyYear": "Classements de l'année {{year}} - VHF e Superiori"
     }
   },
+  "beacons": {
+    "pageTitle": "Balises - VHF e Superiori",
+    "add": "Ajouter une balise",
+    "bandTitle": "Bande {band} MHz",
+    "table": {
+      "callsign": "Indicatif",
+      "name": "Nom",
+      "frequency": "Fréquence",
+      "qth": "QTH",
+      "locator": "Locator",
+      "hamsl": "HAMSL",
+      "antenna": "Antenne",
+      "mode": "Mode",
+      "qtf": "QTF",
+      "power": "Puissance"
+    },
+    "loadError": "Erreur lors du chargement des balises : {error}",
+    "noBeacons": "Aucune balise trouvée"
+  },
   "errors": {
     "USER_NOT_FOUND": "Utilisateur introuvable. Il a peut-être été supprimé",
     "INVALID_PW": "Mot de passe non valide",

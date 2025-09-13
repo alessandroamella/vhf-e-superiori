@@ -233,6 +233,25 @@
       "bodyYear": "Ranglisten für das Jahr {{year}} - VHF e Superiori"
     }
   },
+  "beacons": {
+    "pageTitle": "Baken - VHF e Superiori",
+    "add": "Bake hinzufügen",
+    "bandTitle": "Band {band} MHz",
+    "table": {
+      "callsign": "Rufzeichen",
+      "name": "Name",
+      "frequency": "Frequenz",
+      "qth": "QTH",
+      "locator": "Locator",
+      "hamsl": "HAMSL",
+      "antenna": "Antenne",
+      "mode": "Modus",
+      "qtf": "QTF",
+      "power": "Leistung"
+    },
+    "loadError": "Fehler beim Laden der Baken: {error}",
+    "noBeacons": "Keine Baken gefunden"
+  },
   "errors": {
     "USER_NOT_FOUND": "Benutzer nicht gefunden. Er wurde möglicherweise gelöscht",
     "INVALID_PW": "Ungültiges Passwort",

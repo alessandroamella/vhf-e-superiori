@@ -264,6 +264,25 @@
       "bodyYear": "Rankings for the year {{year}} - VHF e Superiori"
     }
   },
+  "beacons": {
+    "pageTitle": "Beacons - VHF e Superiori",
+    "add": "Add beacon",
+    "bandTitle": "Band {band} MHz",
+    "table": {
+      "callsign": "Callsign",
+      "name": "Name",
+      "frequency": "Frequency",
+      "qth": "QTH",
+      "locator": "Locator",
+      "hamsl": "HAMSL",
+      "antenna": "Antenna",
+      "mode": "Mode",
+      "qtf": "QTF",
+      "power": "Power"
+    },
+    "loadError": "Error loading beacons: {error}",
+    "noBeacons": "No beacons found"
+  },
   "errors": {
     "USER_NOT_FOUND": "User not found. It might have been deleted",
     "INVALID_PW": "Invalid password",

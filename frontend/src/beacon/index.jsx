@@ -3,6 +3,7 @@ import axios from "axios";
 import { Alert, Button, Table } from "flowbite-react";
 import { useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import { FaPlus } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
 import { createSearchParams, Link, useNavigate } from "react-router";
@@ -18,6 +19,8 @@ const BeaconHomepage = () => {
   const [bands, setBands] = useState([]);
 
   const { user } = useContext(UserContext);
+
+  const { i18n, t } = useTranslation();
 
   useEffect(() => {
     async function getBeacons() {
@@ -57,9 +60,13 @@ const BeaconHomepage = () => {
   return (
     <>
       <Helmet>
-        <title>Beacon - VHF e superiori</title>
+        <title>
+          {i18n.exists("beacons.pageTitle")
+            ? t("beacons.pageTitle")
+            : "Beacon - VHF e Superiori"}
+        </title>
       </Helmet>
-      <div className="w-full overflow-y-auto h-full pb-4 dark:text-white dark:bg-gray-900">
+      <div className="w-full min-h-[60vh] overflow-y-auto h-full pb-4 dark:text-white dark:bg-gray-900">
         <div className="mx-auto px-4 w-full md:w-11/12 py-12">
           {alert && (
             <Alert
@@ -93,7 +100,7 @@ const BeaconHomepage = () => {
                     }
                   >
                     <FaPlus className="inline mr-2 mt-[2.5px]" />
-                    Aggiungi beacon
+                    {t("beacons.add")}
                   </Button>
                 </div>
               </ReactPlaceholder>
@@ -107,34 +114,40 @@ const BeaconHomepage = () => {
                   ready={!loading}
                 >
                   <Typography variant="h2" className="dark:text-white mb-4">
-                    Banda {band} MHz
+                    {t("beacons.bandTitle", { band })}
                   </Typography>
                   {Array.isArray(beacons) && beacons.length !== 0 ? (
                     <Table striped className="text-lg font-semibold">
                       <Table.Head>
-                        <Table.HeadCell>Nominativo</Table.HeadCell>
-                        <Table.HeadCell className="hidden md:table-cell">
-                          Nome
-                        </Table.HeadCell>
-                        <Table.HeadCell>Frequenza</Table.HeadCell>
-                        <Table.HeadCell className="hidden md:table-cell">
-                          QTH
-                        </Table.HeadCell>
-                        <Table.HeadCell>Locatore</Table.HeadCell>
-                        <Table.HeadCell className="hidden md:table-cell">
-                          HAMSL
+                        <Table.HeadCell>
+                          {t("beacons.table.callsign")}
                         </Table.HeadCell>
                         <Table.HeadCell className="hidden md:table-cell">
-                          Antenna
+                          {t("beacons.table.name")}
+                        </Table.HeadCell>
+                        <Table.HeadCell>
+                          {t("beacons.table.frequency")}
                         </Table.HeadCell>
                         <Table.HeadCell className="hidden md:table-cell">
-                          Modo
+                          {t("beacons.table.qth")}
+                        </Table.HeadCell>
+                        <Table.HeadCell>
+                          {t("beacons.table.locator")}
                         </Table.HeadCell>
                         <Table.HeadCell className="hidden md:table-cell">
-                          QTF
+                          {t("beacons.table.hamsl")}
                         </Table.HeadCell>
                         <Table.HeadCell className="hidden md:table-cell">
-                          Potenza
+                          {t("beacons.table.antenna")}
+                        </Table.HeadCell>
+                        <Table.HeadCell className="hidden md:table-cell">
+                          {t("beacons.table.mode")}
+                        </Table.HeadCell>
+                        <Table.HeadCell className="hidden md:table-cell">
+                          {t("beacons.table.qtf")}
+                        </Table.HeadCell>
+                        <Table.HeadCell className="hidden md:table-cell">
+                          {t("beacons.table.power")}
                         </Table.HeadCell>
                       </Table.Head>
                       <Table.Body>
@@ -201,9 +214,9 @@ const BeaconHomepage = () => {
                     <Card>
                       <Card.Body>
                         {alert?.color === "failure" ? (
-                          <p>Errore nel caricamento dei beacon: {alert.msg}</p>
+                          <p>{t("beacons.loadError", { error: alert.msg })}</p>
                         ) : (
-                          <p>Nessun beacon presente</p>
+                          <p>{t("beacons.noBeacons")}</p>
                         )}
                       </Card.Body>
                     </Card>

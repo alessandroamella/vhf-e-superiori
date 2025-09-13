@@ -266,6 +266,25 @@
       "bodyYear": "Classifiche dell'anno {{year}} - VHF e superiori"
     }
   },
+  "beacons": {
+    "pageTitle": "Beacon - VHF e Superiori",
+    "add": "Aggiungi beacon",
+    "bandTitle": "Banda {band} MHz",
+    "table": {
+      "callsign": "Nominativo",
+      "name": "Nome",
+      "frequency": "Frequenza",
+      "qth": "QTH",
+      "locator": "Locatore",
+      "hamsl": "HAMSL",
+      "antenna": "Antenna",
+      "mode": "Modo",
+      "qtf": "QTF",
+      "power": "Potenza"
+    },
+    "loadError": "Errore nel caricamento dei beacon: {error}",
+    "noBeacons": "Nessun beacon presente"
+  },
   "errors": {
     "USER_NOT_FOUND": "Utente non trovato. Potrebbe essere stato cancellato",
     "INVALID_PW": "Password non valida",
