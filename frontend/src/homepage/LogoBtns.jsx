@@ -62,7 +62,7 @@ const LogoBtns = () => {
         {/* giallo con testo nero (bianco in dark) */}
         <Link
           to="/generate-map"
-          className="w-full bg-[#FFFE69] text-black font-bold px-4 py-2 rounded-lg hover:bg-[#dedd52] transition-colors h-full text-center flex items-center justify-center"
+          className="w-full uppercase bg-[#FFFE69] text-black font-bold px-4 py-2 rounded-lg hover:bg-[#dedd52] transition-colors h-full text-center flex items-center justify-center"
         >
           {t("generateMap.generateYourMap")}
         </Link>
