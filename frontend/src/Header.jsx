@@ -162,7 +162,7 @@ const Header = () => {
             {t("generateMap.generateYourMap")}
           </LinkButton>
           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse z-10">
-            Nuovo
+            {t("new")}
           </span>
         </div>
       </div>

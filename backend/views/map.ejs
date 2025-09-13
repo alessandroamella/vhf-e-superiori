@@ -178,6 +178,25 @@
                     '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
+            // Track unique markers to avoid duplicates
+            const uniqueMarkers = new Map();
+
+            // Create a red icon for from stations with fallback
+            let redIcon;
+            try {
+                redIcon = new L.Icon({
+                    iconUrl: '<%= markerAssets.redIcon %>',
+                    shadowUrl: '<%= markerAssets.shadowIcon %>',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                });
+            } catch (error) {
+                console.warn('Failed to create red icon, using default:', error);
+                redIcon = new L.Icon.Default();
+            }
+
             qsos.forEach(function (qso) {
                 if (
                     qso.fromStationLat &&
@@ -194,26 +213,41 @@
                         { color: "#ef4444", weight: 3, opacity: 0.7 }
                     ).addTo(map);
 
-                    // From Station Marker
-                    L.marker([qso.fromStationLat, qso.fromStationLon])
-                        .bindPopup(
+                    // From Station Marker (only if not already added)
+                    const fromKey = `${qso.fromStationLat},${qso.fromStationLon}`;
+                    if (!uniqueMarkers.has(fromKey)) {
+                        // Create marker with red icon, fallback to default if icon fails
+                        let fromMarker;
+                        try {
+                            fromMarker = L.marker([qso.fromStationLat, qso.fromStationLon], { icon: redIcon });
+                        } catch (error) {
+                            console.warn('Failed to use red icon, using default marker:', error);
+                            fromMarker = L.marker([qso.fromStationLat, qso.fromStationLon]);
+                        }
+                        
+                        fromMarker.bindPopup(
                             "<b>" +
                                 (qso.fromStationCallsignOverride ||
                                     qso.fromStation.callsign) +
                                 "</b><br>Locator: " +
                                 qso.fromLocator
-                        )
-                        .addTo(map);
+                        ).addTo(map);
+                        uniqueMarkers.set(fromKey, true);
+                    }
 
-                    // To Station Marker
-                    L.marker([qso.toStationLat, qso.toStationLon])
-                        .bindPopup(
-                            "<b>" +
-                                qso.callsign +
-                                "</b><br>Locator: " +
-                                qso.toLocator
-                        )
-                        .addTo(map);
+                    // To Station Marker (only if not already added)
+                    const toKey = `${qso.toStationLat},${qso.toStationLon}`;
+                    if (!uniqueMarkers.has(toKey)) {
+                        L.marker([qso.toStationLat, qso.toStationLon])
+                            .bindPopup(
+                                "<b>" +
+                                    qso.callsign +
+                                    "</b><br>Locator: " +
+                                    qso.toLocator
+                            )
+                            .addTo(map);
+                        uniqueMarkers.set(toKey, true);
+                    }
                 }
             });
         </script>

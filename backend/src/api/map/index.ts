@@ -72,6 +72,35 @@ class MapExporter {
     }
   }
 
+  async fetchMarkerAssets(): Promise<{ redIcon: string; shadowIcon: string }> {
+    try {
+      const redIconPath = path.join(
+        process.cwd(),
+        "assets",
+        "marker-icon-2x-red.png",
+      );
+      const shadowIconPath = path.join(
+        process.cwd(),
+        "assets",
+        "marker-shadow.png",
+      );
+
+      const [redIconBuffer, shadowIconBuffer] = await Promise.all([
+        readFile(redIconPath),
+        readFile(shadowIconPath),
+      ]);
+
+      return {
+        redIcon: `data:image/png;base64,${redIconBuffer.toString("base64")}`,
+        shadowIcon: `data:image/png;base64,${shadowIconBuffer.toString("base64")}`,
+      };
+    } catch (error) {
+      logger.error("Error fetching marker assets from file");
+      logger.error(error);
+      throw error;
+    }
+  }
+
   private generateCacheKey(
     eventId: string,
     callsign: string | null,
@@ -132,6 +161,8 @@ class MapExporter {
       const image = await this.fetchImage();
       const imageBase64 = `data:image/png;base64,${image.toString("base64")}`;
 
+      const markerAssets = await this.fetchMarkerAssets();
+
       const points = [
         ...qsos.map((qso) => [qso.toStationLat!, qso.toStationLon!]),
         ...qsos.map((qso) => [qso.fromStationLat!, qso.fromStationLon!]),
@@ -150,6 +181,7 @@ class MapExporter {
         profilePic,
         points,
         hasAllQsos,
+        markerAssets,
       });
 
       // writeFileSync(path.join(process.cwd(), "map.html"), renderedHtml);

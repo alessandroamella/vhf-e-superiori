@@ -16,18 +16,6 @@ import {
   FaShareAlt,
 } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import {
-  EmailIcon,
-  EmailShareButton,
-  FacebookIcon,
-  FacebookShareButton,
-  TelegramIcon,
-  TelegramShareButton,
-  TwitterIcon,
-  TwitterShareButton,
-  WhatsappIcon,
-  WhatsappShareButton,
-} from "react-share";
 import { UserContext } from "../App";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
 import { getErrorStr } from "../shared";
@@ -84,7 +72,7 @@ const GenerateMapPublicPage = () => {
 
   const setAlert = useCallback((alert) => {
     _setAlert(alert);
-    if (alert?.color === "failure") {
+    if (alert && alert.color !== "success") {
       mainRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, []);
@@ -98,7 +86,7 @@ const GenerateMapPublicPage = () => {
         setAdifFile(null);
         setAlert({
           color: "failure",
-          msg: t("generateMap.errors.INVALID_ADIF_FILE"),
+          msg: t("errors.INVALID_ADIF_FILE"),
         }); // Aggiungi questa traduzione
       }
     },
@@ -137,19 +125,19 @@ const GenerateMapPublicPage = () => {
     setGeneratedMapUrl(null);
 
     if (!adifFile) {
-      setAlert({ color: "failure", msg: t("generateMap.errors.NO_ADIF_FILE") });
+      setAlert({ color: "failure", msg: t("errors.NO_ADIF_FILE") });
       return;
     }
 
     if (!qth.trim()) {
-      setAlert({ color: "failure", msg: t("generateMap.errors.QTH_REQUIRED") });
+      setAlert({ color: "failure", msg: t("errors.QTH_REQUIRED") });
       return;
     }
 
     if (!turnstileToken) {
       setAlert({
         color: "failure",
-        msg: t("generateMap.errors.TURNSTILE_REQUIRED"),
+        msg: t("errors.TURNSTILE_REQUIRED"),
       });
       return;
     }
@@ -202,7 +190,7 @@ const GenerateMapPublicPage = () => {
     } catch (err) {
       console.error("Error generating map:", err?.response?.data);
 
-      let errorMsg = t("generateMap.errors.UNKNOWN_ERROR");
+      let errorMsg = t("errors.UNKNOWN_ERROR");
 
       // If response data is a blob (JSON error), parse it
       if (err?.response?.data instanceof Blob) {
@@ -236,7 +224,7 @@ const GenerateMapPublicPage = () => {
     if (generatedMapUrl && savedValues.adifFileName) {
       saveAs(
         generatedMapUrl,
-        `mappa-${savedValues.adifFileName.replace(".adi", "")}.jpg`,
+        `mappa-${savedValues.adifFileName.split(".").slice(0, -1).join(".")}.jpg`,
       );
     }
   };
@@ -262,7 +250,7 @@ const GenerateMapPublicPage = () => {
       files: [file],
     };
 
-    if (navigator.share && navigator.canShare(shareData)) {
+    if (navigator.share && navigator.canShare?.(shareData)) {
       try {
         await navigator.share(shareData);
       } catch (error) {
@@ -286,7 +274,7 @@ const GenerateMapPublicPage = () => {
     console.error("Turnstile error:", error);
     setAlert({
       color: "failure",
-      msg: t("generateMap.errors.TURNSTILE_ERROR"),
+      msg: t("errors.CAPTCHA_FAILED"),
     });
     setTurnstileToken(null);
   };
@@ -567,7 +555,7 @@ const GenerateMapPublicPage = () => {
                       size="lg"
                       className="flex-1 sm:flex-none"
                     >
-                      <FaDownload className="mr-2" />
+                      <FaDownload className="mr-2 mt-[3px]" />
                       {t("generateMap.downloadMap")}
                     </Button>
                     <Button
@@ -576,13 +564,13 @@ const GenerateMapPublicPage = () => {
                       size="lg"
                       className="flex-1 sm:flex-none"
                     >
-                      <FaShareAlt className="mr-2" />
+                      <FaShareAlt className="mr-2 mt-[3px]" />
                       {t("generateMap.shareMap")}
                     </Button>
                   </div>
 
                   {/* Social Share Section */}
-                  <div className="text-center">
+                  {/* <div className="text-center">
                     <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">
                       {t("generateMap.shareOnSocialMedia")}
                     </p>
@@ -644,7 +632,7 @@ const GenerateMapPublicPage = () => {
                         <EmailIcon size={40} round />
                       </EmailShareButton>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Footer Note */}
                   <div className="text-center pt-6 border-t border-gray-200 dark:border-gray-700">
