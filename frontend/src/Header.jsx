@@ -8,7 +8,7 @@ import { UserContext } from "./App";
 import Flags from "./Flags";
 import LogoBtns from "./homepage/LogoBtns";
 
-const LinkButton = ({ to, children, keepCurrent }) => {
+const LinkButton = ({ to, children, keepCurrent, color }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
@@ -22,7 +22,7 @@ const LinkButton = ({ to, children, keepCurrent }) => {
     <Button
       as={Link}
       to={{ pathname: to, search: searchParams.toString() }}
-      color={isActive ? "purple" : "info"}
+      color={isActive ? "purple" : color || "info"}
       className="uppercase w-full"
     >
       {children}
@@ -150,8 +150,9 @@ const Header = () => {
           </LinkButton>
         )}
         <LinkButton to="/rankings">{t("scoreboards")}</LinkButton>
+
         <div className="relative col-span-2 lg:col-span-1">
-          <LinkButton to="/generate-map">
+          <LinkButton to="/generate-map" color="yellow">
             {t("generateMap.generateYourMap")}
           </LinkButton>
           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse z-10">
