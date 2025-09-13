@@ -277,7 +277,7 @@ router.get("/", async (_req, res) => {
   logger.debug("Getting rankings for current solar year");
 
   const startOfYear = moment().startOf("year");
-  const endOfYear = moment().endOf("year");
+  // const endOfYear = moment().endOf("year");
 
   // Check cache
   if (
