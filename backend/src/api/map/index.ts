@@ -23,15 +23,17 @@ class MapExporter {
         logger.error("Invalid image metadata");
         return null;
       }
-      const newWidth = Math.round(metadata.width * 0.1);
-      const newHeight = Math.round(metadata.height * 0.1);
+      // const newWidth = Math.round(metadata.width * 0.5);
+      // const newHeight = Math.round(metadata.height * 0.5);
+      const newWidth = Math.round(metadata.width);
+      const newHeight = Math.round(metadata.height);
 
       const buffer = await sharp(imgBuffer)
-        .resize(newWidth, newHeight) // Resize to 10% of original
-        .png({ quality: 80, compressionLevel: 9 }) // Optimize PNG
+        .resize(newWidth, newHeight) // Resize to 50% of original
+        .png({ quality: 95 })
         .toBuffer();
 
-      logger.debug("Image processed successfully");
+      logger.debug(`Map image processed to ${newWidth}x${newHeight}`);
 
       return buffer;
     } catch (error) {
@@ -72,15 +74,19 @@ class MapExporter {
 
   private generateCacheKey(
     eventId: string,
-    callsign: string,
+    callsign: string | null,
     qsos: QsoDoc[],
   ): string {
     const sortedQsoIds = qsos
       .map((qso) => qso.id)
       .sort()
       .join(",");
-    const str = `${eventId}_${callsign}_${sortedQsoIds}`;
-    return crypto.createHash("sha256").update(str).digest("hex");
+    const str = `${eventId}_${callsign ? `${callsign}_` : ""}${sortedQsoIds}`;
+    const cacheKey = crypto.createHash("sha256").update(str).digest("hex");
+    logger.debug(
+      `Generated cache key: ${cacheKey.slice(0, 6)}...${cacheKey.slice(-6)} from string: ${str}`,
+    );
+    return cacheKey;
   }
 
   private getCacheFilePath(cacheKey: string): string {
@@ -90,7 +96,7 @@ class MapExporter {
 
   async exportMapToJpg(
     event: EventDoc,
-    callsign: string,
+    callsign: string | null,
     qsos: QsoDoc[],
     profilePic?: string,
     hasAllQsos = false,
@@ -131,7 +137,7 @@ class MapExporter {
         ...qsos.map((qso) => [qso.fromStationLat!, qso.fromStationLon!]),
       ].filter(([lat, lon]) => lat && lon);
 
-      logger.debug(`Points: ${JSON.stringify(points, null, 2)}`);
+      logger.debug(`Points: ${JSON.stringify(points)}`);
 
       const templatePath = path.join(process.cwd(), "views/map.ejs");
       const templateContent = await readFile(templatePath, "utf-8");
@@ -149,19 +155,15 @@ class MapExporter {
       // writeFileSync(path.join(process.cwd(), "map.html"), renderedHtml);
 
       logger.debug(
-        `Exporting map to JPG with: ${JSON.stringify(
-          {
-            event,
-            callsign,
-            "qsos (length)": qsos.length,
-            profilePic,
-            points,
-            cacheKey,
-            hasAllQsos,
-          },
-          null,
-          2,
-        )}`,
+        `Exporting map to JPG with: ${JSON.stringify({
+          event,
+          callsign,
+          "qsos (length)": qsos.length,
+          profilePic,
+          points,
+          cacheKey,
+          hasAllQsos,
+        })}`,
       );
 
       const browser = await puppeteer.launch({
@@ -186,7 +188,7 @@ class MapExporter {
       await browser.close();
 
       // upscale to 1080p, export 90% jpg
-      const buffer = await sharp(_buffer).jpeg({ quality: 90 }).toBuffer();
+      const buffer = await sharp(_buffer).jpeg({ quality: 95 }).toBuffer();
 
       logger.info(
         `Map of user ${callsign} for event ${event.name} exported to JPG with ${qsos.length} QSO(s) as cache key ${cacheKey}`,

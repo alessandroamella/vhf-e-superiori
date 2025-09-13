@@ -74,4 +74,5 @@ export interface Record {
   stx?: string;
   stx_string?: string;
   srx_string?: string;
+  notes?: string;
 }

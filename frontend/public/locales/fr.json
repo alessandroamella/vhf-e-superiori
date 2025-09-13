@@ -185,7 +185,10 @@
     "openInNewTab": "Ouvrir dans un nouvel onglet",
     "pdfLoadError": "Impossible d'afficher le PDF dans le navigateur.",
     "pdfViewerTitle": "Visionneuse PDF - {{filename}}",
-    "selectPdfToView": "Sélectionnez un PDF pour l'afficher."
+    "selectPdfToView": "Sélectionnez un PDF pour l'afficher.",
+    "yourGeneratedMap": "Votre Carte Générée",
+    "shareOnSocialMedia": "Partager sur les réseaux sociaux",
+    "poweredBy": "Fièrement propulsé par"
   },
   "errors": {
     "USER_NOT_FOUND": "Utilisateur introuvable. Il a peut-être été supprimé",

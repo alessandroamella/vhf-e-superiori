@@ -20,6 +20,7 @@ import Qso from "./event/Qso";
 import QsoManager from "./event/QsoManager";
 import Rankings from "./event/Rankings";
 import ProgettiGianni from "./homepage/ProgettiGianni";
+import GenerateMapPublicPage from "./map/GenerateMapPublicPage"; // <-- NUOVA IMPORTAZIONE
 import Profile from "./profile";
 import ResetPw from "./profile/ResetPw";
 import reportWebVitals from "./reportWebVitals";
@@ -84,6 +85,11 @@ const AppRoutes = () => {
               <Route path="/blog/editor" element={<BlogPostEditor />} />
               <Route path="/blog/:id" element={<BlogPostViewer />} />
               <Route path="/antenne-gianni" element={<AntenneGianni />} />
+              {/* NUOVA ROTTA */}
+              <Route
+                path="/generate-adif-map"
+                element={<GenerateMapPublicPage />}
+              />
               <Route path="*" element={<NotFoundPage />} />
               {/* <Route
               path="contacts/:contactId"

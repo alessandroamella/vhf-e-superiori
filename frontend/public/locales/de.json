@@ -185,7 +185,10 @@
     "openInNewTab": "In neuem Tab öffnen",
     "pdfLoadError": "PDF konnte im Browser nicht angezeigt werden.",
     "pdfViewerTitle": "PDF-Viewer - {{filename}}",
-    "selectPdfToView": "Wählen Sie ein PDF aus, um es anzuzeigen."
+    "selectPdfToView": "Wählen Sie ein PDF aus, um es anzuzeigen.",
+    "yourGeneratedMap": "La Tua Mappa Generata",
+    "shareOnSocialMedia": "Condividi sui social media",
+    "poweredBy": "Orgogliosamente alimentato da"
   },
   "errors": {
     "USER_NOT_FOUND": "Benutzer nicht gefunden. Er wurde möglicherweise gelöscht",

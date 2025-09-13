@@ -184,7 +184,10 @@
     "openInNewTab": "Iftaħ f'tab ġdida",
     "pdfLoadError": "Ma setax jintwera l-PDF fil-browser.",
     "pdfViewerTitle": "Viewer tal-PDF - {{filename}}",
-    "selectPdfToView": "Agħżel PDF biex tarah."
+    "selectPdfToView": "Agħżel PDF biex tarah.",
+    "yourGeneratedMap": "Il-Mappa Ġġenerata Tiegħek",
+    "shareOnSocialMedia": "Aqsam fuq il-midja soċjali",
+    "poweredBy": "Bil-kburija mħaddma minn"
   },
   "errors": {
     "USER_NOT_FOUND": "Utent ma nstabx. Jista' jkun tħassar",

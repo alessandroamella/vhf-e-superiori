@@ -189,6 +189,35 @@
     "pdfViewerTitle": "PDF Viewer - {{filename}}",
     "selectPdfToView": "Select a PDF to view it."
   },
+  "generateMap": {
+    "generateYourMap": "Generate your map",
+    "generateYourMapTitle": "Generate your QSO map from ADIF file",
+    "generateYourMapDescription": "Upload your ADIF file and create a personalized map of your contacts. No registration required!",
+    "adifFile": "ADIF File",
+    "adifFileHelper": "Select your .adi or .adif file. Max 10MB.",
+    "operatorCallsign": "Operator callsign (Optional)",
+    "mapTitle": "Map title (Optional)",
+    "myAdifMap": "My ADIF map",
+    "locator": "Locator",
+    "generateMap": "Generate Map",
+    "generatingMap": "Generating map...",
+    "viewGeneratedMap": "View Generated Map",
+    "yourMap": "Your Map",
+    "generatedQsoMap": "Generated QSO Map",
+    "downloadMap": "Download Map",
+    "shareMap": "Share Map",
+    "shareMapText": "I generated my QSO map from ADIF on vhfesuperiori.eu!",
+    "shareMapTextBody": "Hi! I just generated a beautiful map of my QSOs from ADIF for {event} on vhfesuperiori.eu. You can do it too!",
+    "shareApiNotSupported": "The native sharing function is not supported by your browser, you can download the image.",
+    "noMapToDisplay": "No map to display.",
+    "resetAndNewMap": "Reset and New Map",
+    "generateNewMap": "Generate New Map",
+    "fileSelected": "File selected: {{fileName}}",
+    "mapGeneratedSuccess": "Map generated successfully!",
+    "yourGeneratedMap": "Your Generated Map",
+    "shareOnSocialMedia": "Share on social media",
+    "poweredBy": "Proudly powered by"
+  },
   "errors": {
     "USER_NOT_FOUND": "User not found. It might have been deleted",
     "INVALID_PW": "Invalid password",
@@ -279,6 +308,7 @@
     "INVALID_TITLE": "Invalid title",
     "INVALID_TAGS": "Invalid tags",
     "INVALID_IMAGE": "Invalid image",
-    "MUST_BE_DEV": "You must be a site developer to complete this action"
+    "MUST_BE_DEV": "You must be a site developer to complete this action",
+    "INVALID_ADIF_FILE": "Invalid ADIF file. Please ensure it is a .adi or .adif file."
   }
 }

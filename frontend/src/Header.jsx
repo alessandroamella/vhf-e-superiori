@@ -141,7 +141,7 @@ const Header = () => {
           </form>
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-2 justify-items-center">
+      <div className="mt-4 grid grid-cols-2 lg:grid-cols-5 gap-2 justify-items-center">
         <LinkButton to="/social">{t("photoVideo")}</LinkButton>
         <LinkButton to="/beacon">{t("beacon")}</LinkButton>
         {user === false ? (
@@ -157,6 +157,9 @@ const Header = () => {
           </LinkButton>
         )}
         <LinkButton to="/rankings">{t("scoreboards")}</LinkButton>
+        <LinkButton to="/generate-adif-map">
+          {t("generateMap.generateYourMap")}
+        </LinkButton>
       </div>
     </header>
   );

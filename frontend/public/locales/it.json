@@ -189,6 +189,37 @@
     "pdfViewerTitle": "Visualizzatore PDF - {{filename}}",
     "selectPdfToView": "Seleziona un PDF per visualizzarlo"
   },
+  "generateMap": {
+    "generateYourMap": "Genera la tua mappa",
+    "generateYourMapTitle": "Genera la tua mappa QSO da file ADIF",
+    "generateYourMapDescription": "Carica il tuo file ADIF e crea una mappa personalizzata dei tuoi collegamenti. Non è richiesta la registrazione!",
+    "adifFile": "File ADIF",
+    "adifFileHelper": "Seleziona il tuo file .adi o .adif. Max 10MB.",
+    "operatorCallsign": "Nominativo operatore",
+    "mapTitle": "Titolo della mappa",
+    "myAdifMap": "La mia mappa ADIF",
+    "locator": "Locatore",
+    "generateMap": "Genera Mappa",
+    "generatingMap": "Generazione mappa in corso...",
+    "viewGeneratedMap": "Visualizza Mappa Generata",
+    "yourMap": "La tua Mappa",
+    "generatedQsoMap": "Mappa QSO Generata",
+    "downloadMap": "Scarica mappa",
+    "shareMap": "Condividi mappa",
+    "shareMapText": "Ho generato la mia mappa QSO da ADIF su vhfesuperiori.eu!",
+    "shareMapTextBody": "Ciao! Ho appena generato una mappa dei miei QSO da ADIF per {event} su vhfesuperiori.eu. Puoi farlo anche tu!",
+    "shareApiNotSupported": "La funzione di condivisione nativa non è supportata dal tuo browser, puoi scaricare l'immagine.",
+    "noMapToDisplay": "Nessuna mappa da visualizzare.",
+    "resetAndNewMap": "Resetta e nuova mappa",
+    "generateNewMap": "Genera nuova mappa",
+    "fileSelected": "File selezionato: {{fileName}}",
+    "mapGeneratedSuccess": "Mappa generata con successo!",
+    "yourGeneratedMap": "La tua mappa generata",
+    "shareOnSocialMedia": "Condividi sui social media",
+    "poweredBy": "Sviluppato da",
+    "dropAdifFile": "Rilascia qui il tuo file ADIF...",
+    "dragOrClickAdif": "Trascina qui il tuo file ADIF, o clicca per selezionarlo."
+  },
   "errors": {
     "USER_NOT_FOUND": "Utente non trovato. Potrebbe essere stato cancellato",
     "INVALID_PW": "Password non valida",
@@ -279,6 +310,7 @@
     "INVALID_TITLE": "Titolo non valido",
     "INVALID_TAGS": "Tag non validi",
     "INVALID_IMAGE": "Immagine non valida",
-    "MUST_BE_DEV": "Devi essere uno sviluppatore del sito per completare questa azione"
+    "MUST_BE_DEV": "Devi essere uno sviluppatore del sito per completare questa azione",
+    "INVALID_ADIF_FILE": "File ADIF non valido. Assicurati che sia un file .adi o .adif."
   }
 }

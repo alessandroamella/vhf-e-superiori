@@ -45,7 +45,8 @@
       },
       "style": {
         "noNonNullAssertion": "off",
-        "useImportType": "off"
+        "useImportType": "off",
+        "useTemplate": "warn"
       },
       "nursery": {},
       "complexity": {

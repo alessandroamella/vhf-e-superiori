@@ -16,7 +16,6 @@ import isLoggedIn from "../../middlewares/isLoggedIn";
 import { Qso } from "../../qso/models";
 import { getEventDate } from "../../utils/eventDate";
 import { ParsedAdif } from "../interfaces";
-import { EdiToAdifConverter } from "../utils/edi-to-adif";
 
 const router = Router();
 
@@ -33,7 +32,7 @@ function parseExclude(exclude: string): Exclusion[] {
  * @openapi
  * /api/adif/import:
  *  post:
- *    summary: Parse ADIF or EDI file. MUST CONTAIN adif FILE
+ *    summary: Parse ADIF file. MUST CONTAIN adif FILE
  *    requestBody:
  *      required: true
  *      content:
@@ -53,7 +52,7 @@ function parseExclude(exclude: string): Exclusion[] {
  *      '200':
  *        description: Parsed ADIF
  *      '400':
- *        description: Invalid ADIF or EDI
+ *        description: Invalid ADIF
  *        content:
  *          application/json:
  *            schema:
@@ -114,7 +113,7 @@ router.post(
 
     const _adif = req.files.adif;
     if (!_adif) {
-      logger.debug("No adif/edi file");
+      logger.debug("No adif file");
       return res.status(BAD_REQUEST).json(createError(Errors.INVALID_ADIF));
     }
     const uploadedFile = Array.isArray(_adif) ? _adif[0] : _adif;
@@ -137,32 +136,8 @@ router.post(
     const { save } = req.body; // toBoolean already converts to boolean
 
     try {
-      let text = await readFile(uploadedFile.tempFilePath, "utf-8");
-      const fileExtension = path.extname(uploadedFile.name || "").toLowerCase();
+      const text = await readFile(uploadedFile.tempFilePath, "utf-8");
       await unlink(uploadedFile.tempFilePath);
-
-      // Convert EDI to ADIF if necessary
-      if (fileExtension === ".edi") {
-        try {
-          logger.debug("Converting EDI file to ADIF format");
-          const conversionResult = EdiToAdifConverter.convert(text);
-
-          if (!conversionResult.success) {
-            logger.error("EDI to ADIF conversion failed");
-            return res
-              .status(BAD_REQUEST)
-              .json(createError(Errors.INVALID_ADIF));
-          }
-
-          text = conversionResult.adifData;
-          logger.debug(
-            `Converted EDI to ADIF: ${conversionResult.qsoCount.wrote} QSOs converted`,
-          );
-        } catch (error) {
-          logger.error("Error converting EDI to ADIF:", error);
-          return res.status(BAD_REQUEST).json(createError(Errors.INVALID_ADIF));
-        }
-      }
 
       // logger.debug("Parsing text");
       // logger.debug(text);

@@ -185,7 +185,10 @@
     "openInNewTab": "Abrir en nueva pestaña",
     "pdfLoadError": "No se pudo mostrar el PDF en el navegador.",
     "pdfViewerTitle": "Visor de PDF - {{filename}}",
-    "selectPdfToView": "Selecciona un PDF para verlo."
+    "selectPdfToView": "Selecciona un PDF para verlo.",
+    "yourGeneratedMap": "Tu Mapa Generado",
+    "shareOnSocialMedia": "Compartir en redes sociales",
+    "poweredBy": "Orgullosamente impulsado por"
   },
   "errors": {
     "USER_NOT_FOUND": "Usuario no encontrado. Podría haber sido eliminado",

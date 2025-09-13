@@ -1,5 +1,4 @@
 import { readFile, unlink } from "node:fs/promises";
-import path from "node:path";
 import { AdifParser } from "adif-parser-ts";
 import express, { NextFunction, Request, Response } from "express";
 import fileUpload from "express-fileupload";
@@ -8,7 +7,6 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import moment from "moment";
 import { logger } from "../../../shared";
 import { ParsedAdif } from "../../adif/interfaces";
-import { EdiToAdifConverter } from "../../adif/utils/edi-to-adif";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import { location } from "../../location";
@@ -50,7 +48,7 @@ interface QsoLikeData {
  * @openapi
  * /api/map/generate-adif-public:
  *  post:
- *    summary: Generate QSO map from ADIF or EDI file for non-registered users
+ *    summary: Generate QSO map from ADIF file for non-registered users
  *    requestBody:
  *      required: true
  *      content:
@@ -61,7 +59,7 @@ interface QsoLikeData {
  *              adif:
  *                type: string
  *                format: binary
- *                description: ADIF or EDI file to process
+ *                description: ADIF file to process
  *              turnstileToken:
  *                type: string
  *                description: Cloudflare Turnstile token for bot protection
@@ -80,6 +78,9 @@ interface QsoLikeData {
  *              offsetFrom:
  *                type: number
  *                description: Optional from text position offset
+ *              qth:
+ *                type: string
+ *                description: Optional QTH (location) to geocode for from station coordinates when not available in ADIF
  *            required:
  *              - adif
  *              - turnstileToken
@@ -94,7 +95,7 @@ interface QsoLikeData {
  *              type: string
  *              format: binary
  *      '400':
- *        description: Invalid request, ADIF, or EDI
+ *        description: Invalid request or ADIF
  *        content:
  *          application/json:
  *            schema:
@@ -114,6 +115,7 @@ router.post(
   body("offsetCallsign").optional().isNumeric(),
   body("offsetData").optional().isNumeric(),
   body("offsetFrom").optional().isNumeric(),
+  body("qth").optional().isString().trim(),
   validate,
   (req: Request, _res: Response, next: NextFunction) => {
     // Map turnstileToken to token for checkCaptcha middleware
@@ -123,9 +125,9 @@ router.post(
   checkCaptcha, // This expects turnstileToken in body as "token"
   async (req: Request, res: Response) => {
     try {
-      // Validate that ADIF/EDI file was uploaded
+      // Validate that ADIF file was uploaded
       if (!req.files || !req.files.adif) {
-        logger.debug("No ADIF/EDI file uploaded");
+        logger.debug("No ADIF file uploaded");
         return res.status(BAD_REQUEST).json(createError(Errors.NO_CONTENT));
       }
 
@@ -135,44 +137,18 @@ router.post(
         : _adif;
 
       let text: string;
-      let fileExtension: string;
       try {
         // Read the uploaded file
         text = await readFile(uploadedFile.tempFilePath, "utf-8");
-        fileExtension = path.extname(uploadedFile.name || "").toLowerCase();
         await unlink(uploadedFile.tempFilePath); // Clean up temp file
       } catch (error) {
         logger.error("Error reading uploaded file:", error);
         return res.status(BAD_REQUEST).json(createError(Errors.INVALID_ADIF));
       }
 
-      // Convert EDI to ADIF if necessary
-      if (fileExtension === ".edi") {
-        try {
-          logger.debug("Converting EDI file to ADIF format");
-          const conversionResult = EdiToAdifConverter.convert(text);
-
-          if (!conversionResult.success) {
-            logger.error("EDI to ADIF conversion failed");
-            return res
-              .status(BAD_REQUEST)
-              .json(createError(Errors.INVALID_ADIF));
-          }
-
-          text = conversionResult.adifData;
-          logger.debug(
-            `Converted EDI to ADIF: ${conversionResult.qsoCount.wrote} QSOs converted`,
-          );
-        } catch (error) {
-          logger.error("Error converting EDI to ADIF:", error);
-          return res.status(BAD_REQUEST).json(createError(Errors.INVALID_ADIF));
-        }
-      }
-
       let parsed: ParsedAdif;
       try {
         parsed = AdifParser.parseAdi(text) as unknown as ParsedAdif;
-        console.log({ text, parsed });
         logger.debug(`Parsed ADIF with ${parsed.records.length} records`);
       } catch (error) {
         logger.error("Error parsing ADIF:", error);
@@ -207,6 +183,30 @@ router.post(
         }
       }
 
+      // Geocode QTH if provided for fallback coordinates
+      let fallbackFromStationLat: number | null = null;
+      let fallbackFromStationLon: number | null = null;
+      if (req.body.qth) {
+        try {
+          logger.debug(`Geocoding QTH: ${req.body.qth}`);
+          const geocoded = location.calculateLatLon(req.body.qth);
+          if (geocoded) {
+            fallbackFromStationLat = geocoded[0];
+            fallbackFromStationLon = geocoded[1];
+            logger.debug(
+              `QTH geocoded to: ${fallbackFromStationLat}, ${fallbackFromStationLon}`,
+            );
+          } else {
+            // logger.warn(`Failed to geocode QTH: ${req.body.qth}`);
+            return res
+              .status(BAD_REQUEST)
+              .json(createError(Errors.ERROR_QTH_PARSE));
+          }
+        } catch (error) {
+          logger.warn(`Error geocoding QTH ${req.body.qth}:`, error);
+        }
+      }
+
       // Process QSO records
       const qsoData: QsoLikeData[] = [];
       let fromStationLat: number | null = null;
@@ -214,6 +214,8 @@ router.post(
       let fromLocator: string | null = null;
 
       for (const record of parsed.records) {
+        logger.debug(`Processing QSO with ${record.call}`);
+
         // Extract coordinates and locators
         let toStationLat: number | null = null;
         let toStationLon: number | null = null;
@@ -231,6 +233,13 @@ router.post(
               fromStationLon = coords[1];
               fromLocator = record.my_gridsquare;
             }
+          } else if (fallbackFromStationLat && fallbackFromStationLon) {
+            // Use geocoded QTH as fallback
+            fromStationLat = fallbackFromStationLat;
+            fromStationLon = fallbackFromStationLon;
+            logger.debug(
+              `Using geocoded QTH coordinates for ${record.call}: ${fromStationLat}, ${fromStationLon}`,
+            );
           }
         }
 
@@ -245,6 +254,25 @@ router.post(
             toStationLon = coords[1];
             toLocator = record.gridsquare;
           }
+        } else if (record.notes) {
+          // Try to extract locator from notes field
+          const trimmedNotes = record.notes.trim().toLowerCase();
+          // Check if notes looks like a locator (4 or 6 characters: 2 letters + 2 digits + optionally 2 letters)
+          const locatorPattern = /^[a-z]{2}[0-9]{2}[a-z]{0,2}$/;
+          if (
+            locatorPattern.test(trimmedNotes) &&
+            (trimmedNotes.length === 4 || trimmedNotes.length === 6)
+          ) {
+            const coords = location.calculateLatLon(trimmedNotes);
+            if (coords) {
+              toStationLat = coords[0];
+              toStationLon = coords[1];
+              toLocator = trimmedNotes.toUpperCase();
+              logger.debug(
+                `Extracted locator ${toLocator} from notes for ${record.call}`,
+              );
+            }
+          }
         }
 
         // Skip QSOs without valid coordinates
@@ -254,8 +282,16 @@ router.post(
           !toStationLat ||
           !toStationLon
         ) {
+          const obj = Object.entries({
+            fromStationLat,
+            fromStationLon,
+            toStationLat,
+            toStationLon,
+          })
+            .filter(([, v]) => !v)
+            .map(([k]) => k);
           logger.debug(
-            `Skipping QSO with ${record.call} - missing coordinates`,
+            `Skipping QSO with ${record.call} - missing coordinates: ${obj.join(", ")}`,
           );
           continue;
         }
@@ -302,8 +338,8 @@ router.post(
       // Create dummy event object
       const eventTitle = req.body.eventTitle || "Mappa ADIF Generata";
       const dummyEvent: DummyEvent = {
-        _id: "dummy-event-id",
-        id: "dummy-event-id",
+        _id: `dummy-adif-export-${eventTitle}`,
+        id: `dummy-adif-export-${eventTitle}`,
         name: eventTitle,
         date: new Date(),
         offsetCallsign: req.body.offsetCallsign
@@ -322,7 +358,7 @@ router.post(
       const buffer = await mapExporter.exportMapToJpg(
         // biome-ignore lint/suspicious/noExplicitAny: type assertion needed for dummyEvent
         dummyEvent as any,
-        operatorCallsign || "UNKNOWN",
+        operatorCallsign || null,
         // biome-ignore lint/suspicious/noExplicitAny: type assertion needed for qsoData
         qsoData as any,
         profilePicUrl,
