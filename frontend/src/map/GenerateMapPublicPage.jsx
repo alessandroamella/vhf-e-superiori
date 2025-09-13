@@ -36,6 +36,8 @@ const GenerateMapPublicPage = () => {
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("darkMode") === "true",
   );
+  const [canShare, setCanShare] = useState(false);
+  const [shareData, setShareData] = useState(null);
 
   // Saved values for the generated map (snapshot when map was created)
   const [savedValues, setSavedValues] = useState({
@@ -68,6 +70,55 @@ const GenerateMapPublicPage = () => {
       window.removeEventListener("storage", checkDarkMode);
     };
   }, []);
+
+  // Check if sharing is supported and prepare share data when map is generated
+  useEffect(() => {
+    const checkShareCapabilityAndPrepareData = async () => {
+      if (!generatedMapUrl) {
+        setCanShare(false);
+        setShareData(null);
+        return;
+      }
+
+      try {
+        // Convert blob URL to File for testing sharing capability
+        const response = await fetch(generatedMapUrl);
+        const blob = await response.blob();
+        const file = new File(
+          [blob],
+          `mappa-${savedValues.adifFileName.split(".").slice(0, -1).join(".")}.jpg`,
+          { type: "image/jpeg" },
+        );
+
+        const testShareData = {
+          title: savedValues.eventTitle || t("generateMap.generatedMap"),
+          text: t("generateMap.shareMapText", {
+            callsign: savedValues.operatorCallsign || "utente",
+            site: "vhfesuperiori.eu",
+          }),
+          files: [file],
+        };
+
+        // Check if the browser supports sharing with files
+        const canShareFiles =
+          navigator.share && navigator.canShare?.(testShareData);
+
+        if (canShareFiles) {
+          setCanShare(true);
+          setShareData(testShareData);
+        } else {
+          setCanShare(false);
+          setShareData(null);
+        }
+      } catch (error) {
+        console.error("Error preparing share data:", error);
+        setCanShare(false);
+        setShareData(null);
+      }
+    };
+
+    checkShareCapabilityAndPrepareData();
+  }, [generatedMapUrl, savedValues, t]);
 
   const mainRef = useRef();
 
@@ -231,39 +282,13 @@ const GenerateMapPublicPage = () => {
   };
 
   const handleShare = async () => {
-    if (!generatedMapUrl) return;
+    if (!shareData || !canShare) return;
 
-    // Convert blob URL back to a File for sharing API
-    const response = await fetch(generatedMapUrl);
-    const blob = await response.blob();
-    const file = new File(
-      [blob],
-      `mappa-${savedValues.adifFileName.split(".").slice(0, -1).join(".")}.jpg`,
-      { type: "image/jpeg" },
-    );
-
-    const shareData = {
-      title: savedValues.eventTitle || t("generateMap.generatedMap"),
-      text: t("generateMap.shareMapText", {
-        callsign: savedValues.operatorCallsign || "utente",
-        site: "vhfesuperiori.eu",
-      }),
-      files: [file],
-    };
-
-    if (navigator.share && navigator.canShare?.(shareData)) {
-      try {
-        await navigator.share(shareData);
-      } catch (error) {
-        console.error("Error sharing:", error);
-        setAlert({ color: "failure", msg: t("generateMap.shareError") });
-      }
-    } else {
-      // setAlert({ color: "info", msg: t("generateMap.shareApiNotSupported") });
-
-      // download it
-      console.log("Sharing not supported, downloading instead:", shareData);
-      saveAs(file);
+    try {
+      await navigator.share(shareData);
+    } catch (error) {
+      console.error("Error sharing:", error);
+      setAlert({ color: "failure", msg: t("generateMap.shareError") });
     }
   };
 
@@ -575,15 +600,17 @@ const GenerateMapPublicPage = () => {
                       <FaDownload className="mr-2 mt-[3px]" />
                       {t("generateMap.downloadMap")}
                     </Button>
-                    <Button
-                      onClick={handleShare}
-                      color="blue"
-                      size="lg"
-                      className="flex-1 sm:flex-none"
-                    >
-                      <FaShareAlt className="mr-2 mt-[3px]" />
-                      {t("shareMap")}
-                    </Button>
+                    {canShare && shareData && (
+                      <Button
+                        onClick={handleShare}
+                        color="blue"
+                        size="lg"
+                        className="flex-1 sm:flex-none"
+                      >
+                        <FaShareAlt className="mr-2 mt-[3px]" />
+                        {t("shareMap")}
+                      </Button>
+                    )}
                   </div>
 
                   {/* Footer Note */}

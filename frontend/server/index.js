@@ -54,6 +54,7 @@ app.use(
           "https://www.googletagmanager.com",
           "https://*.google-analytics.com",
           "https://checkip.amazonaws.com",
+          "blob:",
         ],
         fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
         objectSrc: ["'none'"],
