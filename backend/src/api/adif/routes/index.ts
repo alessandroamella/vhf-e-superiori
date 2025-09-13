@@ -16,6 +16,7 @@ import isLoggedIn from "../../middlewares/isLoggedIn";
 import { Qso } from "../../qso/models";
 import { getEventDate } from "../../utils/eventDate";
 import { ParsedAdif } from "../interfaces";
+import { EdiToAdifConverter } from "../utils/edi-to-adif";
 
 const router = Router();
 
@@ -32,7 +33,7 @@ function parseExclude(exclude: string): Exclusion[] {
  * @openapi
  * /api/adif/import:
  *  post:
- *    summary: Parse ADIF file. MUST CONTAIN adif FILE
+ *    summary: Parse ADIF or EDI file. MUST CONTAIN adif FILE
  *    requestBody:
  *      required: true
  *      content:
@@ -52,7 +53,7 @@ function parseExclude(exclude: string): Exclusion[] {
  *      '200':
  *        description: Parsed ADIF
  *      '400':
- *        description: Invalid ADIF
+ *        description: Invalid ADIF or EDI
  *        content:
  *          application/json:
  *            schema:
@@ -113,10 +114,10 @@ router.post(
 
     const _adif = req.files.adif;
     if (!_adif) {
-      logger.debug("No adif file");
+      logger.debug("No adif/edi file");
       return res.status(BAD_REQUEST).json(createError(Errors.INVALID_ADIF));
     }
-    const adif = Array.isArray(_adif) ? _adif[0] : _adif;
+    const uploadedFile = Array.isArray(_adif) ? _adif[0] : _adif;
 
     const user = await User.findOne({
       _id: reqUser._id,
@@ -133,24 +134,35 @@ router.post(
       return res.status(BAD_REQUEST).json(createError(Errors.EVENT_NOT_FOUND));
     }
 
-    // no longer required
-    // if (!user.isAdmin) {
-    //     const joinRequest = await JoinRequest.findOne({
-    //         forEvent: event._id,
-    //         fromUser: user._id
-    //     });
-    //     if (!joinRequest) {
-    //         return res
-    //             .status(BAD_REQUEST)
-    //             .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
-    //     }
-    // }
-
     const { save } = req.body; // toBoolean already converts to boolean
 
     try {
-      const text = await readFile(adif.tempFilePath, "utf-8");
-      await unlink(adif.tempFilePath);
+      let text = await readFile(uploadedFile.tempFilePath, "utf-8");
+      const fileExtension = path.extname(uploadedFile.name || "").toLowerCase();
+      await unlink(uploadedFile.tempFilePath);
+
+      // Convert EDI to ADIF if necessary
+      if (fileExtension === ".edi") {
+        try {
+          logger.debug("Converting EDI file to ADIF format");
+          const conversionResult = EdiToAdifConverter.convert(text);
+
+          if (!conversionResult.success) {
+            logger.error("EDI to ADIF conversion failed");
+            return res
+              .status(BAD_REQUEST)
+              .json(createError(Errors.INVALID_ADIF));
+          }
+
+          text = conversionResult.adifData;
+          logger.debug(
+            `Converted EDI to ADIF: ${conversionResult.qsoCount.wrote} QSOs converted`,
+          );
+        } catch (error) {
+          logger.error("Error converting EDI to ADIF:", error);
+          return res.status(BAD_REQUEST).json(createError(Errors.INVALID_ADIF));
+        }
+      }
 
       // logger.debug("Parsing text");
       // logger.debug(text);

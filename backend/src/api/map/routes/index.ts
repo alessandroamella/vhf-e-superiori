@@ -8,6 +8,7 @@ import isLoggedIn from "../../middlewares/isLoggedIn";
 import { qrz } from "../../qrz";
 import { Qso } from "../../qso/models";
 import MapExporter from "..";
+import generatePublicRouter from "./generatePublic";
 
 const router = express.Router();
 const mapExporter = new MapExporter();
@@ -87,5 +88,8 @@ router.get(
     }
   },
 );
+
+// Mount the public generation routes
+router.use(generatePublicRouter);
 
 export default router;
