@@ -21,7 +21,7 @@ const Flags = () => {
       ].map(([countryCode, countryName, languageCode]) => (
         <div
           key={countryCode}
-          className="cursor-pointer hover:scale-110 transition-all hover:shadow-lg dark:shadow-white"
+          className="cursor-pointer hover:scale-110 transition-transform"
           onClick={() => handleLanguageChange(languageCode)}
         >
           <Flag
