@@ -25,7 +25,7 @@ const MdViewer = () => {
   }, [name]);
 
   return (
-    <Card className="md:mx-4 lg:mx-6 shadow">
+    <Card className="md:mx-4 md:mt-4 lg:mx-6 shadow">
       {error ? (
         <Alert color="failure">{error}</Alert>
       ) : (
