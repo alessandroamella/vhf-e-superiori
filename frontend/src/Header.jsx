@@ -157,9 +157,14 @@ const Header = () => {
           </LinkButton>
         )}
         <LinkButton to="/rankings">{t("scoreboards")}</LinkButton>
-        <LinkButton to="/generate-adif-map">
-          {t("generateMap.generateYourMap")}
-        </LinkButton>
+        <div className="relative">
+          <LinkButton to="/generate-adif-map">
+            {t("generateMap.generateYourMap")}
+          </LinkButton>
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse z-10">
+            Nuovo
+          </span>
+        </div>
       </div>
     </header>
   );
