@@ -43,7 +43,7 @@
     "@aws-sdk/client-s3": "^3.850.0",
     "@aws-sdk/s3-request-presigner": "^3.850.0",
     "@typegoose/typegoose": "^12.17.0",
-    "adif-parser-ts": "^0.6.24",
+    "adif-parser-ts": "^0.6.26",
     "axios": "^1.11.0",
     "axios-cookiejar-support": "^5.0.5",
     "bcrypt": "^5.1.1",

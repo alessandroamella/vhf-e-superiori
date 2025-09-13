@@ -91,7 +91,7 @@ async function sendEqslEmail(): Promise<void> {
       if (!eqslTemplateImgs.has(event._id.toString())) {
         const eqslPic = new EqslPic(event.eqslUrl);
         await eqslPic.fetchImage();
-        const tempPath = await eqslPic.saveImageToFile();
+        const tempPath = await eqslPic.saveImageToFile(undefined, "png"); // Keep PNG for template processing
         eqslTemplateImgs.set(event._id.toString(), tempPath);
       }
 

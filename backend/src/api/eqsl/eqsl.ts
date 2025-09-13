@@ -72,17 +72,36 @@ class EqslPic {
   }
 
   public async saveImageToFile(
-    _path: string = path.join(
-      envs.BASE_TEMP_DIR,
-      envs.QSL_CARD_TMP_FOLDER,
-      `eqsl-${moment().unix()}-${uuidv4()}.png`,
-    ),
+    _path?: string,
+    forceFormat?: "jpeg" | "png",
   ): Promise<string> {
     if (!this.image) {
       throw new Error("Image not fetched in saveImageToFile");
     }
-    await sharp(this.image).toFile(_path);
-    return _path;
+
+    // Convert to JPEG by default for smaller file sizes, unless PNG is explicitly requested
+    const useJpeg = forceFormat ? forceFormat === "jpeg" : true;
+    const extension = useJpeg ? "jpg" : "png";
+
+    // Generate default path if not provided
+    const filePath =
+      _path ??
+      path.join(
+        envs.BASE_TEMP_DIR,
+        envs.QSL_CARD_TMP_FOLDER,
+        `eqsl-${moment().unix()}-${uuidv4()}.${extension}`,
+      );
+
+    if (useJpeg) {
+      await sharp(this.image)
+        .toFormat("jpeg")
+        .jpeg({ quality: 80 })
+        .toFile(filePath);
+    } else {
+      await sharp(this.image).toFile(filePath);
+    }
+
+    return filePath;
   }
 
   public async addQsoInfo(
@@ -105,7 +124,7 @@ class EqslPic {
     const outPath = path.join(tempDir, `eqsl-${epoch}-${guid}-out.png`); // output image
     const filePath =
       templatePath ?? path.join(tempDir, `eqsl-${epoch}-${guid}.png`); // eQSL card template
-    if (!templatePath) await this.saveImageToFile(filePath);
+    if (!templatePath) await this.saveImageToFile(filePath, "png"); // Keep PNG for ImageMagick processing
     logger.debug(`Saved eQSL image to file ${filePath}`);
 
     const text2 = `Data:${moment(qso.qsoDate).format(
@@ -214,7 +233,7 @@ class EqslPic {
     const tempDir = path.join(envs.BASE_TEMP_DIR, envs.QSL_CARD_TMP_FOLDER);
     const fileName = `eqsl-${stationId}-${moment().unix()}-${uuidv4()}-aws.jpg`;
     const filePath = path.join(tempDir, fileName);
-    await this.saveImageToFile(filePath);
+    await this.saveImageToFile(filePath, "jpeg"); // Use JPEG for AWS upload
 
     const mimeType = "image/jpeg";
 

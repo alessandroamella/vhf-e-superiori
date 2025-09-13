@@ -314,7 +314,14 @@ export class EmailService {
     );
     const eqslPic = new EqslPic(qso.imageHref);
     await eqslPic.fetchImage(eqslBuffer);
-    const filePath = await eqslPic.saveImageToFile();
+    const filePath = await eqslPic.saveImageToFile(
+      path.join(
+        envs.BASE_TEMP_DIR,
+        envs.QSL_CARD_TMP_FOLDER,
+        `eqsl-email-${qso._id}-${moment().unix()}.jpg`,
+      ),
+      "jpeg", // Force JPEG format for smaller file sizes
+    );
     const callsignAlphanum = qso.callsign
       .replace(/[^a-zA-Z0-9]/g, "")
       .toLowerCase();
@@ -362,7 +369,7 @@ export class EmailService {
       html,
       attachments: [
         {
-          filename: `eqsl_${callsignAlphanum}.png`,
+          filename: `eqsl_${callsignAlphanum}.jpg`,
           path: filePath,
         },
       ],

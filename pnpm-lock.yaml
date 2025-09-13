@@ -30,8 +30,8 @@ importers:
         specifier: ^12.17.0
         version: 12.17.0(mongoose@8.16.5(socks@2.8.6))
       adif-parser-ts:
-        specifier: ^0.6.24
-        version: 0.6.24
+        specifier: ^0.6.26
+        version: 0.6.26
       axios:
         specifier: ^1.11.0
         version: 1.11.0
@@ -2584,8 +2584,8 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  adif-parser-ts@0.6.24:
-    resolution: {integrity: sha512-Cy5jbzNdFDMQNOrkaJrpJgbku+PKzA2PpyjGK4qRqOtdF8xwe59o24Aa500McQV8y9AKvprmagr6jEs63nyv5Q==}
+  adif-parser-ts@0.6.26:
+    resolution: {integrity: sha512-PHAuBkH1W19u8OVtuPC1e8r45sWjZGtom9xzoUcLxIOrUQAAADMf4VYsBrgSzmSBJZbryidJeUjvuzFUhp73+Q==}
     engines: {node: '>=14.0.0', npm: '>7.0.0'}
 
   agent-base@6.0.2:
@@ -8731,7 +8731,7 @@ snapshots:
 
   acorn@8.15.0: {}
 
-  adif-parser-ts@0.6.24: {}
+  adif-parser-ts@0.6.26: {}
 
   agent-base@6.0.2:
     dependencies:

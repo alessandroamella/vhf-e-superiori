@@ -293,7 +293,7 @@ export class QsoClass {
         const eqslPic = new EqslPic(eqslTemplateImgUrl);
         logger.debug(`Fetching eQSL template image for event ${event._id}`);
         await eqslPic.fetchImage();
-        const tempPath = await eqslPic.saveImageToFile();
+        const tempPath = await eqslPic.saveImageToFile(undefined, "png"); // Keep PNG for template processing
         eqslTemplateImgPath = tempPath;
       }
       if (!eqslTemplateImgPath) {
