@@ -68,7 +68,7 @@ const Header = () => {
   return (
     <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-2 md:px-8">
       <div className="flex flex-col lg:flex-row md:items-center gap-4">
-        <div className="flex items-center gap-4">
+        <div className="w-full flex items-center gap-4">
           <Link to="/">
             <LazyLoadImage
               className="w-20 md:w-36 cursor-pointer hover:scale-105 transition-transform"
@@ -76,7 +76,7 @@ const Header = () => {
               alt="Logo"
             />
           </Link>
-          <div className="flex flex-col gap-2">
+          <div className="flex md:min-w-[500px] flex-col gap-2">
             <div className="flex items-center gap-">
               <Link
                 to="/"
@@ -131,7 +131,7 @@ const Header = () => {
           </form>
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-2 lg:grid-cols-5 gap-2 justify-items-center items-center">
+      <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-2 justify-items-center items-center">
         <div className="block md:hidden col-span-2 w-full">
           <LogoBtns />
         </div>
@@ -150,19 +150,6 @@ const Header = () => {
           </LinkButton>
         )}
         <LinkButton to="/rankings">{t("scoreboards")}</LinkButton>
-
-        <div className="relative col-span-2 lg:col-span-1 w-full">
-          {/* giallo con testo nero (bianco in dark) */}
-          <Link
-            to="/generate-map"
-            className="bg-[#FFFE69] text-black font-bold px-4 py-2 rounded-lg hover:bg-[#dedd52] transition-colors w-full text-center block"
-          >
-            {t("generateMap.generateYourMap")}
-          </Link>
-          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse z-10">
-            {t("new")}
-          </span>
-        </div>
       </div>
     </header>
   );
