@@ -9,7 +9,7 @@ import { UserContext } from "./App";
 import Flags from "./Flags";
 import LogoBtns from "./homepage/LogoBtns";
 
-const LinkButton = ({ to, children, keepCurrent, className }) => {
+const LinkButton = ({ to, children, keepCurrent, className, disableColor }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
@@ -23,7 +23,7 @@ const LinkButton = ({ to, children, keepCurrent, className }) => {
     <Button
       as={Link}
       to={{ pathname: to, search: searchParams.toString() }}
-      color={isActive ? "purple" : "info"}
+      color={isActive ? "purple" : disableColor ? undefined : "info"}
       className={classNames(`uppercase w-full`, className)}
     >
       {children}
@@ -157,6 +157,7 @@ const Header = () => {
           <LinkButton
             to="/generate-map"
             className="!bg-yellow-400 text-black hover:!bg-yellow-300 dark:text-white dark:!bg-yellow-500 dark:hover:!bg-yellow-400"
+            disableColor
           >
             {t("generateMap.generateYourMap")}
           </LinkButton>
