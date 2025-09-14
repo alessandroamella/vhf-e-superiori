@@ -1,11 +1,12 @@
 import { readFile, unlink } from "node:fs/promises";
 import { AdifParser } from "adif-parser-ts";
-import express, { NextFunction, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import fileUpload from "express-fileupload";
 import { body } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import moment from "moment";
 import { logger } from "../../../shared";
+import { convertEdiToAdif } from "../../../utils/edi-to-adif";
 import { ParsedAdif } from "../../adif/interfaces";
 import { Errors } from "../../errors";
 import type { EventDoc } from "../../event/models";
@@ -28,7 +29,7 @@ type DummyEvent = Pick<
  * @openapi
  * /api/map/generate-adif-public:
  *  post:
- *    summary: Generate QSO map from ADIF file for non-registered users
+ *    summary: Generate QSO map from ADIF or EDI file for non-registered users
  *    requestBody:
  *      required: true
  *      content:
@@ -39,8 +40,8 @@ type DummyEvent = Pick<
  *              adif:
  *                type: string
  *                format: binary
- *                description: ADIF file to process
- *              turnstileToken:
+ *                description: ADIF or EDI file to process
+ *              token:
  *                type: string
  *                description: Cloudflare Turnstile token for bot protection
  *              operatorCallsign:
@@ -63,8 +64,9 @@ type DummyEvent = Pick<
  *                description: Optional QTH (location) to geocode for from station coordinates when not available in ADIF
  *            required:
  *              - adif
- *              - turnstileToken
+ *              - token
  *              - operatorCallsign
+ *              - eventTitle
  *    tags:
  *      - map
  *    responses:
@@ -90,25 +92,20 @@ type DummyEvent = Pick<
  */
 router.post(
   "/generate-adif-public",
-  body("turnstileToken").isString().notEmpty(),
+  body("token").isString().notEmpty(),
   body("operatorCallsign").isString().trim().notEmpty(),
-  body("eventTitle").optional().isString().trim(),
+  body("eventTitle").isString().trim(),
   body("offsetCallsign").optional().isNumeric(),
   body("offsetData").optional().isNumeric(),
   body("offsetFrom").optional().isNumeric(),
   body("qth").optional().isString().trim(),
   validate,
-  (req: Request, _res: Response, next: NextFunction) => {
-    // Map turnstileToken to token for checkCaptcha middleware
-    req.body.token = req.body.turnstileToken;
-    next();
-  },
-  checkCaptcha, // This expects turnstileToken in body as "token"
+  checkCaptcha,
   async (req: Request, res: Response) => {
     try {
-      // Validate that ADIF file was uploaded
+      // Validate that ADIF or EDI file was uploaded
       if (!req.files || !req.files.adif) {
-        logger.debug("No ADIF file uploaded");
+        logger.debug("No ADIF/EDI file uploaded");
         return res.status(BAD_REQUEST).json(createError(Errors.NO_CONTENT));
       }
 
@@ -127,17 +124,41 @@ router.post(
         return res.status(BAD_REQUEST).json(createError(Errors.INVALID_ADIF));
       }
 
+      // Helper function to detect if file is EDI format
+      const isEdiFile = (content: string, filename: string): boolean => {
+        // Check file extension
+        if (filename.toLowerCase().endsWith(".edi")) {
+          return true;
+        }
+        // Check content for EDI markers
+        return (
+          content.includes("[REG1TEST;1]") || content.includes("[QSORecords;")
+        );
+      };
+
+      // Convert EDI to ADIF if needed
+      if (isEdiFile(text, uploadedFile.name || "")) {
+        try {
+          logger.debug("EDI file detected, converting to ADIF");
+          text = convertEdiToAdif(text);
+          logger.debug("Successfully converted EDI to ADIF");
+        } catch (error) {
+          logger.error("Error converting EDI to ADIF:", error);
+          return res.status(BAD_REQUEST).json(createError(Errors.INVALID_ADIF));
+        }
+      }
+
       let parsed: ParsedAdif;
       try {
         parsed = AdifParser.parseAdi(text) as unknown as ParsedAdif;
-        logger.debug(`Parsed ADIF with ${parsed.records.length} records`);
+        logger.debug(`Parsed log with ${parsed.records.length} records`);
       } catch (error) {
-        logger.error("Error parsing ADIF:", error);
+        logger.error("Error parsing log file:", error);
         return res.status(BAD_REQUEST).json(createError(Errors.INVALID_ADIF));
       }
 
       if (!parsed.records || parsed.records.length === 0) {
-        logger.debug("No QSO records found in ADIF");
+        logger.debug("No QSO records found in log file");
         return res.status(BAD_REQUEST).json(createError(Errors.INVALID_ADIF));
       }
 
@@ -338,7 +359,7 @@ router.post(
       }
 
       // Create dummy event object
-      const eventTitle = req.body.eventTitle || "Mappa ADIF Generata";
+      const eventTitle = req.body.eventTitle;
       const dummyEvent: DummyEvent = {
         _id: `dummy-adif-export-${eventTitle}`,
         id: `dummy-adif-export-${eventTitle}`,
@@ -356,7 +377,9 @@ router.post(
       };
 
       // Generate map image
-      logger.info(`Generating map for ${qsoData.length} QSOs from ADIF upload`);
+      logger.info(
+        `Generating map for ${qsoData.length} QSOs from log file upload`,
+      );
       const buffer = await mapExporter.exportMapToJpg(
         // biome-ignore lint/suspicious/noExplicitAny: type assertion needed for dummyEvent
         dummyEvent as any,

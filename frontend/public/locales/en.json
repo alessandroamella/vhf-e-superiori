@@ -195,13 +195,13 @@
   },
   "generateMap": {
     "generateYourMap": "Generate your map",
-    "generateYourMapTitle": "Generate your QSO map from ADIF file",
-    "generateYourMapDescription": "Upload your ADIF file and create a personalized map of your contacts. No registration required!",
-    "adifFile": "ADIF File",
-    "adifFileHelper": "Select your .adi or .adif file. Max 10MB.",
-    "operatorCallsign": "Operator callsign (Optional)",
+    "generateYourMapTitle": "Generate your QSO map from ADIF/EDI file",
+    "generateYourMapDescription": "Upload your ADIF/EDI file and create a personalized map of your contacts. No registration required!",
+    "adifFile": "ADIF/EDI File",
+    "adifFileHelper": "Select your .adi, .adif, or .edi file. Max 10MB.",
+    "operatorCallsign": "Operator callsign",
     "mapTitle": "Map title (Optional)",
-    "myAdifMap": "My ADIF map",
+    "myMap": "My map",
     "locator": "Locator",
     "generateMap": "Generate Map",
     "generatingMap": "Generating map...",
@@ -209,8 +209,8 @@
     "yourMap": "Your Map",
     "generatedQsoMap": "Generated QSO Map",
     "downloadMap": "Download Map",
-    "shareMapText": "I generated my QSO map from ADIF on vhfesuperiori.eu!",
-    "shareMapTextBody": "Hi! I just generated a beautiful map of my QSOs from ADIF for {event} on vhfesuperiori.eu. You can do it too!",
+    "shareMapText": "I generated my QSO map from my ADIF/EDI file on vhfesuperiori.eu!",
+    "shareMapTextBody": "Hi! I just generated a beautiful map of my QSOs from my ADIF/EDI file for {{event}} on vhfesuperiori.eu. You can do it too!",
     "shareApiNotSupported": "The native sharing function is not supported by your browser, you can download the image.",
     "shareError": "Error sharing the map",
     "noMapToDisplay": "No map to display.",
@@ -221,7 +221,9 @@
     "requiredFields": "Fields marked with asterisk are required",
     "yourGeneratedMap": "Your Generated Map",
     "shareOnSocialMedia": "Share on social media",
-    "poweredBy": "Proudly powered by"
+    "poweredBy": "Proudly powered by",
+    "dropAdifFile": "Drop your ADIF/EDI file here...",
+    "dragOrClickAdif": "Drag your .adif, .adi or .edi file here, or click to select it."
   },
   "rankings": {
     "filterByEvent": "Filter by Event",
@@ -409,7 +411,6 @@
     "INVALID_TITLE": "Invalid title",
     "INVALID_TAGS": "Invalid tags",
     "INVALID_IMAGE": "Invalid image",
-    "MUST_BE_DEV": "You must be a site developer to complete this action",
-    "INVALID_ADIF_FILE": "Invalid ADIF file. Please ensure it is a .adi or .adif file."
+    "MUST_BE_DEV": "You must be a site developer to complete this action"
   }
 }

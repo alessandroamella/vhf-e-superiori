@@ -11,6 +11,7 @@ async function cleanTempDir() {
   const tmpPaths = [
     envs.FILE_UPLOAD_TMP_FOLDER,
     envs.QSL_CARD_TMP_FOLDER,
+    envs.MAPS_TMP_FOLDER,
     envs.MONGODUMP_FOLDER,
   ].map((e) => join(cwd(), envs.BASE_TEMP_DIR, e));
 

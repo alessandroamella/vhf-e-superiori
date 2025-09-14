@@ -112,7 +112,7 @@ const GenerateMapPublicPage = () => {
 
         const testShareData = {
           title: savedValues.eventTitle || t("generateMap.generatedMap"),
-          text: t("generateMap.shareMapText", {
+          text: t("generateMap.shareMapTextBody", {
             callsign: savedValues.operatorCallsign || "utente",
             site: "vhfesuperiori.eu",
           }),
@@ -158,7 +158,7 @@ const GenerateMapPublicPage = () => {
         setAdifFile(null);
         setAlert({
           color: "failure",
-          msg: t("errors.INVALID_ADIF_FILE"),
+          msg: t("errors.INVALID_FILE_MIME_TYPE"),
         }); // Aggiungi questa traduzione
       }
     },
@@ -168,8 +168,8 @@ const GenerateMapPublicPage = () => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "application/octet-stream": [".adi", ".adif"], // Tipo MIME comune per i file ADIF
-      "text/plain": [".adi", ".adif"], // Potrebbe essere anche testo semplice
+      "application/octet-stream": [".adi", ".adif", ".edi"], // Tipo MIME comune per i file ADIF/EDI
+      "text/plain": [".adi", ".adif", ".edi"], // Potrebbe essere anche testo semplice
     },
     multiple: false,
   });
@@ -177,15 +177,15 @@ const GenerateMapPublicPage = () => {
   const resetForm = useCallback(() => {
     setAdifFile(null);
     reset({
-      operatorCallsign: "",
-      qth: "",
+      operatorCallsign: user?.callsign || "",
+      qth: user?.locator || "",
       eventTitle: "",
     });
     setGeneratedMapUrl(null);
     setAlert(null);
     setSavedValues({
-      operatorCallsign: user?.callsign || "",
-      qth: user?.locator || "",
+      operatorCallsign: "",
+      qth: "",
       eventTitle: "",
       adifFileName: "",
     });
@@ -215,13 +215,11 @@ const GenerateMapPublicPage = () => {
     const formData = new FormData();
     formData.append("adif", adifFile);
     formData.append("qth", data.qth.trim());
-    formData.append("turnstileToken", turnstileToken);
+    formData.append("token", turnstileToken);
     if (data.operatorCallsign) {
       formData.append("operatorCallsign", data.operatorCallsign);
     }
-    if (data.eventTitle) {
-      formData.append("eventTitle", data.eventTitle);
-    }
+    formData.append("eventTitle", data.eventTitle || t("generateMap.myMap"));
 
     try {
       const response = await axios.post(
@@ -515,7 +513,7 @@ const GenerateMapPublicPage = () => {
                 id="event-title"
                 type="text"
                 {...register("eventTitle")}
-                placeholder={t("generateMap.myAdifMap")}
+                placeholder={t("generateMap.myMap")}
                 disabled={isLoading}
               />
             </div>
