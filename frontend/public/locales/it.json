@@ -196,7 +196,7 @@
   "generateMap": {
     "generateYourMap": "Genera la tua mappa",
     "generateYourMapTitle": "Genera la tua mappa QSO da file ADIF/EDI",
-    "generateYourMapDescription": "Carica il tuo file ADIF/EDI e crea una mappa personalizzata dei tuoi contatti. Non è richiesta la registrazione!",
+    "generateYourMapDescription": "Carica il tuo file ADIF/EDI e crea una mappa personalizzata dei tuoi collegamenti. Non è richiesta la registrazione!",
     "adifFile": "File ADIF/EDI",
     "adifFileHelper": "Seleziona il tuo file .adi, .adif, o .edi. Max 10MB.",
     "operatorCallsign": "Nominativo operatore",
