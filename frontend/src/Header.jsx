@@ -1,6 +1,6 @@
 import { Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link, useLocation } from "react-router";
@@ -41,29 +41,7 @@ const Header = () => {
   const location = useLocation();
   const isHome = location.pathname === "/";
 
-  const [darkMode, setDarkMode] = useState(false); // State for dark mode
-
   const { t } = useTranslation();
-
-  useEffect(() => {
-    // On mount, check localStorage for dark mode preference
-    const storedDarkMode = localStorage.getItem("darkMode");
-    if (storedDarkMode === "true") {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
-
-  useEffect(() => {
-    // Update localStorage and html class when darkMode changes
-    if (darkMode) {
-      localStorage.setItem("darkMode", "true");
-      document.documentElement.classList.add("dark");
-    } else {
-      localStorage.setItem("darkMode", "false");
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
 
   return (
     <header className="bg-lightGray-normal dark:bg-gray-800 dark:text-white py-4 px-2 md:px-8">

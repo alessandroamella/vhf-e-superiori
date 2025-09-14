@@ -21,6 +21,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { UserContext } from "../App";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
 import { getErrorStr } from "../shared";
+import useDarkModeStore from "../stores/darkModeStore";
 
 const GenerateMapPublicPage = () => {
   const { i18n, t } = useTranslation();
@@ -63,9 +64,10 @@ const GenerateMapPublicPage = () => {
   const [generatedMapUrl, setGeneratedMapUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [alert, _setAlert] = useState(null);
-  const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("darkMode") === "true",
-  );
+
+  // Use Zustand store for dark mode
+  const isDarkMode = useDarkModeStore((state) => state.isDarkMode);
+
   const [canShare, setCanShare] = useState(false);
   const [shareData, setShareData] = useState(null);
 
@@ -87,19 +89,6 @@ const GenerateMapPublicPage = () => {
       setValue("qth", user.locator);
     }
   }, [user, setValue]);
-
-  useEffect(() => {
-    function checkDarkMode() {
-      const darkModeValue = localStorage.getItem("darkMode") === "true";
-      setDarkMode(darkModeValue);
-    }
-
-    window.addEventListener("storage", checkDarkMode);
-
-    return () => {
-      window.removeEventListener("storage", checkDarkMode);
-    };
-  }, []);
 
   // Check if sharing is supported and prepare share data when map is generated
   useEffect(() => {
@@ -530,7 +519,7 @@ const GenerateMapPublicPage = () => {
               <Turnstile
                 options={{
                   language: i18n.language || "en",
-                  theme: darkMode ? "dark" : "light",
+                  theme: isDarkMode ? "dark" : "light",
                 }}
                 siteKey={recaptchaSiteKey}
                 onSuccess={handleTurnstileVerify}

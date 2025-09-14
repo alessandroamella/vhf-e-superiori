@@ -54,7 +54,9 @@
       },
       "correctness": {
         "useUniqueElementIds": "off",
-        "noNestedComponentDefinitions": "off"
+        "noNestedComponentDefinitions": "off",
+        "noUndeclaredDependencies": "error",
+        "noUndeclaredVariables": "error"
       },
       "suspicious": {
         "noUnknownAtRules": "off"
