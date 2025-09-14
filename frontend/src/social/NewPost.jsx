@@ -11,6 +11,7 @@ import {
 } from "flowbite-react";
 import PropTypes from "prop-types";
 import React, { useEffect, useMemo, useState } from "react";
+import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -144,6 +145,11 @@ const NewPost = () => {
           console.log("uploading...", percent);
           setUploadPercent(percent);
         },
+      });
+      ReactGA.event({
+        category: "Social",
+        action: "Create New Post",
+        value: files.length,
       });
       console.log(data);
 

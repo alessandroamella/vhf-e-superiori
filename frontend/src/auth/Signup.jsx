@@ -5,6 +5,7 @@ import { Alert, Avatar, Card, Label, TextInput, Tooltip } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
+import ReactGA from "react-ga4";
 import { usePlacesWidget } from "react-google-autocomplete";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
@@ -268,6 +269,11 @@ const Signup = () => {
       }
       console.log("signup obj", { ...obj, password: "********" });
       await axios.post("/api/auth/signup", obj);
+      ReactGA.event({
+        category: "Authentication",
+        action: "User Signup",
+      });
+
       removeCookie("callsign", { path: "/signup" });
       removeCookie("name", { path: "/signup" });
       removeCookie("phoneNumber", { path: "/signup" });

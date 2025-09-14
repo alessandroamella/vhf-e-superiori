@@ -3,6 +3,7 @@ import { Alert, Button, Label, TextInput } from "flowbite-react";
 import L from "leaflet";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
+import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
 import { FaBackward, FaMapMarkerAlt } from "react-icons/fa";
 import {
@@ -218,6 +219,11 @@ const BeaconEditor = () => {
         const res = await axios.post("/api/beacon", data);
         _id = res.data._id;
       }
+      ReactGA.event({
+        category: "Beacon",
+        action: isEditing ? "Edit Beacon" : "Create Beacon",
+        label: callsign,
+      });
       navigate(`/beacon/${_id}`, { replace: true });
     } catch (err) {
       setAlert({

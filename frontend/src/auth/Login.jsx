@@ -3,6 +3,7 @@ import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
+import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router";
@@ -87,6 +88,10 @@ const Login = () => {
         email,
         token,
       });
+      ReactGA.event({
+        category: "Authentication",
+        action: "Password Reset Request",
+      });
       setAlert({
         color: "success",
         msg: t("resetPasswordEmail"),
@@ -120,6 +125,10 @@ const Login = () => {
         password,
       });
       console.log(data);
+      ReactGA.event({
+        category: "Authentication",
+        action: "User Login",
+      });
       setUser(data);
       navigate(searchParams.get("to") || "/", { replace: true });
     } catch (err) {

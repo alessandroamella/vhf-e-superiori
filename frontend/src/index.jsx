@@ -35,6 +35,7 @@ import "react-medium-image-zoom/dist/styles.css";
 import "react-placeholder/lib/reactPlaceholder.css";
 
 import { Suspense } from "react";
+import ReactGA from "react-ga4";
 import { BrowserRouter, Route, Routes } from "react-router";
 import {
   EventsContext,
@@ -48,12 +49,16 @@ import FallbackView from "./FallbackView";
 import Layout from "./Layout";
 import NotFoundPage from "./NotFound";
 import SplashLoader, { SplashWrapper } from "./SplashLoader";
-
 import useUserStore from "./stores/userStore";
 
+ReactGA.initialize("your GA measurement id");
+
 import "./i18n/i18n";
+import "./ga4";
+import usePageTracking from "./hooks/usePageTracking";
 
 const AppRoutes = () => {
+  usePageTracking();
   return (
     <BrowserRouter>
       <SplashWrapper>

@@ -19,6 +19,7 @@ import {
 } from "flowbite-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
+import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
 import {
   FaBook,
@@ -440,6 +441,10 @@ const QsoManager = () => {
         }
 
         const { data } = await axios.post("/api/qso", obj);
+        ReactGA.event({
+          category: "QSO Management",
+          action: "Create QSO",
+        });
         console.log("QSO", data);
 
         // setAlert({
@@ -568,6 +573,10 @@ const QsoManager = () => {
             "Content-Type": "multipart/form-data",
           },
         });
+        ReactGA.event({
+          category: "QSO Management",
+          action: "Start ADIF Import",
+        });
         console.log("imported", { data });
 
         setAdifQsos(data);
@@ -636,6 +645,13 @@ const QsoManager = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+        });
+        ReactGA.event({
+          category: "QSO Management",
+          action: "Submit ADIF Import",
+          value: adifQsos.filter(
+            (qso) => adifChecked[getAdifKey(qso, adifQsos.indexOf(qso))],
+          ).length,
         });
         console.log("imported", { data });
 

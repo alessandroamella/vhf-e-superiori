@@ -1,5 +1,6 @@
 import { Spinner } from "flowbite-react";
 import { useContext } from "react";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import { FaCircle } from "react-icons/fa";
 import { Link } from "react-router";
@@ -17,6 +18,14 @@ const Footer = () => {
           href="https://www.bitrey.dev"
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => {
+            // For Website Link
+            ReactGA.event({
+              category: "Outbound Link",
+              action: "Click",
+              label: "Bitrey Website",
+            });
+          }}
           className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
         >
           IU4QSG

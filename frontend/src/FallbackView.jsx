@@ -1,10 +1,28 @@
 import { Alert } from "flowbite-react";
+import { useEffect, useMemo } from "react";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import { FaSadCry } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
-const FallbackView = () => {
+const FallbackView = ({ error }) => {
   const { t } = useTranslation();
+
+  const errorStr = useMemo(() => {
+    if (!error) return null;
+    return error.message || error.toString() || "Unknown Error";
+  }, [error]);
+
+  useEffect(() => {
+    if (errorStr) {
+      ReactGA.event({
+        category: "Error",
+        action: "Boundary Triggered",
+        label: errorStr,
+        nonInteraction: true,
+      });
+    }
+  }, [errorStr]);
 
   return (
     <div className="flex flex-col items-center justify-center p-3 h-full min-w-full min-h-full dark:bg-gray-900">
@@ -21,6 +39,14 @@ const FallbackView = () => {
       </a>
       <Alert color="warning">
         <FaSadCry className="inline" /> {t("errors.GENERIC_ERROR")}
+        {errorStr && (
+          <>
+            <br />
+            <small className="text-gray-700 dark:text-gray-300">
+              {errorStr}
+            </small>
+          </>
+        )}
       </Alert>
       <div className="my-4 flex items-center flex-col">
         <LazyLoadImage

@@ -4,6 +4,7 @@ import { saveAs } from "file-saver";
 import { Alert, Button, Spinner, TextInput } from "flowbite-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -233,6 +234,11 @@ const GenerateMapPublicPage = () => {
           responseType: "blob", // Il backend restituisce un blob immagine
         },
       );
+      ReactGA.event({
+        category: "Map",
+        action: "Generate Public Map",
+        label: data.eventTitle,
+      });
 
       const imageUrl = URL.createObjectURL(response.data);
       setGeneratedMapUrl(imageUrl);

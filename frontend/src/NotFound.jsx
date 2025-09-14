@@ -1,10 +1,25 @@
 import { Button } from "flowbite-react";
+import { useEffect } from "react";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import { HiHome, HiOutlineArrowLeft } from "react-icons/hi";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 
 const NotFoundPage = () => {
   const { t } = useTranslation();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.pathname) return;
+    // Log 404 error to Google Analytics
+    ReactGA.event({
+      category: "Error",
+      action: "404 Not Found",
+      label: location.pathname,
+      nonInteraction: true,
+    });
+  }, [location.pathname]);
+
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-50 dark:bg-gray-900 px-4">
       <div className="text-center max-w-lg">

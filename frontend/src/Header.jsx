@@ -1,5 +1,6 @@
 import { Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link, useLocation } from "react-router";
@@ -81,6 +82,9 @@ const Header = () => {
             action="https://www.paypal.com/donate"
             method="post"
             target="_top"
+            onClick={() =>
+              ReactGA.event({ category: "Donation", action: "Click" })
+            }
           >
             <input type="hidden" name="business" value="7AY7WF3G8SVHY" />
             <input type="hidden" name="no_recurring" value="0" />

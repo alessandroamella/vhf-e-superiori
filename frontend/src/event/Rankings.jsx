@@ -12,6 +12,7 @@ import {
 } from "flowbite-react";
 import { orderBy } from "lodash";
 import { useEffect, useMemo, useState } from "react";
+import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { FaExclamationTriangle } from "react-icons/fa";
@@ -221,6 +222,14 @@ const Rankings = () => {
   const pageTitle = event
     ? t("rankings.pageTitle.event", { name: event.name })
     : t("rankings.pageTitle.year", { year });
+
+  const trackShare = (platform) => {
+    ReactGA.event({
+      category: "Social",
+      action: "Share",
+      label: `${platform} - ${event ? event.name : year} Rankings`,
+    });
+  };
 
   return (
     <>
@@ -433,6 +442,7 @@ const Rankings = () => {
               {socialTitle && socialBody && (
                 <>
                   <FacebookShareButton
+                    onClick={() => trackShare("Facebook")}
                     url={curUrl}
                     quote={socialTitle}
                     hashtag="#vhfesuperiori"
@@ -440,19 +450,29 @@ const Rankings = () => {
                     <FacebookIcon size={32} round />
                   </FacebookShareButton>
                   <TwitterShareButton
+                    onClick={() => trackShare("Twitter")}
                     url={curUrl}
                     title={socialTitle}
                     hashtags={["vhfesuperiori"]}
                   >
                     <TwitterIcon size={32} round />
                   </TwitterShareButton>
-                  <WhatsappShareButton url={curUrl} title={socialTitle}>
+                  <WhatsappShareButton
+                    onClick={() => trackShare("WhatsApp")}
+                    url={curUrl}
+                    title={socialTitle}
+                  >
                     <WhatsappIcon size={32} round />
                   </WhatsappShareButton>
-                  <TelegramShareButton url={curUrl} title={socialTitle}>
+                  <TelegramShareButton
+                    onClick={() => trackShare("Telegram")}
+                    url={curUrl}
+                    title={socialTitle}
+                  >
                     <TelegramIcon size={32} round />
                   </TelegramShareButton>
                   <EmailShareButton
+                    onClick={() => trackShare("Email")}
                     url={curUrl}
                     subject={socialTitle}
                     body={socialBody}

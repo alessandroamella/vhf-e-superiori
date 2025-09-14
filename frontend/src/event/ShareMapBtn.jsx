@@ -3,6 +3,7 @@ import { saveAs } from "file-saver";
 import { Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useCallback, useMemo, useState } from "react";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import { FaShareAlt, FaWhatsapp } from "react-icons/fa";
 import { getErrorStr } from "../shared";
@@ -44,6 +45,12 @@ const ShareMapBtn = ({ event, qsos, user, setAlert }) => {
         setMustClickAgain(true);
         return;
       }
+      // Example for Facebook Share
+      ReactGA.event({
+        category: "Social",
+        action: "Share",
+        label: "QSO Map Image Share",
+      });
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         navigator.share({
           title: `Mappa collegamenti di ${user?.callsign} per ${event.name}`,

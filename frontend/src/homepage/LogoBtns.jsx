@@ -1,5 +1,6 @@
 import { Button } from "flowbite-react";
 import { useEffect } from "react";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
 import useUserStore from "../stores/userStore";
@@ -17,6 +18,12 @@ const AirscoutBtn = () => {
     if (isOpenAirscout && user) {
       search.delete("openairscout");
       setSearch(search);
+      // For Airscout Button
+      ReactGA.event({
+        category: "Outbound Link",
+        action: "Click",
+        label: "Airscout",
+      });
       window.open(url, "_blank");
     }
   }, [isOpenAirscout, search, setSearch, user]);

@@ -6,6 +6,7 @@ import {
   MenuList,
 } from "@material-tailwind/react";
 import PropTypes from "prop-types";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import { FaLanguage } from "react-icons/fa";
 import Flag from "react-world-flags";
@@ -24,6 +25,11 @@ const LanguageSelector = ({ className }) => {
 
   const handleLanguageChange = (languageCode) => {
     i18n.changeLanguage(languageCode);
+    ReactGA.event({
+      category: "UI Interaction",
+      action: "Change Language",
+      label: languageCode,
+    });
   };
 
   const currentLanguage =

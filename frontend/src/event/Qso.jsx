@@ -4,6 +4,7 @@ import { Alert, Button, Table } from "flowbite-react";
 import { latLngBounds } from "leaflet";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
+import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
 import { FaBackward, FaHome, FaInfoCircle } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -53,6 +54,14 @@ const Qso = () => {
 
   const [qso, setQso] = useState(false);
   const [alert, setAlert] = useState(null);
+
+  const trackShare = (platform) => {
+    ReactGA.event({
+      category: "Social",
+      action: "Share",
+      label: `${platform} - QSO`,
+    });
+  };
 
   useEffect(() => {
     async function getQso() {
@@ -180,6 +189,7 @@ const Qso = () => {
                       {qso && (
                         <>
                           <FacebookShareButton
+                            onClick={() => trackShare("Facebook")}
                             url={qso.imageHref}
                             quote={socialTitle}
                             hashtag="#vhfesuperiori"
@@ -187,6 +197,7 @@ const Qso = () => {
                             <FacebookIcon size={32} round />
                           </FacebookShareButton>
                           <TwitterShareButton
+                            onClick={() => trackShare("Twitter")}
                             url={qso.imageHref}
                             title={socialTitle}
                             hashtags={["vhfesuperiori"]}
@@ -194,18 +205,21 @@ const Qso = () => {
                             <TwitterIcon size={32} round />
                           </TwitterShareButton>
                           <WhatsappShareButton
+                            onClick={() => trackShare("WhatsApp")}
                             url={qso.imageHref}
                             title={socialTitle}
                           >
                             <WhatsappIcon size={32} round />
                           </WhatsappShareButton>
                           <TelegramShareButton
+                            onClick={() => trackShare("Telegram")}
                             url={qso.imageHref}
                             title={socialTitle}
                           >
                             <TelegramIcon size={32} round />
                           </TelegramShareButton>
                           <EmailShareButton
+                            onClick={() => trackShare("Email")}
                             url={qso.imageHref}
                             subject={socialTitle}
                             body={socialBody}

@@ -1,3 +1,4 @@
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import Flag from "react-world-flags";
 
@@ -7,6 +8,11 @@ const Flags = () => {
   // Funzione per gestire il cambio di lingua
   const handleLanguageChange = (languageCode) => {
     i18n.changeLanguage(languageCode); // Cambia la lingua in base al codice della lingua selezionata
+    ReactGA.event({
+      category: "UI Interaction",
+      action: "Change Language",
+      label: languageCode,
+    });
   };
 
   return (

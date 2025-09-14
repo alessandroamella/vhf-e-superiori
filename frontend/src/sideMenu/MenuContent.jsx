@@ -2,6 +2,7 @@ import axios from "axios";
 import { Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
+import ReactGA from "react-ga4";
 import { useTranslation } from "react-i18next";
 import {
   FaArchive,
@@ -138,6 +139,10 @@ const MenuContent = ({ isSideBar }) => {
   async function logout() {
     try {
       await axios.post("/api/auth/logout");
+      ReactGA.event({
+        category: "Authentication",
+        action: "User Logout",
+      });
       logoutStore();
     } catch (err) {
       console.log("logout error", getErrorStr(err?.response?.data?.err));
