@@ -8,41 +8,21 @@ import moment from "moment";
 import { logger } from "../../../shared";
 import { ParsedAdif } from "../../adif/interfaces";
 import { Errors } from "../../errors";
+import type { EventDoc } from "../../event/models";
 import { createError, validate } from "../../helpers";
 import { location } from "../../location";
 import checkCaptcha from "../../middlewares/checkCaptcha";
 import { qrz } from "../../qrz";
+import type { QsoDoc } from "../../qso/models";
 import MapExporter from "..";
 
 const router = express.Router();
 const mapExporter = new MapExporter();
 
-interface DummyEvent {
-  _id: string;
-  id: string;
-  name: string;
-  date: Date;
-  offsetCallsign?: number;
-  offsetData?: number;
-  offsetFrom?: number;
-}
-
-interface QsoLikeData {
-  fromStationLat: number;
-  fromStationLon: number;
-  toStationLat: number;
-  toStationLon: number;
-  callsign: string;
-  mode?: string;
-  frequency?: string;
-  band?: string;
-  qsoDate: Date;
-  fromLocator?: string;
-  toLocator?: string;
-  notes?: string;
-  rst?: number;
-  fromStationCallsignOverride?: string;
-}
+type DummyEvent = Pick<
+  EventDoc,
+  "id" | "name" | "date" | "offsetCallsign" | "offsetData" | "offsetFrom"
+> & { _id: string };
 
 /**
  * @openapi
@@ -65,7 +45,7 @@ interface QsoLikeData {
  *                description: Cloudflare Turnstile token for bot protection
  *              operatorCallsign:
  *                type: string
- *                description: Optional operator callsign for QRZ lookup
+ *                description: Operator callsign for QRZ lookup
  *              eventTitle:
  *                type: string
  *                description: Optional custom title for the map
@@ -84,6 +64,7 @@ interface QsoLikeData {
  *            required:
  *              - adif
  *              - turnstileToken
+ *              - operatorCallsign
  *    tags:
  *      - map
  *    responses:
@@ -110,7 +91,7 @@ interface QsoLikeData {
 router.post(
   "/generate-adif-public",
   body("turnstileToken").isString().notEmpty(),
-  body("operatorCallsign").optional().isString().trim(),
+  body("operatorCallsign").isString().trim().notEmpty(),
   body("eventTitle").optional().isString().trim(),
   body("offsetCallsign").optional().isNumeric(),
   body("offsetData").optional().isNumeric(),
@@ -160,26 +141,40 @@ router.post(
         return res.status(BAD_REQUEST).json(createError(Errors.INVALID_ADIF));
       }
 
-      // Get operator callsign from request or try to infer from ADIF
-      let operatorCallsign = req.body.operatorCallsign;
-      if (!operatorCallsign) {
-        // Try to get from first record's station_callsign or operator fields
-        const firstRecord = parsed.records[0];
-        operatorCallsign = firstRecord.station_callsign || firstRecord.operator;
-      }
+      // Get operator callsign from request (now mandatory)
+      const operatorCallsign = req.body.operatorCallsign;
 
       // Get QRZ data if operator callsign is available
       let qrzData = null;
-      let profilePicUrl: string | undefined;
-      if (operatorCallsign) {
-        try {
-          qrzData = await qrz.getInfo(operatorCallsign);
-          profilePicUrl = qrzData?.pictureUrl;
-          logger.debug(
-            `QRZ lookup for ${operatorCallsign}: ${qrzData ? "found" : "not found"}`,
-          );
-        } catch (error) {
-          logger.warn(`Error looking up ${operatorCallsign} on QRZ:`, error);
+      try {
+        qrzData = await qrz.getInfo(operatorCallsign);
+        logger.debug(
+          `QRZ lookup for ${operatorCallsign}: ${qrzData ? "found" : "not found"}`,
+        );
+      } catch (error) {
+        logger.warn(`Error looking up ${operatorCallsign} on QRZ:`, error);
+      }
+
+      // If no QRZ data found and callsign has prefix/suffix, get the longest part
+      let cleanCallsign = operatorCallsign;
+      if (!qrzData) {
+        const _callsigns: string[] = operatorCallsign.split("/");
+        _callsigns.sort((a: string, b: string) => b.length - a.length);
+        cleanCallsign = _callsigns[0];
+
+        // Try QRZ lookup again with clean callsign if it's different
+        if (cleanCallsign !== operatorCallsign) {
+          try {
+            qrzData = await qrz.getInfo(cleanCallsign);
+            logger.debug(
+              `QRZ lookup for clean callsign ${cleanCallsign}: ${qrzData ? "found" : "not found"}`,
+            );
+          } catch (error) {
+            logger.warn(
+              `Error looking up clean callsign ${cleanCallsign} on QRZ:`,
+              error,
+            );
+          }
         }
       }
 
@@ -208,7 +203,14 @@ router.post(
       }
 
       // Process QSO records
-      const qsoData: QsoLikeData[] = [];
+      const qsoData: Pick<
+        QsoDoc,
+        | "id"
+        | "fromStationLat"
+        | "fromStationLon"
+        | "toStationLat"
+        | "toStationLon"
+      >[] = [];
       let fromStationLat: number | null = null;
       let fromStationLon: number | null = null;
       let fromLocator: string | null = null;
@@ -310,7 +312,7 @@ router.post(
         }
 
         // Create QSO-like object
-        const qso: QsoLikeData = {
+        const qso = {
           fromStationLat,
           fromStationLon,
           toStationLat,
@@ -359,9 +361,8 @@ router.post(
         // biome-ignore lint/suspicious/noExplicitAny: type assertion needed for dummyEvent
         dummyEvent as any,
         operatorCallsign || null,
-        // biome-ignore lint/suspicious/noExplicitAny: type assertion needed for qsoData
-        qsoData as any,
-        profilePicUrl,
+        qsoData,
+        qrzData?.pictureUrl,
         true, // hasAllQsos = true for public generation
       );
 

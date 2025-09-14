@@ -104,7 +104,7 @@ class MapExporter {
   private generateCacheKey(
     eventId: string,
     callsign: string | null,
-    qsos: QsoDoc[],
+    qsos: Pick<QsoDoc, "id">[],
   ): string {
     const sortedQsoIds = qsos
       .map((qso) => qso.id)
@@ -126,7 +126,14 @@ class MapExporter {
   async exportMapToJpg(
     event: EventDoc,
     callsign: string | null,
-    qsos: QsoDoc[],
+    qsos: Pick<
+      QsoDoc,
+      | "id"
+      | "fromStationLat"
+      | "fromStationLon"
+      | "toStationLat"
+      | "toStationLon"
+    >[],
     profilePic?: string,
     hasAllQsos = false,
   ): Promise<Buffer> {
