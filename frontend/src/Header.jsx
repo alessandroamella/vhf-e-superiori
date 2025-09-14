@@ -10,7 +10,7 @@ import useUserStore from "./stores/userStore";
 
 const LinkButton = ({ to, children, keepCurrent }) => {
   const location = useLocation();
-  const isActive = location.pathname === to;
+  const isActive = to.startsWith(location.pathname);
 
   // if keepCurrent is true, add to search params "to=${current location}"
   const searchParams = new URLSearchParams(); // don't use current search params
