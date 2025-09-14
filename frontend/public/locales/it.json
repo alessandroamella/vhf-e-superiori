@@ -286,6 +286,36 @@
     "loadError": "Errore nel caricamento dei beacon: {{error}}",
     "noBeacons": "Nessun beacon presente"
   },
+  "beaconViewer": {
+    "pageTitle": "Beacon {{callsign}} - VHF e superiori",
+    "header": "Beacon {{callsign}}",
+    "editButton": "Modifica",
+    "deleteBeaconButton": "Elimina beacon",
+    "historyLabel": "Modifiche",
+    "adminTooltip": "Vedi questo in quanto amministratore",
+    "deleteConfirmation": {
+      "single": "Sei sicuro di voler eliminare questo beacon assieme alla sua unica modifica? Questa azione è irreversibile. Continuare?",
+      "plural": "Sei sicuro di voler eliminare questo beacon assieme a tutte le sue {{count}} modifiche? Questa azione è irreversibile. Continuare?"
+    },
+    "deleteEditConfirmation": "Sei sicuro di voler eliminare queste modifiche di {{author}}? Questa azione è irreversibile. Continuare?",
+    "approveEditConfirmation": "Sei sicuro di voler approvare queste modifiche di {{author}}? Questa azione è irreversibile. Continuare?",
+    "callsignLabel": "Nominativo",
+    "nameLabel": "Nome",
+    "frequencyLabel": "Frequenza",
+    "antennaLabel": "Antenna",
+    "powerLabel": "Potenza",
+    "qthLabel": "QTH",
+    "locatorLabel": "Locatore",
+    "altitudeLabel": "Altezza",
+    "modeLabel": "Modo",
+    "qtfLabel": "QTF",
+    "changesByText": "Modifiche da ",
+    "onDateText": "il",
+    "atTimeText": "alle",
+    "approveButton": "Approva modifiche",
+    "deleteEditButton": "Elimina modifiche",
+    "deleteSingleEditTooltip": "Non puoi cancellare queste modifiche in quanto sono le uniche finora fatte del beacon. Creane delle nuove e poi cancella queste, oppure cancella l'intero beacon con il tasto sopra."
+  },
   "errors": {
     "error": "Errore",
     "GENERIC_ERROR": "Qualcosa è andato storto, per favore riprova",

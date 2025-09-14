@@ -284,6 +284,36 @@
     "dropAdifFile": "Lassen Sie Ihre ADIF-Datei hier fallen...",
     "dragOrClickAdif": "Ziehen Sie Ihre ADIF-Datei hierher oder klicken Sie, um sie auszuwählen."
   },
+  "beaconViewer": {
+    "pageTitle": "Bake {{callsign}} - VHF und höher",
+    "header": "Bake {{callsign}}",
+    "editButton": "Bearbeiten",
+    "deleteBeaconButton": "Bake löschen",
+    "historyLabel": "Änderungen",
+    "adminTooltip": "Sie sehen dies, da Sie ein Administrator sind",
+    "deleteConfirmation": {
+      "single": "Sind Sie sicher, dass Sie diese Bake zusammen mit ihrer einzigen Änderung löschen möchten? Diese Aktion ist unumkehrbar. Fortfahren?",
+      "plural": "Sind Sie sicher, dass Sie diese Bake zusammen mit all ihren {{count}} Änderungen löschen möchten? Diese Aktion ist unumkehrbar. Fortfahren?"
+    },
+    "deleteEditConfirmation": "Sind Sie sicher, dass Sie diese Änderungen von {{author}} löschen möchten? Diese Aktion ist unumkehrbar. Fortfahren?",
+    "approveEditConfirmation": "Sind Sie sicher, dass Sie diese Änderungen von {{author}} genehmigen möchten? Diese Aktion ist unumkehrbar. Fortfahren?",
+    "callsignLabel": "Rufzeichen",
+    "nameLabel": "Name",
+    "frequencyLabel": "Frequenz",
+    "antennaLabel": "Antenne",
+    "powerLabel": "Leistung",
+    "qthLabel": "QTH",
+    "locatorLabel": "Locator",
+    "altitudeLabel": "Höhe",
+    "modeLabel": "Modus",
+    "qtfLabel": "QTF",
+    "changesByText": "Änderungen von ",
+    "onDateText": "am",
+    "atTimeText": "um",
+    "approveButton": "Änderungen genehmigen",
+    "deleteEditButton": "Änderungen löschen",
+    "deleteSingleEditTooltip": "Sie können diese Änderungen nicht löschen, da es die bisher einzigen für die Bake sind. Erstellen Sie neue und löschen Sie dann diese, oder löschen Sie die gesamte Bake mit der Schaltfläche oben."
+  },
   "errors": {
     "error": "Fehler",
     "GENERIC_ERROR": "Etwas ist schiefgelaufen, bitte versuche es erneut",

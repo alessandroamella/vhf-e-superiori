@@ -283,6 +283,36 @@
     "dropAdifFile": "Warrab il-fajl ADIF tiegħek hawn...",
     "dragOrClickAdif": "Kaxkar il-fajl ADIF tiegħek hawn, jew ikklikkja biex tagħżlu."
   },
+  "beaconViewer": {
+    "pageTitle": "Beacon {{callsign}} - VHF u aktar",
+    "header": "Beacon {{callsign}}",
+    "editButton": "Editja",
+    "deleteBeaconButton": "Ħassar il-beacon",
+    "historyLabel": "Modifiki",
+    "adminTooltip": "Qed tara dan għax int amministratur",
+    "deleteConfirmation": {
+      "single": "Inti żgur li trid tħassar dan il-beacon flimkien mal-unika modifika tiegħu? Din l-azzjoni ma tistax titreġġa' lura. Trid tkompli?",
+      "plural": "Inti żgur li trid tħassar dan il-beacon flimkien mal-{{count}} modifiki kollha tiegħu? Din l-azzjoni ma tistax titreġġa' lura. Trid tkompli?"
+    },
+    "deleteEditConfirmation": "Inti żgur li trid tħassar dawn il-modifiki minn {{author}}? Din l-azzjoni ma tistax titreġġa' lura. Trid tkompli?",
+    "approveEditConfirmation": "Inti żgur li trid tapprova dawn il-modifiki minn {{author}}? Din l-azzjoni ma tistax titreġġa' lura. Trid tkompli?",
+    "callsignLabel": "Callsign",
+    "nameLabel": "Isem",
+    "frequencyLabel": "Frekwenza",
+    "antennaLabel": "Antenna",
+    "powerLabel": "Qawwa",
+    "qthLabel": "QTH",
+    "locatorLabel": "Locator",
+    "altitudeLabel": "Altitudni",
+    "modeLabel": "Mod",
+    "qtfLabel": "QTF",
+    "changesByText": "Modifiki minn ",
+    "onDateText": "fi",
+    "atTimeText": "fil-",
+    "approveButton": "Approva l-modifiki",
+    "deleteEditButton": "Ħassar il-modifiki",
+    "deleteSingleEditTooltip": "Ma tistax tħassar dawn il-modifiki peress li huma l-uniċi li saru għal dan il-beacon s'issa. Oħloq oħrajn ġodda u mbagħad ħassar dawn, jew ħassar il-beacon kollu bil-buttuna ta' hawn fuq."
+  },
   "errors": {
     "error": "Żball",
     "GENERIC_ERROR": "Xi ħaġa marret ħażin, jekk jogħġbok erġa' ipprova",

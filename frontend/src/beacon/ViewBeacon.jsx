@@ -3,6 +3,7 @@ import { Alert, Button, Card, Pagination, Tooltip } from "flowbite-react";
 import L from "leaflet";
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import {
   FaBackward,
   FaCheckCircle,
@@ -21,6 +22,8 @@ import useUserStore from "../stores/userStore";
 const ViewBeacon = () => {
   const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const { t } = useTranslation();
 
   const [beacon, setBeacon] = useState(null);
   const [_properties, setProperties] = useState(null);
@@ -70,13 +73,16 @@ const ViewBeacon = () => {
   const navigate = useNavigate();
 
   async function deleteBeacon(id) {
-    const confirm = window.confirm(
-      `Sei sicuro di voler eliminare questo beacon assieme a tutte le sue ${
-        _properties.length || "-"
-      } modific${
-        _properties.length === 1 ? "a" : "he"
-      }? Questa azione è irreversibile. Continuare?`,
-    );
+    const confirmText =
+      _properties.length === 1
+        ? t("beaconViewer.deleteConfirmation.single", {
+            count: _properties.length,
+          })
+        : t("beaconViewer.deleteConfirmation.plural", {
+            count: _properties.length || "-",
+          });
+
+    const confirm = window.confirm(confirmText);
     if (!confirm) return;
 
     try {
@@ -95,7 +101,9 @@ const ViewBeacon = () => {
   async function deleteEdit(properties) {
     const { _id, editAuthor } = properties;
     const confirm = window.confirm(
-      `Sei sicuro di voler eliminare queste modifiche di ${editAuthor?.callsign}? Questa azione è irreversibile. Continuare?`,
+      t("beaconViewer.deleteEditConfirmation", {
+        author: editAuthor?.callsign,
+      }),
     );
     if (!confirm) return;
 
@@ -118,7 +126,9 @@ const ViewBeacon = () => {
   async function approveEdit(properties) {
     const { _id, editAuthor } = properties;
     const confirm = window.confirm(
-      `Sei sicuro di voler approvare queste modifiche di ${editAuthor?.callsign}? Questa azione è irreversibile. Continuare?`,
+      t("beaconViewer.approveEditConfirmation", {
+        author: editAuthor?.callsign,
+      }),
     );
     if (!confirm) return;
 
@@ -142,7 +152,9 @@ const ViewBeacon = () => {
   return (
     <>
       <Helmet>
-        <title>Beacon {beacon?.callsign || ""} - VHF e superiori</title>
+        <title>
+          {t("beaconViewer.pageTitle", { callsign: beacon?.callsign || "" })}
+        </title>
       </Helmet>
       <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
@@ -173,7 +185,7 @@ const ViewBeacon = () => {
             {beacon && properties && (
               <>
                 <h1 className="text-3xl md:text-4xl text-center font-bold mb-4">
-                  Beacon {beacon.callsign}
+                  {t("beaconViewer.header", { callsign: beacon.callsign })}
                 </h1>
 
                 <div className="flex flex-col md:flex-row md:justify-between mb-4">
@@ -181,17 +193,17 @@ const ViewBeacon = () => {
                     <Link to={`/beacon/editor?id=${beacon._id}`}>
                       <Button color="light">
                         <FaPen className="inline mr-2" />
-                        Modifica
+                        {t("beaconViewer.editButton")}
                       </Button>
                     </Link>
                     {user?.isAdmin && (
-                      <Tooltip content="Vedi questo in quanto amministratore">
+                      <Tooltip content={t("beaconViewer.adminTooltip")}>
                         <Button
                           color="failure"
                           onClick={() => deleteBeacon(beacon._id)}
                         >
                           <FaTrash className="inline mr-2" />
-                          Elimina beacon
+                          {t("beaconViewer.deleteBeaconButton")}
                         </Button>
                       </Tooltip>
                     )}
@@ -199,7 +211,7 @@ const ViewBeacon = () => {
                   {_properties.length !== 1 && (
                     <div className="flex gap-1 justify-center items-center">
                       <p className="text-gray-600 dark:text-gray-200 -mr-8 mb-2">
-                        Modifiche
+                        {t("beaconViewer.historyLabel")}
                       </p>
                       <Pagination
                         currentPage={propIndex + 1}
@@ -210,42 +222,50 @@ const ViewBeacon = () => {
                   )}
                 </div>
 
-                {/* nice card instead of table */}
                 <Card className="mb-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <p>
-                        <strong>Nominativo:</strong> {beacon.callsign}
+                        <strong>{t("beaconViewer.callsignLabel")}:</strong>{" "}
+                        {beacon.callsign}
                       </p>
                       <p>
-                        <strong>Nome:</strong> {properties.name}
+                        <strong>{t("beaconViewer.nameLabel")}:</strong>{" "}
+                        {properties.name}
                       </p>
                       <p>
-                        <strong>Frequenza:</strong>{" "}
+                        <strong>{t("beaconViewer.frequencyLabel")}:</strong>{" "}
                         {properties.frequency.toFixed(3)} MHz
                       </p>
                       <p>
-                        <strong>Antenna:</strong> {properties.antenna}
+                        <strong>{t("beaconViewer.antennaLabel")}:</strong>{" "}
+                        {properties.antenna}
                       </p>
                       <p>
-                        <strong>Potenza:</strong> {properties.power}W
+                        <strong>{t("beaconViewer.powerLabel")}:</strong>{" "}
+                        {properties.power}W
                       </p>
                     </div>
                     <div>
                       <p>
-                        <strong>QTH:</strong> {properties.qthStr}
+                        <strong>{t("beaconViewer.qthLabel")}:</strong>{" "}
+                        {properties.qthStr}
                       </p>
                       <p>
-                        <strong>Locatore:</strong> {properties.locator}
+                        <strong>{t("beaconViewer.locatorLabel")}:</strong>{" "}
+                        {properties.locator}
                       </p>
                       <p>
-                        <strong>Altezza:</strong> {properties.hamsl}m
+                        <strong>{t("beaconViewer.altitudeLabel")}:</strong>{" "}
+                        {properties.hamsl}m
                       </p>
                       <p>
-                        <strong>Modo:</strong> {properties.mode}
+                        <strong>{t("beaconViewer.modeLabel")}:</strong>{" "}
+                        {properties.mode}
                       </p>
                       <p>
-                        <strong>QTF:</strong> {properties.qtf}
+                        <strong>{t("beaconViewer.qtfLabel")}:</strong>{" "}
+                        {properties.qtf}
                       </p>
                     </div>
                   </div>
@@ -262,18 +282,18 @@ const ViewBeacon = () => {
                           ) : (
                             <FaInfoCircle className="inline mr-2 mb-[2px]" />
                           )}
-                          Modifiche da{" "}
+                          {t("beaconViewer.changesByText")}
                           <Link
                             className="font-bold"
                             to={`/u/${properties.editAuthor.callsign}`}
                           >
                             {properties.editAuthor.callsign}
                           </Link>{" "}
-                          il{" "}
+                          {t("beaconViewer.onDateText")}{" "}
                           {formatInTimeZone(
                             new Date(properties.editDate),
                             "Europe/Rome",
-                            "dd/MM/yyyy 'alle' HH:mm",
+                            `dd/MM/yyyy '${t("beaconViewer.atTimeText")}' HH:mm`,
                           )}
                         </div>
                       </div>
@@ -281,23 +301,23 @@ const ViewBeacon = () => {
                     {user?.isAdmin && (
                       <div className="flex gap-2 items-center">
                         {!properties.verifiedBy && (
-                          <Tooltip content="Vedi questo in quanto amministratore">
+                          <Tooltip content={t("beaconViewer.adminTooltip")}>
                             <Button
                               color="warning"
                               disabled={disabled}
                               onClick={() => approveEdit(properties)}
                             >
                               <FaCheckCircle className="inline mr-2" />
-                              Approva modifiche
+                              {t("beaconViewer.approveButton")}
                             </Button>
                           </Tooltip>
                         )}
                         <Tooltip
-                          content={`${
+                          content={
                             _properties?.length === 1
-                              ? "Non puoi cancellare queste modifiche in quanto sono le uniche finora fatte del beacon. Creane delle nuove e poi cancella queste, oppure cancella l'intero beacon con il tasto sopra."
-                              : "Vedi questo in quanto amministratore"
-                          }`}
+                              ? t("beaconViewer.deleteSingleEditTooltip")
+                              : t("beaconViewer.adminTooltip")
+                          }
                         >
                           <Button
                             color="failure"
@@ -305,7 +325,7 @@ const ViewBeacon = () => {
                             onClick={() => deleteEdit(properties)}
                           >
                             <FaTrash className="inline mr-2" />
-                            Elimina modifiche
+                            {t("beaconViewer.deleteEditButton")}
                           </Button>
                         </Tooltip>
                       </div>
@@ -330,7 +350,6 @@ const ViewBeacon = () => {
                       >
                         <Popup>
                           <p className="m-0 p-0">
-                            Posizione del beacon{" "}
                             <strong>{beacon.callsign}</strong>:<br />
                             <span className="text-center">
                               {properties.lat.toFixed(6)},{" "}

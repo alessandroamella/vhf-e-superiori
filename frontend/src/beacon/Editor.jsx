@@ -538,7 +538,7 @@ const BeaconEditor = () => {
                 <div className="flex flex-col md:flex-row justify-center gap-2 md:gap-8 items-center mb-2">
                   <div>
                     <h2 className="text-2xl font-bold">Posizione</h2>
-                    <span className="text-gray-600 ">
+                    <span className="text-gray-600 dark:text-gray-400">
                       Clicca sulla mappa per selezionare la posizione del beacon
                     </span>
                   </div>

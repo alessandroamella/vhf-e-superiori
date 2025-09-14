@@ -284,6 +284,36 @@
     "loadError": "Error loading beacons: {{error}}",
     "noBeacons": "No beacons found"
   },
+  "beaconViewer": {
+    "pageTitle": "Beacon {{callsign}} - VHF and above",
+    "header": "Beacon {{callsign}}",
+    "editButton": "Edit",
+    "deleteBeaconButton": "Delete beacon",
+    "historyLabel": "Edits",
+    "adminTooltip": "You see this because you are an administrator",
+    "deleteConfirmation": {
+      "single": "Are you sure you want to delete this beacon along with its only edit? This action is irreversible. Continue?",
+      "plural": "Are you sure you want to delete this beacon along with all its {{count}} edits? This action is irreversible. Continue?"
+    },
+    "deleteEditConfirmation": "Are you sure you want to delete these edits by {{author}}? This action is irreversible. Continue?",
+    "approveEditConfirmation": "Are you sure you want to approve these edits by {{author}}? This action is irreversible. Continue?",
+    "callsignLabel": "Callsign",
+    "nameLabel": "Name",
+    "frequencyLabel": "Frequency",
+    "antennaLabel": "Antenna",
+    "powerLabel": "Power",
+    "qthLabel": "QTH",
+    "locatorLabel": "Locator",
+    "altitudeLabel": "Altitude",
+    "modeLabel": "Mode",
+    "qtfLabel": "QTF",
+    "changesByText": "Edits by ",
+    "onDateText": "on",
+    "atTimeText": "at",
+    "approveButton": "Approve edits",
+    "deleteEditButton": "Delete edits",
+    "deleteSingleEditTooltip": "You cannot delete these edits as they are the only ones made for the beacon so far. Create new ones and then delete these, or delete the entire beacon with the button above."
+  },
   "errors": {
     "error": "Error",
     "GENERIC_ERROR": "Something went wrong, please try again",

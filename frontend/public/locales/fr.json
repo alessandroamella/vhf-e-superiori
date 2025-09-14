@@ -284,6 +284,36 @@
     "dropAdifFile": "Déposez votre fichier ADIF ici...",
     "dragOrClickAdif": "Faites glisser votre fichier ADIF ici, ou cliquez pour le sélectionner."
   },
+  "beaconViewer": {
+    "pageTitle": "Balise {{callsign}} - VHF et plus",
+    "header": "Balise {{callsign}}",
+    "editButton": "Modifier",
+    "deleteBeaconButton": "Supprimer la balise",
+    "historyLabel": "Modifications",
+    "adminTooltip": "Vous voyez ceci car vous êtes un administrateur",
+    "deleteConfirmation": {
+      "single": "Êtes-vous sûr de vouloir supprimer cette balise ainsi que sa seule modification ? Cette action est irréversible. Continuer ?",
+      "plural": "Êtes-vous sûr de vouloir supprimer cette balise ainsi que toutes ses {{count}} modifications ? Cette action est irréversible. Continuer ?"
+    },
+    "deleteEditConfirmation": "Êtes-vous sûr de vouloir supprimer ces modifications de {{author}} ? Cette action est irréversible. Continuer ?",
+    "approveEditConfirmation": "Êtes-vous sûr de vouloir approuver ces modifications de {{author}} ? Cette action est irréversible. Continuer ?",
+    "callsignLabel": "Indicatif",
+    "nameLabel": "Nom",
+    "frequencyLabel": "Fréquence",
+    "antennaLabel": "Antenne",
+    "powerLabel": "Puissance",
+    "qthLabel": "QTH",
+    "locatorLabel": "Locator",
+    "altitudeLabel": "Altitude",
+    "modeLabel": "Mode",
+    "qtfLabel": "QTF",
+    "changesByText": "Modifications par ",
+    "onDateText": "le",
+    "atTimeText": "à",
+    "approveButton": "Approuver les modifications",
+    "deleteEditButton": "Supprimer les modifications",
+    "deleteSingleEditTooltip": "Vous ne pouvez pas supprimer ces modifications car ce sont les seules effectuées jusqu'à présent pour la balise. Créez-en de nouvelles puis supprimez celles-ci, ou supprimez la balise entière avec le bouton ci-dessus."
+  },
   "errors": {
     "error": "Erreur",
     "GENERIC_ERROR": "Quelque chose a mal tourné, veuillez réessayer",

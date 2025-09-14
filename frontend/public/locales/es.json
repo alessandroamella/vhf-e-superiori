@@ -284,6 +284,36 @@
     "dropAdifFile": "Suelta tu archivo ADIF aquí...",
     "dragOrClickAdif": "Arrastra tu archivo ADIF aquí, o haz clic para seleccionarlo."
   },
+  "beaconViewer": {
+    "pageTitle": "Baliza {{callsign}} - VHF y superiores",
+    "header": "Baliza {{callsign}}",
+    "editButton": "Editar",
+    "deleteBeaconButton": "Eliminar baliza",
+    "historyLabel": "Ediciones",
+    "adminTooltip": "Ves esto porque eres un administrador",
+    "deleteConfirmation": {
+      "single": "¿Estás seguro de que quieres eliminar esta baliza junto con su única edición? Esta acción es irreversible. ¿Continuar?",
+      "plural": "¿Estás seguro de que quieres eliminar esta baliza junto con todas sus {{count}} ediciones? Esta acción es irreversible. ¿Continuar?"
+    },
+    "deleteEditConfirmation": "¿Estás seguro de que quieres eliminar estas ediciones de {{author}}? Esta acción es irreversible. ¿Continuar?",
+    "approveEditConfirmation": "¿Estás seguro de que quieres aprobar estas ediciones de {{author}}? Esta acción es irreversible. ¿Continuar?",
+    "callsignLabel": "Indicativo",
+    "nameLabel": "Nombre",
+    "frequencyLabel": "Frecuencia",
+    "antennaLabel": "Antena",
+    "powerLabel": "Potencia",
+    "qthLabel": "QTH",
+    "locatorLabel": "Localizador",
+    "altitudeLabel": "Altitud",
+    "modeLabel": "Modo",
+    "qtfLabel": "QTF",
+    "changesByText": "Ediciones de ",
+    "onDateText": "el",
+    "atTimeText": "a las",
+    "approveButton": "Aprobar ediciones",
+    "deleteEditButton": "Eliminar ediciones",
+    "deleteSingleEditTooltip": "No puedes eliminar estas ediciones ya que son las únicas realizadas para la baliza hasta ahora. Crea nuevas y luego elimina estas, o elimina la baliza completa con el botón de arriba."
+  },
   "errors": {
     "error": "Error",
     "GENERIC_ERROR": "Algo salió mal, por favor inténtalo de nuevo",
