@@ -347,6 +347,7 @@
     "NO_IMAGE_TO_EQSL": "Kein Bild für eQSL vorhanden",
     "INVALID_ADIF": "Ungültige ADIF-Datei",
     "INVALID_ADIF_EXCLUDE": "Ungültige ADIF-Ausschluss",
+    "OPERATOR_CALLSIGN_REQUIRED": "Das Operatorrufzeichen ist erforderlich",
     "INVALID_NAME": "Ungültiger Name",
     "INVALID_CALLSIGN": "Ungültiges Rufzeichen",
     "INVALID_COMMENT": "Ungültiger Kommentar",

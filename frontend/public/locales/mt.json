@@ -346,6 +346,7 @@
     "NO_IMAGE_TO_EQSL": "Ebda immaġni biex tuża għall-eQSL",
     "INVALID_ADIF": "Fajl ADIF invalidu",
     "INVALID_ADIF_EXCLUDE": "Esklużjoni ADIF invalida",
+    "OPERATOR_CALLSIGN_REQUIRED": "Is-sejħa tal-operatur hija obbligatorja",
     "INVALID_NAME": "Isem invalidu",
     "INVALID_CALLSIGN": "Callsign invalidu",
     "INVALID_COMMENT": "Kumment invalidu",

@@ -347,6 +347,7 @@
     "NO_IMAGE_TO_EQSL": "No hay imagen para usar en la eQSL",
     "INVALID_ADIF": "Archivo ADIF no válido",
     "INVALID_ADIF_EXCLUDE": "Exclusión ADIF no válida",
+    "OPERATOR_CALLSIGN_REQUIRED": "El indicativo del operador es obligatorio",
     "INVALID_NAME": "Nombre no válido",
     "INVALID_CALLSIGN": "Indicativo no válido",
     "INVALID_COMMENT": "Comentario no válido",
