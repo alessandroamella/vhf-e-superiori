@@ -21,6 +21,7 @@
   "edition": "Edizione",
   "band": "Banda",
   "date": "Data",
+  "image": "Immagine",
   "scoreboard": "Classifica",
   "new": "Nuovo",
   "visualizeScoreboard": "Visualizza classifica",
@@ -315,6 +316,17 @@
     "approveButton": "Approva modifiche",
     "deleteEditButton": "Elimina modifiche",
     "deleteSingleEditTooltip": "Non puoi cancellare queste modifiche in quanto sono le uniche finora fatte del beacon. Creane delle nuove e poi cancella queste, oppure cancella l'intero beacon con il tasto sopra."
+  },
+  "fileUploader": {
+    "toast": {
+      "limitExceededTitle": "Limite totale superato ({{count}} file rifiutato)",
+      "limitExceededTitle_plural": "Limite totale superato ({{count}} file rifiutati)",
+      "rejectedFilesMessage": "I seguenti file superano il limite totale di 99.5MB: {{rejectedNames}}. Spazio rimanente: {{remainingSpaceMB}}MB"
+    },
+    "dropzone": {
+      "prompt": "Trascina qui i tuoi file o clicca per selezionarli."
+    },
+    "totalSize": "Dimensione totale: {{currentSize}}MB / {{maxSize}}MB"
   },
   "errors": {
     "error": "Errore",

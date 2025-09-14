@@ -18,6 +18,7 @@
   "edition": "Ausgabe",
   "band": "Band",
   "date": "Datum",
+  "image": "Bild",
   "scoreboard": "Rangliste",
   "new": "Neu",
   "visualizeScoreboard": "Rangliste anzeigen",
@@ -313,6 +314,17 @@
     "approveButton": "Änderungen genehmigen",
     "deleteEditButton": "Änderungen löschen",
     "deleteSingleEditTooltip": "Sie können diese Änderungen nicht löschen, da es die bisher einzigen für die Bake sind. Erstellen Sie neue und löschen Sie dann diese, oder löschen Sie die gesamte Bake mit der Schaltfläche oben."
+  },
+  "fileUploader": {
+    "toast": {
+      "limitExceededTitle": "Gesamtlimit überschritten ({{count}} Datei abgelehnt)",
+      "limitExceededTitle_plural": "Gesamtlimit überschritten ({{count}} Dateien abgelehnt)",
+      "rejectedFilesMessage": "Die folgenden Dateien überschreiten das Gesamtlimit von 99.5MB: {{rejectedNames}}. Verbleibender Speicherplatz: {{remainingSpaceMB}}MB"
+    },
+    "dropzone": {
+      "prompt": "Ziehen Sie Ihre Dateien hierher oder klicken Sie, um sie auszuwählen."
+    },
+    "totalSize": "Gesamtgröße: {{currentSize}}MB / {{maxSize}}MB"
   },
   "errors": {
     "error": "Fehler",

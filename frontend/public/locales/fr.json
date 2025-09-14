@@ -18,6 +18,7 @@
   "edition": "Édition",
   "band": "Bande",
   "date": "Date",
+  "image": "Image",
   "scoreboard": "Classement",
   "new": "Nouveau",
   "visualizeScoreboard": "Voir le classement",
@@ -313,6 +314,17 @@
     "approveButton": "Approuver les modifications",
     "deleteEditButton": "Supprimer les modifications",
     "deleteSingleEditTooltip": "Vous ne pouvez pas supprimer ces modifications car ce sont les seules effectuées jusqu'à présent pour la balise. Créez-en de nouvelles puis supprimez celles-ci, ou supprimez la balise entière avec le bouton ci-dessus."
+  },
+  "fileUploader": {
+    "toast": {
+      "limitExceededTitle": "Limite totale dépassée ({{count}} fichier rejeté)",
+      "limitExceededTitle_plural": "Limite totale dépassée ({{count}} fichiers rejetés)",
+      "rejectedFilesMessage": "Les fichiers suivants dépassent la limite totale de 99.5Mo : {{rejectedNames}}. Espace restant : {{remainingSpaceMB}}Mo"
+    },
+    "dropzone": {
+      "prompt": "Glissez-déposez vos fichiers ici ou cliquez pour les sélectionner."
+    },
+    "totalSize": "Taille totale : {{currentSize}}Mo / {{maxSize}}Mo"
   },
   "errors": {
     "error": "Erreur",

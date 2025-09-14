@@ -18,6 +18,7 @@
   "edition": "Edizzjoni",
   "band": "Banda",
   "date": "Data",
+  "image": "Immaġni",
   "scoreboard": "Tabella tal-Punteġġ",
   "new": "Ġdid",
   "visualizeScoreboard": "Ara t-tabella tal-punteġġ",
@@ -312,6 +313,17 @@
     "deleteSingleEditTooltip": "Ma tistax tħassar dawn il-modifiki peress li huma l-uniċi li saru għal dan il-beacon s'issa. Oħloq oħrajn ġodda u mbagħad ħassar dawn, jew ħassar il-beacon kollu bil-buttuna ta' hawn fuq.",
     "dropAdifFile": "Ħalli l-fajl ADIF/EDI tiegħek hawn...",
     "dragOrClickAdif": "Drag il-fajl tiegħek .adif, .adi jew .edi hawn, jew ikklikkja biex tagħżlu."
+  },
+  "fileUploader": {
+    "toast": {
+      "limitExceededTitle": "Limitu totali maqbuż ({{count}} fajl miċħud)",
+      "limitExceededTitle_plural": "Limitu totali maqbuż ({{count}} fajls miċħuda)",
+      "rejectedFilesMessage": "Il-fajls li ġejjin jaqbżu l-limitu totali ta' 99.5MB: {{rejectedNames}}. Spazju li fadal: {{remainingSpaceMB}}MB"
+    },
+    "dropzone": {
+      "prompt": "Iddreggja l-fajls tiegħek hawn jew ikklikkja biex tagħżilhom."
+    },
+    "totalSize": "Daqs totali: {{currentSize}}MB / {{maxSize}}MB"
   },
   "errors": {
     "error": "Żball",

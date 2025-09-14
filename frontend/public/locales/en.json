@@ -21,6 +21,7 @@
   "edition": "Edition",
   "band": "Band",
   "date": "Date",
+  "image": "Image",
   "scoreboard": "Leaderboard",
   "new": "New",
   "visualizeScoreboard": "View leaderboard",
@@ -315,6 +316,17 @@
     "approveButton": "Approve edits",
     "deleteEditButton": "Delete edits",
     "deleteSingleEditTooltip": "You cannot delete these edits as they are the only ones made for the beacon so far. Create new ones and then delete these, or delete the entire beacon with the button above."
+  },
+  "fileUploader": {
+    "toast": {
+      "limitExceededTitle": "Total limit exceeded ({{count}} file rejected)",
+      "limitExceededTitle_plural": "Total limit exceeded ({{count}} files rejected)",
+      "rejectedFilesMessage": "The following files exceed the total limit of 99.5MB: {{rejectedNames}}. Remaining space: {{remainingSpaceMB}}MB"
+    },
+    "dropzone": {
+      "prompt": "Drag and drop your files here, or click to select them."
+    },
+    "totalSize": "Total size: {{currentSize}}MB / {{maxSize}}MB"
   },
   "errors": {
     "error": "Error",

@@ -18,6 +18,7 @@
   "edition": "Edición",
   "band": "Banda",
   "date": "Fecha",
+  "image": "Imagen",
   "scoreboard": "Clasificación",
   "new": "Nuevo",
   "visualizeScoreboard": "Ver clasificación",
@@ -313,6 +314,17 @@
     "approveButton": "Aprobar ediciones",
     "deleteEditButton": "Eliminar ediciones",
     "deleteSingleEditTooltip": "No puedes eliminar estas ediciones ya que son las únicas realizadas para la baliza hasta ahora. Crea nuevas y luego elimina estas, o elimina la baliza completa con el botón de arriba."
+  },
+  "fileUploader": {
+    "toast": {
+      "limitExceededTitle": "Límite total excedido ({{count}} archivo rechazado)",
+      "limitExceededTitle_plural": "Límite total excedido ({{count}} archivos rechazados)",
+      "rejectedFilesMessage": "Los siguientes archivos superan el límite total de 99.5MB: {{rejectedNames}}. Espacio restante: {{remainingSpaceMB}}MB"
+    },
+    "dropzone": {
+      "prompt": "Arrastra tus archivos aquí o haz clic para seleccionarlos."
+    },
+    "totalSize": "Tamaño total: {{currentSize}}MB / {{maxSize}}MB"
   },
   "errors": {
     "error": "Error",

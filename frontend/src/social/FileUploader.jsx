@@ -3,6 +3,7 @@ import heic2any from "heic2any";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { useTranslation } from "react-i18next";
 import { FaExclamationTriangle, FaTrash } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlayer from "react-player";
@@ -14,12 +15,14 @@ const FileItem = React.memo(({ file, index, onDelete }) => {
     onDelete(e, index);
   };
 
+  const { t } = useTranslation();
+
   return (
     <div className="relative max-w-full">
       {file.type.includes("image") ? (
         <LazyLoadImage
           src={URL.createObjectURL(file)}
-          alt="Immagine"
+          alt={t("image")}
           className="w-full h-auto max-h-64 object-contain rounded"
           onClick={(e) => e.stopPropagation()}
         />
@@ -61,11 +64,12 @@ const FileUploader = ({
   maxPhotos,
   maxVideos,
 }) => {
+  const { t } = useTranslation();
+
   const [toast, setToast] = useState(null);
 
   /**
    * @param {File[]} acceptedFiles
-   * @param {File[]} rejectedFiles
    */
   const handleDrop = async (acceptedFiles) => {
     const currentPhotos = files.filter((file) =>
@@ -119,7 +123,10 @@ const FileUploader = ({
 
       setToast({
         type: "error",
-        message: `I seguenti file superano il limite totale di 99.5MB: ${rejectedNames}. Spazio rimanente: ${remainingSpaceMB}MB`,
+        message: t("fileUploader.toast.rejectedFilesMessage", {
+          rejectedNames,
+          remainingSpaceMB,
+        }),
         files: rejectedFiles.length,
       });
 
@@ -163,7 +170,7 @@ const FileUploader = ({
   };
 
   const handleDelete = (e, index) => {
-    e.stopPropagation(); // Fermare la propagazione del click
+    e.stopPropagation(); // Stop click propagation
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
@@ -199,7 +206,9 @@ const FileUploader = ({
             </div>
             <div className="ml-3 text-sm font-normal">
               <div className="font-semibold text-gray-900 dark:text-white">
-                Limite totale superato ({toast.files} file rifiutati)
+                {t("fileUploader.toast.limitExceededTitle", {
+                  count: toast.files,
+                })}
               </div>
               <div className="text-gray-500 dark:text-gray-300 text-xs mt-1">
                 {toast.message}
@@ -219,14 +228,17 @@ const FileUploader = ({
         <input {...getInputProps()} disabled={disabled} />
         {files.length === 0 && (
           <p className="text-center text-gray-500">
-            Trascina qui i tuoi file o clicca per selezionarli.
+            {t("fileUploader.dropzone.prompt")}
           </p>
         )}
 
         {/* Display current total size */}
         {files.length > 0 && (
           <div className="text-sm text-gray-600 mb-2 text-center">
-            Dimensione totale: {currentTotalSizeMB}MB / {maxTotalSizeMB}MB
+            {t("fileUploader.totalSize", {
+              currentSize: currentTotalSizeMB,
+              maxSize: maxTotalSizeMB,
+            })}
           </div>
         )}
 
