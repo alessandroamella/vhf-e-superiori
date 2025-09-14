@@ -2,7 +2,7 @@ import { Turnstile } from "@marsidev/react-turnstile";
 import axios from "axios";
 import { saveAs } from "file-saver";
 import { Alert, Button, Spinner, TextInput } from "flowbite-react";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Helmet } from "react-helmet";
 import { useForm } from "react-hook-form";
@@ -18,10 +18,10 @@ import {
 } from "react-icons/fa";
 import { MdRepeat } from "react-icons/md";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { UserContext } from "../App";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
 import { getErrorStr } from "../shared";
 import useDarkModeStore from "../stores/darkModeStore";
+import useUserStore from "../stores/userStore";
 
 const GenerateMapPublicPage = () => {
   const { i18n, t } = useTranslation();
@@ -79,7 +79,7 @@ const GenerateMapPublicPage = () => {
     adifFileName: "",
   });
 
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
 
   useEffect(() => {
     if (user?.callsign) {

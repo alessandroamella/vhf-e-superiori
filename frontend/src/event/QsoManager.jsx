@@ -17,7 +17,7 @@ import {
   TextInput,
   Tooltip,
 } from "flowbite-react";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Helmet } from "react-helmet";
 import {
@@ -39,11 +39,11 @@ import {
 } from "react-router";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window";
-import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import MapWatermark from "../shared/MapWatermark";
 import StationMapMarker from "../shared/StationMapMarker";
+import useUserStore from "../stores/userStore";
 import ShareMapBtn from "./ShareMapBtn";
 import VirtualizedQsoRow from "./VirtualizedQsoRow";
 
@@ -55,7 +55,7 @@ function getAdifKey(qso, index) {
 }
 
 const QsoManager = () => {
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
 
   const alertContainerRef = useRef(null);
   const scrollToAlert = useCallback(() => {

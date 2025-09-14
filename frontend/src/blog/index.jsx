@@ -2,22 +2,22 @@ import axios from "axios";
 import { formatDistance } from "date-fns";
 import { it } from "date-fns/locale";
 import { Alert, Button, Card, Tooltip } from "flowbite-react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { FaCircle, FaPlus } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Markdown from "react-markdown";
 import ReactPlaceholder from "react-placeholder";
 import { Link } from "react-router";
-import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
+import useUserStore from "../stores/userStore";
 
 const Blog = () => {
   const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
 
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
 
   useEffect(() => {
     async function getBlogPosts() {

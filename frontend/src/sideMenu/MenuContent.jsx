@@ -19,10 +19,12 @@ import {
 import { HiMoon, HiSun } from "react-icons/hi";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { createSearchParams, Link, useLocation } from "react-router";
-import { JoinOpenContext, SidebarOpenContext, UserContext } from "../App";
+import { useShallow } from "zustand/react/shallow";
+import { JoinOpenContext, SidebarOpenContext } from "../App";
 import MobileLanguageSelector from "../MobileLanguageSelector";
 import { getErrorStr } from "../shared";
 import useDarkModeStore from "../stores/darkModeStore";
+import useUserStore from "../stores/userStore";
 
 const SectionHref = ({ href, wip, children }) => {
   const { setSidebarOpen } = useContext(SidebarOpenContext);
@@ -111,7 +113,12 @@ SectionTitle.propTypes = {
 };
 
 const MenuContent = ({ isSideBar }) => {
-  const { user, setUser } = useContext(UserContext);
+  const { user, logoutStore } = useUserStore(
+    useShallow((store) => ({
+      user: store.user,
+      logoutStore: store.logout,
+    })),
+  );
   const { joinOpen, setJoinOpen } = useContext(JoinOpenContext);
   const [, setMenuOpen] = useState(false);
   const { t } = useTranslation();
@@ -131,7 +138,7 @@ const MenuContent = ({ isSideBar }) => {
   async function logout() {
     try {
       await axios.post("/api/auth/logout");
-      setUser(null);
+      logoutStore();
     } catch (err) {
       console.log("logout error", getErrorStr(err?.response?.data?.err));
       window.alert(getErrorStr(err?.response?.data?.err));
@@ -160,7 +167,7 @@ const MenuContent = ({ isSideBar }) => {
         onClick={toggleDarkMode}
         color="light"
         size="sm"
-        className="mb-4 dark:bg-gray-700 dark:hover:bg-gray-600"
+        className="mb-4 dark:bg-gray-700 dark:hover:bg-gray-600 w-full"
         title={isDarkMode ? t("enableLightMode") : t("enableDarkMode")}
       >
         {isDarkMode ? <HiSun className="w-4" /> : <HiMoon className="w-4" />}

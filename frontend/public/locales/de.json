@@ -285,6 +285,8 @@
     "dragOrClickAdif": "Ziehen Sie Ihre ADIF-Datei hierher oder klicken Sie, um sie auszuwählen."
   },
   "errors": {
+    "GENERIC_ERROR": "Etwas ist schiefgelaufen, bitte versuche es erneut",
+    "CONTACT_ADMIN": "Wenn das Problem weiterhin besteht, kontaktieren Sie einen Administrator",
     "USER_NOT_FOUND": "Benutzer nicht gefunden. Er wurde möglicherweise gelöscht",
     "INVALID_PW": "Ungültiges Passwort",
     "WRONG_PW": "Falsches Passwort",

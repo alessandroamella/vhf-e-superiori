@@ -1,18 +1,23 @@
 import axios, { isAxiosError } from "axios";
 import { Alert, Button, Spinner } from "flowbite-react";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { FaBackward, FaTrash } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router";
-import { UserContext } from "../App";
+import { useShallow } from "zustand/react/shallow";
 import { getErrorStr } from "../shared";
+import useUserStore from "../stores/userStore";
 import ViewPostContent from "./ViewPostContent";
 
 const ViewPost = () => {
   const { id } = useParams();
 
-  const { user, setUser } = useContext(UserContext);
-
+  const { user, setUser } = useUserStore(
+    useShallow((store) => ({
+      user: store.user,
+      setUser: store.setUser,
+    })),
+  );
   const [deleteDisabled, setDeleteDisabled] = useState(false);
 
   const [alert, setAlert] = useState(null);

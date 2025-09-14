@@ -2,7 +2,7 @@ import axios from "axios";
 import { Alert, Button, Label, TextInput } from "flowbite-react";
 import L from "leaflet";
 import PropTypes from "prop-types";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { FaBackward, FaMapMarkerAlt } from "react-icons/fa";
 import {
@@ -19,9 +19,9 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router";
-import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import MapWatermark from "../shared/MapWatermark";
+import useUserStore from "../stores/userStore";
 
 const CustomMarker = ({
   showPos,
@@ -143,7 +143,7 @@ const BeaconEditor = () => {
     getBeacon();
   }, [id, navigate]);
 
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
   const isEditing = !!id; // true if id is not null (i.e. we are editing a beacon)
   const canEdit = user?.isAdmin || user?._id === beaconEdit?.editAuthor;
 

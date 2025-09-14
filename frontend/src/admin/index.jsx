@@ -28,9 +28,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import { EventsContext, UserContext } from "../App";
+import { EventsContext } from "../App";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import useUserStore from "../stores/userStore";
 import CreateEditEventModal from "./CreateEditEventModal";
 import EditUserModal from "./EditUserModal"; // Import the new component
 import PostsTable from "./PostsTable";
@@ -38,7 +39,7 @@ import UsersTable from "./UsersTable";
 import ViewJoinRequest from "./ViewJoinRequest";
 
 const AdminManager = () => {
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
   const { events } = useContext(EventsContext);
 
   const [showModal, setShowModal] = useState(false);

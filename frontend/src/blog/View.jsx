@@ -1,7 +1,7 @@
 import axios from "axios";
 import { it } from "date-fns/locale";
 import { Alert, Button, Spinner } from "flowbite-react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { FaBackward, FaTrash } from "react-icons/fa";
@@ -10,9 +10,9 @@ import Markdown from "react-markdown";
 import Zoom from "react-medium-image-zoom";
 import ReactPlaceholder from "react-placeholder";
 import { Link, useNavigate, useParams } from "react-router";
-import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import useUserStore from "../stores/userStore";
 
 const BlogPostViewer = () => {
   const [post, setPost] = useState(null);
@@ -42,7 +42,7 @@ const BlogPostViewer = () => {
     getBlogPost();
   }, [id]);
 
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
 
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(false);

@@ -1,15 +1,15 @@
 import { Card, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Button, Table } from "flowbite-react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { FaPlus } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
 import { createSearchParams, Link, useNavigate } from "react-router";
-import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import { inRange } from "../shared/inRange";
+import useUserStore from "../stores/userStore";
 
 const BeaconHomepage = () => {
   const [alert, setAlert] = useState(null);
@@ -18,7 +18,7 @@ const BeaconHomepage = () => {
 
   const [bands, setBands] = useState([]);
 
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
 
   const { i18n, t } = useTranslation();
 

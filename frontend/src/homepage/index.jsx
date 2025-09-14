@@ -24,21 +24,22 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router";
-import { EventsContext, JoinOpenContext, UserContext } from "../App";
+import { EventsContext, JoinOpenContext } from "../App";
 import JoinRequestModal from "./JoinRequestModal";
 import "react-round-carousel/src/index.css";
 import Flags from "../Flags";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import useUserStore from "../stores/userStore";
 
 const Homepage = () => {
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
   const { events } = useContext(EventsContext);
   const { i18n, t } = useTranslation();
 
   const [alert, setAlert] = useState(null);
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // const [isZoomed, setIsZoomed] = useState(false);
   const [zoomedImg, setZoomedImg] = useState(null);
@@ -73,8 +74,10 @@ const Homepage = () => {
         color: "success",
         msg: "Email confermata con successo! Ora puoi prenotarti come stazione attivatrice, inviare foto e video e altro.",
       });
+      searchParams.delete("confirmed");
+      setSearchParams(searchParams);
     }
-  }, [searchParams]);
+  }, [searchParams, setSearchParams]);
 
   const navigate = useNavigate();
 

@@ -16,12 +16,13 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { FaInfo } from "react-icons/fa";
 import { Link } from "react-router";
-import { EventsContext, UserContext } from "../App";
+import { EventsContext } from "../App";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import useUserStore from "../stores/userStore";
 
 const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
   const { events } = useContext(EventsContext);
   const { t } = useTranslation();
 

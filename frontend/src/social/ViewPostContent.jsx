@@ -1,6 +1,5 @@
 import React, {
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -18,10 +17,10 @@ import PropTypes from "prop-types";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlaceholder from "react-placeholder/lib";
 import { Link } from "react-router";
-import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import CallsignLoading from "../shared/CallsignLoading";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import useUserStore from "../stores/userStore";
 import CommentsSection from "./CommentSection";
 import Description from "./Description";
 import MediaSwiper from "./MediaSwiper";
@@ -32,7 +31,7 @@ const ViewPostContent = React.memo(({ postExtended, hideComments }) => {
   const postPictures = useMemo(() => post?.pictures || [], [post?.pictures]);
   const postVideos = useMemo(() => post?.videos || [], [post?.videos]);
 
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
 
   const [content, setContent] = useState("");
   const [disabled, setDisabled] = useState(false);

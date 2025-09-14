@@ -1,12 +1,11 @@
 import { Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
-import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link, useLocation } from "react-router";
-import { UserContext } from "./App";
 import Flags from "./Flags";
 import LogoBtns from "./homepage/LogoBtns";
+import useUserStore from "./stores/userStore";
 
 const LinkButton = ({ to, children, keepCurrent }) => {
   const location = useLocation();
@@ -37,7 +36,7 @@ LinkButton.propTypes = {
 };
 
 const Header = () => {
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
   const location = useLocation();
   const isHome = location.pathname === "/";
 

@@ -5,6 +5,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
+import classNames from "classnames";
 import { getDate, isAfter } from "date-fns";
 import { it, itCH } from "date-fns/locale";
 import {
@@ -26,6 +27,7 @@ import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import {
   FaArrowAltCircleRight,
+  FaCaretDown,
   FaCheck,
   FaExclamation,
   FaExternalLinkAlt,
@@ -39,14 +41,21 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router";
-import { EventsContext, UserContext } from "../App";
+import { useShallow } from "zustand/react/shallow";
+import { EventsContext } from "../App";
 import { mapsApiKey } from "../constants/mapsApiKey";
 import { getErrorStr } from "../shared";
 import CallsignLoading from "../shared/CallsignLoading";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import useUserStore from "../stores/userStore";
 
 const Profile = () => {
-  const { user, setUser } = useContext(UserContext);
+  const { user, setUser } = useUserStore(
+    useShallow((store) => ({
+      user: store.user,
+      setUser: store.setUser,
+    })),
+  );
   const { events } = useContext(EventsContext);
   const { t } = useTranslation();
 
@@ -308,6 +317,12 @@ const Profile = () => {
   const [joinRequestDeleteError, setJoinRequestDeleteError] = useState("");
 
   const [qsoOpen, setQsoOpen] = useState(false);
+
+  useEffect(() => {
+    if (user && !user.qsos?.length) {
+      setQsoOpen(true);
+    }
+  }, [user]);
 
   return (
     <>
@@ -910,58 +925,80 @@ const Profile = () => {
                 ) : (
                   <Accordion open={qsoOpen}>
                     <AccordionHeader onClick={() => setQsoOpen(!qsoOpen)}>
-                      <span className="dark:text-gray-300">Visualizza QSO</span>
+                      <span className="dark:text-gray-300">
+                        Visualizza QSO ({user?.qsos?.length || 0}){" "}
+                        <FaCaretDown
+                          className={classNames(
+                            "transition-transform inline-block ml-2",
+                            qsoOpen ? "rotate-180" : "",
+                          )}
+                        />
+                      </span>
                     </AccordionHeader>
                     <AccordionBody>
-                      <Table striped>
-                        <Table.Head>
-                          <Table.HeadCell>Attivatore</Table.HeadCell>
-                          <Table.HeadCell>Nominativo</Table.HeadCell>
-                          <Table.HeadCell>Data</Table.HeadCell>
-                          <Table.HeadCell>Locatore</Table.HeadCell>
-                        </Table.Head>
-                        <Table.Body>
-                          {user?.qsos?.map((qso) => (
-                            <Table.Row
-                              key={qso._id}
-                              onClick={() => navigate(`/qso/${qso._id}`)}
-                              className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                            >
-                              <Table.Cell
-                                className={
-                                  (
-                                    qso.fromStationCallsignOverride ||
-                                    qso.fromStation?.callsign ||
-                                    ""
-                                  ).includes(user?.callsign)
-                                    ? "font-bold"
-                                    : ""
-                                }
+                      {user?.qsos?.length ? (
+                        <Table striped>
+                          <Table.Head>
+                            <Table.HeadCell>Attivatore</Table.HeadCell>
+                            <Table.HeadCell>Nominativo</Table.HeadCell>
+                            <Table.HeadCell>Data</Table.HeadCell>
+                            <Table.HeadCell>Locatore</Table.HeadCell>
+                          </Table.Head>
+                          <Table.Body>
+                            {user?.qsos?.map((qso) => (
+                              <Table.Row
+                                key={qso._id}
+                                onClick={() => navigate(`/qso/${qso._id}`)}
+                                className="dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                               >
-                                {qso.fromStationCallsignOverride ||
-                                  qso.fromStation?.callsign}
-                              </Table.Cell>
-                              <Table.Cell
-                                className={
-                                  qso.callsign.includes(user?.callsign)
-                                    ? "font-bold"
-                                    : ""
-                                }
-                              >
-                                {qso.callsign}
-                              </Table.Cell>
-                              <Table.Cell>
-                                {formatInTimeZone(
-                                  new Date(qso.qsoDate),
-                                  "Europe/Rome",
-                                  "dd/MM/yyyy HH:mm",
-                                )}
-                              </Table.Cell>
-                              <Table.Cell>{qso.locator}</Table.Cell>
-                            </Table.Row>
-                          ))}
-                        </Table.Body>
-                      </Table>
+                                <Table.Cell
+                                  className={
+                                    (
+                                      qso.fromStationCallsignOverride ||
+                                      qso.fromStation?.callsign ||
+                                      ""
+                                    ).includes(user?.callsign)
+                                      ? "font-bold"
+                                      : ""
+                                  }
+                                >
+                                  {qso.fromStationCallsignOverride ||
+                                    qso.fromStation?.callsign}
+                                </Table.Cell>
+                                <Table.Cell
+                                  className={
+                                    qso.callsign.includes(user?.callsign)
+                                      ? "font-bold"
+                                      : ""
+                                  }
+                                >
+                                  {qso.callsign}
+                                </Table.Cell>
+                                <Table.Cell>
+                                  {formatInTimeZone(
+                                    new Date(qso.qsoDate),
+                                    "Europe/Rome",
+                                    "dd/MM/yyyy HH:mm",
+                                  )}
+                                </Table.Cell>
+                                <Table.Cell>{qso.locator}</Table.Cell>
+                              </Table.Row>
+                            ))}
+                          </Table.Body>
+                        </Table>
+                      ) : (
+                        <Alert color="info">
+                          <p className="font-medium">Ancora nessun QSO!</p>
+                          <p>
+                            Ma puoi segnare i tuoi QSO effettuati al prossimo
+                            evento, sarà disponibile un tasto
+                            <Button size="xs" color="blue" className="inline">
+                              {t("sendEQSL")}
+                            </Button>{" "}
+                            pochi giorni prima dell'inizio!
+                          </p>
+                        </Alert>
+                      )}
                     </AccordionBody>
                   </Accordion>
                 )}

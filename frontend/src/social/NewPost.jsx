@@ -10,14 +10,14 @@ import {
   Textarea,
 } from "flowbite-react";
 import PropTypes from "prop-types";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { FaBackward, FaInfoCircle, FaPlus } from "react-icons/fa";
 import { createSearchParams, useNavigate } from "react-router";
-import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
+import useUserStore from "../stores/userStore";
 import FileUploader from "./FileUploader";
 import ViewPostContent from "./ViewPostContent";
 
@@ -40,7 +40,7 @@ const NewPost = () => {
   const maxVideos = 5;
   const { t } = useTranslation();
 
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
 
   const [alert, setAlert] = useState(null);
   const [disabled, setDisabled] = useState(false);

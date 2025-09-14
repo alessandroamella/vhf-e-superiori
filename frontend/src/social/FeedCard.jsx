@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import ReactPlaceholder from "react-placeholder";
 import { Link } from "react-router";
@@ -11,9 +11,10 @@ import { Avatar, Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
 import { FaTrash } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { UserContext } from "../App";
+import { useShallow } from "zustand/react/shallow";
 import { getErrorStr } from "../shared";
 import CallsignLoading from "../shared/CallsignLoading";
+import useUserStore from "../stores/userStore";
 import TimeAgo from "./TimeAgo";
 
 /**
@@ -33,7 +34,12 @@ import TimeAgo from "./TimeAgo";
  * @param {Props} props
  */
 const FeedCard = ({ posts, setPosts, post, pp, setAlert, id }) => {
-  const { user, setUser } = useContext(UserContext);
+  const { user, setUser } = useUserStore(
+    useShallow((store) => ({
+      user: store.user,
+      setUser: store.setUser,
+    })),
+  );
 
   const pic =
     pp &&

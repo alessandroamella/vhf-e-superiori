@@ -2,13 +2,14 @@ import { Turnstile } from "@marsidev/react-turnstile";
 import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Label, TextInput, Tooltip } from "flowbite-react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { UserContext } from "../App";
+import { useShallow } from "zustand/react/shallow";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
 import { getErrorStr } from "../shared";
+import useUserStore from "../stores/userStore";
 
 const Login = () => {
   const [callsign, setCallsign] = useState("");
@@ -40,7 +41,12 @@ const Login = () => {
     }, 100);
   }, [resetPw]);
 
-  const { user, setUser } = useContext(UserContext);
+  const { user, setUser } = useUserStore(
+    useShallow((store) => ({
+      user: store.user,
+      setUser: store.setUser,
+    })),
+  );
 
   const alertRef = useRef();
   const captchaRef = useRef();

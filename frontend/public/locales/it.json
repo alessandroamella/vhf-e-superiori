@@ -287,6 +287,8 @@
     "noBeacons": "Nessun beacon presente"
   },
   "errors": {
+    "GENERIC_ERROR": "Qualcosa è andato storto, per favore riprova",
+    "CONTACT_ADMIN": "Se il problema persiste, contatta un amministratore",
     "USER_NOT_FOUND": "Utente non trovato. Potrebbe essere stato cancellato",
     "INVALID_PW": "Password non valida",
     "WRONG_PW": "Password errata",

@@ -11,7 +11,7 @@ import {
   Tabs,
 } from "flowbite-react";
 import { orderBy } from "lodash";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { FaExclamationTriangle } from "react-icons/fa";
@@ -29,9 +29,9 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import useUserStore from "../stores/userStore";
 import ShareMapBtn from "./ShareMapBtn";
 
 const EventList = () => {
@@ -183,7 +183,7 @@ const Rankings = () => {
 
   const [showRankings, setShowRankings] = useState(null);
 
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
 
   const [qsos, setQsos] = useState(null);
 

@@ -32,19 +32,19 @@ import {
   Tooltip,
 } from "flowbite-react";
 import PropTypes from "prop-types";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Helmet } from "react-helmet";
 import { FaExclamationTriangle, FaPlus, FaTrash, FaUndo } from "react-icons/fa";
 import { createSearchParams, useNavigate } from "react-router";
-import { UserContext } from "../App";
 import { getErrorStr } from "../shared";
+import useUserStore from "../stores/userStore";
 
 const BlogPostEditor = ({ blogPost }) => {
   const [alert, setAlert] = useState(null);
   const [disabled, setDisabled] = useState(false);
 
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
   const navigate = useNavigate();
 
   const isEditing = useMemo(() => !!blogPost, [blogPost]);

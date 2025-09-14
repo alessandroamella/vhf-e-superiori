@@ -7,6 +7,7 @@ import Signup from "./auth/Signup";
 import ViewEvent from "./event/ViewEvent";
 import Homepage from "./homepage";
 import "./index.css";
+import { ErrorBoundary } from "react-error-boundary";
 import AntenneGianni from "./antenna/AntenneGianni";
 // import Regolamento from "./homepage/Regolamento";
 // import Info from "./homepage/Info";
@@ -39,14 +40,16 @@ import {
   EventsContext,
   JoinOpenContext,
   SidebarOpenContext,
-  UserContext,
   ViewsContext,
 } from "./App";
 import BlogPostEditor from "./blog/Editor";
 import BlogPostViewer from "./blog/View";
+import FallbackView from "./FallbackView";
 import Layout from "./Layout";
 import NotFoundPage from "./NotFound";
 import SplashLoader, { SplashWrapper } from "./SplashLoader";
+
+import useUserStore from "./stores/userStore";
 
 import "./i18n/i18n";
 
@@ -100,33 +103,17 @@ const AppRoutes = () => {
 };
 
 export const App = () => {
-  const [user, setUser] = useState(false);
+  const fetchUser = useUserStore((store) => store.fetchUser);
+  console.log({ fetchUser });
+
   const [events, setEvents] = useState(false);
   const [joinOpen, setJoinOpen] = useState(false);
   const [views, setViews] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const isFetchingUser = useRef(false);
-
   useEffect(() => {
-    async function fetchUser() {
-      if (isFetchingUser.current) return;
-      isFetchingUser.current = true;
-
-      try {
-        const { data } = await axios.get("/api/auth");
-        console.log("user", data);
-        setUser(data);
-      } catch (err) {
-        console.log("no user");
-        if (!isAxiosError(err)) return console.error(err);
-        // setAlert(err.response?.data || "Errore sconosciuto");
-        setUser(null);
-      }
-    }
-
-    if (!user) fetchUser();
-  }, [user]);
+    fetchUser();
+  }, [fetchUser]);
 
   const isFetchingEvents = useRef(false);
 
@@ -208,7 +195,7 @@ export const App = () => {
 
   return (
     <ThemeProvider>
-      <UserContext.Provider value={{ user, setUser }}>
+      <ErrorBoundary fallback={<FallbackView />}>
         <EventsContext.Provider value={{ events, setEvents }}>
           <JoinOpenContext.Provider
             value={{
@@ -225,7 +212,7 @@ export const App = () => {
             </ViewsContext.Provider>
           </JoinOpenContext.Provider>
         </EventsContext.Provider>
-      </UserContext.Provider>
+      </ErrorBoundary>
     </ThemeProvider>
   );
 };

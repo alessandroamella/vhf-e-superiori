@@ -13,9 +13,10 @@ import {
 } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { createSearchParams, Link, useNavigate, useParams } from "react-router";
-import { EventsContext, UserContext } from "../App";
+import { EventsContext } from "../App";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
+import useUserStore from "../stores/userStore";
 
 const EventContainer = ({ event, children }) =>
   event?.logoUrl ? (
@@ -31,7 +32,7 @@ const EventContainer = ({ event, children }) =>
 
 const ViewEvent = () => {
   const { id } = useParams();
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
   const { events } = useContext(EventsContext);
 
   const [event, setEvent] = useState(null);

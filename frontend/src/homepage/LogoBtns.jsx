@@ -1,13 +1,13 @@
 import { Button } from "flowbite-react";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
-import { UserContext } from "../App";
+import useUserStore from "../stores/userStore";
 
 const AirscoutBtn = () => {
   const url = "https://forms.gle/3NctoQ7Sy8ksbBQR7";
 
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
 
   const [search, setSearch] = useSearchParams();
 

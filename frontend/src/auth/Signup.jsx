@@ -3,14 +3,7 @@ import { Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { Alert, Avatar, Card, Label, TextInput, Tooltip } from "flowbite-react";
 import PropTypes from "prop-types";
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { usePlacesWidget } from "react-google-autocomplete";
 import { Helmet } from "react-helmet";
@@ -24,10 +17,10 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router";
-import { UserContext } from "../App";
 import { mapsApiKey } from "../constants/mapsApiKey";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
 import { getErrorStr } from "../shared";
+import useUserStore from "../stores/userStore";
 
 const useFocus = () => {
   const htmlElRef = useRef(null);
@@ -80,7 +73,7 @@ const Signup = () => {
   const captchaRef = useRef();
   const alertRef = useRef();
 
-  const { setUser } = useContext(UserContext);
+  const setUser = useUserStore((store) => store.setUser);
 
   const [alert, setAlert] = useState(null);
   const [disabled, setDisabled] = useState(false);
@@ -349,7 +342,7 @@ const Signup = () => {
     setTosPrivacyError(null);
   }
 
-  const { user } = useContext(UserContext);
+  const user = useUserStore((store) => store.user);
 
   async function handleReCaptchaError(err) {
     console.log("ReCAPTCHA error", err, "\nReCAPTCHA ref:", captchaRef.current);

@@ -174,7 +174,7 @@ router.put(
         province,
       });
 
-      if (oldEmail !== email && !newUser.isAdmin) {
+      if (oldEmail !== email) {
         logger.debug(
           `User ${user.callsign} update: email was "${
             user.email
