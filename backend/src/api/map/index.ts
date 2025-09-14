@@ -30,7 +30,7 @@ class MapExporter {
 
       const buffer = await sharp(imgBuffer)
         .resize(newWidth, newHeight) // Resize to 50% of original
-        .png()
+        .png({ quality: 95 })
         .toBuffer();
 
       logger.debug(`Map image processed to ${newWidth}x${newHeight}`);
@@ -226,11 +226,11 @@ class MapExporter {
 
       await browser.close();
 
-      // upscale to 1080p, export 90% jpg
-      const buffer = await sharp(_buffer).png().toBuffer();
+      // upscale to 1080p, export 95% jpg
+      const buffer = await sharp(_buffer).jpeg({ quality: 95 }).toBuffer();
 
       logger.info(
-        `Map of user ${callsign} for event ${event.name} exported to PNG with ${qsos.length} QSO(s) as cache key ${cacheKey}`,
+        `Map of user ${callsign} for event ${event.name} exported to JPG with ${qsos.length} QSO(s) as cache key ${cacheKey}`,
       );
 
       // Save the generated image to cache
