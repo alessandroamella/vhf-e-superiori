@@ -60,50 +60,48 @@ import usePageTracking from "./hooks/usePageTracking";
 const AppRoutes = () => {
   usePageTracking();
   return (
-    <BrowserRouter>
-      <SplashWrapper>
-        <Suspense fallback={<SplashLoader />}>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Homepage />} />
-              <Route path="/progetti-gianni" element={<ProgettiGianni />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/social" element={<Social />} />
-              <Route path="/social/new" element={<NewPost />} />
-              <Route path="/u/:callsign" element={<ViewPublished />} />
-              <Route path="/social/:id" element={<ViewPost />} />
-              <Route path="/eventmanager" element={<AdminManager />} />
-              <Route path="/qsomanager/:id" element={<QsoManager />} />
-              <Route path="/rankings" element={<Rankings />} />
-              <Route path="/rankings/:id" element={<Rankings />} />
-              <Route path="/eqsl/:id" element={<EqslRedirect />} />
-              <Route path="/qso/:id" element={<Qso />} />
-              {/* <Route path="/regolamento" element={<Regolamento />} /> */}
-              {/* <Route path="/info" element={<Info />} /> */}
-              <Route path="/resetpw" element={<ResetPw />} />
-              <Route path="/event/:id" element={<ViewEvent />} />
-              <Route path="/document/:name" element={<MdViewer />} />
-              <Route path="/beacon" element={<BeaconHomepage />} />
-              <Route path="/beacon/editor" element={<BeaconEditor />} />
-              <Route path="/beacon/:id" element={<ViewBeacon />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/editor" element={<BlogPostEditor />} />
-              <Route path="/blog/:id" element={<BlogPostViewer />} />
-              <Route path="/antenne-gianni" element={<AntenneGianni />} />
-              {/* NUOVA ROTTA */}
-              <Route path="/generate-map" element={<GenerateMapPublicPage />} />
-              <Route path="*" element={<NotFoundPage />} />
-              {/* <Route
+    <SplashWrapper>
+      <Suspense fallback={<SplashLoader />}>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Homepage />} />
+            <Route path="/progetti-gianni" element={<ProgettiGianni />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/social" element={<Social />} />
+            <Route path="/social/new" element={<NewPost />} />
+            <Route path="/u/:callsign" element={<ViewPublished />} />
+            <Route path="/social/:id" element={<ViewPost />} />
+            <Route path="/eventmanager" element={<AdminManager />} />
+            <Route path="/qsomanager/:id" element={<QsoManager />} />
+            <Route path="/rankings" element={<Rankings />} />
+            <Route path="/rankings/:id" element={<Rankings />} />
+            <Route path="/eqsl/:id" element={<EqslRedirect />} />
+            <Route path="/qso/:id" element={<Qso />} />
+            {/* <Route path="/regolamento" element={<Regolamento />} /> */}
+            {/* <Route path="/info" element={<Info />} /> */}
+            <Route path="/resetpw" element={<ResetPw />} />
+            <Route path="/event/:id" element={<ViewEvent />} />
+            <Route path="/document/:name" element={<MdViewer />} />
+            <Route path="/beacon" element={<BeaconHomepage />} />
+            <Route path="/beacon/editor" element={<BeaconEditor />} />
+            <Route path="/beacon/:id" element={<ViewBeacon />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/editor" element={<BlogPostEditor />} />
+            <Route path="/blog/:id" element={<BlogPostViewer />} />
+            <Route path="/antenne-gianni" element={<AntenneGianni />} />
+            {/* NUOVA ROTTA */}
+            <Route path="/generate-map" element={<GenerateMapPublicPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+            {/* <Route
               path="contacts/:contactId"
               element={<Contact />}
             /> */}
-            </Route>
-          </Routes>
-        </Suspense>
-      </SplashWrapper>
-    </BrowserRouter>
+          </Route>
+        </Routes>
+      </Suspense>
+    </SplashWrapper>
   );
 };
 
@@ -212,7 +210,9 @@ export const App = () => {
               <SidebarOpenContext.Provider
                 value={{ sidebarOpen, setSidebarOpen }}
               >
-                <AppRoutes />
+                <BrowserRouter>
+                  <AppRoutes />
+                </BrowserRouter>
               </SidebarOpenContext.Provider>
             </ViewsContext.Provider>
           </JoinOpenContext.Provider>
