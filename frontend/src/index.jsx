@@ -39,7 +39,6 @@ import {
   EventsContext,
   JoinOpenContext,
   SidebarOpenContext,
-  SplashContext,
   UserContext,
   ViewsContext,
 } from "./App";
@@ -103,7 +102,6 @@ const AppRoutes = () => {
 export const App = () => {
   const [user, setUser] = useState(false);
   const [events, setEvents] = useState(false);
-  const [splashPlayed, setSplashPlayed] = useState(false);
   const [joinOpen, setJoinOpen] = useState(false);
   const [views, setViews] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -212,22 +210,20 @@ export const App = () => {
     <ThemeProvider>
       <UserContext.Provider value={{ user, setUser }}>
         <EventsContext.Provider value={{ events, setEvents }}>
-          <SplashContext.Provider value={{ splashPlayed, setSplashPlayed }}>
-            <JoinOpenContext.Provider
-              value={{
-                joinOpen,
-                setJoinOpen,
-              }}
-            >
-              <ViewsContext.Provider value={{ views }}>
-                <SidebarOpenContext.Provider
-                  value={{ sidebarOpen, setSidebarOpen }}
-                >
-                  <AppRoutes />
-                </SidebarOpenContext.Provider>
-              </ViewsContext.Provider>
-            </JoinOpenContext.Provider>
-          </SplashContext.Provider>
+          <JoinOpenContext.Provider
+            value={{
+              joinOpen,
+              setJoinOpen,
+            }}
+          >
+            <ViewsContext.Provider value={{ views }}>
+              <SidebarOpenContext.Provider
+                value={{ sidebarOpen, setSidebarOpen }}
+              >
+                <AppRoutes />
+              </SidebarOpenContext.Provider>
+            </ViewsContext.Provider>
+          </JoinOpenContext.Provider>
         </EventsContext.Provider>
       </UserContext.Provider>
     </ThemeProvider>
