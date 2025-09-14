@@ -35,7 +35,7 @@ import useUserStore from "../stores/userStore";
 const Homepage = () => {
   const user = useUserStore((store) => store.user);
   const { events } = useContext(EventsContext);
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
 
   const [alert, setAlert] = useState(null);
 
@@ -264,7 +264,9 @@ const Homepage = () => {
     <>
       <Helmet>
         <title>
-          {i18n.exists("mainTitle") ? t("mainTitle") : "Main Title"}
+          {t("mainTitle", {
+            defaultValue: "VHF e Superiori - Flash Mob Radioamatoriale",
+          })}
         </title>
       </Helmet>
 

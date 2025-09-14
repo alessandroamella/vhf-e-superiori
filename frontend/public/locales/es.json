@@ -285,6 +285,7 @@
     "dragOrClickAdif": "Arrastra tu archivo ADIF aquí, o haz clic para seleccionarlo."
   },
   "errors": {
+    "error": "Error",
     "GENERIC_ERROR": "Algo salió mal, por favor inténtalo de nuevo",
     "CONTACT_ADMIN": "Si el problema persiste, contacta a un administrador",
     "USER_NOT_FOUND": "Usuario no encontrado. Podría haber sido eliminado",

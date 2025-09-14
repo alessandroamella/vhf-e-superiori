@@ -136,13 +136,16 @@ const Social = () => {
     );
   }, [filterCallsign, posts]);
 
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <>
       <Helmet>
         <title>
-          {i18n.exists("social") ? t("social") : "Social"} - VHF e Superiori
+          {t("social", {
+            defaultValue: "Social",
+          })}{" "}
+          - VHF e Superiori
         </title>
         <meta
           name="description"

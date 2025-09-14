@@ -52,7 +52,7 @@ OpenExternally.propTypes = {
 
 const Signup = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["signupcache"]);
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
 
   const [avatar, setAvatar] = useState(null);
 
@@ -371,8 +371,10 @@ const Signup = () => {
     <>
       <Helmet>
         <title>
-          {i18n.exists("signupVhf") ? t("signupVhf") : "Signup"} - VHF e
-          Superiori
+          {t("signupVhf", {
+            defaultValue: "Signup",
+          })}{" "}
+          - VHF e Superiori
         </title>
       </Helmet>
       {user &&

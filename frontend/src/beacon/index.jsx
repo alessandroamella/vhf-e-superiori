@@ -20,7 +20,7 @@ const BeaconHomepage = () => {
 
   const user = useUserStore((store) => store.user);
 
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function getBeacons() {
@@ -61,9 +61,10 @@ const BeaconHomepage = () => {
     <>
       <Helmet>
         <title>
-          {i18n.exists("beacons.pageTitle")
-            ? t("beacons.pageTitle")
-            : "Beacon - VHF e Superiori"}
+          {t("beacons.pageTitle", {
+            defaultValue: "Beacon",
+          })}{" "}
+          - VHF e Superiori
         </title>
       </Helmet>
       <div className="w-full min-h-[60vh] overflow-y-auto h-full pb-4 dark:text-white dark:bg-gray-900">

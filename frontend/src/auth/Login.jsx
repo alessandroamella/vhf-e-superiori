@@ -15,7 +15,7 @@ import useUserStore from "../stores/userStore";
 const Login = () => {
   const [callsign, setCallsign] = useState("");
   const [password, setPassword] = useState("");
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
 
   const loginFormRef = useRef();
   const emailRef = useRef();
@@ -178,7 +178,10 @@ const Login = () => {
     <>
       <Helmet>
         <title>
-          {i18n.exists("loginVhf") ? t("loginVhf") : "Login"} - VHF e Superiori
+          {t("loginVhf", {
+            defaultValue: "Login",
+          })}{" "}
+          - VHF e Superiori
         </title>
       </Helmet>
       {user &&

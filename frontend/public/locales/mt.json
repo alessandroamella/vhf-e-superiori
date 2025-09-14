@@ -284,6 +284,7 @@
     "dragOrClickAdif": "Kaxkar il-fajl ADIF tiegħek hawn, jew ikklikkja biex tagħżlu."
   },
   "errors": {
+    "error": "Żball",
     "GENERIC_ERROR": "Xi ħaġa marret ħażin, jekk jogħġbok erġa' ipprova",
     "CONTACT_ADMIN": "Jekk il-problema tippersisti, ikkuntattja amministratur",
     "USER_NOT_FOUND": "Utent ma nstabx. Jista' jkun tħassar",
