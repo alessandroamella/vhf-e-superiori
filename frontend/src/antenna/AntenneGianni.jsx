@@ -1,3 +1,4 @@
+import { saveAs } from "file-saver";
 import { Button } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
@@ -190,10 +191,8 @@ const AntenneGianni = () => {
   };
 
   const downloadPdf = (filename) => {
-    const link = document.createElement("a");
-    link.href = `https://vhfesuperiori.s3.eu-central-1.amazonaws.com/antenne-gianni/${selectedBand}/${filename}`;
-    link.download = filename;
-    link.click();
+    const pdfUrl = `https://vhfesuperiori.s3.eu-central-1.amazonaws.com/antenne-gianni/${selectedBand}/${filename}`;
+    saveAs(pdfUrl, filename);
   };
 
   return (

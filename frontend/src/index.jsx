@@ -9,8 +9,6 @@ import Homepage from "./homepage";
 import "./index.css";
 import { ErrorBoundary } from "react-error-boundary";
 import AntenneGianni from "./antenna/AntenneGianni";
-// import Regolamento from "./homepage/Regolamento";
-// import Info from "./homepage/Info";
 import BeaconHomepage from "./beacon";
 import BeaconEditor from "./beacon/Editor";
 import ViewBeacon from "./beacon/ViewBeacon";
@@ -20,7 +18,6 @@ import EqslRedirect from "./event/EqslRedirect";
 import Qso from "./event/Qso";
 import QsoManager from "./event/QsoManager";
 import Rankings from "./event/Rankings";
-import ProgettiGianni from "./homepage/ProgettiGianni";
 import GenerateMapPublicPage from "./map/GenerateMapPublicPage"; // <-- NUOVA IMPORTAZIONE
 import Profile from "./profile";
 import ResetPw from "./profile/ResetPw";
@@ -65,7 +62,6 @@ const AppRoutes = () => {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Homepage />} />
-            <Route path="/progetti-gianni" element={<ProgettiGianni />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/profile" element={<Profile />} />
