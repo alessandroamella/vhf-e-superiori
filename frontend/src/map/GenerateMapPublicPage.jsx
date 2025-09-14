@@ -5,6 +5,7 @@ import { Alert, Button, Spinner, TextInput } from "flowbite-react";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Helmet } from "react-helmet";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
   FaCloudUploadAlt,
@@ -25,10 +26,39 @@ const GenerateMapPublicPage = () => {
   const { i18n, t } = useTranslation();
   const turnstileRef = useRef(null); // Ref per il componente Turnstile
 
+  // React Hook Form setup
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    reset,
+    watch,
+    trigger,
+  } = useForm({
+    defaultValues: {
+      operatorCallsign: "",
+      qth: "",
+      eventTitle: "",
+    },
+    mode: "onBlur",
+  });
+
+  const callsign = watch("operatorCallsign").trim();
+  if (
+    errors.operatorCallsign &&
+    callsign.length >= 1 &&
+    callsign.length <= 10
+  ) {
+    trigger("operatorCallsign");
+  }
+
+  const locator = watch("qth").trim();
+  if (errors.qth && (locator.length === 4 || locator.length === 6)) {
+    trigger("qth");
+  }
+
   const [adifFile, setAdifFile] = useState(null);
-  const [operatorCallsign, setOperatorCallsign] = useState("");
-  const [qth, setQth] = useState("");
-  const [eventTitle, setEventTitle] = useState("");
   const [turnstileToken, setTurnstileToken] = useState(null);
   const [generatedMapUrl, setGeneratedMapUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,12 +81,12 @@ const GenerateMapPublicPage = () => {
 
   useEffect(() => {
     if (user?.callsign) {
-      setOperatorCallsign(user.callsign);
+      setValue("operatorCallsign", user.callsign);
     }
     if (user?.locator) {
-      setQth(user.locator);
+      setValue("qth", user.locator);
     }
-  }, [user]);
+  }, [user, setValue]);
 
   useEffect(() => {
     function checkDarkMode() {
@@ -156,33 +186,29 @@ const GenerateMapPublicPage = () => {
 
   const resetForm = useCallback(() => {
     setAdifFile(null);
-    setOperatorCallsign("");
-    setQth("");
-    setEventTitle("");
+    reset({
+      operatorCallsign: "",
+      qth: "",
+      eventTitle: "",
+    });
     setGeneratedMapUrl(null);
     setAlert(null);
     setSavedValues({
-      operatorCallsign: "",
-      qth: "",
+      operatorCallsign: user?.callsign || "",
+      qth: user?.locator || "",
       eventTitle: "",
       adifFileName: "",
     });
     // Scroll back to top of form
     mainRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [setAlert]);
+  }, [reset, setAlert, user]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     setAlert(null);
     setGeneratedMapUrl(null);
 
     if (!adifFile) {
       setAlert({ color: "failure", msg: t("errors.NO_ADIF_FILE") });
-      return;
-    }
-
-    if (!qth.trim()) {
-      setAlert({ color: "failure", msg: t("errors.QTH_REQUIRED") });
       return;
     }
 
@@ -198,13 +224,13 @@ const GenerateMapPublicPage = () => {
 
     const formData = new FormData();
     formData.append("adif", adifFile);
-    formData.append("qth", qth.trim());
+    formData.append("qth", data.qth.trim());
     formData.append("turnstileToken", turnstileToken);
-    if (operatorCallsign) {
-      formData.append("operatorCallsign", operatorCallsign);
+    if (data.operatorCallsign) {
+      formData.append("operatorCallsign", data.operatorCallsign);
     }
-    if (eventTitle) {
-      formData.append("eventTitle", eventTitle);
+    if (data.eventTitle) {
+      formData.append("eventTitle", data.eventTitle);
     }
 
     try {
@@ -224,9 +250,9 @@ const GenerateMapPublicPage = () => {
 
       // Save the current form values as they were when the map was generated
       setSavedValues({
-        operatorCallsign: operatorCallsign || "",
-        qth: qth.trim() || "",
-        eventTitle: eventTitle || "",
+        operatorCallsign: data.operatorCallsign || "",
+        qth: data.qth.trim() || "",
+        eventTitle: data.eventTitle || "",
         adifFileName: adifFile.name || "",
       });
 
@@ -329,9 +355,14 @@ const GenerateMapPublicPage = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 text-gray-800 dark:text-white">
             {t("generateMap.generateYourMapTitle")}
           </h1>
-          <p className="text-center text-gray-600 dark:text-gray-300 mb-8">
+          <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
             {t("generateMap.generateYourMapDescription")}
           </p>
+
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400 mb-6">
+            <span className="text-red-500">*</span>{" "}
+            {t("generateMap.requiredFields")}
+          </div>
 
           {alert && (
             <div className="mb-4">
@@ -352,7 +383,7 @@ const GenerateMapPublicPage = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <div className="mb-2 block">
                 <label
@@ -409,18 +440,35 @@ const GenerateMapPublicPage = () => {
                   htmlFor="operator-callsign"
                   className="block text-sm font-medium text-gray-900 dark:text-gray-200"
                 >
-                  {t("generateMap.operatorCallsign")}
+                  {t("generateMap.operatorCallsign")}{" "}
+                  <span className="text-red-500">*</span>
                 </label>
               </div>
               <TextInput
                 id="operator-callsign"
                 type="text"
-                value={operatorCallsign}
-                onChange={(e) =>
-                  setOperatorCallsign(e.target.value.toUpperCase())
-                }
-                placeholder="IZ0XYZ (Opzionale)"
+                {...register("operatorCallsign", {
+                  required: t("errors.OPERATOR_CALLSIGN_REQUIRED"),
+                  validate: (value) => {
+                    const trimmed = value.trim();
+                    if (trimmed === "") {
+                      return t("errors.OPERATOR_CALLSIGN_REQUIRED");
+                    }
+                    if (
+                      trimmed.includes(" ") ||
+                      trimmed.length < 1 ||
+                      trimmed.length > 10
+                    ) {
+                      return t("errors.INVALID_CALLSIGN");
+                    }
+                    return true;
+                  },
+                  setValueAs: (value) => value.trim().toUpperCase(),
+                })}
+                placeholder="IZ0XYZ"
                 disabled={isLoading}
+                color={errors.operatorCallsign ? "failure" : "gray"}
+                helperText={errors.operatorCallsign?.message}
               />
             </div>
 
@@ -437,11 +485,25 @@ const GenerateMapPublicPage = () => {
               <TextInput
                 id="qth"
                 type="text"
-                value={qth}
-                onChange={(e) => setQth(e.target.value)}
-                placeholder="JN61GV"
+                {...register("qth", {
+                  required: t("errors.LOCATOR_REQUIRED"),
+                  validate: (value) => {
+                    const trimmed = value.trim();
+                    if (trimmed === "") {
+                      return t("errors.LOCATOR_REQUIRED");
+                    }
+                    // validate length 4 or 6
+                    if (trimmed.length !== 4 && trimmed.length !== 6) {
+                      return t("errors.INVALID_LOCATOR");
+                    }
+                    return true;
+                  },
+                  setValueAs: (value) => value.trim(),
+                })}
+                placeholder="JN54mn"
                 disabled={isLoading}
-                required
+                color={errors.qth ? "failure" : "gray"}
+                helperText={errors.qth?.message}
               />
             </div>
 
@@ -457,8 +519,7 @@ const GenerateMapPublicPage = () => {
               <TextInput
                 id="event-title"
                 type="text"
-                value={eventTitle}
-                onChange={(e) => setEventTitle(e.target.value)}
+                {...register("eventTitle")}
                 placeholder={t("generateMap.myAdifMap")}
                 disabled={isLoading}
               />
@@ -481,9 +542,7 @@ const GenerateMapPublicPage = () => {
 
             <Button
               type="submit"
-              disabled={
-                isLoading || !adifFile || !qth.trim() || !turnstileToken
-              }
+              disabled={isLoading || !adifFile || !turnstileToken}
               className="w-full"
             >
               {isLoading ? (
@@ -549,7 +608,7 @@ const GenerateMapPublicPage = () => {
                   <div className="mt-4 md:mt-0">
                     <Button
                       onClick={resetForm}
-                      color="light"
+                      color="blue"
                       size="sm"
                       className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-white/30"
                     >

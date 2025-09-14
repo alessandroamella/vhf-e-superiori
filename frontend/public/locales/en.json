@@ -218,6 +218,7 @@
     "generateNewMap": "Generate New Map",
     "fileSelected": "File selected: {{fileName}}",
     "mapGeneratedSuccess": "Map generated successfully!",
+    "requiredFields": "Fields marked with asterisk are required",
     "yourGeneratedMap": "Your Generated Map",
     "shareOnSocialMedia": "Share on social media",
     "poweredBy": "Proudly powered by"
@@ -346,6 +347,8 @@
     "NO_IMAGE_TO_EQSL": "No image to use for eQSL",
     "INVALID_ADIF": "Invalid ADIF file",
     "INVALID_ADIF_EXCLUDE": "Invalid ADIF exclude",
+    "OPERATOR_CALLSIGN_REQUIRED": "Operator callsign is required",
+    "LOCATOR_REQUIRED": "Locator is required",
     "INVALID_NAME": "Invalid name",
     "INVALID_CALLSIGN": "Invalid callsign",
     "INVALID_COMMENT": "Invalid comment",
