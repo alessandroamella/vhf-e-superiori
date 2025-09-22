@@ -1,4 +1,4 @@
-import { cleanEnv, str } from "envalid";
+import { cleanEnv, str, url } from "envalid";
 import { Errors } from "../api/errors";
 import { logger } from "./logger";
 
@@ -29,6 +29,7 @@ export const envs = cleanEnv(
     GOOGLE_MAPS_API_KEY: str(),
     AWS_REGION: str(),
     CHROME_PATH: str(),
+    FRONTEND_URL: url(),
   },
   {
     reporter: ({ errors }) => {

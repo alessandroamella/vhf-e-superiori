@@ -68,7 +68,7 @@ router.get(
         throw new Error("User has no verification code in verify route");
       }
 
-      const same = bcrypt.compareSync(req.params.code, user.verificationCode);
+      const same = await bcrypt.compare(req.params.code, user.verificationCode);
 
       logger.debug(
         `Compare ${req.params.code} and ${user.verificationCode}: ${same}`,

@@ -14,6 +14,7 @@ import type { JoinRequestDoc } from "../joinRequest/models";
 import type { BasePostDoc } from "../post/models";
 import { qrz } from "../qrz";
 import type { QsoDoc } from "../qso/models";
+import { removeTrailingSlash } from "../utils/removeTrailingSlash";
 
 moment.locale("it");
 
@@ -91,10 +92,11 @@ export class EmailService {
   }
 
   public static async sendResetPwMail(user: UserDoc, code: string) {
-    const html = await EmailService.loadMailFromFile("changePw.html", {
-      "{NOMINATIVO}": user.callsign,
-      "{USERID}": user._id.toString(),
-      "{CODE}": code,
+    const html = await EmailService.loadMailFromFile("changePw.ejs", {
+      callsign: user.callsign,
+      userId: user._id.toString(),
+      resetPwdCode: code,
+      baseUrl: removeTrailingSlash(envs.FRONTEND_URL),
     });
 
     const message: Mail.Options = {

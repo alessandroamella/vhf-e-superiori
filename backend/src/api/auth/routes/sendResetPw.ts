@@ -1,15 +1,19 @@
 import bcrypt from "bcrypt";
 import { Router } from "express";
 import { body } from "express-validator";
-import { INTERNAL_SERVER_ERROR, OK } from "http-status";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
+import moment from "moment";
 import randomstring from "randomstring";
 import { logger } from "../../../shared/logger";
 import EmailService from "../../email";
+import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import checkCaptcha from "../../middlewares/checkCaptcha";
 import { User } from "../models";
 
 const router = Router();
+
+const PW_RESET_EXPIRATION_MINUTES = 15;
 
 /**
  * @openapi
@@ -25,7 +29,7 @@ const router = Router();
  *            properties:
  *              email:
  *                type: string
- *                format: password
+ *                format: email
  *              token:
  *                type: string
  *                description: ReCAPTCHA token
@@ -63,7 +67,23 @@ router.post(
       });
       if (!user) {
         logger.debug(`Email ${req.body.email} not found in send reset pw`);
+        // Always return OK to prevent email enumeration attacks
         return res.sendStatus(OK);
+      }
+
+      // check if another code was sent within last minute
+      if (
+        user.passwordReset &&
+        moment(user.passwordReset.expires)
+          .subtract(PW_RESET_EXPIRATION_MINUTES - 1, "minutes")
+          .isAfter(new Date())
+      ) {
+        logger.debug(
+          `Password reset already requested recently for user ${user.callsign}`,
+        );
+        return res
+          .status(BAD_REQUEST)
+          .json(createError(Errors.PW_RESET_WAIT_BEFORE_NEW));
       }
 
       const passwordResetCode = randomstring.generate({
@@ -71,9 +91,19 @@ router.post(
         charset: "alphanumeric",
       });
 
-      user.passwordResetCode = await bcrypt.hash(passwordResetCode, 10);
+      const hashedCode = await bcrypt.hash(passwordResetCode, 10);
+      const expires = moment()
+        .add(PW_RESET_EXPIRATION_MINUTES, "minutes")
+        .toDate();
+
+      // Create and assign the new PasswordReset object
+      user.passwordReset = {
+        code: hashedCode,
+        expires: expires,
+      };
       await user.save();
 
+      // Send the UN-HASHED code to the user
       await EmailService.sendResetPwMail(user, passwordResetCode);
 
       logger.debug(`User ${user.callsign} sent reset pw request`);

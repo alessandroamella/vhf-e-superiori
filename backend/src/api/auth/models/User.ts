@@ -10,10 +10,31 @@ import IsEmail from "isemail";
 import parsePhoneNumber, { isValidPhoneNumber } from "libphonenumber-js";
 import { logger } from "../../../shared";
 
+export class PasswordReset {
+  @prop({ required: true })
+  public code!: string;
+
+  @prop({ required: true })
+  public expires!: Date;
+}
+
 /**
  * @swagger
  *  components:
  *    schemas:
+ *      PasswordReset:
+ *        type: object
+ *        required:
+ *          - code
+ *          - expires
+ *        properties:
+ *          code:
+ *            type: string
+ *            description: Password reset code
+ *          expires:
+ *            type: string
+ *            format: date-time
+ *            description: When the password reset code expires
  *      User:
  *        type: object
  *        required:
@@ -56,9 +77,8 @@ import { logger } from "../../../shared";
  *          verificationCode:
  *            type: string
  *            description: Account verification code
- *          passwordResetCode:
- *            type: string
- *            description: Password reset code
+ *          passwordReset:
+ *            $ref: '#/components/schemas/PasswordReset'
  */
 
 @modelOptions({
@@ -117,10 +137,10 @@ export class UserClass {
   public isVerified!: boolean;
 
   @prop({ required: false })
-  public passwordResetCode?: string;
-
-  @prop({ required: false })
   public verificationCode?: string;
+
+  @prop({ required: false, type: () => PasswordReset })
+  public passwordReset?: PasswordReset;
 
   public async isValidPw(this: DocumentType<UserClass>, plainPw: string) {
     return await bcrypt.compare(plainPw, this.password);

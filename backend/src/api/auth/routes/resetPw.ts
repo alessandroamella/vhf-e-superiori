@@ -60,31 +60,37 @@ router.post(
     .isString()
     .trim()
     .isStrongPassword({ minLength: 8, minSymbols: 0 })
-    .withMessage(Errors.INVALID_PW),
+    .withMessage(Errors.WEAK_PW), // Assuming WEAK_PW is your error for this
   validate,
   async (req, res) => {
     try {
       const user = await User.findOne({
         _id: req.body.user,
+        "passwordReset.expires": { $gt: new Date() },
       });
-      if (!user) {
-        logger.debug(`User ${req.body._id} not found in reset pw`);
-        return res.status(BAD_REQUEST).json(createError(Errors.USER_NOT_FOUND));
-      } else if (!user.passwordResetCode) {
-        logger.debug("User password reset code undefined for reset pw");
+
+      // This check now handles invalid user ID, no token, or expired token
+      if (!user || !user.passwordReset) {
+        logger.debug(
+          `User ${req.body.user} not found or token expired in reset pw`,
+        );
         return res
           .status(BAD_REQUEST)
-          .json(createError(Errors.VERIFICATION_CODE_NOT_FOUND));
+          .json(createError(Errors.INVALID_PW_RESET_CODE));
       }
 
-      const same = bcrypt.compareSync(
+      // Compare the code from the nested object
+      const same = await bcrypt.compare(
         req.body.passwordResetCode,
-        user.passwordResetCode,
+        user.passwordReset.code,
       );
 
       if (same) {
         logger.debug("Password reset code match");
-        user.passwordResetCode = undefined;
+
+        // Clear the entire passwordReset object to invalidate the token
+        user.passwordReset = undefined;
+
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(req.body.newPassword, salt);
         await user.save();

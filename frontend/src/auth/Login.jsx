@@ -293,7 +293,6 @@ const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={disabled}
                   required
-                  autoFocus
                 />
                 <div className="my-4" />
                 <Turnstile

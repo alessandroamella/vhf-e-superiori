@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
+import moment from "moment";
 import { envs, logger } from "../../shared";
 import { Errors } from "../errors";
 import { createError } from "../helpers";
@@ -107,7 +108,7 @@ async function checkCaptcha(
     // Check token age (warn if older than 4 minutes)
     const challengeTime = new Date(validation.challenge_ts);
     const now = new Date();
-    const ageMinutes = (now.getTime() - challengeTime.getTime()) / (1000 * 60);
+    const ageMinutes = moment(now).diff(moment(challengeTime), "minutes", true);
 
     if (ageMinutes > 4) {
       logger.warn(`Turnstile token is ${ageMinutes.toFixed(1)} minutes old`);
