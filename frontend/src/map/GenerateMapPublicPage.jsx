@@ -1,8 +1,10 @@
 import { Turnstile } from "@marsidev/react-turnstile";
 import axios from "axios";
+import classNames from "classnames";
 import { saveAs } from "file-saver";
 import { Alert, Button, Spinner, TextInput } from "flowbite-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import Confetti from "react-confetti";
 import { useDropzone } from "react-dropzone";
 import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
@@ -19,6 +21,7 @@ import {
 } from "react-icons/fa";
 import { MdRepeat } from "react-icons/md";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useWindowSize } from "react-use";
 import { recaptchaSiteKey } from "../constants/recaptchaSiteKey";
 import { getErrorStr } from "../shared";
 import useDarkModeStore from "../stores/darkModeStore";
@@ -27,6 +30,8 @@ import useUserStore from "../stores/userStore";
 const GenerateMapPublicPage = () => {
   const { i18n, t } = useTranslation();
   const turnstileRef = useRef(null); // Ref per il componente Turnstile
+
+  const { width, height } = useWindowSize();
 
   // React Hook Form setup
   const {
@@ -165,6 +170,9 @@ const GenerateMapPublicPage = () => {
     [t, setAlert],
   );
 
+  const [showConfetti, setShowConfetti] = useState(false);
+  const confettiTimeoutRef = useRef(null);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
@@ -251,6 +259,12 @@ const GenerateMapPublicPage = () => {
 
       setAlert({ color: "success", msg: t("generateMap.mapGeneratedSuccess") });
 
+      setShowConfetti(true);
+      confettiTimeoutRef.current = setTimeout(
+        () => setShowConfetti(false),
+        5000,
+      ); // Stop confetti after 5 seconds
+
       // Scroll to the generated map section after a short delay
       setTimeout(() => {
         document.getElementById("generated-map-section")?.scrollIntoView({
@@ -289,6 +303,16 @@ const GenerateMapPublicPage = () => {
     } finally {
       setIsLoading(false);
     }
+
+    return () => {
+      // Cleanup blob URL when component unmounts or when a new image is generated
+      if (generatedMapUrl) {
+        URL.revokeObjectURL(generatedMapUrl);
+      }
+      if (confettiTimeoutRef.current) {
+        clearTimeout(confettiTimeoutRef.current);
+      }
+    };
   };
 
   const handleDownloadMap = () => {
@@ -565,6 +589,26 @@ const GenerateMapPublicPage = () => {
                 <span className="bg-white dark:bg-gray-900 px-6 text-lg font-medium text-gray-500 dark:text-gray-400">
                   ✨ {t("generateMap.yourGeneratedMap")} ✨
                 </span>
+              </div>
+              <div
+                className={classNames(
+                  "absolute top-4 transition-opacity duration-500",
+                  {
+                    "opacity-0": !showConfetti,
+                  },
+                )}
+              >
+                <Confetti
+                  run
+                  gravity={0.1}
+                  initialVelocityX={2}
+                  initialVelocityY={2}
+                  numberOfPieces={200}
+                  opacity={1}
+                  recycle
+                  width={width}
+                  height={height}
+                />
               </div>
             </div>
 
