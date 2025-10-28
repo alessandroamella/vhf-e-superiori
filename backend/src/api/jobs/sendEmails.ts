@@ -1,6 +1,7 @@
 import { unlink } from "node:fs/promises";
 import { isDocument } from "@typegoose/typegoose";
 import { CronJob } from "cron";
+import NodeCache from "node-cache";
 import { logger } from "../../shared";
 import EqslPic from "../eqsl/eqsl";
 import type { EventDoc } from "../event/models";
@@ -10,6 +11,9 @@ import { Qso, QsoDoc } from "../qso/models";
 const LIMIT_PER_DAY = 180;
 const CRON_SCHEDULE = "00 13 * * *";
 const TIMEZONE = "Europe/Rome";
+
+// Cache for email lookups (30 minutes TTL)
+const emailCache = new NodeCache({ stdTTL: 1800 });
 
 async function getEmailForQso(qso: QsoDoc): Promise<string | null> {
   if (qso.email) {
@@ -23,15 +27,30 @@ async function getEmailForQso(qso: QsoDoc): Promise<string | null> {
       // sort by length
       return b.length - a.length;
     })[0] || qso.callsign;
+
+  // Check cache first
+  const cacheKey = `email:${callsign}`;
+  if (emailCache.has(cacheKey)) {
+    const cachedEmail = emailCache.get<string | null>(cacheKey);
+    logger.debug(
+      `Using cached email for ${callsign}: ${cachedEmail || "not found"}`,
+    );
+    return cachedEmail || null;
+  }
+
   const qrzInfo = await qrz.getInfo(callsign);
 
   if (qrzInfo?.email) {
     // Update the QSO with the email from QRZ
     qso.email = qrzInfo.email;
     await qso.save();
+    // Cache the found email
+    emailCache.set(cacheKey, qrzInfo.email);
     return qrzInfo.email;
   }
 
+  // Cache the fact that no email was found
+  emailCache.set(cacheKey, null);
   return null;
 }
 

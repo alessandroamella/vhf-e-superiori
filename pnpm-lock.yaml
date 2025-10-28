@@ -101,6 +101,9 @@ importers:
       libphonenumber-js:
         specifier: ^1.12.18
         version: 1.12.18
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       mime-types:
         specifier: ^2.1.35
         version: 2.1.35
@@ -186,6 +189,9 @@ importers:
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
+      '@types/lodash':
+        specifier: ^4.17.20
+        version: 4.17.20
       '@types/mime-types':
         specifier: ^2.1.4
         version: 2.1.4
@@ -3950,6 +3956,7 @@ packages:
 
   intersection-observer@0.10.0:
     resolution: {integrity: sha512-fn4bQ0Xq8FTej09YC/jqKZwtijpvARlRp6wxL5WTA6yPe2YWSJ5RJh7Nm79rK2qB0wr6iDQzH60XGq5V/7u8YQ==}
+    deprecated: The Intersection Observer polyfill is no longer needed and can safely be removed. Intersection Observer has been Baseline since 2019.
 
   ip-address@10.0.1:
     resolution: {integrity: sha512-NWv9YLW4PoW2B7xtzaS3NCot75m6nK7Icdv0o3lfMceJVRfSoQwqD4wEH5rLwoKJwUiZ/rfpiVBhnaF0FK4HoA==}

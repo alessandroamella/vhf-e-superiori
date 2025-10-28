@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import { checkSchema } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
+import { pick } from "lodash";
 import { logger } from "../../../shared";
 import { User, UserDoc } from "../../auth/models";
 import { Errors } from "../../errors";
@@ -80,89 +81,34 @@ router.post(
             .json(createError(Errors.USER_NOT_FOUND));
         }
         _fromStation = fromStation;
-      } else {
-        // commented out - now we allow everyone who is logged in
-        // to log their QSOs
-        // find join request with same event and user to check for permissions
-        // const joinRequest = await JoinRequest.findOne({
-        //     forEvent: req.body.event,
-        //     fromUser: user._id
-        // });
-        // if (!joinRequest) {
-        //     logger.debug(
-        //         `Join request not found for event ${
-        //             req.body.event
-        //         } and user ${user._id.toString()}`
-        //     );
-        //     return res
-        //         .status(BAD_REQUEST)
-        //         .json(createError(Errors.JOIN_REQUEST_NOT_FOUND));
-        // } else if (!joinRequest.isApproved) {
-        //     logger.debug(
-        //         `Join request not approved for event ${
-        //             req.body.event
-        //         } and user ${user._id.toString()}`
-        //     );
-        //     return res
-        //         .status(BAD_REQUEST)
-        //         .json(createError(Errors.JOIN_REQUEST_NOT_APPROVED));
-        // }
       }
 
-      const {
-        callsign,
-        fromStationCallsignOverride,
-        event,
-        frequency,
-        band,
-        mode,
-        qsoDate,
-        locator,
-        rst,
-        notes,
-        fromStationCity,
-        fromStationProvince,
-        fromStationLat,
-        fromStationLon,
-      } = req.body;
+      const qsoBody = pick(req.body, [
+        "callsign",
+        "fromStationCallsignOverride",
+        "event",
+        "frequency",
+        "band",
+        "mode",
+        "qsoDate",
+        "locator",
+        "rst",
+        "notes",
+        "fromStationCity",
+        "fromStationProvince",
+        "fromStationLat",
+        "fromStationLon",
+      ]);
 
       const fromStation = _fromStation._id.toString();
 
       logger.info("Creating QSO with following params");
-      logger.info({
-        fromStation,
-        callsign,
-        fromStationCallsignOverride,
-        event,
-        frequency,
-        band,
-        mode,
-        qsoDate,
-        fromStationCity,
-        fromStationProvince,
-        fromStationLat,
-        fromStationLon,
-        locator,
-        rst,
-        notes,
-      });
-      const qso = new Qso({
-        fromStation,
-        fromStationCallsignOverride,
-        callsign,
-        event,
-        frequency,
-        band,
-        mode,
-        qsoDate,
-        fromStationCity,
-        fromStationProvince,
-        fromStationLat,
-        fromStationLon,
-        locator,
-        rst,
-        notes,
-      });
+      logger.info(
+        Object.entries(fromStation)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(", "),
+      );
+      const qso = new Qso(qsoBody);
       try {
         await qso.validate();
       } catch (err) {

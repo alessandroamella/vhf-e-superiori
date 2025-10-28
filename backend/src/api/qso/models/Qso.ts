@@ -13,7 +13,6 @@ import EqslPic from "../../eqsl/eqsl";
 import { EventClass, EventDoc } from "../../event/models";
 import { location } from "../../location";
 import { qrz } from "../../qrz";
-import { Qso } from ".";
 
 /**
  * @swagger
@@ -172,21 +171,22 @@ import { Qso } from ".";
       }
     }
 
-    // find qso with same callsign and event to copy email
-    const qso = await Qso.findOne({
-      callsign: callsignClean,
-      event: this.event,
-      email: { $exists: true },
-    });
-    if (qso) {
-      this.toStation = qso.toStation;
-      this.email = qso.email;
-      this.toStationLat = qso.toStationLat;
-      this.toStationLon = qso.toStationLon;
-      if (!this.toStationLat ? qso.toStationLat : true) {
-        return;
-      }
-    }
+    // QUESTO CODICE DI MERDA HA AVVELENATO IL DB CON DATI SBAGLIATI
+    // // find qso with same callsign and event to copy email
+    // const qso = await Qso.findOne({
+    //   callsign: callsignClean,
+    //   event: this.event,
+    //   email: { $exists: true },
+    // });
+    // if (qso) {
+    //   this.toStation = qso.toStation;
+    //   this.email = qso.email;
+    //   this.toStationLat = qso.toStationLat;
+    //   this.toStationLon = qso.toStationLon;
+    //   if (!this.toStationLat ? qso.toStationLat : true) {
+    //     return;
+    //   }
+    // }
 
     // last resort: try to scrape email from QRZ
     const scraped = await qrz.getInfo(callsignClean);
