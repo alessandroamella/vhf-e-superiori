@@ -1,12 +1,15 @@
 import { unlink } from "node:fs/promises";
 import { isDocument } from "@typegoose/typegoose";
 import { CronJob } from "cron";
+import { convert as convertHtmlToText } from "html-to-text";
 import NodeCache from "node-cache";
-import { logger } from "../../shared";
+import { envs, logger } from "../../shared";
 import EqslPic from "../eqsl/eqsl";
 import type { EventDoc } from "../event/models";
+import { FailedNotificationLog } from "../failedNotificationLog/models";
 import { qrz } from "../qrz";
 import { Qso, QsoDoc } from "../qso/models";
+import { telegramService } from "../telegram/telegram.service";
 
 const LIMIT_PER_DAY = 180;
 const CRON_SCHEDULE = "00 13 * * *";
@@ -64,6 +67,48 @@ async function processQso(
     logger.warn(
       `No email found for QSO ${qso._id} with callsign ${qso.callsign}`,
     );
+
+    // --- NUOVA LOGICA DI NOTIFICA ---
+    try {
+      // 1. Prova a creare un log. Se esiste già, fallirà grazie all'indice univoco.
+      await FailedNotificationLog.create({
+        callsign: qso.callsign,
+        eventId: event._id.toString(),
+        eventName: event.name,
+      });
+
+      // 2. Se la creazione ha successo, significa che è la prima volta. Invia la notifica.
+      logger.info(
+        `First time no email found for ${qso.callsign} in event ${event.name}. Notifying admins.`,
+      );
+
+      const message = `⚠️ <b>Nessuna Email Trovata</b>\n\nNon è stato possibile trovare un indirizzo email per il nominativo <b>${convertHtmlToText(qso.callsign)}</b> durante l'evento <b>${convertHtmlToText(event.name)}</b>.\n\nQuesto avviso non verrà ripetuto per la stessa combinazione nominativo/evento.`;
+
+      await telegramService.sendAdminNotification(
+        message,
+        envs.TELEGRAM_ERRORS_THREAD_ID,
+      );
+    } catch (error) {
+      // Se l'errore è un "duplicate key error" (codice 11000), è normale.
+      // Significa che abbiamo già notificato e non dobbiamo fare nulla.
+      if (
+        typeof error === "object" &&
+        "code" in (error as object) &&
+        (error as { code: number }).code === 11000
+      ) {
+        logger.debug(
+          `Admin notification for ${qso.callsign}/${event.name} already sent. Skipping.`,
+        );
+      } else {
+        // Altri errori (es. problemi di connessione al DB) vanno loggati.
+        logger.error(
+          `Error while checking/creating failed notification log for ${qso.callsign}`,
+        );
+        logger.error(error);
+      }
+    }
+    // --- FINE NUOVA LOGICA ---
+
     return;
   } else if (!event.eqslUrl) {
     logger.warn(`No eQSL URL found for event ${event.name}`);

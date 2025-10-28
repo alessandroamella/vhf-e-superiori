@@ -1,5 +1,8 @@
+import { convert } from "html-to-text";
+import { last } from "lodash";
 import NodeCache from "node-cache";
 import { logger } from "../../shared/logger";
+import { telegramService } from "../telegram/telegram.service";
 import { BeaconDocWithProps, BeaconLeanWithProp } from "./models";
 
 // Cache for 15 minutes
@@ -44,6 +47,14 @@ export class BeaconCache {
       logger.debug(`Cached beacon ${id}`);
     } catch (err) {
       logger.error(`Error setting beacon ${id} in cache:`, err);
+      telegramService.sendAdminNotification(
+        `❗️ <b>Error setting beacon ${id} (${
+          last(beacon.properties)?.name
+        }) in cache</b>\n\n${
+          err instanceof Error ? convert(err.message) : "Unknown error"
+        }`,
+        parseInt(process.env.TELEGRAM_ERRORS_THREAD_ID || "0", 10),
+      );
     }
   }
 

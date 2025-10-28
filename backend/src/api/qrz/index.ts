@@ -1,9 +1,10 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, isAxiosError } from "axios";
 import { CronJob } from "cron";
 import moment from "moment-timezone";
 import { parseStringPromise } from "xml2js";
 import { envs } from "../../shared/envs";
 import { logger } from "../../shared/logger";
+import { telegramService } from "../telegram/telegram.service";
 import { OkQrzDatabase, QrzMappedData, QrzReturnData } from "./interfaces/qrz";
 
 interface CachedData {
@@ -79,6 +80,18 @@ class Qrz {
       logger.error(
         (axios.isAxiosError(err) && (err.response?.data || err.response)) ||
           err?.toString(),
+      );
+      telegramService.sendAdminNotification(
+        `❗️ <b>Error logging in to QRZ XML API</b>\n\n${
+          isAxiosError(err)
+            ? typeof err.response?.data === "object"
+              ? JSON.stringify(err.response.data)
+              : err.message
+            : err instanceof Error
+              ? err.message
+              : "Unknown error"
+        }`,
+        envs.TELEGRAM_ERRORS_THREAD_ID,
       );
       return null;
     }
@@ -216,6 +229,18 @@ class Qrz {
         logger.error("JSON was:");
         logger.error(json);
       }
+      telegramService.sendAdminNotification(
+        `❗️ <b>Error fetching QRZ info for callsign ${callsign}</b>\n\n${
+          isAxiosError(err)
+            ? typeof err.response?.data === "object"
+              ? JSON.stringify(err.response.data)
+              : err.message
+            : err instanceof Error
+              ? err.message
+              : "Unknown error"
+        }`,
+        envs.TELEGRAM_ERRORS_THREAD_ID,
+      );
       return null;
     }
   }

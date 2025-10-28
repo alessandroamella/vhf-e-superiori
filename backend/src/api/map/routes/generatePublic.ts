@@ -3,9 +3,10 @@ import { AdifParser } from "adif-parser-ts";
 import express, { Request, Response } from "express";
 import fileUpload from "express-fileupload";
 import { body } from "express-validator";
+import { convert } from "html-to-text";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "http-status";
 import moment from "moment";
-import { logger } from "../../../shared";
+import { envs, logger } from "../../../shared";
 import { convertEdiToAdif } from "../../../utils/edi-to-adif";
 import { ParsedAdif } from "../../adif/interfaces";
 import { Errors } from "../../errors";
@@ -15,6 +16,7 @@ import { location } from "../../location";
 import checkCaptcha from "../../middlewares/checkCaptcha";
 import { qrz } from "../../qrz";
 import type { QsoDoc } from "../../qso/models";
+import { telegramService } from "../../telegram/telegram.service";
 import MapExporter from "..";
 
 const router = express.Router();
@@ -154,6 +156,12 @@ router.post(
         logger.debug(`Parsed log with ${parsed.records.length} records`);
       } catch (error) {
         logger.error("Error parsing log file:", error);
+        telegramService.sendAdminNotification(
+          `❗️ <b>Error parsing ADIF file upload user: ${req.user ? `${req.user._id} - ${req.user.callsign}` : "Unknown user or not logged in"}</b>\n\n${
+            error instanceof Error ? convert(error.message) : "Unknown error"
+          }`,
+          envs.TELEGRAM_ERRORS_THREAD_ID,
+        );
         return res.status(BAD_REQUEST).json(createError(Errors.INVALID_ADIF));
       }
 

@@ -1,4 +1,4 @@
-import { cleanEnv, str, url } from "envalid";
+import { cleanEnv, num, str, url } from "envalid";
 import { Errors } from "../api/errors";
 import { logger } from "./logger";
 
@@ -30,6 +30,9 @@ export const envs = cleanEnv(
     AWS_REGION: str(),
     CHROME_PATH: str(),
     FRONTEND_URL: url(),
+    TELEGRAM_BOT_TOKEN: str(),
+    TELEGRAM_CHAT_ID: num(),
+    TELEGRAM_ERRORS_THREAD_ID: num(),
   },
   {
     reporter: ({ errors }) => {
