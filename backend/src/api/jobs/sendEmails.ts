@@ -1,6 +1,7 @@
 import { unlink } from "node:fs/promises";
 import { isDocument } from "@typegoose/typegoose";
 import { CronJob } from "cron";
+import { subWeeks } from "date-fns";
 import { convert as convertHtmlToText } from "html-to-text";
 import NodeCache from "node-cache";
 import { envs, logger } from "../../shared";
@@ -130,14 +131,21 @@ async function sendEqslEmail(): Promise<void> {
   const eqslTemplateImgs = new Map<string, string>();
 
   try {
-    const qsos = await Qso.find({ emailSent: false })
+    const twoWeeksAgo = subWeeks(new Date(), 2);
+
+    const qsos = await Qso.find({
+      emailSent: false,
+      createdAt: { $gte: twoWeeksAgo }, // created 2 weeks ago onwards
+    })
       .populate("fromStation")
       .populate("event")
       .sort({ createdAt: -1 }) // process the most recent QSOs first
       .limit(LIMIT_PER_DAY)
       .exec();
 
-    logger.info(`Found ${qsos.length} QSOs to process`);
+    logger.info(
+      `Found ${qsos.length} QSOs to process (created >= 2 weeks ago)`,
+    );
 
     if (
       qsos.some((qso) => !isDocument(qso.fromStation) || !isDocument(qso.event))

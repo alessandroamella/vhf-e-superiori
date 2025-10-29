@@ -171,23 +171,6 @@ import { qrz } from "../../qrz";
       }
     }
 
-    // QUESTO CODICE DI MERDA HA AVVELENATO IL DB CON DATI SBAGLIATI
-    // // find qso with same callsign and event to copy email
-    // const qso = await Qso.findOne({
-    //   callsign: callsignClean,
-    //   event: this.event,
-    //   email: { $exists: true },
-    // });
-    // if (qso) {
-    //   this.toStation = qso.toStation;
-    //   this.email = qso.email;
-    //   this.toStationLat = qso.toStationLat;
-    //   this.toStationLon = qso.toStationLon;
-    //   if (!this.toStationLat ? qso.toStationLat : true) {
-    //     return;
-    //   }
-    // }
-
     // last resort: try to scrape email from QRZ
     const scraped = await qrz.getInfo(callsignClean);
     if (scraped) {
