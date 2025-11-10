@@ -68,14 +68,16 @@ router.get("/:id", param("id").isMongoId(), validate, async (req, res) => {
       .populate({
         path: "verifiedBy",
         select: "callsign isDev isAdmin",
-      });
+      })
+      .lean();
     if (props.length === 0) {
       logger.error(`Beacon ${_beacon._id} has no properties`);
       logger.error(_beacon);
       return res.status(INTERNAL_SERVER_ERROR).json(createError());
     }
     const beacon = _beacon as BeaconDocWithProps;
-    beacon.properties = props;
+    // biome-ignore lint/suspicious/noExplicitAny: dont want to type
+    (beacon as any).properties = props;
 
     // Cache the result
     BeaconCache.setBeacon(req.params.id, beacon);
