@@ -69,9 +69,15 @@ router.post(
 
       let _fromStation: UserDoc = user;
       if (user.isAdmin && req.body.fromStation) {
-        const fromStation = await User.findOne({
-          _id: req.body.fromStation,
-        });
+        const fromStation = await User.findOne(
+          {
+            _id: req.body.fromStation,
+          },
+          {
+            _id: true,
+            callsign: true,
+          },
+        );
         if (!fromStation) {
           logger.debug(
             `User ${req.body.fromStation} not found in QSO admin create`,
@@ -83,29 +89,35 @@ router.post(
         _fromStation = fromStation;
       }
 
-      const qsoBody = pick(req.body, [
-        "callsign",
-        "fromStationCallsignOverride",
-        "event",
-        "frequency",
-        "band",
-        "mode",
-        "qsoDate",
-        "locator",
-        "rst",
-        "notes",
-        "fromStationCity",
-        "fromStationProvince",
-        "fromStationLat",
-        "fromStationLon",
-      ]);
-
       const fromStation = _fromStation._id.toString();
+
+      const qsoBody = {
+        fromStation,
+        ...pick(req.body, [
+          "callsign",
+          "fromStationCallsignOverride",
+          "event",
+          "frequency",
+          "band",
+          "mode",
+          "qsoDate",
+          "locator",
+          "rst",
+          "notes",
+          "fromStationCity",
+          "fromStationProvince",
+          "fromStationLat",
+          "fromStationLon",
+        ]),
+      };
 
       logger.info("Creating QSO with following params");
       logger.info(
-        Object.entries(fromStation)
-          .map(([k, v]) => `${k}: ${v}`)
+        Object.entries(qsoBody)
+          .map(
+            ([k, v]) =>
+              `${k}: ${k === "fromStation" ? `${v} (${_fromStation.callsign})` : v}`,
+          )
           .join(", "),
       );
       const qso = new Qso(qsoBody);
