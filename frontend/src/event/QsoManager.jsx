@@ -186,12 +186,12 @@ const QsoManager = () => {
             ?.includes(user.callsign),
         event.joinRequests,
       );
-      if (user.isAdmin) {
-        setAlert({
-          color: "info",
-          msg: "Non sei una stazione attivatrice per questo evento, ma sei un amministratore e puoi comunque gestire i QSO",
-        });
-      }
+      // if (user.isAdmin) {
+      //   setAlert({
+      //     color: "info",
+      //     msg: "Non sei una stazione attivatrice per questo evento, ma sei un amministratore e puoi comunque gestire i QSO",
+      //   });
+      // }
       // now we allow everyone
       //  else {
       //   setAlert({
