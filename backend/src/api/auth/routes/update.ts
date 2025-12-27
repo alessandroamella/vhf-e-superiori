@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { NextFunction, Request, Response, Router } from "express";
-import { body, checkSchema, param } from "express-validator";
+import { checkSchema, param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "http-status";
 import randomstring from "randomstring";
 import { logger } from "../../../shared";
@@ -72,7 +72,6 @@ router.put(
   "/:_id",
   param("_id").isMongoId(),
   checkSchema(updateSchema),
-  body("isAdmin").optional().isBoolean().toBoolean(),
   validate,
   async (req: Request, res: Response, next: NextFunction) => {
     const curUser = req.user;
@@ -109,7 +108,8 @@ router.put(
         city,
         province,
         isAdmin,
-      } = req.body;
+        isVerified,
+      } = req.body as UserDoc;
 
       if (email) {
         const emailExists = await User.exists({
@@ -151,7 +151,9 @@ router.put(
 
       if (curUser.isAdmin) {
         obj.callsign = callsign || user.callsign;
-        obj.isAdmin = isAdmin || user.isAdmin;
+        obj.isAdmin = typeof isAdmin === "boolean" ? isAdmin : user.isAdmin;
+        obj.isVerified =
+          typeof isVerified === "boolean" ? isVerified : user.isVerified;
       }
 
       const newUser = await User.findOneAndUpdate({ _id: user._id }, obj, {
@@ -174,7 +176,9 @@ router.put(
         province,
       });
 
-      if (oldEmail !== email) {
+      // If emails differ AND user is not admin, sed new verification email and
+      // set isVerified to false
+      if (oldEmail !== email && !curUser.isAdmin) {
         logger.debug(
           `User ${user.callsign} update: email was "${
             user.email

@@ -212,7 +212,7 @@ const EditUserModal = ({
                         ? "(caricamento...)"
                         : userEditing?.isVerified
                           ? "(✅ verificata)"
-                          : "(❌ non verificata, clicca su 'Applica modifiche' per forzare la verifica)"
+                          : "(❌ non verificata)"
                     }`}
                   />
                 </div>
@@ -297,6 +297,32 @@ const EditUserModal = ({
                         className="ml-1 select-none dark:text-gray-100"
                         htmlFor="user-admin"
                         value="Amministratore"
+                      />
+                    </Tooltip>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Tooltip
+                      content={
+                        userEditing?.isVerified
+                          ? "Rimuovi la verifica dell'email (l'utente dovrà verificarla nuovamente)"
+                          : "Verifica l'email dell'utente manualmente"
+                      }
+                    >
+                      <Checkbox
+                        id="user-verified"
+                        checked={userEditing?.isVerified}
+                        onChange={(e) =>
+                          setUserEditing({
+                            ...userEditing,
+                            isVerified: e.target.checked,
+                          })
+                        }
+                        disabled={disabled}
+                      />
+                      <Label
+                        className="ml-1 select-none dark:text-gray-100"
+                        htmlFor="user-verified"
+                        value="Email verificata"
                       />
                     </Tooltip>
                   </div>
