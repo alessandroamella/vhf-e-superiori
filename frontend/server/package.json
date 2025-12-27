@@ -11,10 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "helmet": "^8.0.0",
-    "http-proxy-middleware": "^3.0.3",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
+    "helmet": "^8.1.0",
+    "http-proxy-middleware": "^3.0.5",
     "permissions-policy": "^0.6.0",
     "vite-express": "^0.20.0"
   }
