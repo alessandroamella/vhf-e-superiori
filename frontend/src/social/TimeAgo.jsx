@@ -1,10 +1,10 @@
 import { formatDistanceToNow } from "date-fns";
-import { utcToZonedTime } from "date-fns-tz";
+import { toZonedTime } from "date-fns-tz";
 import PropTypes from "prop-types";
 
 const TimeAgo = ({ createdAt }) => {
   // Converte la data in ora locale.
-  const zonedDate = utcToZonedTime(
+  const zonedDate = toZonedTime(
     new Date(createdAt),
     Intl.DateTimeFormat().resolvedOptions().timeZone,
   );

@@ -35,6 +35,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
       // so exclude events at or after 2040-01-01
       (e) => isAfter(e.date, now) && isBefore(e.date, new Date("2040-01-01")),
     );
+    console.log("joinable events", joinable);
     setJoinableEvents(joinable);
   }, [events]);
 

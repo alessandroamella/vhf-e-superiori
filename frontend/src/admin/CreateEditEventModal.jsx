@@ -2,7 +2,7 @@ import { Typography } from "@material-tailwind/react";
 import axios from "axios";
 import Compressor from "compressorjs";
 import { getYear, parse } from "date-fns";
-import { zonedTimeToUtc } from "date-fns-tz";
+import { fromZonedTime } from "date-fns-tz";
 import {
   Alert,
   Button,
@@ -46,7 +46,7 @@ const CreateEditEventModal = ({
     const parsedDate = parse(dateString, "yyyy-MM-dd'T'HH:mm", new Date());
 
     // Convert to UTC considering Rome timezone
-    const utcDate = zonedTimeToUtc(parsedDate, romeTimeZone);
+    const utcDate = fromZonedTime(parsedDate, romeTimeZone);
 
     // Return the ISO string
     return utcDate.toISOString();
