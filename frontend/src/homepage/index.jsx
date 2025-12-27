@@ -34,8 +34,16 @@ import useUserStore from "../stores/userStore";
 
 const Homepage = () => {
   const user = useUserStore((store) => store.user);
-  const { events } = useContext(EventsContext);
+  const { events: _events } = useContext(EventsContext);
   const { t } = useTranslation();
+
+  const events = useMemo(() => {
+    if (!Array.isArray(_events)) return null;
+    // just events before 2040
+    return _events.filter((e) =>
+      isBefore(new Date(e.date), new Date("2040-01-01")),
+    );
+  }, [_events]);
 
   const [alert, setAlert] = useState(null);
 
