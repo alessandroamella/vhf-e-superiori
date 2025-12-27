@@ -10,6 +10,24 @@ import IsEmail from "isemail";
 import parsePhoneNumber, { isValidPhoneNumber } from "libphonenumber-js";
 import { logger } from "../../../shared";
 
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      PasswordReset:
+ *        type: object
+ *        required:
+ *          - code
+ *          - expires
+ *        properties:
+ *          code:
+ *            type: string
+ *            description: Password reset code
+ *          expires:
+ *            type: string
+ *            format: date-time
+ *            description: When the password reset code expires
+ */
 export class PasswordReset {
   @prop({ required: true })
   public code!: string;
