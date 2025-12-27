@@ -40,9 +40,7 @@ const Homepage = () => {
   const events = useMemo(() => {
     if (!Array.isArray(_events)) return null;
     // just events before 2040
-    return _events.filter((e) =>
-      isBefore(new Date(e.date), new Date("2040-01-01")),
-    );
+    return _events.filter((e) => isBefore(e.date, new Date("2040-01-01")));
   }, [_events]);
 
   const [alert, setAlert] = useState(null);
