@@ -2,6 +2,7 @@ import axios from "axios";
 import { Button, Spinner } from "flowbite-react";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   FaArchive,
   FaCalendar,
@@ -11,15 +12,16 @@ import {
   FaSignOutAlt,
   FaUserAlt,
   FaUserPlus,
-  FaUsers,
   FaUserShield,
+  FaUsers,
   FaWhatsapp
 } from "react-icons/fa";
+import { HiMoon, HiSun } from "react-icons/hi";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { createSearchParams, Link, useLocation } from "react-router";
 import { JoinOpenContext, SidebarOpenContext, UserContext } from "../App";
+import MobileLanguageSelector from "../MobileLanguageSelector";
 import { getErrorStr } from "../shared";
-import { useTranslation } from "react-i18next";
 
 const SectionHref = ({ href, wip, children }) => {
   const { setSidebarOpen } = useContext(SidebarOpenContext);
@@ -111,9 +113,30 @@ const MenuContent = ({ isSideBar }) => {
   const { user, setUser } = useContext(UserContext);
   const { joinOpen, setJoinOpen } = useContext(JoinOpenContext);
   const [, setMenuOpen] = useState(false);
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
+  const [darkMode, setDarkMode] = useState(false);
 
   const location = useLocation();
+
+  useEffect(() => {
+    // On mount, check localStorage for dark mode preference
+    const storedDarkMode = localStorage.getItem("darkMode");
+    if (storedDarkMode === "true") {
+      setDarkMode(true);
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
+  useEffect(() => {
+    // Update localStorage and html class when darkMode changes
+    if (darkMode) {
+      localStorage.setItem("darkMode", "true");
+      document.documentElement.classList.add("dark");
+    } else {
+      localStorage.setItem("darkMode", "false");
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
 
   useEffect(() => {
     if (joinOpen) {
@@ -135,7 +158,7 @@ const MenuContent = ({ isSideBar }) => {
 
   return (
     <>
-      <Link to="/" className="flex items-center gap-2 mb-2">
+      <Link to="/" className="flex items-center gap-2 mb-4">
         <LazyLoadImage className="w-14" src="/logo-min.png" alt="Logo" />
         <h3
           className={`font-bold text-xl ${
@@ -145,6 +168,19 @@ const MenuContent = ({ isSideBar }) => {
           {t("vhf")}
         </h3>
       </Link>
+
+      <MobileLanguageSelector className="mb-4" />
+
+      {/* Dark mode toggle button */}
+      <Button
+        onClick={() => setDarkMode(!darkMode)}
+        color="light"
+        size="sm"
+        className="mb-4 dark:bg-gray-700 dark:hover:bg-gray-600"
+        title={darkMode ? t("enableLightMode") : t("enableDarkMode")}
+      >
+        {darkMode ? <HiSun className="w-4" /> : <HiMoon className="w-4" />}
+      </Button>
 
       {user?.isAdmin && (
         <Button
@@ -177,7 +213,7 @@ const MenuContent = ({ isSideBar }) => {
           <SectionLink to="/profile">
             <FaUserAlt />{" "}
             <span>
-             {t("accountOf")} <strong>{user.callsign}</strong>
+              {t("accountOf")} <strong>{user.callsign}</strong>
             </span>
           </SectionLink>
           <SectionLink onClick={logout}>
@@ -193,13 +229,15 @@ const MenuContent = ({ isSideBar }) => {
       </SectionHref>
       <SectionHref href="#amministratori">
         <FaUserShield />
-         {t("admins")}
+        {t("admins")}
       </SectionHref>
       <SectionHref href="#eventi">
-        <FaCalendar />{t("events")}
+        <FaCalendar />
+        {t("events")}
       </SectionHref>
       <SectionHref href="#calendario">
-        <FaCalendarWeek />{t("eventCalendar")}
+        <FaCalendarWeek />
+        {t("eventCalendar")}
       </SectionHref>
 
       <SectionTitle
@@ -210,10 +248,12 @@ const MenuContent = ({ isSideBar }) => {
         {t("flashMob")}
       </SectionTitle>
       <SectionHref href="#storiaflashmob">
-        <FaArchive />{t("flashMobHistory")}
+        <FaArchive />
+        {t("flashMobHistory")}
       </SectionHref>
       <SectionHref href="#istruzioniflashmob">
-        <FaListOl />{t("menuInstructions")}
+        <FaListOl />
+        {t("menuInstructions")}
       </SectionHref>
       <a
         href="https://chat.whatsapp.com/FJ6HissbZwE47OWmpes7Pr"
@@ -221,7 +261,8 @@ const MenuContent = ({ isSideBar }) => {
         rel="noopener noreferrer"
         className="flex items-center gap-2 mb-2"
       >
-        <FaWhatsapp />{t("whatsappGroup")}
+        <FaWhatsapp />
+        {t("whatsappGroup")}
       </a>
       <Button
         as={Link}

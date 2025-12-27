@@ -78,11 +78,11 @@ class Qrz {
             return json.QRZDatabase.Session[0].Key[0];
         } catch (err) {
             logger.error("Error while logging in to XML qrz.com");
-            if (axios.isAxiosError(err)) {
-                logger.error(err.response?.data || err.response || err);
-            } else {
-                logger.error(err);
-            }
+            logger.error(
+                (axios.isAxiosError(err) &&
+                    (err.response?.data || err.response)) ||
+                    err?.toString()
+            );
             return null;
         }
     }

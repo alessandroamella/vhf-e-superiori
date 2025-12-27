@@ -1193,12 +1193,12 @@ const QsoManager = () => {
                               <div className="flex flex-col md:flex-row gap-2 justify-center items-center md:items-end">
                                 <div className="w-full relative">
                                   <Label
-                                    htmlFor="callsign"
+                                    htmlFor="username"
                                     value="Nominativo"
                                   />
                                   <TextInput
                                     disabled={disabled}
-                                    id="callsign"
+                                    id="username"
                                     label="Nominativo"
                                     sizing="xl"
                                     minLength={1}

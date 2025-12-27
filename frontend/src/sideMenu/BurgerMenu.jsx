@@ -33,7 +33,7 @@ const BurgerMenu = () => {
           pageWrapId={"page-wrap"}
           outerContainerId={"outer-container"}
           isOpen={sidebarOpen}
-          onStateChange={state => setSidebarOpen(state.isOpen)}
+          onStateChange={(state) => setSidebarOpen(state.isOpen)}
         >
           <MenuContent />
         </BurgerMenuComponent>

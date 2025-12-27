@@ -8,7 +8,8 @@ import FeedCard from "./FeedCard";
 
 import axios from "axios";
 import { Alert, Button, Spinner, TextInput } from "flowbite-react";
-import { uniqBy } from "lodash";
+import { orderBy, uniqBy } from "lodash";
+import { useTranslation } from "react-i18next";
 import { FaPlus, FaUserTag } from "react-icons/fa";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MenuContent from "../sideMenu/MenuContent";
@@ -19,7 +20,7 @@ const Social = () => {
   const { ready } = useContext(ReadyContext);
   const { t } = useTranslation(); 
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [alert, setAlert] = useState(null);
 
@@ -53,10 +54,7 @@ const Social = () => {
       if (data.posts.length > 0) {
         console.log("setting posts");
         setPosts(
-          uniqBy(
-            fromDate ? [...data.posts, ...posts] : [...posts, ...data.posts]
-          ),
-          "_id"
+          orderBy(uniqBy([...data.posts, ...posts], "_id"), "createdAt", "desc")
         );
       } else {
         console.log("no new posts");
@@ -74,15 +72,24 @@ const Social = () => {
       }
       setHasMore(data.posts.length > 0);
       setPostsLoaded(true);
+
+      if (data.posts.some((p) => p._id === searchParams.get("newPostId"))) {
+        searchParams.delete("newPostId");
+        searchParams.delete("created");
+        setSearchParams(searchParams);
+      }
     },
-    [cursor, posts, profilePictures]
+    [cursor, posts, profilePictures, searchParams, setSearchParams]
   );
 
   useEffect(() => {
+    console.log("fetching posts from cursor", cursor);
     fetchPosts();
     // don't listen for orderBy: there will be a useEffect to reset cursor
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cursor]);
+
+  const hasCreated = searchParams.get("created");
 
   useEffect(() => {
     if (!posts || posts.length === 0) return;
@@ -93,12 +100,14 @@ const Social = () => {
         didFirstFetch = true;
         return;
       }
-      fetchPosts(posts[0].createdAt);
-      // every 4 sec
-    }, 4 * 1000);
+      const firstDate = hasCreated ? null : posts[0].createdAt;
+      console.log("fetching posts from ", firstDate);
+      fetchPosts(firstDate);
+      // every 10 sec
+    }, (hasCreated ? 5 : 15) * 1000);
 
     return () => clearInterval(fetchPostsInterval);
-  }, [fetchPosts, posts]);
+  }, [fetchPosts, posts, hasCreated]);
 
   function fetchMorePosts() {
     setCursor(cursor + cursorLimit);
@@ -130,6 +139,8 @@ const Social = () => {
     );
   }, [filterCallsign, posts]);
 
+  const { t } = useTranslation();
+
   return (
     <>
       {!splashPlayed && <Splash ready={ready} />}
@@ -160,16 +171,15 @@ const Social = () => {
             onDismiss={() => navigate("/social")}
           >
             <p>
-               {t("post")}{" "}
+              {t("post")}{" "}
               <span className="font-semibold">
                 {searchParams?.get("created")}
               </span>{" "}
-                {t("succesfullyCreated")}🎉
+              {t("successfullyCreated").toLocaleLowerCase()} 🎉
             </p>
 
-            <p>
-             {t("contentsInElaboration")}
-            </p>
+            <p>{t("contentsInElaboration")}</p>
+
           </Alert>
         )}
 
@@ -235,7 +245,7 @@ const Social = () => {
                     </p>
                   }
                 >
-                  <div className="p-0 md:p-5">
+                  <div className="p-0 md:p-5 xl:grid xl:grid-cols-2 xl:gap-x-4">
                     {filteredPosts.map((p) => (
                       <FeedCard
                         id={"post-" + p._id}
