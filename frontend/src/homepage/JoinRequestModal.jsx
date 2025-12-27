@@ -30,7 +30,11 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
   useEffect(() => {
     if (!events) return;
     const now = new Date();
-    const joinable = events.filter((e) => isAfter(new Date(e.date), now));
+    const joinable = events.filter(
+      // in the future refactor, rn a debug event is used with date in 2040
+      // so exclude events at or after 2040-01-01
+      (e) => isAfter(e.date, now) && isBefore(e.date, new Date("2040-01-01")),
+    );
     setJoinableEvents(joinable);
   }, [events]);
 
