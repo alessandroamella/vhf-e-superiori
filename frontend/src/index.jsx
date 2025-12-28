@@ -52,6 +52,7 @@ ReactGA.initialize("your GA measurement id");
 
 import "./i18n/i18n";
 import "./ga4";
+import { CookiesProvider } from "react-cookie";
 import usePageTracking from "./hooks/usePageTracking";
 
 const AppRoutes = () => {
@@ -195,24 +196,26 @@ export const App = () => {
   return (
     <ThemeProvider>
       <ErrorBoundary fallback={<FallbackView />}>
-        <EventsContext.Provider value={{ events, setEvents }}>
-          <JoinOpenContext.Provider
-            value={{
-              joinOpen,
-              setJoinOpen,
-            }}
-          >
-            <ViewsContext.Provider value={{ views }}>
-              <SidebarOpenContext.Provider
-                value={{ sidebarOpen, setSidebarOpen }}
-              >
-                <BrowserRouter>
-                  <AppRoutes />
-                </BrowserRouter>
-              </SidebarOpenContext.Provider>
-            </ViewsContext.Provider>
-          </JoinOpenContext.Provider>
-        </EventsContext.Provider>
+        <CookiesProvider /*  defaultSetOptions={{ path: "/" }} */>
+          <EventsContext.Provider value={{ events, setEvents }}>
+            <JoinOpenContext.Provider
+              value={{
+                joinOpen,
+                setJoinOpen,
+              }}
+            >
+              <ViewsContext.Provider value={{ views }}>
+                <SidebarOpenContext.Provider
+                  value={{ sidebarOpen, setSidebarOpen }}
+                >
+                  <BrowserRouter>
+                    <AppRoutes />
+                  </BrowserRouter>
+                </SidebarOpenContext.Provider>
+              </ViewsContext.Provider>
+            </JoinOpenContext.Provider>
+          </EventsContext.Provider>
+        </CookiesProvider>
       </ErrorBoundary>
     </ThemeProvider>
   );
