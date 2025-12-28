@@ -33,6 +33,7 @@ export const envs = cleanEnv(
     TELEGRAM_BOT_TOKEN: str(),
     TELEGRAM_CHAT_ID: num(),
     TELEGRAM_ERRORS_THREAD_ID: num(),
+    TELEGRAM_TIMEOUT_ERROR_THREAD_ID: num(),
   },
   {
     reporter: ({ errors }) => {

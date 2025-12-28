@@ -236,12 +236,15 @@ class Qrz {
         : err instanceof Error
           ? err.message
           : "Unknown error";
+      const isTimeoutError = errorStr.includes("timeout");
       telegramService.sendAdminNotification(
         `❗️ <b>Error fetching QRZ info for callsign ${callsign}</b>\n\n${
           errorStr
         }`,
-        envs.TELEGRAM_ERRORS_THREAD_ID,
-        errorStr.includes("timeout"), // Disable notification on timeout errors
+        isTimeoutError
+          ? envs.TELEGRAM_TIMEOUT_ERROR_THREAD_ID
+          : envs.TELEGRAM_ERRORS_THREAD_ID,
+        { disableNotification: isTimeoutError },
       );
       return null;
     }

@@ -12,13 +12,12 @@ type SendMessagePayload = {
 class TelegramService {
   private botToken = envs.TELEGRAM_BOT_TOKEN;
   private chatId = envs.TELEGRAM_CHAT_ID;
-  // private errorsThreadId = envs.TELEGRAM_ERRORS_THREAD_ID;
   private baseUrl = `https://api.telegram.org/bot${this.botToken}`;
 
   public async sendAdminNotification(
     message: string,
     threadId: number,
-    disableNotification?: boolean,
+    options?: { disableNotification?: boolean },
   ): Promise<void> {
     try {
       const payload: SendMessagePayload = {
@@ -27,8 +26,8 @@ class TelegramService {
         parse_mode: "html",
         message_thread_id: threadId,
       };
-      if (typeof disableNotification === "boolean") {
-        payload.disable_notification = disableNotification;
+      if (typeof options?.disableNotification === "boolean") {
+        payload.disable_notification = options.disableNotification;
       }
 
       await axios.post(`${this.baseUrl}/sendMessage`, payload);
