@@ -141,7 +141,7 @@ class Qrz {
           callsign: callsign,
           t: d,
         },
-        timeout: 2000, // 10 seconds
+        timeout: 5000, // 5 seconds
       });
       const parsed: QrzReturnData = await parseStringPromise(data);
       json = parsed;
