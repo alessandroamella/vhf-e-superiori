@@ -6,6 +6,7 @@ type SendMessagePayload = {
   text: string;
   parse_mode: string;
   message_thread_id?: number;
+  disable_notification?: boolean;
 };
 
 class TelegramService {
@@ -17,6 +18,7 @@ class TelegramService {
   public async sendAdminNotification(
     message: string,
     threadId: number,
+    disableNotification?: boolean,
   ): Promise<void> {
     try {
       const payload: SendMessagePayload = {
@@ -25,6 +27,9 @@ class TelegramService {
         parse_mode: "html",
         message_thread_id: threadId,
       };
+      if (typeof disableNotification === "boolean") {
+        payload.disable_notification = disableNotification;
+      }
 
       await axios.post(`${this.baseUrl}/sendMessage`, payload);
       logger.info(`Sent Telegram notification to chat ID ${this.chatId}`);

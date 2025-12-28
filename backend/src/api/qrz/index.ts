@@ -229,17 +229,19 @@ class Qrz {
         logger.error("JSON was:");
         logger.error(json);
       }
+      const errorStr = isAxiosError(err)
+        ? typeof err.response?.data === "object"
+          ? JSON.stringify(err.response.data)
+          : err.message
+        : err instanceof Error
+          ? err.message
+          : "Unknown error";
       telegramService.sendAdminNotification(
         `❗️ <b>Error fetching QRZ info for callsign ${callsign}</b>\n\n${
-          isAxiosError(err)
-            ? typeof err.response?.data === "object"
-              ? JSON.stringify(err.response.data)
-              : err.message
-            : err instanceof Error
-              ? err.message
-              : "Unknown error"
+          errorStr
         }`,
         envs.TELEGRAM_ERRORS_THREAD_ID,
+        errorStr.includes("timeout"), // Disable notification on timeout errors
       );
       return null;
     }
