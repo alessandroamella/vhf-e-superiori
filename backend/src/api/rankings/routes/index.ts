@@ -275,7 +275,7 @@ router.get(
  */
 router.get("/", async (req, res) => {
   const year = req.query.year
-    ? parseInt(req.query.year as string)
+    ? parseInt(req.query.year as string, 10)
     : moment().year();
   logger.debug(`Getting rankings for year ${year}`);
 

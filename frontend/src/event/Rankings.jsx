@@ -186,7 +186,7 @@ const Rankings = () => {
 
   const navigate = useNavigate();
 
-  const year = yearParam ? parseInt(yearParam) : new Date().getFullYear();
+  const year = yearParam ? parseInt(yearParam, 10) : new Date().getFullYear();
 
   const socialTitle = t("rankings.social.title", {
     context: event ? "event" : "year",
