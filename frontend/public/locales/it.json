@@ -1,4 +1,19 @@
 {
+  "diploma50": {
+    "title": "DIPLOMA 50° RADIO FLASH MOB",
+    "dates": "Dal 1 al 5 febbraio 2026",
+    "description": "L’evento per il 50esimo Radio Flash Mob si terrà come da calendario nei giorni dal 01/02 al 05/02/2026. Negli orari indicati. Sulle bande indicate nelle frequenze indicate.",
+    "activators_info": "Gli attivatori per questo evento anniversario useranno il nominativo speciale",
+    "activators_role": "e saranno esclusivamente gli amministratori del gruppo VHF e Superiori.",
+    "points_per_contact": "Ogni collegamento valido darà",
+    "one_point": "1 punto",
+    "diploma_requirement": "Per ricevere il diploma si dovranno collegare minimo",
+    "five_activators": "5 attivatori",
+    "any_band": "in qualsiasi banda",
+    "delivery_info": "Alla chiusura dell’evento tutti gli amici che avranno 5 o più punti riceveranno il diploma in formato pdf sulla mail indicata su qrz com. Nel caso che si volesse ricevere diploma su una mail diversa e’ sufficiente segnalarlo ad uno degli attivatori/amministratori collegato.",
+    "thank_you": "Grazie della partecipazione e buon divertimento.",
+    "team_signature": "Il team VHF e Superiori."
+  },
   "firstPoster": "Locandina del primo flash mob",
   "mainTitle": "VHF e Superiori - Flash Mob Radioamatoriale",
   "bornFrom": "Nasce da un'idea di <1>IU4JJJ</1> Pietro Cerrone membro della chat VHF e Superiori che la propone a <3>IZ5RNF</3> Alessandro Ronca creatore del gruppo.",
@@ -50,7 +65,7 @@
   "nobodyOnVhf": "Il primo risultato che si era prefissato era quello di \"interrompere\" il tam tam che da tempo si sentiva ripetere: \"In VHF SSB non c'è più nessuno, figuriamoci sulle bande superiori\". Lentamente gli amici collegati in radio che accettavano di essere inseriti passarono da 3 a 5 a 20 a 30 a 50, ma molte zone del paese rimanevano purtroppo ancora scoperte. Fu per lui un risultato memorabile il superamento della soglia dei 100 partecipanti dopo un lavoro portato avanti ininterrottamente per due anni di contatti radio, inviti e inserimenti. Così la chat inizia a essere utile e i messaggi iniziano a essere sempre più numerosi grazie al contributo di molti appassionati presenti nel gruppo.",
   "results": "Fiero del risultato e del fatto che il gruppo iniziasse ad essere utilizzato per i fini per i quali era nato, continuò, come fa ancora oggi, ad invitare operatori nel gruppo vhfesuperiori contattando i potenziali membri personalmente uno ad uno. Giunto vicino alla soglia dei 200 iscritti, la gestione della chat richiedeva sempre più tempo, diventando un impegno difficile e impegnativo.",
   "adminsNominated": "Decide così di nominare degli amministratori che fossero di supporto e sviluppo, seguendo il concetto di \"copertura\" territoriale, competenza, disponibilità e condivisione degli intenti del gruppo. Gli amministratori sono diventati in breve tempo indispensabili e riferimenti zonali per le stazioni di nuovo ingresso e per quelle che già facevano parte della chat. La divisione che fu fatta è quella che rimane ad oggi, e cioè in zone: nord, centro, centro-sud e sud. Entrano nel gruppo nuovi amici che iniziano la loro attività e altri che riprendono dopo periodi di pausa, e altri che sempre sono stati operativi.",
-  "stationsIncreasing": "Nel tempo si è visto un incremento esponenziale del numero delle stazioni operative e del numero dei collegamenti, sia quotidianamente che in occasione di manifestazioni, con un trend ancora oggi in continua crescita. L'entusiasmo e la passione per questo hobby sta coinvolgendo e divertendo sempre più  appassionati. Ad oggi, 10 marzo 2025, il gruppo conta oltre 700 partecipanti da tutta Italia, Spagna, Svizzera, Francia, Croazia, Malta, Bulgaria, Serbia ecc.",
+  "stationsIncreasing": "Nel tempo si è visto un incremento esponenziale del numero delle stazioni operative e del numero dei collegamenti, sia quotidianamente che in occasione di manifestazioni, con un trend ancora oggi in continua crescita. L'entusiasmo e la passione per questo hobby sta coinvolgendo e divertendo sempre più  appassionati. Ad oggi, 5 gennaio 2026, il gruppo conta oltre 830 partecipanti da tutta Italia, Spagna, Svizzera, Francia, Croazia, Malta, Bulgaria, Serbia ecc.",
   "websiteCreation": "Questa grande partecipazione ha portato alla creazione di questo sito, con lo scopo di diffondere questo entusiasmo e passione per queste bande e modi anche oltre i confini italiani, in tutta Europa. In questa sede, intendo ringraziare personalmente e singolarmente tutti, nessuno escluso, per aver accettato di far parte di questo progetto e di aver condiviso questa idea. Ogni singolo operatore, con il suo contributo e passione, sta portando sempre più radioamatori ad operare sulle VHF e Superiori.",
   "thankYouForContributing": "UN GRAZIE SENTITO DEL VOSTRO CONTRIBUTO, SENZA IL QUALE NON SAREBBE STATO POSSIBILE PORTARE COSÌ TANTE PERSONE A DIVERTIRSI IN RADIO INSIEME.",
   "acceptedActivator": "Sei stato accettato come stazione attivatrice",

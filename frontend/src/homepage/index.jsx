@@ -479,7 +479,7 @@ const Homepage = () => {
               <div className="md:px-4">
                 <Card className="mb-8 border-2 border-yellow-400 dark:border-yellow-600">
                   <h2 className="text-2xl font-bold text-center text-yellow-600 dark:text-yellow-400 uppercase">
-                    DIPLOMA 50° RADIO FLASH MOB
+                    {t("diploma50.title")}
                   </h2>
                   <div className="flex flex-col items-center">
                     <img
@@ -489,37 +489,26 @@ const Homepage = () => {
                     />
                     <div className="text-justify text-gray-700 dark:text-gray-300 space-y-2">
                       <p>
-                        <strong>Dal 1 al 5 febbraio 2026</strong>
+                        <strong>{t("diploma50.dates")}</strong>
+                      </p>
+                      <p>{t("diploma50.description")}</p>
+                      <p>
+                        {t("diploma50.activators_info")}{" "}
+                        <strong>II4FMOB</strong>{" "}
+                        {t("diploma50.activators_role")}
                       </p>
                       <p>
-                        L’evento per il 50esimo Radio Flash Mob si terrà come da
-                        calendario nei giorni dal 01/02 al 05/02/2026. Negli
-                        orari indicati. Sulle bande indicate nelle frequenze
-                        indicate.
+                        {t("diploma50.points_per_contact")}{" "}
+                        <strong>{t("diploma50.one_point")}</strong>.
+                        {t("diploma50.diploma_requirement")}{" "}
+                        <strong>{t("diploma50.five_activators")}</strong>{" "}
+                        {t("diploma50.any_band")}.
                       </p>
-                      <p>
-                        Gli attivatori per questo evento anniversario useranno
-                        il nominativo speciale <strong>II4FMOB</strong> e
-                        saranno esclusivamente gli amministratori del gruppo VHF
-                        e Superiori.
-                      </p>
-                      <p>
-                        Ogni collegamento valido darà <strong>1 punto</strong>.
-                        Per ricevere il diploma si dovranno collegare minimo{" "}
-                        <strong>5 attivatori</strong> in qualsiasi banda.
-                      </p>
-                      <p>
-                        Alla chiusura dell’evento tutti gli amici che avranno 5
-                        o più punti riceveranno il diploma in formato pdf sulla
-                        mail indicata su qrz com. Nel caso che si volesse
-                        ricevere diploma su una mail diversa e’ sufficiente
-                        segnalarlo ad uno degli attivatori/amministratori
-                        collegato.
-                      </p>
+                      <p>{t("diploma50.delivery_info")}</p>
                       <p className="font-bold text-center mt-4">
-                        Grazie della partecipazione e buon divertimento.
+                        {t("diploma50.thank_you")}
                         <br />
-                        Il team VHF e Superiori.
+                        {t("diploma50.team_signature")}
                       </p>
                     </div>
                   </div>
