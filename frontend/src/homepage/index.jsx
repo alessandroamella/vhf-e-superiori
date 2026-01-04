@@ -556,7 +556,7 @@ const Homepage = () => {
                         ?.click();
                     }
                   }}
-                  className="mt-12 md:mt-24 overflow-x-hidden overflow-y-clip -mx-4 md:mx-4 md:max-w-[80vw] select-none"
+                  className="min-h-[20rem] mt-12 md:mt-24 overflow-x-hidden overflow-y-clip -mx-4 md:mx-4 md:max-w-[80vw] select-none"
                 >
                   {posters ? (
                     <Carousel items={posters} showControls={false} />
