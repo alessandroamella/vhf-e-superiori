@@ -17,7 +17,12 @@ import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { FaExclamationTriangle } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
-import { useLocation, useNavigate, useParams } from "react-router";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router";
 import {
   EmailIcon,
   EmailShareButton,
@@ -94,14 +99,26 @@ const EventList = () => {
         {t("rankings.filterByEvent")}
       </h2>
       <ListGroup className="max-h-56 overflow-auto">
-        <ListGroup.Item
-          onClick={() => navigate("/rankings")}
-          className="uppercase font-bold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-700 text-red-500 dark:text-red-400"
-        >
-          <span className="uppercase">
-            {t("rankings.annualRankings", { year: new Date().getFullYear() })}
-          </span>
-        </ListGroup.Item>
+        {Array.from(
+          { length: new Date().getFullYear() - 2024 + 1 },
+          (_, i) => new Date().getFullYear() - i,
+        ).map((year) => (
+          <ListGroup.Item
+            key={year}
+            onClick={() =>
+              navigate(
+                year === new Date().getFullYear()
+                  ? "/rankings"
+                  : `/rankings?year=${year}`,
+              )
+            }
+            className="uppercase font-bold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-700 text-red-500 dark:text-red-400"
+          >
+            <span className="uppercase">
+              {t("rankings.annualRankings", { year })}
+            </span>
+          </ListGroup.Item>
+        ))}
         {events?.map((event) => (
           <ListGroup.Item
             key={event._id}
@@ -123,6 +140,8 @@ const EventList = () => {
 
 const Rankings = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const yearParam = searchParams.get("year");
 
   const [event, setEvent] = useState(null);
   const [stationRankings, setStationRankings] = useState(null);
@@ -137,9 +156,13 @@ const Rankings = () => {
       try {
         setLoading(true);
 
-        const { data } = await axios.get(
-          id ? `/api/rankings/${id}` : "/api/rankings",
-        );
+        const url = id
+          ? `/api/rankings/${id}`
+          : yearParam
+            ? `/api/rankings?year=${yearParam}`
+            : "/api/rankings";
+
+        const { data } = await axios.get(url);
         console.log("event and rankings:", data);
         const { event, rankings } = data;
         if (event) {
@@ -159,11 +182,11 @@ const Rankings = () => {
       }
     }
     getData();
-  }, [id]);
+  }, [id, yearParam]);
 
   const navigate = useNavigate();
 
-  const year = new Date().getFullYear();
+  const year = yearParam ? parseInt(yearParam) : new Date().getFullYear();
 
   const socialTitle = t("rankings.social.title", {
     context: event ? "event" : "year",

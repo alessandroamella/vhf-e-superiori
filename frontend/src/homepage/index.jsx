@@ -477,6 +477,54 @@ const Homepage = () => {
                 )}
               </div>
               <div className="md:px-4">
+                <Card className="mb-8 border-2 border-yellow-400 dark:border-yellow-600">
+                  <h2 className="text-2xl font-bold text-center text-yellow-600 dark:text-yellow-400 uppercase">
+                    DIPLOMA 50° RADIO FLASH MOB
+                  </h2>
+                  <div className="flex flex-col items-center">
+                    <img
+                      src="/diploma50.jpg"
+                      alt="Diploma 50 Radio Flash Mob"
+                      className="w-full max-w-md rounded-lg shadow-lg mb-4"
+                    />
+                    <div className="text-justify text-gray-700 dark:text-gray-300 space-y-2">
+                      <p>
+                        <strong>Dal 1 al 5 febbraio 2026</strong>
+                      </p>
+                      <p>
+                        L’evento per il 50esimo Radio Flash Mob si terrà come da
+                        calendario nei giorni dal 01/02 al 05/02/2026. Negli
+                        orari indicati. Sulle bande indicate nelle frequenze
+                        indicate.
+                      </p>
+                      <p>
+                        Gli attivatori per questo evento anniversario useranno
+                        il nominativo speciale <strong>II4FMOB</strong> e
+                        saranno esclusivamente gli amministratori del gruppo VHF
+                        e Superiori.
+                      </p>
+                      <p>
+                        Ogni collegamento valido darà <strong>1 punto</strong>.
+                        Per ricevere il diploma si dovranno collegare minimo{" "}
+                        <strong>5 attivatori</strong> in qualsiasi banda.
+                      </p>
+                      <p>
+                        Alla chiusura dell’evento tutti gli amici che avranno 5
+                        o più punti riceveranno il diploma in formato pdf sulla
+                        mail indicata su qrz com. Nel caso che si volesse
+                        ricevere diploma su una mail diversa e’ sufficiente
+                        segnalarlo ad uno degli attivatori/amministratori
+                        collegato.
+                      </p>
+                      <p className="font-bold text-center mt-4">
+                        Grazie della partecipazione e buon divertimento.
+                        <br />
+                        Il team VHF e Superiori.
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+
                 <div
                   id="eventi"
                   onClick={(e) => {
@@ -508,7 +556,7 @@ const Homepage = () => {
                         ?.click();
                     }
                   }}
-                  className="min-h-[20rem] mt-12 md:mt-24 overflow-x-hidden overflow-y-clip -mx-4 md:mx-4 md:max-w-[80vw] select-none"
+                  className="mt-12 md:mt-24 overflow-x-hidden overflow-y-clip -mx-4 md:mx-4 md:max-w-[80vw] select-none"
                 >
                   {posters ? (
                     <Carousel items={posters} showControls={false} />
@@ -541,13 +589,6 @@ const Homepage = () => {
                   >
                     {t("clickHere")}
                   </Button>
-                  {/* <Alert color="info">
-                  <span>
-                    <span className="font-medium">Info</span> Il modulo per
-                    registrarsi non è ancora in funzione. Nel frattempo, puoi
-                    contattarci scrivendo a uno degli amministratori.
-                  </span>
-                </Alert> */}
                 </div>
 
                 <Accordion

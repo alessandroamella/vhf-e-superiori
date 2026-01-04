@@ -273,14 +273,20 @@ router.get(
  *            schema:
  *              $ref: '#/components/schemas/ResErr'
  */
-router.get("/", async (_req, res) => {
-  logger.debug("Getting rankings for current solar year");
+router.get("/", async (req, res) => {
+  const year = req.query.year
+    ? parseInt(req.query.year as string)
+    : moment().year();
+  logger.debug(`Getting rankings for year ${year}`);
 
-  const startOfYear = moment().startOf("year");
-  // const endOfYear = moment().endOf("year");
+  const startOfYear = moment().year(year).startOf("year");
+  const endOfYear = moment().year(year).endOf("year");
+
+  const isCurrentYear = year === moment().year();
 
   // Check cache
   if (
+    isCurrentYear &&
     yearlyRankingsCache.data &&
     yearlyRankingsCache.date &&
     moment().diff(yearlyRankingsCache.date) < CACHE_EXPIRATION_MS
@@ -288,15 +294,19 @@ router.get("/", async (_req, res) => {
     logger.debug("Returning yearly rankings from cache");
     return res.json({ event: null, rankings: yearlyRankingsCache.data });
   }
-  logger.debug("Cache miss or expired, recalculating yearly rankings");
 
-  // Get all events for the current solar year
+  if (isCurrentYear) {
+    logger.debug("Cache miss or expired, recalculating yearly rankings");
+  } else {
+    logger.debug(`Calculating rankings for year ${year}`);
+  }
+
+  // Get all events for the year
   const events = await Event.find(
     {
       date: {
         $gte: startOfYear.toDate(),
-        // $lte: endOfYear.toDate(),
-        $lte: new Date(), // up to now
+        $lte: isCurrentYear ? new Date() : endOfYear.toDate(),
       },
     },
     { _id: 1 },
@@ -304,8 +314,10 @@ router.get("/", async (_req, res) => {
 
   if (!events || events.length === 0) {
     logger.debug("No events found for the current solar year.");
-    yearlyRankingsCache.data = { stationRankings: [], userRankings: [] }; // Cache empty result
-    yearlyRankingsCache.date = moment();
+    if (isCurrentYear) {
+      yearlyRankingsCache.data = { stationRankings: [], userRankings: [] }; // Cache empty result
+      yearlyRankingsCache.date = moment();
+    }
     return res.json({
       event: null,
       rankings: { stationRankings: [], userRankings: [] },
@@ -408,8 +420,10 @@ router.get("/", async (_req, res) => {
   );
 
   const rankingsData = { stationRankings, userRankings };
-  yearlyRankingsCache.data = rankingsData;
-  yearlyRankingsCache.date = moment();
+  if (isCurrentYear) {
+    yearlyRankingsCache.data = rankingsData;
+    yearlyRankingsCache.date = moment();
+  }
   res.json({ event: null, rankings: rankingsData });
 });
 
