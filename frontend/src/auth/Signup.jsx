@@ -34,15 +34,17 @@ const useFocus = () => {
 
 const OpenExternally = ({ doc }) => {
   return (
-    <Link
-      to={`/document/${doc}`}
+    <a
+      href={`/document/${doc}`}
+      target="_blank"
+      rel="noopener noreferrer"
       className="text-red-500 hover:text-red-600 transition-colors"
     >
       <FaExternalLinkAlt className="inline mr-1" />
       Apri
       {doc === "tos" ? " i Termini e Condizioni" : " la Privacy Policy"}{" "}
       esternamente
-    </Link>
+    </a>
   );
 };
 
