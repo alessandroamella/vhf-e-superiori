@@ -245,8 +245,8 @@
     "annualRankings": "Classifiche annuali - anno {{year}}",
     "qsoLoadError": "Errore nel caricamento dei QSO",
     "pageTitle": {
-      "event": "{{name}} - Classifiche - VHF e superiori",
-      "year": "Anno {{year}} - Classifiche - VHF e superiori"
+      "event": "{{name}} - Classifiche - VHF e Superiori",
+      "year": "Anno {{year}} - Classifiche - VHF e Superiori"
     },
     "qsoModal": {
       "title": "QSO di",
@@ -276,10 +276,10 @@
     },
     "noQsosFound": "Nessun collegamento trovato",
     "social": {
-      "title_event": "Classifiche {{name}} - VHF e superiori",
-      "title_year": "Classifiche {{year}} - VHF e superiori",
-      "bodyEvent": "Classifiche dell'evento {{name}} - {{date}} - VHF e superiori",
-      "bodyYear": "Classifiche dell'anno {{year}} - VHF e superiori"
+      "title_event": "Classifiche {{name}} - VHF e Superiori",
+      "title_year": "Classifiche {{year}} - VHF e Superiori",
+      "bodyEvent": "Classifiche dell'evento {{name}} - {{date}} - VHF e Superiori",
+      "bodyYear": "Classifiche dell'anno {{year}} - VHF e Superiori"
     }
   },
   "beacons": {
@@ -302,7 +302,7 @@
     "noBeacons": "Nessun beacon presente"
   },
   "beaconViewer": {
-    "pageTitle": "Beacon {{callsign}} - VHF e superiori",
+    "pageTitle": "Beacon {{callsign}} - VHF e Superiori",
     "header": "Beacon {{callsign}}",
     "editButton": "Modifica",
     "deleteBeaconButton": "Elimina beacon",

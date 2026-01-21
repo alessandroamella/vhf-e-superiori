@@ -1,4 +1,4 @@
-# VHF e superiori
+# VHF e Superiori
 
 Il frontend va su 8904
 

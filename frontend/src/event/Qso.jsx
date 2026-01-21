@@ -95,12 +95,12 @@ const Qso = () => {
   const socialTitle = qso && `QSO ${qso?.callsign} - ${qso?.event?.name}`;
   const socialBody =
     qso &&
-    `QSO ${qso?.callsign} - ${fromCallsign} - ${qso?.event?.name} - ${qso?.qsoDate} UTC - ${qso?.frequency} MHz - ${qso?.mode} - VHF e superiori`;
+    `QSO ${qso?.callsign} - ${fromCallsign} - ${qso?.event?.name} - ${qso?.qsoDate} UTC - ${qso?.frequency} MHz - ${qso?.mode} - VHF e Superiori`;
 
   return (
     <>
       <Helmet>
-        <title>{socialTitle || "QSO"} - VHF e superiori</title>
+        <title>{socialTitle || "QSO"} - VHF e Superiori</title>
       </Helmet>
       <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">

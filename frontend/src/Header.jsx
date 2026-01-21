@@ -99,7 +99,7 @@ const Header = () => {
               src="https://www.paypalobjects.com/it_IT/IT/i/btn/btn_donate_LG.gif"
               border="0"
               name="submit"
-              title="Aiutaci a sostenere VHF e superiori!"
+              title="Aiutaci a sostenere VHF e Superiori!"
               alt="Fai una donazione con il pulsante PayPal"
             />
             <img

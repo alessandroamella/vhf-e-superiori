@@ -77,7 +77,7 @@ const BlogPostViewer = () => {
   return (
     <>
       <Helmet>
-        <title>{post ? post.title : "Blog"} - VHF e superiori</title>
+        <title>{post ? post.title : "Blog"} - VHF e Superiori</title>
       </Helmet>
       <div className="mx-auto px-4 w-full md:w-5/6 pt-8 pb-2">
         <div className="md:-ml-4 md:-mt-4 flex justify-between">

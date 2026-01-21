@@ -87,7 +87,7 @@ const ViewPost = () => {
   return (
     <>
       <Helmet>
-        <title>{post?.description || "Post"} - VHF e superiori</title>
+        <title>{post?.description || "Post"} - VHF e Superiori</title>
       </Helmet>
       <div className="px-4 md:px-12 max-w-full pt-2 md:pt-4 pb-12 min-h-[80vh] bg-white dark:bg-gray-900 dark:text-white">
         <div className="flex justify-between items-center">

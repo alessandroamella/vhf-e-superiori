@@ -330,7 +330,7 @@ const BeaconEditor = () => {
     <>
       <Helmet>
         <title>
-          {isEditing ? "Modifica" : "Nuovo"} beacon - VHF e superiori
+          {isEditing ? "Modifica" : "Nuovo"} beacon - VHF e Superiori
         </title>
       </Helmet>
       <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900">

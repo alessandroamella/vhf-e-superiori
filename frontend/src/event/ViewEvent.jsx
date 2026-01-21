@@ -98,7 +98,7 @@ const ViewEvent = () => {
   return (
     <>
       <Helmet>
-        <title>{event?.name || "Evento"} - VHF e superiori</title>
+        <title>{event?.name || "Evento"} - VHF e Superiori</title>
       </Helmet>
       <Modal
         position="center"

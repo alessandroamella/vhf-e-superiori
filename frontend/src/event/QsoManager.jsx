@@ -871,7 +871,7 @@ const QsoManager = () => {
     <>
       <Helmet>
         <title>
-          Gestione QSO -{event ? ` ${event.name} -` : ""} VHF e superiori
+          Gestione QSO -{event ? ` ${event.name} -` : ""} VHF e Superiori
         </title>
       </Helmet>
       <Modal

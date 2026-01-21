@@ -100,7 +100,7 @@ export class EmailService {
     });
 
     const message: Mail.Options = {
-      from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
+      from: `"VHF e Superiori" ${process.env.SEND_EMAIL_FROM}`,
       to: user.email,
       subject: "Reset password",
       html,
@@ -120,7 +120,7 @@ export class EmailService {
       "{NOMINATIVO}": newAdmin.callsign,
     });
     const message: Mail.Options = {
-      from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
+      from: `"VHF e Superiori" ${process.env.SEND_EMAIL_FROM}`,
       to: newAdmin.email,
       subject: "Nuovo amministratore",
       html,
@@ -142,14 +142,14 @@ export class EmailService {
       "{AZIONE}": isNewUser ? "Benvenuto!" : "Cambio email",
       "{BASEURL}": removeTrailingSlash(envs.FRONTEND_URL),
       "{DESCRIZIONE}": isNewUser
-        ? "grazie per esserti registrato su VHF e superiori"
+        ? "grazie per esserti registrato su VHF e Superiori"
         : "abbiamo ricevuto la richiesta di cambio email",
     });
 
     const message: Mail.Options = {
-      from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
+      from: `"VHF e Superiori" ${process.env.SEND_EMAIL_FROM}`,
       to: user.email,
-      subject: "Verifica email VHF e superiori",
+      subject: "Verifica email VHF e Superiori",
       html,
     };
 
@@ -174,7 +174,7 @@ export class EmailService {
     });
 
     const message: Mail.Options = {
-      from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
+      from: `"VHF e Superiori" ${process.env.SEND_EMAIL_FROM}`,
       to: user.email,
       subject: "Richiesta per stazione attivatrice",
       html,
@@ -205,7 +205,7 @@ export class EmailService {
       "{EVENTID}": event._id.toString(),
     });
     const message: Mail.Options = {
-      from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
+      from: `"VHF e Superiori" ${process.env.SEND_EMAIL_FROM}`,
       to: user.email,
       subject: "Accettazione richiesta stazione attivatrice",
       html,
@@ -229,7 +229,7 @@ export class EmailService {
     logger.debug(EmailService.adminEmails);
 
     const message: Mail.Options = {
-      from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
+      from: `"VHF e Superiori" ${process.env.SEND_EMAIL_FROM}`,
       to: EmailService.adminEmails,
       subject: "Richiesta per stazione attivatrice",
       html:
@@ -270,7 +270,7 @@ export class EmailService {
     const scraped = await qrz.getInfo(fromUser.callsign);
 
     const message: Mail.Options = {
-      from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
+      from: `"VHF e Superiori" ${process.env.SEND_EMAIL_FROM}`,
       to: forUser.email,
       subject: parentComment
         ? `Nuova risposta da ${fromUser.callsign} al tuo commento`
@@ -364,7 +364,7 @@ export class EmailService {
     });
 
     const message: Mail.Options = {
-      from: `"VHF e superiori" ${process.env.SEND_EMAIL_FROM}`,
+      from: `"VHF e Superiori" ${process.env.SEND_EMAIL_FROM}`,
       to: toEmail,
       subject:
         "eQSL per il QSO con " +

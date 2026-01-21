@@ -192,7 +192,7 @@ const BlogPostEditor = ({ blogPost }) => {
   return (
     <>
       <Helmet>
-        <title>Blog post editor - VHF e superiori</title>
+        <title>Blog post editor - VHF e Superiori</title>
       </Helmet>
       <div className="w-full h-full dark:bg-gray-900 dark:text-white">
         <div className="mx-auto px-4 w-full md:w-5/6 my-4">
