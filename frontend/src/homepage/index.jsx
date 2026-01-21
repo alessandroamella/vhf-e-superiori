@@ -65,17 +65,24 @@ const Homepage = () => {
     [],
   );
 
+  const toConfirm = searchParams.get("toconfirm");
+  const confirmed = searchParams.get("confirmed");
+
   useEffect(() => {
-    if (searchParams.get("toconfirm")) {
+    if (toConfirm) {
+      console.log("showing toconfirm alert");
       setAlert({
         color: "info",
         msg: "Grazie per esserti registrato! Per favore verifica il tuo account cliccando il link presente all'interno della mail",
       });
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    } else if (searchParams.get("confirmed")) {
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }, 100);
+    } else if (confirmed) {
+      console.log("showing confirmed alert");
       setAlert({
         color: "success",
         msg: "Email confermata con successo! Ora puoi prenotarti come stazione attivatrice, inviare foto e video e altro.",
@@ -83,7 +90,7 @@ const Homepage = () => {
       searchParams.delete("confirmed");
       setSearchParams(searchParams);
     }
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, confirmed, toConfirm]);
 
   const navigate = useNavigate();
 

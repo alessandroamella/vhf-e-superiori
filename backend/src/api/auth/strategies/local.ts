@@ -37,7 +37,7 @@ passport.use(
             phoneNumber +
             " already exists",
         );
-        logger.debug(`Password = ${password}`);
+        // logger.debug(`Password = ${password}`);
         const exists = await User.findOne({
           $or: [{ callsign }, { email }, { phoneNumber }],
         });

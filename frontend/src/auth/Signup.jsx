@@ -221,6 +221,8 @@ const Signup = () => {
     fetchLocator();
   }, [lat, lon]);
 
+  const toConfirm = useRef(false);
+
   async function signup(e, recaptchaValue) {
     e?.preventDefault();
 
@@ -284,12 +286,15 @@ const Signup = () => {
         callsign,
         password,
       });
+      toConfirm.current = true;
       setUser(data);
+
+      // this should be done by the useEffect on user change, but just in case
       navigate(
         {
           pathname: searchParams.get("to") || "/",
           search: createSearchParams({
-            toconfirm: true,
+            toconfirm: "true",
           }).toString(),
         },
         {
@@ -306,7 +311,13 @@ const Signup = () => {
       if (typeof str === "string" && str.includes(",")) {
         setAlert([...new Set(str.split(","))].map(getErrorStr).join(", "));
       } else {
+        console.log("single error string:", str);
         setAlert(getErrorStr(str));
+
+        if (str === "CAPTCHA_FAILED") {
+          console.log("resetting captcha due to failure");
+          captchaRef.current.reset();
+        }
       }
       setDisabled(false);
     }
@@ -380,7 +391,15 @@ const Signup = () => {
         </title>
       </Helmet>
       {user &&
-        navigate(searchParams.get("to") || "/profile", { replace: true })}
+        (toConfirm.current
+          ? navigate(
+              {
+                pathname: searchParams.get("to") || "/",
+                search: createSearchParams({ toconfirm: "true" }).toString(),
+              },
+              { replace: true },
+            )
+          : navigate(searchParams.get("to") || "/profile", { replace: true }))}
       <div className="w-full h-full dark:bg-gray-900 dark:text-white">
         <div className="mx-auto px-8 w-full md:w-2/3 pt-12 pb-20">
           <Typography variant="h1" className="dark:text-white mb-2">

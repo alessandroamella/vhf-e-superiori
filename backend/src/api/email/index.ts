@@ -140,6 +140,7 @@ export class EmailService {
       "{USERID}": user._id.toString(),
       "{CODE}": code,
       "{AZIONE}": isNewUser ? "Benvenuto!" : "Cambio email",
+      "{BASEURL}": removeTrailingSlash(envs.FRONTEND_URL),
       "{DESCRIZIONE}": isNewUser
         ? "grazie per esserti registrato su VHF e superiori"
         : "abbiamo ricevuto la richiesta di cambio email",
