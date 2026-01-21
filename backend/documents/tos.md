@@ -52,7 +52,7 @@ Benvenuto su VHF e superiori ([https://www.vhfesuperiori.eu/](https://www.vhfesu
 
 ## 5. Assenza di Garanzie
 
-5.1. Il servizio è offerto "così com'è" ("as is"), senza garanzie di continuità. Il sito potrebbe essere irraggiungibile per manutenzione o guasti tecnici. Nessun risarcimento potrà essere richiesto per disservizi o perdita di dati.
+5.1. Il sito è offerto "così com'è" ("as is"), senza garanzie di continuità. Il sito potrebbe essere irraggiungibile per manutenzione o guasti tecnici. Nessun risarcimento potrà essere richiesto per disservizi o perdita di dati.
 
 ## 6. Sostegno al Progetto (Donazioni e Contributi)
 
