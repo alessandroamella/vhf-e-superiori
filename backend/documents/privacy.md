@@ -209,7 +209,7 @@ Si consiglia di rivedere periodicamente la presente Informativa sulla Privacy pe
 
 Se avete domande sulla presente Informativa sulla Privacy, potete contattarci:
 
--   Tramite email: [alexlife@tiscali.it](mailto:alexlife@tiscali.it)
+-   Tramite email: [iu4jjj@gmail.com](mailto:iu4jjj@gmail.com)
 
 Potete anche contattare il Webmaster:
 

@@ -584,7 +584,7 @@ const Profile = () => {
                         id="email"
                         name="email"
                         type="email"
-                        placeholder="alexlife@tiscali.it"
+                        placeholder="iu4jjj@gmail.com"
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -764,12 +764,12 @@ const Profile = () => {
                     <li>
                       <strong>Alessandro IZ5RNF:</strong>
                       <a
-                        href="mailto:alexlife@tiscali.it"
+                        href="mailto:iu4jjj@gmail.com"
                         target="_blank"
                         className="ml-1"
                         rel="noreferrer"
                       >
-                        alexlife@tiscali.it
+                        iu4jjj@gmail.com
                       </a>
                     </li>
                   </ul>
