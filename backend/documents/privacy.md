@@ -50,7 +50,7 @@ Trattiamo i tuoi dati per le seguenti finalità:
 
 I tuoi dati possono essere condivisi con fornitori di servizi tecnici che agiscono come Responsabili o Titolari autonomi del trattamento:
 
-*   **Hosting e Database:** Amazon Web Services (AWS) e MongoDB (infrastruttura server).
+*   **Hosting e Database:** Amazon Web Services (AWS) e Hetzner (infrastruttura server).
 *   **Storage File:** Amazon AWS S3 (per foto e video).
 *   **Analisi:** Google Analytics 4 (statistiche d'uso).
 *   **Mappe:** Google Maps Platform (visualizzazione mappe e QTH).
