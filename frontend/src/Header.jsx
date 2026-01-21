@@ -91,7 +91,7 @@ const Header = () => {
             <input
               type="hidden"
               name="item_name"
-              value="Aiutaci a sostenere Vhfesuperiori, stiamo facendo il massimo per offrirti un servizio migliore. Grazie!"
+              value="Ti piace il progetto VHF e Superiori? Se vuoi, puoi aiutarci a sostenerne i costi di gestione con una libera donazione. Grazie!"
             />
             <input type="hidden" name="currency_code" value="EUR" />
             <input
