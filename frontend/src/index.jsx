@@ -32,7 +32,6 @@ import "react-medium-image-zoom/dist/styles.css";
 import "react-placeholder/lib/reactPlaceholder.css";
 
 import { Suspense } from "react";
-import ReactGA from "react-ga4";
 import { BrowserRouter, Route, Routes } from "react-router";
 import {
   EventsContext,
@@ -48,7 +47,16 @@ import NotFoundPage from "./NotFound";
 import SplashLoader, { SplashWrapper } from "./SplashLoader";
 import useUserStore from "./stores/userStore";
 
-ReactGA.initialize("your GA measurement id");
+// Prima della definizione del componente App o nell'useEffect iniziale
+axios.interceptors.request.use((config) => {
+  // Leggi lo stato SENZA hook (Zustand permette l'accesso diretto)
+  const impersonatedUserId = useUserStore.getState().impersonatedUserId;
+
+  if (impersonatedUserId) {
+    config.headers["x-impersonate-user"] = impersonatedUserId;
+  }
+  return config;
+});
 
 import "./i18n/i18n";
 import "./ga4";

@@ -14,6 +14,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window";
 import { useScreenDetector } from "../hooks/useScreenDetector";
 import CallsignLoading from "../shared/CallsignLoading";
+import useUserStore from "../stores/userStore";
 
 const UsersTable = ({
   users,
@@ -21,6 +22,9 @@ const UsersTable = ({
   setUserEditing,
   setJoinRequestsModal,
 }) => {
+  const currentUser = useUserStore((state) => state.user);
+  const startImpersonation = useUserStore((state) => state.startImpersonation);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const tableRef = useRef(null);
@@ -42,6 +46,13 @@ const UsersTable = ({
       );
     }
   }, [users, searchTerm]);
+
+  const handleImpersonate = (targetUser) => {
+    if (window.confirm(`Vuoi impersonare ${targetUser.callsign}?`)) {
+      startImpersonation(targetUser._id);
+      window.location.href = "/";
+    }
+  };
 
   const { isMobile } = useScreenDetector();
 
@@ -116,7 +127,7 @@ const UsersTable = ({
               {u.phoneNumber}
             </a>
           </div>
-          <div className="flex items-center p-4 w-24">
+          <div className="flex items-center p-4 w-24 gap-2">
             {u.joinRequests.length !== 0 ? (
               <Button
                 color="info"
@@ -129,6 +140,19 @@ const UsersTable = ({
               </Button>
             ) : (
               <FaTimes />
+            )}
+            {currentUser?.isDev && u._id !== currentUser._id && (
+              <Button
+                size="xs"
+                color="dark"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleImpersonate(u);
+                }}
+                title="Impersona Utente"
+              >
+                🕵️
+              </Button>
             )}
           </div>
         </div>

@@ -15,6 +15,7 @@ import joinRequestRoutes from "../joinRequest/routes";
 import locationRoutes from "../location/routes";
 import mapRoutes from "../map/routes";
 import errorHandler from "../middlewares/errorHandler";
+import impersonate from "../middlewares/impersonate";
 import populateUser from "../middlewares/populateUser";
 import postRoutes from "../post/routes";
 import qrzRoutes from "../qrz/routes";
@@ -46,6 +47,8 @@ router.use(bodyParser.json());
 router.use(cookieParser(envs.COOKIE_SECRET));
 
 router.use(populateUser);
+
+router.use(impersonate);
 
 router.use(
   fileUpload({
