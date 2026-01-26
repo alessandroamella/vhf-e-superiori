@@ -9,7 +9,6 @@ import { createError, validate } from "../../helpers";
 import isLoggedIn from "../../middlewares/isLoggedIn";
 import { qrz } from "../../qrz";
 import { Qso } from "../../qso/models";
-import { getEventDate } from "../../utils/eventDate";
 import previewRoute from "./preview";
 
 const router = Router();
@@ -74,7 +73,6 @@ router.get(
 
       const event = await Event.findOne({
         _id: qso.event,
-        ...getEventDate(user),
       });
       if (!event) {
         return res
