@@ -9,6 +9,13 @@ const createSchema: Schema = {
     optional: true,
     errorMessage: Errors.INVALID_OBJECT_ID,
   },
+  toLocator: {
+    isString: { options: [] },
+    trim: { options: [] },
+    isLength: { options: { min: 4, max: 6 } },
+    optional: true,
+    errorMessage: "Locatore destinazione non valido",
+  },
   fromStationCallsignOverride: {
     isString: { options: [], errorMessage: Errors.INVALID_CALLSIGN },
     trim: { options: [] },

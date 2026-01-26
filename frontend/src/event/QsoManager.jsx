@@ -48,6 +48,12 @@ import useUserStore from "../stores/userStore";
 import ShareMapBtn from "./ShareMapBtn";
 import VirtualizedQsoRow from "./VirtualizedQsoRow";
 
+const formatForInput = (dateStr) => {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  return d.toISOString().slice(0, 16); // Formats to YYYY-MM-DDTHH:mm
+};
+
 function getAdifKey(qso, index) {
   return JSON.stringify({
     callsign: qso.callsign,
@@ -567,7 +573,19 @@ const QsoManager = () => {
         // Send 'payload' instead of 'editingQso'
         const { data } = await axios.put(`/api/qso/${editingQso._id}`, payload);
 
-        setQsos(qsos.map((q) => (q._id === data._id ? { ...q, ...data } : q)));
+        setQsos((prevQsos) => {
+          // 1. Replace the updated QSO in the list
+          const updatedList = prevQsos.map((q) =>
+            q._id === data._id ? { ...q, ...data } : q,
+          );
+
+          // 2. Re-sort the list by date (Descending: Newest at the top)
+          // Using .sort() on a copied array or using the functional update pattern
+          return [...updatedList].sort(
+            (a, b) => new Date(b.qsoDate) - new Date(a.qsoDate),
+          );
+        });
+
         setEditingQso(null);
         setAlert({ color: "success", msg: "QSO aggiornato con successo" });
       } catch (err) {
@@ -580,7 +598,7 @@ const QsoManager = () => {
         setDisabled(false);
       }
     },
-    [editingQso, qsos, setAlert],
+    [editingQso, setAlert],
   );
 
   const [autocomplete, setAutocomplete] = useState(null);
@@ -1156,12 +1174,42 @@ const QsoManager = () => {
                   />
                 </div>
                 <div>
-                  <Label value="Locatore" />
+                  <Label value="DA Locatore" />
                   <TextInput
                     value={editingQso.locator || ""}
                     onChange={(e) =>
                       setEditingQso({ ...editingQso, locator: e.target.value })
                     }
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label value="Data e Ora (UTC)" />
+                  <TextInput
+                    type="datetime-local"
+                    value={formatForInput(editingQso.qsoDate)}
+                    onChange={(e) =>
+                      setEditingQso({
+                        ...editingQso,
+                        qsoDate: new Date(e.target.value).toISOString(),
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label value="A Locatore" />
+                  <TextInput
+                    placeholder="es. JN54xx"
+                    value={editingQso.toLocator || ""}
+                    onChange={(e) => {
+                      setEditingQso({
+                        ...editingQso,
+                        toLocator: e.target.value,
+                      });
+                    }}
+                    helperText="Sovrascrive le coordinate calcolate automaticamente"
                   />
                 </div>
               </div>

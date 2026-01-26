@@ -6,6 +6,7 @@ import { logger } from "../../../shared";
 import { User } from "../../auth/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
+import { location } from "../../location";
 import { Qso, type QsoDoc } from "../models";
 import createSchema from "../schemas/createSchema";
 
@@ -56,6 +57,7 @@ router.put(
         "mode",
         "qsoDate",
         "locator",
+        "toLocator",
         "rst",
         "notes",
         "fromStationCallsignOverride",
@@ -65,7 +67,7 @@ router.put(
         "fromStationLat",
         "fromStationLon",
         "email",
-      ] satisfies (keyof QsoDoc)[]);
+      ] satisfies (keyof QsoDoc | "toLocator")[]);
 
       // If fromStation changed, we should attempt to update the location data
       // from the new user, unless specific location data was sent in the body
@@ -119,6 +121,15 @@ router.put(
         // qso.emailSent = false;
       }
 
+      if (updates.toLocator) {
+        const latLon = location.calculateLatLon(updates.toLocator);
+        if (latLon) {
+          qso.toStationLat = latLon[0];
+          qso.toStationLon = latLon[1];
+          // We update these on the document directly
+        }
+      }
+
       await qso.save();
 
       // Return populated QSO (consistent with other endpoints)
@@ -127,7 +138,25 @@ router.put(
         select: "callsign isDev isAdmin",
       });
 
-      res.json(populated);
+      const responseObj = {
+        ...populated.toObject(),
+        toLocator:
+          populated.toStationLat && populated.toStationLon
+            ? location.calculateQth(
+                populated.toStationLat,
+                populated.toStationLon,
+              )
+            : undefined,
+        fromLocator:
+          populated.fromStationLat && populated.fromStationLon
+            ? location.calculateQth(
+                populated.fromStationLat,
+                populated.fromStationLon,
+              )
+            : undefined,
+      };
+
+      res.json(responseObj); // Send the object with the calculated locators
     } catch (err) {
       logger.error("Error while updating QSO");
       logger.error(err);
