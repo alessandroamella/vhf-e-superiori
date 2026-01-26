@@ -1879,7 +1879,7 @@ const QsoManager = () => {
                                 className="flex-shrink-0 flex justify-center items-center"
                                 style={{ width: "5%" }}
                               >
-                                <span className="sr-only">Ações</span>
+                                <span className="sr-only">Azione</span>
                               </div>
                               {user?.isAdmin && (
                                 <div
