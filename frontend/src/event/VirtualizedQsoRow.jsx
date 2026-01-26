@@ -2,6 +2,7 @@ import { Button, Checkbox, Spinner, Tooltip } from "flowbite-react";
 import PropTypes from "prop-types";
 import {
   FaCheck,
+  FaEdit,
   FaEnvelope,
   FaExternalLinkAlt,
   FaTimes,
@@ -21,6 +22,7 @@ const VirtualizedQsoRow = ({ index, style, data }) => {
     eqslSending,
     forceSendEqsl,
     formatInTimeZone,
+    onEdit,
   } = data;
 
   const q = qsos[index];
@@ -121,6 +123,19 @@ const VirtualizedQsoRow = ({ index, style, data }) => {
           className={`flex justify-center items-center gap-1`}
           style={{ width: user?.isAdmin ? "14%" : "8%" }}
         >
+          {(user?.isAdmin || user?.isDev || user?._id === q.fromStation) && (
+            <Button
+              color="light"
+              size="sm"
+              className="bg-gray-200 border-gray-200 hover:bg-gray-300"
+              onClick={() => onEdit(q)}
+            >
+              <Tooltip content="Modifica QSO">
+                <FaEdit />
+              </Tooltip>
+            </Button>
+          )}
+
           <Button
             color={
               eqslSending.get(q._id) === "ok"
@@ -202,6 +217,7 @@ VirtualizedQsoRow.propTypes = {
     eqslSending: PropTypes.instanceOf(Map).isRequired,
     forceSendEqsl: PropTypes.func.isRequired,
     formatInTimeZone: PropTypes.func.isRequired,
+    onEdit: PropTypes.func.isRequired,
   }).isRequired,
 };
 

@@ -344,6 +344,7 @@
     "error": "Fehler",
     "GENERIC_ERROR": "Etwas ist schiefgelaufen, bitte versuche es erneut",
     "CONTACT_ADMIN": "Wenn das Problem weiterhin besteht, kontaktieren Sie einen Administrator",
+    "VALIDATION_ERROR": "Validierungsfehler",
     "USER_NOT_FOUND": "Benutzer nicht gefunden. Er wurde möglicherweise gelöscht",
     "INVALID_PW": "Ungültiges Passwort",
     "WRONG_PW": "Falsches Passwort",

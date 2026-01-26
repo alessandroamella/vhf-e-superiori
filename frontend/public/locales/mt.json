@@ -343,6 +343,7 @@
     "error": "Żball",
     "GENERIC_ERROR": "Xi ħaġa marret ħażin, jekk jogħġbok erġa' ipprova",
     "CONTACT_ADMIN": "Jekk il-problema tippersisti, ikkuntattja amministratur",
+    "VALIDATION_ERROR": "Żball ta' validazzjoni",
     "USER_NOT_FOUND": "Utent ma nstabx. Jista' jkun tħassar",
     "INVALID_PW": "Password invalida",
     "WRONG_PW": "Password żbaljata",

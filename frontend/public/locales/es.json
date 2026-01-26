@@ -344,6 +344,7 @@
     "error": "Error",
     "GENERIC_ERROR": "Algo salió mal, por favor inténtalo de nuevo",
     "CONTACT_ADMIN": "Si el problema persiste, contacta a un administrador",
+    "VALIDATION_ERROR": "Error de validación",
     "USER_NOT_FOUND": "Usuario no encontrado. Podría haber sido eliminado",
     "INVALID_PW": "Contraseña inválida",
     "WRONG_PW": "Contraseña incorrecta",

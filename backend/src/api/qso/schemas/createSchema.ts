@@ -3,13 +3,14 @@ import { Errors } from "../../errors";
 
 const createSchema: Schema = {
   fromStation: {
-    isString: { options: [] },
+    isString: { options: [], errorMessage: Errors.INVALID_OBJECT_ID },
     trim: { options: [] },
     isMongoId: { options: [] },
     optional: true,
+    errorMessage: Errors.INVALID_OBJECT_ID,
   },
   fromStationCallsignOverride: {
-    isString: { options: [] },
+    isString: { options: [], errorMessage: Errors.INVALID_CALLSIGN },
     trim: { options: [] },
     isLength: { options: { min: 1, max: 10 } },
     toUpperCase: { options: [] },
@@ -35,7 +36,7 @@ const createSchema: Schema = {
     errorMessage: Errors.INVALID_EMAIL,
   },
   event: {
-    isString: { options: [] },
+    isString: { options: [], errorMessage: Errors.INVALID_OBJECT_ID },
     trim: { options: [] },
     isMongoId: { options: [] },
     errorMessage: Errors.INVALID_OBJECT_ID,
@@ -50,6 +51,7 @@ const createSchema: Schema = {
   band: {
     isString: { options: [] },
     trim: { options: [] },
+    errorMessage: Errors.INVALID_FREQUENCY_BAND,
   },
   mode: {
     isString: { options: [] },

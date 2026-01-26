@@ -12,6 +12,7 @@ import {
   FileInput,
   Label,
   Modal,
+  Select,
   Spinner,
   Table,
   TextInput,
@@ -87,6 +88,8 @@ const QsoManager = () => {
 
   const eqslSending = useMap();
 
+  const [editingQso, setEditingQso] = useState(null);
+
   useEffect(() => {
     async function getUsers() {
       try {
@@ -110,7 +113,10 @@ const QsoManager = () => {
         setUsers(null);
       }
     }
-    if (user?.isAdmin && !users) getUsers();
+
+    if ((user?.isAdmin || user?.isDev) && !users) {
+      getUsers();
+    }
   }, [setAlert, user, users]);
 
   const getQsos = useCallback(async () => {
@@ -491,6 +497,46 @@ const QsoManager = () => {
       setAlert,
       user,
     ],
+  );
+
+  const updateQso = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (!editingQso) return;
+
+      // Create a copy of the object to avoid modifying the state directly
+      const payload = { ...editingQso };
+
+      // "Flatten" populated objects back to their IDs so the backend validator is happy
+      if (payload.fromStation && typeof payload.fromStation === "object") {
+        payload.fromStation = payload.fromStation._id;
+      }
+      if (payload.event && typeof payload.event === "object") {
+        payload.event = payload.event._id;
+      }
+      if (payload.toStation && typeof payload.toStation === "object") {
+        payload.toStation = payload.toStation._id;
+      }
+
+      try {
+        setDisabled(true);
+        // Send 'payload' instead of 'editingQso'
+        const { data } = await axios.put(`/api/qso/${editingQso._id}`, payload);
+
+        setQsos(qsos.map((q) => (q._id === data._id ? { ...q, ...data } : q)));
+        setEditingQso(null);
+        setAlert({ color: "success", msg: "QSO aggiornato con successo" });
+      } catch (err) {
+        console.error(err);
+        setAlert({
+          color: "failure",
+          msg: getErrorStr(err?.response?.data?.err),
+        });
+      } finally {
+        setDisabled(false);
+      }
+    },
+    [editingQso, qsos, setAlert],
   );
 
   const [autocomplete, setAutocomplete] = useState(null);
@@ -874,6 +920,128 @@ const QsoManager = () => {
           Gestione QSO -{event ? ` ${event.name} -` : ""} VHF e Superiori
         </title>
       </Helmet>
+
+      {/* Edit Modal */}
+      <Modal
+        show={!!editingQso}
+        onClose={() => setEditingQso(null)}
+        dismissible
+      >
+        <Modal.Header>Modifica QSO</Modal.Header>
+        <Modal.Body>
+          {editingQso && (
+            <form
+              id="edit-qso-form"
+              onSubmit={updateQso}
+              className="flex flex-col gap-4"
+            >
+              {(user?.isAdmin || user?.isDev) && users && (
+                <div>
+                  <Label value="DA Stazione (fromStationCallsignOverride)" />
+                  <Select
+                    value={
+                      typeof editingQso.fromStation === "object"
+                        ? editingQso.fromStation?._id
+                        : editingQso.fromStation
+                    }
+                    onChange={(e) => {
+                      const selectedUser = users.find(
+                        (u) => u._id === e.target.value,
+                      );
+                      setEditingQso({
+                        ...editingQso,
+                        fromStation: e.target.value,
+                        fromStationCallsignOverride:
+                          selectedUser?.callsign ||
+                          editingQso.fromStationCallsignOverride,
+                      });
+                    }}
+                  >
+                    {users.map((u) => (
+                      <option key={u._id} value={u._id}>
+                        {u.callsign} {u.name ? `(${u.name})` : ""}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+              )}
+              <div>
+                <Label value="A Stazione (callsign)" />
+                <TextInput
+                  value={editingQso.callsign}
+                  onChange={(e) =>
+                    setEditingQso({
+                      ...editingQso,
+                      callsign: e.target.value.toUpperCase(),
+                    })
+                  }
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label value="Banda" />
+                  <TextInput
+                    value={editingQso.band}
+                    onChange={(e) =>
+                      setEditingQso({ ...editingQso, band: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label value="Modo" />
+                  <TextInput
+                    value={editingQso.mode}
+                    onChange={(e) =>
+                      setEditingQso({ ...editingQso, mode: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label value="RST" />
+                  <TextInput
+                    type="number"
+                    value={editingQso.rst}
+                    onChange={(e) =>
+                      setEditingQso({
+                        ...editingQso,
+                        rst: parseInt(e.target.value, 10),
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label value="Locatore" />
+                  <TextInput
+                    value={editingQso.locator || ""}
+                    onChange={(e) =>
+                      setEditingQso({ ...editingQso, locator: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+              <div>
+                <Label value="Note" />
+                <TextInput
+                  value={editingQso.notes || ""}
+                  onChange={(e) =>
+                    setEditingQso({ ...editingQso, notes: e.target.value })
+                  }
+                />
+              </div>
+            </form>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button form="edit-qso-form" type="submit" disabled={disabled}>
+            Salva
+          </Button>
+          <Button color="gray" onClick={() => setEditingQso(null)}>
+            Annulla
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <Modal
         position="center"
         size="7xl"
@@ -1558,6 +1726,7 @@ const QsoManager = () => {
                                       eqslSending,
                                       forceSendEqsl,
                                       formatInTimeZone,
+                                      onEdit: setEditingQso,
                                     }}
                                   >
                                     {VirtualizedQsoRow}

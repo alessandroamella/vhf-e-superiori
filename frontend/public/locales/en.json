@@ -346,6 +346,7 @@
     "error": "Error",
     "GENERIC_ERROR": "Something went wrong, please try again",
     "CONTACT_ADMIN": "If the problem persists, contact an administrator",
+    "VALIDATION_ERROR": "Validation error",
     "USER_NOT_FOUND": "User not found. It might have been deleted",
     "INVALID_PW": "Invalid password",
     "WRONG_PW": "Wrong password",
