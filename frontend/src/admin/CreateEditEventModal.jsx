@@ -164,7 +164,8 @@ const CreateEditEventModal = ({
     if (!showModal) {
       resetForm();
     } else if (eventEditing) {
-      const e = events?.find((e) => e._id === eventEditing);
+      console.log("eventEditing", eventEditing, "events", events);
+      const e = (events && events)?.find((e) => e._id === eventEditing);
       if (e) {
         populateForm(e);
       }

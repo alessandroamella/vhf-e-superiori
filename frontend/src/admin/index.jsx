@@ -150,7 +150,7 @@ const AdminManager = () => {
       setShowModal(false);
       return;
     }
-    const e = events?.find((e) => e._id === eventEditing);
+    const e = events ? events.find((e) => e._id === eventEditing) : null;
     if (e) editEventModal(e);
   }, [editEventModal, eventEditing, events]);
 

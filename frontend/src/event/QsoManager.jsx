@@ -8,17 +8,15 @@ import {
   Button,
   Card,
   Checkbox,
-  Dropdown,
   FileInput,
   Label,
   Modal,
-  Select,
   Spinner,
   Table,
   TextInput,
   Tooltip,
 } from "flowbite-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
@@ -76,7 +74,19 @@ const QsoManager = () => {
   );
 
   const [fromStation, setFromStation] = useState(null);
+  const [fromStationInput, setFromStationInput] = useState("");
   const [users, setUsers] = useState(false);
+
+  // NEW: State for the custom dropdown visibility
+  const [showStationSuggestions, setShowStationSuggestions] = useState(false);
+  const fromStationRef = useRef(null); // To detect clicks outside
+
+  // NEW: State for the Edit Modal search
+  const [editStationSearch, setEditStationSearch] = useState("");
+  const [showEditStationSuggestions, setShowEditStationSuggestions] =
+    useState(false);
+  const editStationRef = useRef(null);
+  const editingQsoIdRef = useRef(null);
 
   const { id } = useParams();
   const [event, setEvent] = useState(false);
@@ -90,6 +100,28 @@ const QsoManager = () => {
 
   const [editingQso, setEditingQso] = useState(null);
 
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredQsos = useMemo(() => {
+    if (!qsos || !Array.isArray(qsos)) return [];
+    if (!searchQuery) return qsos;
+    const lowerQuery = searchQuery.toLowerCase();
+    return qsos.filter((q) => {
+      // Search in "To Station"
+      const callsignMatch = q.callsign.toLowerCase().includes(lowerQuery);
+      // Search in "From Station" (User object)
+      const fromStationMatch = q.fromStation?.callsign
+        ? q.fromStation.callsign.toLowerCase().includes(lowerQuery)
+        : false;
+      // Search in "From Station" (Override text)
+      const overrideMatch = q.fromStationCallsignOverride
+        ? q.fromStationCallsignOverride.toLowerCase().includes(lowerQuery)
+        : false;
+
+      return callsignMatch || fromStationMatch || overrideMatch;
+    });
+  }, [qsos, searchQuery]);
+
   useEffect(() => {
     async function getUsers() {
       try {
@@ -100,9 +132,13 @@ const QsoManager = () => {
         });
         console.log("users", data);
         setUsers(data);
-        setFromStation(
-          data.find((e) => e.callsign === user.callsign) || data[0],
-        );
+
+        // MODIFIED LOGIC START
+        const defaultStation =
+          data.find((e) => e.callsign === user.callsign) || data[0];
+        setFromStation(defaultStation);
+        if (defaultStation) setFromStationInput(defaultStation.callsign);
+        // MODIFIED LOGIC END
       } catch (err) {
         console.log("Errore nel caricamento degli utenti", err);
         setAlert({
@@ -401,103 +437,110 @@ const QsoManager = () => {
     });
   }, [callsign, locator, setCookie]);
 
-  const createQso = useCallback(
-    async (e) => {
-      e?.preventDefault();
+  const createQso = async (e) => {
+    e?.preventDefault();
 
-      if (callsign === user?.callsign) {
-        setAlert({
-          color: "failure",
-          msg: "Non puoi creare un QSO con te stesso",
-        });
-        setDisabled(false);
-        return;
-      }
+    if (callsign === user?.callsign) {
+      setAlert({
+        color: "failure",
+        msg: "Non puoi creare un QSO con te stesso",
+      });
+      setDisabled(false);
+      return;
+    }
 
-      setDisabled(true);
+    setDisabled(true);
 
-      console.log("create qso for callsign", callsign);
+    console.log("create qso for callsign", callsign);
 
-      try {
-        const obj = {
-          // fromStation,
-          callsign,
-          fromStationCallsignOverride: callsignOverride,
-          event: id,
-          band: event.band,
-          mode: "SSB/CW",
-          qsoDate: new Date().toISOString(),
-          locator,
-          rst: 59,
-          fromStationCity: city,
-          fromStationProvince: province,
-          fromStationLat: lat,
-          fromStationLon: lon,
-          // emailSent,
-          // emailSentDate,
-          // notes,
-          // email,
-          // imageHref
-        };
-        if (user.isAdmin && fromStation) {
-          console.log("fromStation changed", fromStation);
-          obj.fromStation = fromStation._id;
-        } else {
-          console.log("fromStation unchanged", user);
+    try {
+      const obj = {
+        // fromStation,
+        callsign,
+        fromStationCallsignOverride: callsignOverride,
+        event: id,
+        band: event.band,
+        mode: "SSB/CW",
+        qsoDate: new Date().toISOString(),
+        locator,
+        rst: 59,
+        fromStationCity: city,
+        fromStationProvince: province,
+        fromStationLat: lat,
+        fromStationLon: lon,
+        // emailSent,
+        // emailSentDate,
+        // notes,
+        // email,
+        // imageHref
+      };
+
+      if (user.isAdmin) {
+        let selectedStation = fromStation;
+
+        // If no object selected, try to match text input to a user
+        if (!selectedStation && fromStationInput && users) {
+          selectedStation = users.find((u) => u.callsign === fromStationInput);
         }
 
-        const { data } = await axios.post("/api/qso", obj);
-        ReactGA.event({
-          category: "QSO Management",
-          action: "Create QSO",
-        });
-        console.log("QSO", data);
+        if (selectedStation) {
+          // Case A: A valid user was found (via click or text match)
+          obj.fromStation = selectedStation._id;
 
-        // setAlert({
-        //   color: "success",
-        //   msg: "QSO creato con successo"
-        // });
-
-        setHighlighted(data._id);
-        setTimeout(() => setHighlighted(null), 2500);
-
-        setQsos([data, ...qsos]);
-        setCallsign("");
-        // resetDate();
-
-        setTimeout(() => {
-          callsignRef?.current?.focus();
-        }, 100);
-      } catch (err) {
-        console.log(err.response?.data?.err || err);
-        window.alert(
-          `ERRORE crea QSO: ${getErrorStr(err?.response?.data?.err || err)}`,
-        );
-
-        // setAlert({
-        //     color: "failure",
-        //     msg: getErrorStr(err?.response?.data?.err)
-        // });
-        // setUser(null);
+          // If the override is still the default Admin callsign, update it to the selected station's callsign
+          // This prevents the QSO from appearing as the Admin despite selecting another station
+          if (callsignOverride === user.callsign) {
+            obj.fromStationCallsignOverride = selectedStation.callsign;
+          }
+        } else if (fromStationInput) {
+          // Case B: Text entered does NOT match any user (Arbitrary override)
+          // We use the Admin's ID as base, but force the override text
+          obj.fromStation = user._id;
+          obj.fromStationCallsignOverride = fromStationInput;
+        } else {
+          // Case C: Nothing entered, use Admin default
+          obj.fromStation = user._id;
+        }
+      } else {
+        console.log("fromStation unchanged", user);
       }
-      setDisabled(false);
-    },
-    [
-      callsign,
-      callsignOverride,
-      city,
-      event.band,
-      fromStation,
-      id,
-      lat,
-      locator,
-      lon,
-      province,
-      qsos,
-      setAlert,
-      user,
-    ],
-  );
+
+      const { data } = await axios.post("/api/qso", obj);
+      ReactGA.event({
+        category: "QSO Management",
+        action: "Create QSO",
+      });
+      console.log("QSO", data);
+
+      // setAlert({
+      //   color: "success",
+      //   msg: "QSO creato con successo"
+      // });
+
+      setHighlighted(data._id);
+      setTimeout(() => setHighlighted(null), 2500);
+
+      setQsos([data, ...qsos]);
+      setCallsign("");
+      // resetDate();
+
+      setTimeout(() => {
+        callsignRef?.current?.focus();
+      }, 100);
+    } catch (err) {
+      console.log(err.response?.data?.err || err);
+      window.alert(
+        `ERRORE crea QSO: ${getErrorStr(err?.response?.data?.err || err)}`,
+      );
+
+      // setAlert({
+      //     color: "failure",
+      //     msg: getErrorStr(err?.response?.data?.err)
+      // });
+      // setUser(null);
+    }
+    setDisabled(false);
+  };
 
   const updateQso = useCallback(
     async (e) => {
@@ -892,17 +935,70 @@ const QsoManager = () => {
   // if clicked outside of autocomplete, close it
   useEffect(() => {
     function handleClickOutside(event) {
+      // Existing logic
       if (
         autocompleteRef.current &&
         !autocompleteRef.current.contains(event.target)
       ) {
         setAutocomplete(null);
       }
+
+      // NEW: Logic for Create Form Dropdown
+      if (
+        fromStationRef.current &&
+        !fromStationRef.current.contains(event.target)
+      ) {
+        setShowStationSuggestions(false);
+      }
+
+      // NEW: Logic for Edit Modal Dropdown
+      if (
+        editStationRef.current &&
+        !editStationRef.current.contains(event.target)
+      ) {
+        setShowEditStationSuggestions(false);
+      }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Modified useEffect to prevent resetting input while typing
+  useEffect(() => {
+    // If modal is closed, reset ref
+    if (!editingQso) {
+      editingQsoIdRef.current = null;
+      return;
+    }
+
+    // If we are still editing the same QSO ID, do not reset the search text
+    if (editingQsoIdRef.current === editingQso._id) return;
+
+    // We are editing a new QSO, update the ref and initialize the search field
+    editingQsoIdRef.current = editingQso._id;
+
+    if (users) {
+      // Try to use the override text first (allows arbitrary edits)
+      if (editingQso.fromStationCallsignOverride) {
+        setEditStationSearch(editingQso.fromStationCallsignOverride);
+        return;
+      }
+
+      // Fallback to looking up the ID
+      const currentStationId =
+        typeof editingQso.fromStation === "object"
+          ? editingQso.fromStation?._id
+          : editingQso.fromStation;
+
+      const currentStation = users.find((u) => u._id === currentStationId);
+      if (currentStation) {
+        setEditStationSearch(currentStation.callsign);
+      } else {
+        setEditStationSearch("");
+      }
+    }
+  }, [editingQso, users]);
 
   return user === null ? (
     <Navigate
@@ -936,33 +1032,80 @@ const QsoManager = () => {
               className="flex flex-col gap-4"
             >
               {(user?.isAdmin || user?.isDev) && users && (
-                <div>
+                <div className="relative" ref={editStationRef}>
                   <Label value="DA Stazione (fromStationCallsignOverride)" />
-                  <Select
-                    value={
-                      typeof editingQso.fromStation === "object"
-                        ? editingQso.fromStation?._id
-                        : editingQso.fromStation
-                    }
+                  <TextInput
+                    value={editStationSearch}
+                    placeholder="Cerca stazione..."
+                    onFocus={() => setShowEditStationSuggestions(true)}
                     onChange={(e) => {
-                      const selectedUser = users.find(
-                        (u) => u._id === e.target.value,
-                      );
-                      setEditingQso({
-                        ...editingQso,
-                        fromStation: e.target.value,
-                        fromStationCallsignOverride:
-                          selectedUser?.callsign ||
-                          editingQso.fromStationCallsignOverride,
-                      });
+                      const val = e.target.value.toUpperCase();
+                      setEditStationSearch(val);
+                      setShowEditStationSuggestions(true);
+
+                      const exact = users.find((u) => u.callsign === val);
+                      if (exact) {
+                        // If text matches a real user, link to that user ID
+                        setEditingQso({
+                          ...editingQso,
+                          fromStation: exact._id,
+                          fromStationCallsignOverride: exact.callsign,
+                        });
+                      } else {
+                        // If text is arbitrary, just update the override text
+                        setEditingQso({
+                          ...editingQso,
+                          fromStationCallsignOverride: val,
+                        });
+                      }
                     }}
-                  >
-                    {users.map((u) => (
-                      <option key={u._id} value={u._id}>
-                        {u.callsign} {u.name ? `(${u.name})` : ""}
-                      </option>
-                    ))}
-                  </Select>
+                    autoComplete="off"
+                  />
+
+                  {/* Custom Dropdown for Edit Modal */}
+                  {showEditStationSuggestions && users && (
+                    <div className="absolute top-16 left-0 w-full z-50 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      {users
+                        .filter((u) => u.callsign.includes(editStationSearch))
+                        .map((u) => (
+                          <div
+                            key={u._id}
+                            className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer transition-colors"
+                            onClick={() => {
+                              setEditingQso({
+                                ...editingQso,
+                                fromStation: u._id,
+                                fromStationCallsignOverride: u.callsign,
+                              });
+                              setEditStationSearch(u.callsign);
+                              setShowEditStationSuggestions(false);
+                            }}
+                          >
+                            <Avatar
+                              img={u.pictureUrl}
+                              rounded
+                              size="xs"
+                              placeholderInitials={u.callsign.substring(0, 2)}
+                            />
+                            <div className="flex flex-col">
+                              <span className="font-bold text-sm dark:text-white">
+                                {u.callsign}
+                              </span>
+                              <span className="text-xs text-gray-500 dark:text-gray-300">
+                                {u.name}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      {users.filter((u) =>
+                        u.callsign.includes(editStationSearch),
+                      ).length === 0 && (
+                        <div className="p-2 text-sm text-gray-500 text-center">
+                          Nessuna stazione trovata
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
               <div>
@@ -1246,36 +1389,98 @@ const QsoManager = () => {
                             ) : (
                               <div className="flex flex-col md:flex-row justify-center items-center gap-4">
                                 {user.isAdmin && users && (
-                                  <div>
+                                  <div
+                                    className="relative w-full"
+                                    ref={fromStationRef}
+                                  >
                                     <Label
                                       htmlFor="fromStation"
                                       value="Da stazione attivatrice*"
                                     />
-                                    <Dropdown
-                                      label={fromStation.callsign}
-                                      disabled={disabled}
+                                    <TextInput
                                       id="fromStation"
+                                      placeholder="Cerca stazione..."
+                                      disabled={disabled}
                                       required
-                                      color="light"
-                                    >
-                                      {users.map((u) => (
-                                        <Dropdown.Item
-                                          key={u._id}
-                                          onClick={() => setFromStation(u)}
-                                        >
-                                          <span
-                                            className={
-                                              u._id === fromStation._id
-                                                ? "font-bold"
-                                                : ""
-                                            }
-                                          >
-                                            {u.callsign}
-                                          </span>
-                                        </Dropdown.Item>
-                                      ))}
-                                    </Dropdown>
-                                    <p className="flex items-center dark:text-gray-200 gap-1 md:mt-2">
+                                      autoComplete="off"
+                                      color={
+                                        fromStation &&
+                                        fromStation.callsign ===
+                                          fromStationInput
+                                          ? "success"
+                                          : "failure"
+                                      }
+                                      value={fromStationInput}
+                                      onFocus={() =>
+                                        setShowStationSuggestions(true)
+                                      }
+                                      onChange={(e) => {
+                                        const val =
+                                          e.target.value.toUpperCase();
+                                        setFromStationInput(val);
+                                        setShowStationSuggestions(true);
+
+                                        // Auto-select if exact match, otherwise clear selection
+                                        // This ensures the object state stays in sync with text
+                                        const exact = users.find(
+                                          (u) => u.callsign === val,
+                                        );
+                                        setFromStation(exact || null);
+                                      }}
+                                    />
+
+                                    {/* RICH DROPDOWN LIST */}
+                                    {showStationSuggestions && users && (
+                                      <div className="absolute top-[70px] left-0 w-full min-w-[200px] z-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                                        {users
+                                          .filter((u) =>
+                                            u.callsign.includes(
+                                              fromStationInput,
+                                            ),
+                                          )
+                                          .map((u) => (
+                                            <div
+                                              key={u._id}
+                                              className="flex items-center gap-3 p-3 border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                                              onClick={() => {
+                                                setFromStation(u);
+                                                setFromStationInput(u.callsign);
+                                                setShowStationSuggestions(
+                                                  false,
+                                                );
+                                              }}
+                                            >
+                                              <Avatar
+                                                img={u.pictureUrl}
+                                                rounded
+                                                size="sm"
+                                                placeholderInitials={u.callsign.substring(
+                                                  0,
+                                                  2,
+                                                )}
+                                              />
+                                              <div className="flex flex-col">
+                                                <span className="font-bold dark:text-white">
+                                                  {u.callsign}
+                                                </span>
+                                                <span className="text-sm text-gray-500 dark:text-gray-400">
+                                                  {u.name}
+                                                </span>
+                                              </div>
+                                            </div>
+                                          ))}
+
+                                        {users.filter((u) =>
+                                          u.callsign.includes(fromStationInput),
+                                        ).length === 0 && (
+                                          <div className="p-3 text-center text-gray-500 dark:text-gray-400 text-sm">
+                                            Nessuna stazione trovata
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+
+                                    <p className="flex items-center dark:text-gray-200 gap-1 md:mt-2 text-xs md:text-sm">
                                       <FaInfoCircle />
                                       Vedi questo in quanto sei un{" "}
                                       <span className="font-bold">
@@ -1522,9 +1727,21 @@ const QsoManager = () => {
                   <hr />
 
                   <div className="mt-12 flex flex-col md:flex-row md:justify-between">
-                    <Typography variant="h2" className="dark:text-white mb-2">
+                    <Typography
+                      variant="h2"
+                      className="dark:text-white mb-2 flex items-center gap-2"
+                    >
                       <FaBook className="opacity-65 scale-75 inline-block" />
                       QSO registrati
+                      {user?.isAdmin && (
+                        <Badge color="green" size="xl">
+                          {Array.isArray(qsos) ? (
+                            qsos.length
+                          ) : (
+                            <Spinner className="dark:text-white dark:fill-white" />
+                          )}
+                        </Badge>
+                      )}
                     </Typography>
                     <div>
                       <h3 className="font-bold dark:text-gray-400">
@@ -1558,6 +1775,20 @@ const QsoManager = () => {
                       qsos.length > 0 ? (
                         <div>
                           <div className="flex flex-col md:flex-row gap-2 items-center md:justify-between">
+                            {/* SEARCH BAR FOR ADMINS */}
+                            {user?.isAdmin && (
+                              <div className="w-full md:w-1/3 mb-2">
+                                <TextInput
+                                  type="text"
+                                  placeholder="Cerca QSO (Stazione o Attivatore)..."
+                                  value={searchQuery}
+                                  onChange={(e) =>
+                                    setSearchQuery(e.target.value)
+                                  }
+                                />
+                              </div>
+                            )}
+
                             {/* seleziona - deseleziona - esporta adif - elimina */}
                             <Button.Group className="mb-2">
                               <Button
@@ -1713,10 +1944,10 @@ const QsoManager = () => {
                                   <List
                                     height={height}
                                     width={width}
-                                    itemCount={qsos.length}
+                                    itemCount={filteredQsos.length}
                                     itemSize={60}
                                     itemData={{
-                                      qsos,
+                                      qsos: filteredQsos,
                                       user,
                                       highlighted,
                                       selectedQsos,

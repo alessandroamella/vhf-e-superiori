@@ -1,5 +1,4 @@
 import { Router } from "express";
-import isAdmin from "../../middlewares/isAdmin";
 import isLoggedIn from "../../middlewares/isLoggedIn";
 import allRoute from "./all";
 import changeLocatorRoute from "./changeLocator";
@@ -14,7 +13,7 @@ router.use("/", getRoute);
 router.use("/", allRoute);
 router.use("/", isLoggedIn, allRoute);
 router.use("/", isLoggedIn, createRoute);
-router.use("/", isLoggedIn, isAdmin, updateRoute);
+router.use("/", isLoggedIn, updateRoute);
 router.use("/", isLoggedIn, deleteRoute);
 router.use("/", isLoggedIn, changeLocatorRoute);
 

@@ -615,7 +615,7 @@ const ViewPublished = () => {
                               {t("forEvent")}{" "}
                               <strong>
                                 {
-                                  mappedEvents?.find(
+                                  (mappedEvents && mappedEvents)?.find(
                                     (e) => e._id === _eventToFilter,
                                   )?.name
                                 }
