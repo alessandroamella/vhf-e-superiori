@@ -1,17 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import { logger } from "../../shared";
-import { User } from "../auth/models";
+import { User, UserDoc } from "../auth/models";
 
 const impersonate = async (
   req: Request,
   _res: Response,
   next: NextFunction,
 ) => {
-  if (!req.user || !req.user.isDev) {
+  const user = req.user as UserDoc;
+  if (!user?.isDev) {
     return next();
   }
 
-  const impersonateId = req.headers["x-impersonate-user"];
+  const impersonateId = req.header("x-impersonate-user");
 
   if (impersonateId && typeof impersonateId === "string") {
     try {
@@ -19,7 +20,7 @@ const impersonate = async (
 
       if (targetUser) {
         logger.warn(
-          `DEV ${req.user.callsign} is impersonating ${targetUser.callsign}`,
+          `DEV ${user.callsign} is impersonating ${targetUser.callsign}`,
         );
 
         // Manteniamo un riferimento all'admin originale se serve,
