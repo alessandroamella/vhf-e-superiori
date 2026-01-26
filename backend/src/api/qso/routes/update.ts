@@ -37,6 +37,16 @@ router.put(
         return res.status(UNAUTHORIZED).json(createError(Errors.QSO_NOT_OWNED));
       }
 
+      // Snapshot current state to check for changes
+      const oldState = {
+        fromStation: qso.fromStation.toString(),
+        fromStationCallsignOverride: qso.fromStationCallsignOverride,
+        callsign: qso.callsign,
+        band: qso.band,
+        mode: qso.mode,
+        qsoDate: qso.qsoDate ? new Date(qso.qsoDate).toISOString() : null,
+      };
+
       // Update fields
       const updates = pick(req.body, [
         "fromStation",
@@ -49,10 +59,65 @@ router.put(
         "rst",
         "notes",
         "fromStationCallsignOverride",
+        // Add location fields so they can be updated if sent
+        "fromStationCity",
+        "fromStationProvince",
+        "fromStationLat",
+        "fromStationLon",
+        "email",
       ] satisfies (keyof QsoDoc)[]);
+
+      // If fromStation changed, we should attempt to update the location data
+      // from the new user, unless specific location data was sent in the body
+      if (updates.fromStation && updates.fromStation !== oldState.fromStation) {
+        const newStationUser = await User.findById(updates.fromStation);
+        if (newStationUser) {
+          // Only apply defaults if not explicitly provided in the update payload
+          if (!updates.fromStationCity)
+            updates.fromStationCity = newStationUser.city;
+          if (!updates.fromStationProvince)
+            updates.fromStationProvince = newStationUser.province;
+          if (
+            updates.fromStationLat === undefined &&
+            newStationUser.lat !== undefined
+          )
+            updates.fromStationLat = newStationUser.lat;
+          if (
+            updates.fromStationLon === undefined &&
+            newStationUser.lon !== undefined
+          )
+            updates.fromStationLon = newStationUser.lon;
+
+          // If coordinates changed and no locator provided, clear old locator
+          // so pre-save hook can recalculate it
+          if (!updates.locator) {
+            qso.locator = undefined;
+          }
+        }
+      }
 
       // Apply updates
       Object.assign(qso, updates);
+
+      // Check if visual fields changed to invalidate eQSL image
+      const hasVisualChanges =
+        qso.fromStation.toString() !== oldState.fromStation ||
+        qso.fromStationCallsignOverride !==
+          oldState.fromStationCallsignOverride ||
+        qso.callsign !== oldState.callsign ||
+        qso.band !== oldState.band ||
+        qso.mode !== oldState.mode ||
+        (qso.qsoDate &&
+          new Date(qso.qsoDate).toISOString() !== oldState.qsoDate);
+
+      if (hasVisualChanges) {
+        logger.info(
+          `QSO ${qso._id} updated critical fields, clearing cached eQSL imageHref`,
+        );
+        qso.imageHref = undefined;
+        // Optionally reset emailSent if you want the UI to reflect it needs sending again
+        // qso.emailSent = false;
+      }
 
       await qso.save();
 
