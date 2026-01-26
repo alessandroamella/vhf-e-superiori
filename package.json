@@ -24,6 +24,7 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@ffmpeg-installer/linux-arm64",
       "@parcel/watcher",
       "@scarf/scarf",
       "aws-sdk",
