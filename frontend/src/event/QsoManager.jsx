@@ -1209,7 +1209,6 @@ const QsoManager = () => {
                         toLocator: e.target.value,
                       });
                     }}
-                    helperText="Sovrascrive le coordinate calcolate automaticamente"
                   />
                 </div>
               </div>
