@@ -42,6 +42,7 @@ import { FixedSizeList as List } from "react-window";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 import MapWatermark from "../shared/MapWatermark";
+import PayPalDonateBtn from "../shared/PayPalDonateBtn";
 import StationMapMarker from "../shared/StationMapMarker";
 import useUserStore from "../stores/userStore";
 import ShareMapBtn from "./ShareMapBtn";
@@ -1567,7 +1568,11 @@ const QsoManager = () => {
                             )
                           ) : (
                             <div className="sticky flex flex-col gap-2 items-center">
-                              <div className="flex flex-col md:flex-row gap-2 justify-center items-center md:items-end">
+                              <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-[1fr,auto,auto,1fr] gap-2 items-end">
+                                {/* Empty spacer for desktop centering */}
+                                <div className="hidden md:block" />
+
+                                {/* Nominativo input */}
                                 <div className="w-full relative">
                                   <Label
                                     htmlFor="username"
@@ -1606,7 +1611,6 @@ const QsoManager = () => {
                                         onClick={createQso}
                                         className="z-40 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-75"
                                       >
-                                        {/* justify-between */}
                                         <div className="flex justify-center items-center gap-2 md:gap-4">
                                           <div className="hidden md:block">
                                             <Avatar
@@ -1631,7 +1635,6 @@ const QsoManager = () => {
                                               </span>
                                             </span>
                                             {autocomplete.name && (
-                                              // break word if too long
                                               <span className="text-center text-sm md:text-md text-gray-500 dark:text-gray-400 max-w-[5rem] md:max-w-[15rem]">
                                                 {autocomplete.name}
                                               </span>
@@ -1656,6 +1659,7 @@ const QsoManager = () => {
                                   )}
                                 </div>
 
+                                {/* Submit button */}
                                 <div className="relative">
                                   <Button
                                     type="submit"
@@ -1684,8 +1688,12 @@ const QsoManager = () => {
                                     ✅ Inserito
                                   </span>
                                 </div>
+
+                                {/* PayPal button - on right for desktop, stacked on mobile */}
+                                <div className="flex justify-center md:justify-end mt-6 md:mt-0">
+                                  <PayPalDonateBtn />
+                                </div>
                               </div>
-                              {/* orario */}
                             </div>
                           )}
                           <div className="mt-4 flex flex-col items-center gap-2">
