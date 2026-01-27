@@ -1423,7 +1423,7 @@ const QsoManager = () => {
                             size="sm"
                             disabled={disabled}
                           >
-                            Modifica locatore anche per portatili /P
+                            Modifica il tuo locatore se sei in portatile/P
                           </Button>
                         </div>
                       )}
@@ -1738,7 +1738,9 @@ const QsoManager = () => {
 
                                 {/* PayPal button - on right for desktop, stacked on mobile */}
                                 <div className="flex justify-center md:justify-end mt-6 md:mt-0">
-                                  <PayPalDonateBtn />
+                                  <div className="transition-transform lg:scale-125 mr-4 md:mr-8">
+                                    <PayPalDonateBtn />
+                                  </div>
                                 </div>
                               </div>
                             </div>
