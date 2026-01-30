@@ -27,11 +27,12 @@ Benvenuto su VHF e Superiori ([https://www.vhfesuperiori.eu/](https://www.vhfesu
 
 2.1. Gli Utenti possono candidarsi come Stazioni Attivatrici per eventi specifici. Le candidature sono soggette ad approvazione insindacabile degli Amministratori.
 2.2. In caso di accettazione, l'Utente si impegna a:
-   - Rimanere in contatto con gli Amministratori.
-   - Partecipare all'evento secondo le modalità concordate.
-   - Registrare i QSO nell'apposita sezione "Gestione QSO".
-2.3. L'Utente accetta che i dati relativi alla sua attività di Stazione Attivatrice siano visibili pubblicamente secondo le logiche dell'evento.
-2.4. Candidandosi, l'Utente accetta incondizionatamente il Regolamento specifico dell'evento.
+
+- Rimanere in contatto con gli Amministratori.
+- Partecipare all'evento secondo le modalità concordate.
+- Registrare i QSO nell'apposita sezione "Gestione QSO".
+  2.3. L'Utente accetta che i dati relativi alla sua attività di Stazione Attivatrice siano visibili pubblicamente secondo le logiche dell'evento.
+  2.4. Candidandosi, l'Utente accetta incondizionatamente il Regolamento specifico dell'evento.
 
 ## 3. Contenuti Caricati dagli Utenti (Foto, Video, Post)
 
@@ -44,11 +45,12 @@ Benvenuto su VHF e Superiori ([https://www.vhfesuperiori.eu/](https://www.vhfesu
 
 4.1. **Esclusione di Responsabilità:** VHF e Superiori agisce come mero ospite (hosting provider) dei contenuti generati dagli utenti e non è responsabile per le opinioni, i dati o i file caricati dagli stessi.
 4.2. **Contenuti Vietati:** È severamente vietato pubblicare:
-   - Materiale offensivo, diffamatorio, razzista, discriminatorio o politico.
-   - Materiale pornografico, violento o illegale.
-   - Spam, malware o virus.
-   - Materiale protetto da copyright senza autorizzazione.
-4.3. Gli Amministratori si riservano il diritto di rimuovere qualsiasi contenuto o sospendere account che violino questi Termini, a loro esclusiva discrezione e senza preavviso.
+
+- Materiale offensivo, diffamatorio, razzista, discriminatorio o politico.
+- Materiale pornografico, violento o illegale.
+- Spam, malware o virus.
+- Materiale protetto da copyright senza autorizzazione.
+  4.3. Gli Amministratori si riservano il diritto di rimuovere qualsiasi contenuto o sospendere account che violino questi Termini, a loro esclusiva discrezione e senza preavviso.
 
 ## 5. Assenza di Garanzie
 
@@ -58,16 +60,17 @@ Benvenuto su VHF e Superiori ([https://www.vhfesuperiori.eu/](https://www.vhfesu
 
 6.1. **Natura Non Commerciale:** VHF e Superiori è un progetto amatoriale privo di scopo di lucro. Non vendiamo servizi, abbonamenti o beni.
 6.2. **Destinazione dei Fondi:** È possibile sostenere il mantenimento tecnico del sito tramite il pulsante "Donazione" (o "Supportaci"). Tutti i fondi raccolti sono considerati **liberalità pure** e saranno utilizzati **esclusivamente** per coprire i costi vivi di gestione, quali:
-   - Hosting del server e database.
-   - Rinnovo dei domini.
-   - Manutenzione tecnica e software.
-   - Attrezzature comuni necessarie al funzionamento del progetto.
-6.3. **Assenza di Controprestazione:** La donazione è un atto di pura liberalità. Il donatore **non riceve** alcun bene, servizio, privilegio, accesso riservato o trattamento di favore in cambio del contributo. Il sito e le sue funzionalità rimangono gratuiti per tutti, a prescindere dal contributo versato.
-6.4. **Modicità:** Si accettano esclusivamente donazioni di modico valore (c.d. "donazioni manuali" ex art. 783 c.c.).
-6.5. **Non Rimborsabilità e Aspetti Fiscali:**
-   - I contributi sono a fondo perduto e non rimborsabili.
-   - Non essendo un ente registrato (Onlus/APS) né un'attività commerciale, VHF e Superiori non emette fattura né ricevuta fiscale valida per detrazioni tasse.
-   - L'Utente dichiara di agire spontaneamente per spirito di supporto alla community.
+
+- Hosting del server e database.
+- Rinnovo dei domini.
+- Manutenzione tecnica e software.
+- Attrezzature comuni necessarie al funzionamento del progetto.
+  6.3. **Assenza di Controprestazione:** La donazione è un atto di pura liberalità. Il donatore **non riceve** alcun bene, servizio, privilegio, accesso riservato o trattamento di favore in cambio del contributo. Il sito e le sue funzionalità rimangono gratuiti per tutti, a prescindere dal contributo versato.
+  6.4. **Modicità:** Si accettano esclusivamente donazioni di modico valore (c.d. "donazioni manuali" ex art. 783 c.c.).
+  6.5. **Non Rimborsabilità e Aspetti Fiscali:**
+- I contributi sono a fondo perduto e non rimborsabili.
+- Non essendo un ente registrato (Onlus/APS) né un'attività commerciale, VHF e Superiori non emette fattura né ricevuta fiscale valida per detrazioni tasse.
+- L'Utente dichiara di agire spontaneamente per spirito di supporto alla community.
 
 ## 7. Proprietà Intellettuale del Sito
 
