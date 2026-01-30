@@ -15,7 +15,7 @@ Benvenuto su VHF e Superiori ([https://www.vhfesuperiori.eu/](https://www.vhfesu
 0.4. "Contenuto" si riferisce a qualsiasi testo, immagine, video, audio, file o altro materiale pubblicato sul sito (inclusi Post e Commenti).
 0.5. "Amministratore" si riferisce ai gestori del sito web.
 0.6. "Privacy Policy" si riferisce alla politica sulla privacy, disponibile all'indirizzo: [Privacy Policy](https://www.vhfesuperiori.eu/document/privacy).
-0.7. "Regolamento" si riferisce alle norme per le Stazioni Attivatrici, disponibile all'indirizzo: [Regolamento](https://www.vhfesuperiori.eu/docs/Regolamento_FLASH_MOB_2023_01_23.pdf).
+0.7. "Regolamento" si riferisce alle norme per le Stazioni Attivatrici, disponibile all'indirizzo: [Regolamento](https://www.vhfesuperiori.eu/docs/Regolamento_FLASH_MOB_2026.pdf).
 0.8. **"Contributo Volontario" (o Donazione)** si riferisce a qualsiasi erogazione liberale di denaro di modico valore, offerta spontaneamente da un Utente a sostegno delle spese vive del progetto, senza alcuna controprestazione.
 0.9. "Termini e Condizioni" (o TOS) si riferisce al presente documento.
 

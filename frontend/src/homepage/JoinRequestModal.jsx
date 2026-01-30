@@ -266,7 +266,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                   <Label htmlFor="accept-tos">
                     {t("viewRulesDeclaration")}{" "}
                     <a
-                      href="/docs/Regolamento_FLASH_MOB_2023_01_23.pdf"
+                      href="/docs/Regolamento_FLASH_MOB_2026.pdf"
                       target="_blank"
                       className="underline"
                       rel="noopener"

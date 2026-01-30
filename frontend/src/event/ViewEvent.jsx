@@ -148,7 +148,7 @@ const ViewEvent = () => {
                   Dichiaro di aver preso visione e di accettare
                   incondizionatamente il{" "}
                   <a
-                    href="/docs/Regolamento_FLASH_MOB_2023_01_23.pdf"
+                    href="/docs/Regolamento_FLASH_MOB_2026.pdf"
                     target="_blank"
                     className="underline"
                     rel="noopener"
