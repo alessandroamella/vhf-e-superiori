@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import ReactPlaceholder from "react-placeholder";
 import { useParams } from "react-router";
+import remarkGfm from "remark-gfm";
 import { getErrorStr } from "../shared";
 
 const MdViewer = () => {
@@ -35,7 +36,12 @@ const MdViewer = () => {
           rows={10}
           ready={!!doc}
         >
-          <Markdown className="markdown dark:text-white">{doc}</Markdown>
+          <Markdown
+            className="markdown dark:text-white"
+            remarkPlugins={[remarkGfm]}
+          >
+            {doc}
+          </Markdown>
         </ReactPlaceholder>
       )}
     </Card>

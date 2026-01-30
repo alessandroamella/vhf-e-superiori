@@ -200,6 +200,27 @@ video {
   @apply dark:text-gray-200;
 }
 
+.markdown table {
+  @apply w-full border-collapse my-4;
+}
+
+.markdown th,
+.markdown td {
+  @apply border border-gray-300 dark:border-gray-600 px-4 py-2 text-left;
+}
+
+.markdown th {
+  @apply bg-gray-100 dark:bg-gray-700 font-semibold;
+}
+
+.markdown tr:nth-child(even) {
+  @apply bg-gray-50 dark:bg-gray-800;
+}
+
+.markdown tr:hover {
+  @apply bg-gray-100 dark:bg-gray-700;
+}
+
 div.input-large div input {
   @apply text-black dark:text-white dark:bg-gray-700 p-2;
 }
