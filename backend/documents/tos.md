@@ -45,12 +45,11 @@ Benvenuto su VHF e Superiori ([https://www.vhfesuperiori.eu/](https://www.vhfesu
 
 4.1. **Esclusione di Responsabilità:** VHF e Superiori agisce come mero ospite (hosting provider) dei contenuti generati dagli utenti e non è responsabile per le opinioni, i dati o i file caricati dagli stessi. 
 4.2. **Contenuti Vietati:** È severamente vietato pubblicare:
-
-- Materiale offensivo, diffamatorio, razzista, discriminatorio o politico.
-- Materiale pornografico, violento o illegale.
-- Spam, malware o virus.
-- Materiale protetto da copyright senza autorizzazione.
-  4.3. Gli Amministratori si riservano il diritto di rimuovere qualsiasi contenuto o sospendere account che violino questi Termini, a loro esclusiva discrezione e senza preavviso.
+   - Materiale offensivo, diffamatorio, razzista, discriminatorio o politico.
+   - Materiale pornografico, violento o illegale.
+   - Spam, malware o virus.
+   - Materiale protetto da copyright senza autorizzazione. 
+4.3. Gli Amministratori si riservano il diritto di rimuovere qualsiasi contenuto o sospendere account che violino questi Termini, a loro esclusiva discrezione e senza preavviso.
 
 ## 5. Assenza di Garanzie
 
@@ -67,7 +66,7 @@ Benvenuto su VHF e Superiori ([https://www.vhfesuperiori.eu/](https://www.vhfesu
 - Attrezzature comuni necessarie al funzionamento del progetto.
   6.3. **Assenza di Controprestazione:** La donazione è un atto di pura liberalità. Il donatore **non riceve** alcun bene, servizio, privilegio, accesso riservato o trattamento di favore in cambio del contributo. Il sito e le sue funzionalità rimangono gratuiti per tutti, a prescindere dal contributo versato.
   6.4. **Modicità:** Si accettano esclusivamente donazioni di modico valore (c.d. "donazioni manuali" ex art. 783 c.c.).
-  6.5. **Non Rimborsabilità e Aspetti Fiscali:**
+  6.5. **Non Rimborsabilità e Aspetti Fiscali:** 
 - I contributi sono a fondo perduto e non rimborsabili.
 - Non essendo un ente registrato (Onlus/APS) né un'attività commerciale, VHF e Superiori non emette fattura né ricevuta fiscale valida per detrazioni tasse.
 - L'Utente dichiara di agire spontaneamente per spirito di supporto alla community.
