@@ -14,7 +14,7 @@ import {
   Spinner,
   Table,
   TextInput,
-  Tooltip
+  Tooltip,
 } from "flowbite-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
@@ -27,7 +27,7 @@ import {
   FaMapMarkerAlt,
   FaSave,
   FaUndo,
-  FaUser
+  FaUser,
 } from "react-icons/fa";
 import { IoIosRadio } from "react-icons/io";
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
@@ -35,7 +35,7 @@ import {
   createSearchParams,
   Navigate,
   useNavigate,
-  useParams
+  useParams,
 } from "react-router";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window";
@@ -57,7 +57,7 @@ const formatForInput = (dateStr) => {
 function getAdifKey(qso, index) {
   return JSON.stringify({
     callsign: qso.callsign,
-    index
+    index,
   });
 }
 
@@ -77,7 +77,7 @@ const QsoManager = () => {
       _setAlert(alert);
       if (alert) scrollToAlert();
     },
-    [scrollToAlert]
+    [scrollToAlert],
   );
 
   const [fromStation, setFromStation] = useState(null);
@@ -112,7 +112,7 @@ const QsoManager = () => {
 
     // Check if the user is in the approved join requests list
     return event.joinRequests.some(
-      (req) => req.isApproved && req.fromUser?.callsign === user.callsign
+      (req) => req.isApproved && req.fromUser?.callsign === user.callsign,
     );
   }, [/* hasAdminRights, */ event, user]);
 
@@ -151,8 +151,8 @@ const QsoManager = () => {
       try {
         const { data } = await axios.get("/api/auth/all", {
           params: {
-            sortByCallsign: true
-          }
+            sortByCallsign: true,
+          },
         });
         console.log("users", data);
         setUsers(data);
@@ -167,7 +167,7 @@ const QsoManager = () => {
         console.log("Errore nel caricamento degli utenti", err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
 
         setUsers(null);
@@ -184,8 +184,8 @@ const QsoManager = () => {
       const { data } = await axios.get("/api/qso", {
         params: {
           event: id,
-          fromStation: hasAdminRights ? undefined : user._id
-        }
+          fromStation: hasAdminRights ? undefined : user._id,
+        },
       });
       console.log("QSOs", data);
       data.sort((b, a) => new Date(a.qsoDate) - new Date(b.qsoDate));
@@ -194,7 +194,7 @@ const QsoManager = () => {
       console.log("Errore nel caricamento dei QSO", err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
 
       setQsos(null);
@@ -217,7 +217,7 @@ const QsoManager = () => {
         console.log("Errore nel caricamento dell'evento", err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
 
         setEvent(null);
@@ -233,7 +233,7 @@ const QsoManager = () => {
     if (user === null) {
       setAlert({
         color: "failure",
-        msg: "Devi prima effettuare il login"
+        msg: "Devi prima effettuare il login",
       });
 
       return;
@@ -250,19 +250,19 @@ const QsoManager = () => {
             ?.filter((e) => e.isApproved)
             ?.map((e) => e.fromUser.callsign)
             ?.includes(user.callsign),
-        event.joinRequests
+        event.joinRequests,
       );
     } else if (event === null) {
       setAlert({
         color: "failure",
-        msg: "Evento non trovato"
+        msg: "Evento non trovato",
       });
 
       return;
     } else if (qsos === null) {
       setAlert({
         color: "failure",
-        msg: "Errore nel caricamento dei QSO"
+        msg: "Errore nel caricamento dei QSO",
       });
 
       return;
@@ -308,7 +308,7 @@ const QsoManager = () => {
         setFormattedAddress(null);
 
         const { data } = await axios.get(
-          `/api/location/locator/${position.coords.latitude}/${position.coords.longitude}`
+          `/api/location/locator/${position.coords.latitude}/${position.coords.longitude}`,
         );
         console.log("fetched locator in geolocalize", data);
         setLocator(data.locator);
@@ -317,9 +317,9 @@ const QsoManager = () => {
         console.log("Errore nella geolocalizzazione", err);
         setAlert({
           color: "failure",
-          msg: "Errore nella geolocalizzazione"
+          msg: "Errore nella geolocalizzazione",
         });
-      }
+      },
     );
   }, [setAlert]);
 
@@ -351,8 +351,8 @@ const QsoManager = () => {
         setFormattedAddress(false);
         const { data } = await axios.get(`/api/location/latlon/${locator}`, {
           params: {
-            geocode: true
-          }
+            geocode: true,
+          },
         });
         console.log("fetched lat lon", data);
         setLocator(data.locator);
@@ -381,7 +381,7 @@ const QsoManager = () => {
       ) {
         try {
           const { data } = await axios.get(
-            `/api/location/locator/${user.lat}/${user.lon}`
+            `/api/location/locator/${user.lat}/${user.lon}`,
           );
           console.log("fetched locator from user lat lon", data);
           _locator = data.locator;
@@ -393,14 +393,14 @@ const QsoManager = () => {
       if (!_locator && !isManuallySettingLocator && !formattedAddress) {
         try {
           const { data } = await axios.get(
-            `/api/autocomplete/${user.callsign.replaceAll("/", "%2F")}`
+            `/api/autocomplete/${user.callsign.replaceAll("/", "%2F")}`,
           );
           console.log("fetched locator from user callsign", data);
           _locator = data.locator;
         } catch (err) {
           console.error(
             "error in USER locator fetch",
-            err?.response?.data || err
+            err?.response?.data || err,
           );
         }
       }
@@ -437,11 +437,11 @@ const QsoManager = () => {
     // durata di 4 ore
     setCookie("callsign", callsign, {
       path: "/qsomanager",
-      maxAge: 60 * 60 * 4
+      maxAge: 60 * 60 * 4,
     });
     setCookie("locator", locator, {
       path: "/qsomanager",
-      maxAge: 60 * 60 * 36 // 36 ore
+      maxAge: 60 * 60 * 36, // 36 ore
     });
   }, [callsign, locator, setCookie]);
 
@@ -451,7 +451,7 @@ const QsoManager = () => {
     if (callsign === user?.callsign) {
       setAlert({
         color: "failure",
-        msg: "Non puoi creare un QSO con te stesso"
+        msg: "Non puoi creare un QSO con te stesso",
       });
       setDisabled(false);
       return;
@@ -475,7 +475,7 @@ const QsoManager = () => {
         fromStationCity: city,
         fromStationProvince: province,
         fromStationLat: lat,
-        fromStationLon: lon
+        fromStationLon: lon,
         // emailSent,
         // emailSentDate,
         // notes,
@@ -516,7 +516,7 @@ const QsoManager = () => {
       const { data } = await axios.post("/api/qso", obj);
       ReactGA.event({
         category: "QSO Management",
-        action: "Create QSO"
+        action: "Create QSO",
       });
       console.log("QSO", data);
 
@@ -538,7 +538,7 @@ const QsoManager = () => {
     } catch (err) {
       console.log(err.response?.data?.err || err);
       window.alert(
-        `ERRORE crea QSO: ${getErrorStr(err?.response?.data?.err || err)}`
+        `ERRORE crea QSO: ${getErrorStr(err?.response?.data?.err || err)}`,
       );
 
       // setAlert({
@@ -577,13 +577,13 @@ const QsoManager = () => {
         setQsos((prevQsos) => {
           // 1. Replace the updated QSO in the list
           const updatedList = prevQsos.map((q) =>
-            q._id === data._id ? { ...q, ...data } : q
+            q._id === data._id ? { ...q, ...data } : q,
           );
 
           // 2. Re-sort the list by date (Descending: Newest at the top)
           // Using .sort() on a copied array or using the functional update pattern
           return [...updatedList].sort(
-            (a, b) => new Date(b.qsoDate) - new Date(a.qsoDate)
+            (a, b) => new Date(b.qsoDate) - new Date(a.qsoDate),
           );
         });
 
@@ -593,13 +593,13 @@ const QsoManager = () => {
         console.error(err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setDisabled(false);
       }
     },
-    [editingQso, setAlert]
+    [editingQso, setAlert],
   );
 
   const [autocomplete, setAutocomplete] = useState(null);
@@ -614,7 +614,7 @@ const QsoManager = () => {
     if (callsign.length <= 2) {
       console.log(
         "too shirt for autocomplete, callsign length",
-        callsign.length
+        callsign.length,
       );
       setAutocomplete(null);
       return;
@@ -626,7 +626,7 @@ const QsoManager = () => {
     autocompleteTimeout.current = setTimeout(async () => {
       try {
         const { data } = await axios.get(
-          `/api/autocomplete/${callsign.replaceAll("/", "%2F")}`
+          `/api/autocomplete/${callsign.replaceAll("/", "%2F")}`,
         );
         console.log("autocomplete", data);
         if (data.callsign !== callsign) {
@@ -672,7 +672,7 @@ const QsoManager = () => {
       if (!isActivator) {
         if (hasAdminRights) {
           window.alert(
-            "La funzione sarebbe attiva solo se sei ATTIVATORE, ma sei amministratore quindi procedo comunque"
+            "La funzione sarebbe attiva solo se sei ATTIVATORE, ma sei amministratore quindi procedo comunque",
           );
         } else {
           window.alert("La funzione è attiva solo se sei ATTIVATORE");
@@ -696,12 +696,12 @@ const QsoManager = () => {
       try {
         const { data } = await axios.post("/api/adif/import", formData, {
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         });
         ReactGA.event({
           category: "QSO Management",
-          action: "Start ADIF Import"
+          action: "Start ADIF Import",
         });
         console.log("imported", { data });
 
@@ -710,20 +710,20 @@ const QsoManager = () => {
           data.reduce((acc, q, i) => {
             acc[getAdifKey(q, i)] = true;
             return acc;
-          }, {})
+          }, {}),
         );
         setShowModal(true);
       } catch (err) {
         console.log(err?.response?.data || err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setDisabled(false);
       }
     },
-    [id, setAlert, isActivator, hasAdminRights]
+    [id, setAlert, isActivator, hasAdminRights],
   );
 
   const [isImportingAdif, setIsImportingAdif] = useState(false);
@@ -762,22 +762,22 @@ const QsoManager = () => {
         JSON.stringify(
           adifQsos
             .map((q, i) => getAdifKey(q, i))
-            .filter((k) => !adifChecked[k])
-        )
+            .filter((k) => !adifChecked[k]),
+        ),
       );
       formData.append("save", true);
       try {
         const { data } = await axios.post("/api/adif/import", formData, {
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         });
         ReactGA.event({
           category: "QSO Management",
           action: "Submit ADIF Import",
           value: adifQsos.filter(
-            (qso) => adifChecked[getAdifKey(qso, adifQsos.indexOf(qso))]
-          ).length
+            (qso) => adifChecked[getAdifKey(qso, adifQsos.indexOf(qso))],
+          ).length,
         });
         console.log("imported", { data });
 
@@ -790,7 +790,7 @@ const QsoManager = () => {
         setTimeout(() => {
           setAlert({
             color: "success",
-            msg: `${data.length} QSO importati con successo`
+            msg: `${data.length} QSO importati con successo`,
           });
           setDisabled(false);
         }, 690);
@@ -798,7 +798,7 @@ const QsoManager = () => {
         console.log(err?.response?.data || err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
         setDisabled(false);
       } finally {
@@ -817,8 +817,8 @@ const QsoManager = () => {
       lon,
       province,
       setAlert,
-      resetAdif
-    ]
+      resetAdif,
+    ],
   );
 
   const [selectedQsos, setSelectedQsos] = useState([]);
@@ -835,7 +835,7 @@ const QsoManager = () => {
   const deleteSelected = useCallback(async () => {
     if (
       !window.confirm(
-        `Vuoi ELIMINARE i QSO selezionati (${selectedQsos.length})?\n⚠️⚠️ L'operazione è irrevocabile!`
+        `Vuoi ELIMINARE i QSO selezionati (${selectedQsos.length})?\n⚠️⚠️ L'operazione è irrevocabile!`,
       )
     ) {
       return;
@@ -854,7 +854,7 @@ const QsoManager = () => {
 
       setAlert({
         color: "success",
-        msg: `Eliminat${deleted.length === 1 ? "o" : "i"} ${deleted.length} QSO`
+        msg: `Eliminat${deleted.length === 1 ? "o" : "i"} ${deleted.length} QSO`,
       });
 
       setDeleteQsoAnimation(true);
@@ -863,7 +863,7 @@ const QsoManager = () => {
       console.log(err?.response?.data || err);
       setAlert({
         color: "failure",
-        msg: getErrorStr(err?.response?.data?.err)
+        msg: getErrorStr(err?.response?.data?.err),
       });
     } finally {
       setDisabled(false);
@@ -883,7 +883,7 @@ const QsoManager = () => {
 
     setAlert({
       color: "success",
-      msg: `Esportati ${selectedQsos.length} QSO`
+      msg: `Esportati ${selectedQsos.length} QSO`,
     });
   }, [id, selectedQsos, setAlert]);
 
@@ -902,8 +902,8 @@ const QsoManager = () => {
           qsos.map((qso) =>
             qso._id === q._id
               ? { ...qso, imageHref: data?.href, emailSent: true }
-              : qso
-          )
+              : qso,
+          ),
         );
         eqslSending.set(q._id, "ok");
         // setAlert({
@@ -915,7 +915,7 @@ const QsoManager = () => {
         console.log(err?.response?.data || err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setTimeout(() => {
@@ -923,7 +923,7 @@ const QsoManager = () => {
         }, 3000);
       }
     },
-    [eqslSending, qsos, setAlert]
+    [eqslSending, qsos, setAlert],
   );
 
   const [allPredataInserted, setAllPredataInserted] = useState(false);
@@ -941,12 +941,12 @@ const QsoManager = () => {
     async function updateLocator() {
       try {
         await axios.put(`/api/qso/changelocator/${event._id}`, {
-          locator
+          locator,
         });
         lastUpdatedLocator.current = locator;
         setCookie("locator", locator, {
           path: "/qsomanager",
-          maxAge: 60 * 60 * 36 // 36 ore
+          maxAge: 60 * 60 * 36, // 36 ore
         });
       } catch (err) {
         console.log("Error while updating locator", err);
@@ -954,7 +954,7 @@ const QsoManager = () => {
           color: "failure",
           msg:
             "Errore nell'aggiornamento del locatore. " +
-            getErrorStr(err?.response?.data?.err)
+            getErrorStr(err?.response?.data?.err),
         });
       }
     }
@@ -1042,8 +1042,8 @@ const QsoManager = () => {
       to={{
         pathname: "/login",
         search: createSearchParams({
-          to: window.location.pathname + window.location.search
-        }).toString()
+          to: window.location.pathname + window.location.search,
+        }).toString(),
       }}
     />
   ) : (
@@ -1086,13 +1086,13 @@ const QsoManager = () => {
                         setEditingQso({
                           ...editingQso,
                           fromStation: exact._id,
-                          fromStationCallsignOverride: exact.callsign
+                          fromStationCallsignOverride: exact.callsign,
                         });
                       } else {
                         // If text is arbitrary, just update the override text
                         setEditingQso({
                           ...editingQso,
-                          fromStationCallsignOverride: val
+                          fromStationCallsignOverride: val,
                         });
                       }
                     }}
@@ -1112,7 +1112,7 @@ const QsoManager = () => {
                               setEditingQso({
                                 ...editingQso,
                                 fromStation: u._id,
-                                fromStationCallsignOverride: u.callsign
+                                fromStationCallsignOverride: u.callsign,
                               });
                               setEditStationSearch(u.callsign);
                               setShowEditStationSuggestions(false);
@@ -1135,7 +1135,7 @@ const QsoManager = () => {
                           </div>
                         ))}
                       {users.filter((u) =>
-                        u.callsign.includes(editStationSearch)
+                        u.callsign.includes(editStationSearch),
                       ).length === 0 && (
                         <div className="p-2 text-sm text-gray-500 text-center">
                           Nessuna stazione trovata
@@ -1152,7 +1152,7 @@ const QsoManager = () => {
                   onChange={(e) =>
                     setEditingQso({
                       ...editingQso,
-                      callsign: e.target.value.toUpperCase()
+                      callsign: e.target.value.toUpperCase(),
                     })
                   }
                 />
@@ -1186,7 +1186,7 @@ const QsoManager = () => {
                     onChange={(e) =>
                       setEditingQso({
                         ...editingQso,
-                        rst: parseInt(e.target.value, 10)
+                        rst: parseInt(e.target.value, 10),
                       })
                     }
                   />
@@ -1211,7 +1211,7 @@ const QsoManager = () => {
                     onChange={(e) =>
                       setEditingQso({
                         ...editingQso,
-                        qsoDate: new Date(e.target.value).toISOString()
+                        qsoDate: new Date(e.target.value).toISOString(),
                       })
                     }
                   />
@@ -1224,7 +1224,7 @@ const QsoManager = () => {
                     onChange={(e) => {
                       setEditingQso({
                         ...editingQso,
-                        toLocator: e.target.value
+                        toLocator: e.target.value,
                       });
                     }}
                   />
@@ -1272,7 +1272,7 @@ const QsoManager = () => {
                         adifQsos.reduce((acc, q, i) => {
                           acc[getAdifKey(q, i)] = true;
                           return acc;
-                        }, {})
+                        }, {}),
                       );
                     }}
                   >
@@ -1286,7 +1286,7 @@ const QsoManager = () => {
                         adifQsos.reduce((acc, q, i) => {
                           acc[getAdifKey(q, i)] = false;
                           return acc;
-                        }, {})
+                        }, {}),
                       );
                     }}
                   >
@@ -1321,7 +1321,7 @@ const QsoManager = () => {
                               onChange={(e) => {
                                 setAdifChecked({
                                   ...adifChecked,
-                                  [getAdifKey(q, i)]: e.target.checked
+                                  [getAdifKey(q, i)]: e.target.checked,
                                 });
                               }}
                             />{" "}
@@ -1331,7 +1331,7 @@ const QsoManager = () => {
                             {formatInTimeZone(
                               q.qsoDate,
                               "UTC",
-                              "yyyy-MM-dd HH:mm"
+                              "yyyy-MM-dd HH:mm",
                             )}
                           </Table.Cell>
                           <Table.Cell>{q.band || q.frequency}</Table.Cell>
@@ -1489,7 +1489,7 @@ const QsoManager = () => {
                                         // Auto-select if exact match, otherwise clear selection
                                         // This ensures the object state stays in sync with text
                                         const exact = users.find(
-                                          (u) => u.callsign === val
+                                          (u) => u.callsign === val,
                                         );
                                         setFromStation(exact || null);
                                       }}
@@ -1501,8 +1501,8 @@ const QsoManager = () => {
                                         {users
                                           .filter((u) =>
                                             u.callsign.includes(
-                                              fromStationInput
-                                            )
+                                              fromStationInput,
+                                            ),
                                           )
                                           .map((u) => (
                                             <div
@@ -1512,7 +1512,7 @@ const QsoManager = () => {
                                                 setFromStation(u);
                                                 setFromStationInput(u.callsign);
                                                 setShowStationSuggestions(
-                                                  false
+                                                  false,
                                                 );
                                               }}
                                             >
@@ -1522,7 +1522,7 @@ const QsoManager = () => {
                                                 size="sm"
                                                 placeholderInitials={u.callsign.substring(
                                                   0,
-                                                  2
+                                                  2,
                                                 )}
                                               />
                                               <div className="flex flex-col">
@@ -1537,7 +1537,7 @@ const QsoManager = () => {
                                           ))}
 
                                         {users.filter((u) =>
-                                          u.callsign.includes(fromStationInput)
+                                          u.callsign.includes(fromStationInput),
                                         ).length === 0 && (
                                           <div className="p-3 text-center text-gray-500 dark:text-gray-400 text-sm">
                                             Nessuna stazione trovata
@@ -1570,7 +1570,7 @@ const QsoManager = () => {
                                       value={callsignOverride}
                                       onChange={(e) =>
                                         setCallsignOverride(
-                                          e.target.value.toUpperCase()
+                                          e.target.value.toUpperCase(),
                                         )
                                       }
                                     />
@@ -1610,7 +1610,7 @@ const QsoManager = () => {
                                           setLocator(e.target.value);
                                           setCookie("locator", e.target.value, {
                                             path: "/qsomanager",
-                                            maxAge: 60 * 60 * 4
+                                            maxAge: 60 * 60 * 4,
                                           });
                                           if (e.target.value.length !== 6) {
                                             setFormattedAddress(null);
@@ -1659,7 +1659,7 @@ const QsoManager = () => {
                                       setCallsign(val);
                                       setCookie("callsign", val, {
                                         path: "/qsomanager",
-                                        maxAge: 60 * 60 * 4
+                                        maxAge: 60 * 60 * 4,
                                       });
                                     }}
                                     required
@@ -1910,7 +1910,7 @@ const QsoManager = () => {
                                   disabled ||
                                   selectedQsos.length === 0 ||
                                   selectedQsos.some(
-                                    (e) => eqslSending.get(e) === "sending"
+                                    (e) => eqslSending.get(e) === "sending",
                                   )
                                 }
                                 onClick={deleteSelected}
@@ -1921,7 +1921,7 @@ const QsoManager = () => {
                                     size="sm"
                                   />
                                 ) : selectedQsos.some(
-                                    (e) => eqslSending.get(e) === "sending"
+                                    (e) => eqslSending.get(e) === "sending",
                                   ) ? (
                                   <Tooltip
                                     content={`Attendi che la eQSL per ${
@@ -1930,8 +1930,8 @@ const QsoManager = () => {
                                           q._id ===
                                           selectedQsos.find(
                                             (e) =>
-                                              eqslSending.get(e) === "sending"
-                                          )
+                                              eqslSending.get(e) === "sending",
+                                          ),
                                       )?.callsign
                                     } si invii...`}
                                   >
@@ -1967,7 +1967,7 @@ const QsoManager = () => {
                               <div
                                 className="flex-shrink-0"
                                 style={{
-                                  width: hasAdminRights ? "15%" : "18%"
+                                  width: hasAdminRights ? "15%" : "18%",
                                 }}
                               >
                                 Nominativo
@@ -1975,7 +1975,7 @@ const QsoManager = () => {
                               <div
                                 className="flex-shrink-0"
                                 style={{
-                                  width: hasAdminRights ? "20%" : "25%"
+                                  width: hasAdminRights ? "20%" : "25%",
                                 }}
                               >
                                 Data UTC
@@ -1983,7 +1983,7 @@ const QsoManager = () => {
                               <div
                                 className="flex-shrink-0"
                                 style={{
-                                  width: hasAdminRights ? "12%" : "15%"
+                                  width: hasAdminRights ? "12%" : "15%",
                                 }}
                               >
                                 Banda
@@ -1991,7 +1991,7 @@ const QsoManager = () => {
                               <div
                                 className="flex-shrink-0"
                                 style={{
-                                  width: hasAdminRights ? "10%" : "12%"
+                                  width: hasAdminRights ? "10%" : "12%",
                                 }}
                               >
                                 Modo
@@ -1999,7 +1999,7 @@ const QsoManager = () => {
                               <div
                                 className="flex-shrink-0"
                                 style={{
-                                  width: hasAdminRights ? "12%" : "15%"
+                                  width: hasAdminRights ? "12%" : "15%",
                                 }}
                               >
                                 A locatore
@@ -2007,7 +2007,7 @@ const QsoManager = () => {
                               <div
                                 className="flex-shrink-0"
                                 style={{
-                                  width: hasAdminRights ? "10%" : "12%"
+                                  width: hasAdminRights ? "10%" : "12%",
                                 }}
                               >
                                 RST
@@ -2023,7 +2023,7 @@ const QsoManager = () => {
                             {/* Virtualized Table Body */}
                             <div
                               style={{
-                                height: Math.min(600, qsos.length * 60)
+                                height: Math.min(600, qsos.length * 60),
                               }}
                             >
                               <AutoSizer>
@@ -2044,7 +2044,7 @@ const QsoManager = () => {
                                       eqslSending,
                                       forceSendEqsl,
                                       formatInTimeZone,
-                                      onEdit: setEditingQso
+                                      onEdit: setEditingQso,
                                     }}
                                   >
                                     {VirtualizedQsoRow}
@@ -2098,14 +2098,14 @@ const QsoManager = () => {
                             q.fromStationLat &&
                             q.fromStationLon &&
                             q.toStationLat &&
-                            q.toStationLon
+                            q.toStationLon,
                         )
                         .map((q) => (
                           <>
                             <Polyline
                               positions={[
                                 [q.fromStationLat, q.fromStationLon],
-                                [q.toStationLat, q.toStationLon]
+                                [q.toStationLat, q.toStationLon],
                               ]}
                               color="blue"
                               weight={2} // make a bit thinner
