@@ -95,6 +95,10 @@ const QsoManager = () => {
   const editStationRef = useRef(null);
   const editingQsoIdRef = useRef(null);
 
+  const hasAdminRights = useMemo(() => {
+    return user?.isAdmin || user?.isDev;
+  }, [user]);
+
   const { id } = useParams();
   const [event, setEvent] = useState(false);
   const [qsos, setQsos] = useState(false);
@@ -157,17 +161,17 @@ const QsoManager = () => {
       }
     }
 
-    if ((user?.isAdmin || user?.isDev) && !users) {
+    if (hasAdminRights && !users) {
       getUsers();
     }
-  }, [setAlert, user, users]);
+  }, [setAlert, hasAdminRights, users, user?.callsign]);
 
   const getQsos = useCallback(async () => {
     try {
       const { data } = await axios.get("/api/qso", {
         params: {
           event: id,
-          fromStation: user.isAdmin ? undefined : user._id,
+          fromStation: hasAdminRights ? undefined : user._id,
         },
       });
       console.log("QSOs", data);
@@ -182,7 +186,7 @@ const QsoManager = () => {
 
       setQsos(null);
     }
-  }, [id, setAlert, user]);
+  }, [id, setAlert, hasAdminRights, user]);
 
   const [callsignOverride, setCallsignOverride] = useState(null);
   useEffect(() => {
@@ -235,22 +239,6 @@ const QsoManager = () => {
             ?.includes(user.callsign),
         event.joinRequests,
       );
-      // if (user.isAdmin) {
-      //   setAlert({
-      //     color: "info",
-      //     msg: "Non sei una stazione attivatrice per questo evento, ma sei un amministratore e puoi comunque gestire i QSO",
-      //   });
-      // }
-      // now we allow everyone
-      //  else {
-      //   setAlert({
-      //     color: "failure",
-      //     msg: "Non sei una stazione attivatrice per questo evento"
-      //   });
-
-      //   setHasPermission(false);
-      //   return;
-      // }
     } else if (event === null) {
       setAlert({
         color: "failure",
@@ -482,7 +470,7 @@ const QsoManager = () => {
         // imageHref
       };
 
-      if (user.isAdmin) {
+      if (hasAdminRights) {
         let selectedStation = fromStation;
 
         // If no object selected, try to match text input to a user
@@ -1050,7 +1038,7 @@ const QsoManager = () => {
               onSubmit={updateQso}
               className="flex flex-col gap-4"
             >
-              {(user?.isAdmin || user?.isDev) && users && (
+              {hasAdminRights && users && (
                 <div className="relative" ref={editStationRef}>
                   <Label value="DA Stazione (fromStationCallsignOverride)" />
                   <TextInput
@@ -1436,7 +1424,7 @@ const QsoManager = () => {
                               <Spinner className="dark:text-white dark:fill-white" />
                             ) : (
                               <div className="flex flex-col md:flex-row justify-center items-center gap-4">
-                                {user.isAdmin && users && (
+                                {hasAdminRights && users && (
                                   <div
                                     className="relative w-full"
                                     ref={fromStationRef}
@@ -1790,7 +1778,7 @@ const QsoManager = () => {
                     >
                       <FaBook className="opacity-65 scale-75 inline-block" />
                       QSO registrati
-                      {user?.isAdmin && (
+                      {hasAdminRights && (
                         <Badge color="green" size="xl">
                           {Array.isArray(qsos) ? (
                             qsos.length
@@ -1833,7 +1821,7 @@ const QsoManager = () => {
                         <div>
                           <div className="flex flex-col md:flex-row gap-2 items-center md:justify-between">
                             {/* SEARCH BAR FOR ADMINS */}
-                            {user?.isAdmin && (
+                            {hasAdminRights && (
                               <div className="w-full md:w-1/3 mb-2">
                                 <TextInput
                                   type="text"
@@ -1938,7 +1926,7 @@ const QsoManager = () => {
                               >
                                 <span className="sr-only">Azione</span>
                               </div>
-                              {user?.isAdmin && (
+                              {hasAdminRights && (
                                 <div
                                   className="flex-shrink-0"
                                   style={{ width: "12%" }}
@@ -1948,43 +1936,55 @@ const QsoManager = () => {
                               )}
                               <div
                                 className="flex-shrink-0"
-                                style={{ width: user?.isAdmin ? "15%" : "18%" }}
+                                style={{
+                                  width: hasAdminRights ? "15%" : "18%",
+                                }}
                               >
                                 Nominativo
                               </div>
                               <div
                                 className="flex-shrink-0"
-                                style={{ width: user?.isAdmin ? "20%" : "25%" }}
+                                style={{
+                                  width: hasAdminRights ? "20%" : "25%",
+                                }}
                               >
                                 Data UTC
                               </div>
                               <div
                                 className="flex-shrink-0"
-                                style={{ width: user?.isAdmin ? "12%" : "15%" }}
+                                style={{
+                                  width: hasAdminRights ? "12%" : "15%",
+                                }}
                               >
                                 Banda
                               </div>
                               <div
                                 className="flex-shrink-0"
-                                style={{ width: user?.isAdmin ? "10%" : "12%" }}
+                                style={{
+                                  width: hasAdminRights ? "10%" : "12%",
+                                }}
                               >
                                 Modo
                               </div>
                               <div
                                 className="flex-shrink-0"
-                                style={{ width: user?.isAdmin ? "12%" : "15%" }}
+                                style={{
+                                  width: hasAdminRights ? "12%" : "15%",
+                                }}
                               >
                                 A locatore
                               </div>
                               <div
                                 className="flex-shrink-0"
-                                style={{ width: user?.isAdmin ? "10%" : "12%" }}
+                                style={{
+                                  width: hasAdminRights ? "10%" : "12%",
+                                }}
                               >
                                 RST
                               </div>
                               <div
                                 className={`text-center`}
-                                style={{ width: user?.isAdmin ? "14%" : "8%" }}
+                                style={{ width: hasAdminRights ? "14%" : "8%" }}
                               >
                                 Azioni
                               </div>

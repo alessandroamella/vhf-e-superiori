@@ -98,6 +98,22 @@ router.put(
         }
       }
 
+      // If the locator is explicitly updated, we must recalculate coordinates immediately.
+      // Otherwise, the stale coordinates in 'updates.fromStationLat/Lon' (sent by frontend)
+      // will prevent the pre-save hook from calculating the new position.
+      if (updates.locator) {
+        const latLon = location.calculateLatLon(updates.locator);
+        if (latLon) {
+          updates.fromStationLat = latLon[0];
+          updates.fromStationLon = latLon[1];
+
+          // Clear city/province so the pre-save hook triggers reverse geocoding
+          // for the new location
+          qso.fromStationCity = "";
+          qso.fromStationProvince = "";
+        }
+      }
+
       // Apply updates
       Object.assign(qso, updates);
 
