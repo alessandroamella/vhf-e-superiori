@@ -1,19 +1,4 @@
 {
-  "diploma50": {
-    "title": "50th RADIO FLASH MOB AWARD",
-    "dates": "From February 1st to 5th, 2026",
-    "description": "The 50th Radio Flash Mob event will take place as scheduled from 01/02 to 05/02/2026. During the indicated times, on the indicated bands and frequencies.",
-    "activators_info": "Activators for this anniversary event will use the special callsign",
-    "activators_role": "and will exclusively be the administrators of the VHF e Superiori group.",
-    "points_per_contact": "Each valid contact will grant",
-    "one_point": "1 point",
-    "diploma_requirement": "To receive the award, you must contact at least",
-    "five_activators": "5 activators",
-    "any_band": "on any band",
-    "delivery_info": "At the end of the event, all participants with 5 or more points will receive the diploma in PDF format at the email address listed on qrz.com. Should you wish to receive the diploma at a different email, simply notify one of the connected activators/administrators.",
-    "thank_you": "Thank you for participating and have fun!",
-    "team_signature": "The VHF e Superiori team."
-  },
   "firstPoster": "First flash mob poster",
   "mainTitle": "VHF e Superiori - Amateur Radio Flash Mob",
   "bornFrom": "Born from an idea by <1>IU4JJJ</1> Pietro Cerrone, a member of the VHF e Superiori chat, who proposed it to <3>IZ5RNF</3> Alessandro Ronca, the group's creator.",
