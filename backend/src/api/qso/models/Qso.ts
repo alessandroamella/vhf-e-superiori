@@ -1,3 +1,4 @@
+import { unlink } from "node:fs/promises";
 import {
   DocumentType,
   modelOptions,
@@ -252,6 +253,53 @@ export class QsoClass {
   @prop({ required: false })
   public notes?: string;
 
+  public async generateEqsl(
+    this: DocumentType<QsoClass>,
+    event: EventDoc,
+    eqslTemplateImgUrl: string,
+    eqslTemplateImgPath?: string,
+  ): Promise<string> {
+    if (this.imageHref) {
+      return this.imageHref;
+    }
+
+    const fromStation = await User.findOne({ _id: this.fromStation });
+    if (!fromStation) {
+      throw new Error(`No fromStation found for QSO ${this._id}`);
+    }
+
+    if (!eqslTemplateImgPath) {
+      const eqslPic = new EqslPic(eqslTemplateImgUrl);
+      await eqslPic.fetchImage();
+      const tempPath = await eqslPic.saveImageToFile(undefined, "png");
+      eqslTemplateImgPath = tempPath;
+    }
+
+    const imgBuf = await sharp(eqslTemplateImgPath).toBuffer();
+    const eqslPic = new EqslPic(imgBuf);
+
+    // Pass the actual event object, not just ID
+    await eqslPic.addQsoInfo(this, fromStation, eqslTemplateImgPath, event);
+
+    const href = await eqslPic.uploadImage(fromStation._id.toString());
+    this.imageHref = href;
+    await this.save();
+
+    // Clean up temp file if we created it locally in this function
+    if (!eqslTemplateImgPath && eqslTemplateImgPath) {
+      try {
+        await unlink(eqslTemplateImgPath);
+      } catch (e) {
+        logger.debug(
+          `No temp file to clean up for QSO ${this._id}: ${e instanceof Error ? e.message : String(e)}`,
+        );
+      }
+    }
+
+    return href;
+  }
+
+  // UPDATED METHOD: Uses the method above, then sends single email (backward compat / force send)
   public async sendEqsl(
     this: DocumentType<QsoClass>,
     event: EventDoc,
@@ -262,51 +310,29 @@ export class QsoClass {
       throw new Error(`No email found in sendEqsl for QSO ${this._id}`);
     }
 
-    let eqslBuff: Buffer | null = null;
+    // 1. Ensure Image Exists
+    await this.generateEqsl(event, eqslTemplateImgUrl, eqslTemplateImgPath);
 
-    const fromStation = await User.findOne({
-      _id: this.fromStation,
-    });
-    if (!fromStation) {
-      throw new Error(`No fromStation found in sendEqsl for QSO ${this._id}`);
-    }
+    const fromStation = await User.findOne({ _id: this.fromStation });
+    if (!fromStation) throw new Error("FromStation not found");
 
-    if (!this.imageHref) {
-      if (!eqslTemplateImgPath) {
-        const eqslPic = new EqslPic(eqslTemplateImgUrl);
-        logger.debug(`Fetching eQSL template image for event ${event._id}`);
-        await eqslPic.fetchImage();
-        const tempPath = await eqslPic.saveImageToFile(undefined, "png"); // Keep PNG for template processing
-        eqslTemplateImgPath = tempPath;
-      }
-      if (!eqslTemplateImgPath) {
-        throw new Error(
-          `No image file path found in sendEqsl for event ${event._id}`,
-        );
-      }
+    // 2. Fetch buffer for attachment
+    const eqslPic = new EqslPic(this.imageHref!);
+    await eqslPic.fetchImage();
 
-      const imgBuf = await sharp(eqslTemplateImgPath).toBuffer();
-      const eqslPic = new EqslPic(imgBuf);
-      logger.debug(`Adding QSO info to image buffer for QSO ${this._id}`);
-      await eqslPic.addQsoInfo(this, fromStation, eqslTemplateImgPath, event);
-      const href = await eqslPic.uploadImage(fromStation._id.toString());
-      this.imageHref = href;
-      logger.info(`Uploaded eQSL image to ${href} for QSO ${this._id}`);
-      await this.save();
-      eqslBuff = eqslPic.getImage();
-    }
-
+    // 3. Send Email
     await EmailService.sendEqslEmail(
       this,
       fromStation,
       this.email,
       event,
-      eqslBuff ?? undefined,
+      eqslPic.getImage() ?? undefined,
     );
+
     this.emailSent = true;
     this.emailSentDate = new Date();
     await this.save();
 
-    return this.imageHref;
+    return this.imageHref!;
   }
 }

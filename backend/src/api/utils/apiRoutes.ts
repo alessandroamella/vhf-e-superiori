@@ -13,6 +13,7 @@ import eqslRoutes from "../eqsl/routes";
 import eventRoutes from "../event/routes";
 import joinRequestRoutes from "../joinRequest/routes";
 import locationRoutes from "../location/routes";
+import logsRoute from "../logs";
 import mapRoutes from "../map/routes";
 import errorHandler from "../middlewares/errorHandler";
 import impersonate from "../middlewares/impersonate";
@@ -108,6 +109,7 @@ router.use("/autocomplete", autocompleteRoutes);
 router.use("/blog", blogRoutes);
 router.use("/backup", backupRoutes);
 router.use("/map", mapRoutes);
+router.use("/logs", logsRoute);
 
 router.use(errorHandler);
 router.use(notFound);

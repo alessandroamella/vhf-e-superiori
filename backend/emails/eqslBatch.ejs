@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
+    th { background-color: #f2f2f2; }
+    .btn { display: inline-block; padding: 6px 12px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; font-size: 12px;}
+    .footer { margin-top: 30px; font-size: 12px; color: #777; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Nuove eQSL disponibili!</h2>
+    <p>Ciao,</p>
+    <p>Sono state generate <strong><%= count %></strong> nuove cartoline eQSL per i tuoi collegamenti.</p>
+    
+    <% if (qsos.length > 3) { %>
+    <p><em>In allegato trovi un'anteprima. Tutte le cartoline sono scaricabili dalla tabella qui sotto:</em></p>
+    <% } else { %>
+    <p><em>Trovi le cartoline in allegato o scaricabili qui sotto:</em></p>
+    <% } %>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Evento / Stazione</th>
+          <th>Banda/Modo</th>
+          <th>Download</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% qsos.forEach(function(qso) { %>
+        <tr>
+          <td><%= qso.date %> <%= qso.time %></td>
+          <td>
+            <strong><%= qso.fromStation %></strong><br/>
+            <span style="font-size: 11px; color: #666"><%= qso.eventName %></span>
+          </td>
+          <td><%= qso.band %> / <%= qso.mode %></td>
+          <td><a href="<%= qso.imageHref %>" class="btn">Scarica</a></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <p>Questo è un messaggio automatico da <a href="<%= baseUrl %>">VHF e Superiori</a>.</p>
+    </div>
+  </div>
+</body>
+</html>

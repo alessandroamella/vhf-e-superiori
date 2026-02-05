@@ -34,6 +34,7 @@ import { formatInTimeZone } from "../shared/formatInTimeZone";
 import useUserStore from "../stores/userStore";
 import CreateEditEventModal from "./CreateEditEventModal";
 import EditUserModal from "./EditUserModal"; // Import the new component
+import LogViewer from "./LogViewer";
 import PostsTable from "./PostsTable";
 import UsersTable from "./UsersTable";
 import ViewJoinRequest from "./ViewJoinRequest";
@@ -441,6 +442,13 @@ const AdminManager = () => {
                 ) : (
                   <Spinner />
                 )}
+              </Accordion.Content>
+            </Accordion.Panel>
+
+            <Accordion.Panel>
+              <Accordion.Title>Log di sistema</Accordion.Title>
+              <Accordion.Content>
+                {user?.isDev ? <LogViewer /> : <p>Solo per sviluppatori</p>}
               </Accordion.Content>
             </Accordion.Panel>
 

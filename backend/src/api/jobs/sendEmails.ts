@@ -3,8 +3,11 @@ import { isDocument } from "@typegoose/typegoose";
 import { CronJob } from "cron";
 import { subWeeks } from "date-fns";
 import { convert as convertHtmlToText } from "html-to-text";
+import moment from "moment";
 import NodeCache from "node-cache";
 import { envs, logger } from "../../shared";
+import type { UserDoc } from "../auth/models";
+import EmailService, { BatchQsoData } from "../email";
 import EqslPic from "../eqsl/eqsl";
 import type { EventDoc } from "../event/models";
 import { FailedNotificationLog } from "../failedNotificationLog/models";
@@ -15,6 +18,15 @@ import { telegramService } from "../telegram/telegram.service";
 const LIMIT_PER_DAY = 180;
 const CRON_SCHEDULE = "00 13 * * *";
 const TIMEZONE = "Europe/Rome";
+const MAX_ATTACHMENTS_PER_EMAIL = 3;
+
+interface QsoGroup {
+  email: string;
+  items: {
+    qso: QsoDoc;
+    event: EventDoc;
+  }[];
+}
 
 // Cache for email lookups (30 minutes TTL)
 const emailCache = new NodeCache({ stdTTL: 1800 });
@@ -58,129 +70,195 @@ async function getEmailForQso(qso: QsoDoc): Promise<string | null> {
   return null;
 }
 
-async function processQso(
-  qso: QsoDoc,
-  event: EventDoc,
-  eqslTemplateImgPath: string,
-): Promise<void> {
-  const email = await getEmailForQso(qso);
-  if (!email) {
-    logger.warn(
-      `No email found for QSO ${qso._id} with callsign ${qso.callsign}`,
-    );
-
-    // --- NUOVA LOGICA DI NOTIFICA ---
-    try {
-      // 1. Prova a creare un log. Se esiste già, fallirà grazie all'indice univoco.
-      await FailedNotificationLog.create({
-        callsign: qso.callsign,
-        eventId: event._id.toString(),
-        eventName: event.name,
-      });
-
-      // 2. Se la creazione ha successo, significa che è la prima volta. Invia la notifica.
-      logger.info(
-        `First time no email found for ${qso.callsign} in event ${event.name}. Notifying admins.`,
-      );
-
-      const message = `⚠️ <b>Nessuna Email Trovata</b>\n\nNon è stato possibile trovare un indirizzo email per il nominativo <b>${convertHtmlToText(qso.callsign)}</b> durante l'evento <b>${convertHtmlToText(event.name)}</b>.\n\nQuesto avviso non verrà ripetuto per la stessa combinazione nominativo/evento.`;
-
-      await telegramService.sendAdminNotification(
-        message,
-        envs.TELEGRAM_ERRORS_THREAD_ID,
-      );
-    } catch (error) {
-      // Se l'errore è un "duplicate key error" (codice 11000), è normale.
-      // Significa che abbiamo già notificato e non dobbiamo fare nulla.
-      if (
-        typeof error === "object" &&
-        "code" in (error as object) &&
-        (error as { code: number }).code === 11000
-      ) {
-        logger.debug(
-          `Admin notification for ${qso.callsign}/${event.name} already sent. Skipping.`,
-        );
-      } else {
-        // Altri errori (es. problemi di connessione al DB) vanno loggati.
-        logger.error(
-          `Error while checking/creating failed notification log for ${qso.callsign}`,
-        );
-        logger.error(error);
-      }
-    }
-    // --- FINE NUOVA LOGICA ---
-
-    return;
-  } else if (!event.eqslUrl) {
-    logger.warn(`No eQSL URL found for event ${event.name}`);
-    return;
-  }
-
-  try {
-    await qso.sendEqsl(event, event.eqslUrl, eqslTemplateImgPath);
-    logger.info(`Sent eQSL email to ${email} for QSO ${qso._id}`);
-  } catch (err) {
-    logger.error(`Error sending eQSL email for QSO ${qso._id} to ${email}`);
-    logger.error(err);
-  }
-}
-
 async function sendEqslEmail(): Promise<void> {
-  logger.info("Running Cron Job to send EQSL emails");
+  logger.info("Running Cron Job to send EQSL emails (Batch Mode)");
 
-  const eqslTemplateImgs = new Map<string, string>();
+  const eqslTemplateImgs = new Map<string, string>(); // EventID -> Local Path
+  const qsoGroups = new Map<string, QsoGroup>(); // Email -> Group
 
   try {
     const twoWeeksAgo = subWeeks(new Date(), 2);
 
+    // 1. Fetch pending QSOs
     const qsos = await Qso.find({
       emailSent: false,
-      createdAt: { $gte: twoWeeksAgo }, // created 2 weeks ago onwards
+      createdAt: { $gte: twoWeeksAgo },
     })
       .populate("fromStation")
       .populate("event")
-      .sort({ createdAt: -1 }) // process the most recent QSOs first
+      .sort({ createdAt: -1 })
       .limit(LIMIT_PER_DAY)
       .exec();
 
-    logger.info(
-      `Found ${qsos.length} QSOs to process (created >= 2 weeks ago)`,
-    );
-
-    if (
-      qsos.some((qso) => !isDocument(qso.fromStation) || !isDocument(qso.event))
-    ) {
-      throw new Error("Some QSOs have unpopulated fromStation or event");
+    if (qsos.length === 0) {
+      logger.info("No QSOs found to process.");
+      return;
     }
 
+    logger.info(`Found ${qsos.length} QSOs to process. Grouping by email...`);
+
+    // 2. Group by Recipient Email
     for (const qso of qsos) {
+      if (!isDocument(qso.fromStation) || !isDocument(qso.event)) continue;
+
       const event = qso.event as EventDoc;
       if (!event.eqslUrl) {
-        logger.debug(`No eQSL URL found for event ${event.name}`);
+        logger.debug(`Event ${event.name} has no eQSL URL, skipping.`);
         continue;
       }
 
-      if (!eqslTemplateImgs.has(event._id.toString())) {
-        const eqslPic = new EqslPic(event.eqslUrl);
-        await eqslPic.fetchImage();
-        const tempPath = await eqslPic.saveImageToFile(undefined, "png"); // Keep PNG for template processing
-        eqslTemplateImgs.set(event._id.toString(), tempPath);
+      const email = await getEmailForQso(qso);
+
+      if (!email) {
+        // Log failure and notify admins once per event/callsign
+        try {
+          await FailedNotificationLog.create({
+            callsign: qso.callsign,
+            eventId: event._id.toString(),
+            eventName: event.name,
+          });
+
+          const msg = `⚠️ <b>Nessuna Email Trovata</b>\n\nNominativo: <b>${convertHtmlToText(qso.callsign)}</b>\nEvento: <b>${convertHtmlToText(event.name)}</b>`;
+          await telegramService.sendAdminNotification(
+            msg,
+            envs.TELEGRAM_ERRORS_THREAD_ID,
+          );
+          // biome-ignore lint/suspicious/noExplicitAny: using any to check error properties
+        } catch (e: any) {
+          if (e.code !== 11000)
+            logger.error("Error creating FailedNotificationLog", e);
+        }
+        continue;
       }
 
-      await processQso(qso, event, eqslTemplateImgs.get(event._id.toString())!);
+      if (!qsoGroups.has(email)) {
+        qsoGroups.set(email, { email, items: [] });
+      }
+      qsoGroups.get(email)!.items.push({ qso, event });
+    }
+
+    // 3. Process each Email Group
+    for (const [email, group] of qsoGroups) {
+      const batchData: Array<BatchQsoData & { fromStation: string }> = [];
+      const attachments: { filename: string; path: string }[] = [];
+      const qsosToUpdate: QsoDoc[] = [];
+
+      for (const { qso, event } of group.items) {
+        if (!event.eqslUrl) {
+          logger.warn(`Event ${event.name} has no eQSL URL, skipping.`);
+          continue;
+        }
+
+        try {
+          // A. Ensure Event Template is downloaded locally (cached for this cron run)
+          const eventId = event._id.toString();
+          if (!eqslTemplateImgs.has(eventId)) {
+            const eqslPic = new EqslPic(event.eqslUrl);
+            await eqslPic.fetchImage();
+            const tempPath = await eqslPic.saveImageToFile(undefined, "png");
+            eqslTemplateImgs.set(eventId, tempPath);
+          }
+
+          // B. Generate the final eQSL Image (with text overlay)
+          const href = await qso.generateEqsl(
+            event,
+            event.eqslUrl,
+            eqslTemplateImgs.get(eventId)!,
+          );
+
+          // C. Prepare metadata for the EJS template
+          batchData.push({
+            callsign: qso.callsign,
+            date: moment(qso.qsoDate).tz("Europe/Rome").format("DD/MM/YYYY"),
+            time: moment(qso.qsoDate).tz("Europe/Rome").format("HH:mm"),
+            band: qso.band,
+            mode: qso.mode,
+            eventName: event.name,
+            imageHref: href,
+            fromStation:
+              qso.fromStationCallsignOverride ||
+              (qso.fromStation as UserDoc).callsign,
+          });
+
+          qsosToUpdate.push(qso);
+
+          // D. Prepare physical attachments (Limited to avoid huge emails)
+          if (attachments.length < MAX_ATTACHMENTS_PER_EMAIL) {
+            const specificEqsl = new EqslPic(href);
+            await specificEqsl.fetchImage();
+            const attPath = await specificEqsl.saveImageToFile(
+              undefined,
+              "jpeg",
+            );
+
+            attachments.push({
+              filename: `eqsl_${qso.callsign.replace(/[^a-zA-Z0-9]/g, "")}_${qsosToUpdate.length}.jpg`,
+              path: attPath,
+            });
+          }
+        } catch (err) {
+          logger.error(`Error processing individual QSO ${qso._id} for batch`);
+          logger.error(err);
+        }
+      }
+
+      // 4. Send the consolidated email
+      if (batchData.length > 0) {
+        try {
+          await EmailService.sendEqslBatchEmail(email, batchData, attachments);
+
+          // Mark all processed QSOs as sent
+          for (const q of qsosToUpdate) {
+            q.emailSent = true;
+            q.emailSentDate = new Date();
+            await q.save();
+          }
+          logger.info(
+            `Successfully sent batch of ${batchData.length} eQSLs to ${email}`,
+          );
+        } catch (err) {
+          if (EmailService.isQuotaError(err)) {
+            logger.error(
+              "!!! MAILJET LIMIT REACHED !!! Aborting cron job to save remaining QSOs for tomorrow.",
+            );
+            logger.error(err);
+
+            // Critical: break the outer group loop so we don't try to send more
+            // and we don't mark the current 'qsosToUpdate' as sent.
+            break;
+          } else {
+            logger.error(
+              `Failed to send batch email to ${email} (Non-quota error)`,
+            );
+            logger.error(err);
+          }
+        }
+      }
+
+      // 5. Cleanup individual attachment files immediately after sending
+      for (const att of attachments) {
+        try {
+          await unlink(att.path);
+        } catch (e) {
+          logger.warn(
+            `Cleanup failed for ${att.path}: ${e instanceof Error ? e.message : String(e)}`,
+          );
+        }
+      }
     }
   } catch (err) {
-    logger.error("Error while sending EQSL emails");
+    logger.error("Global error in sendEqslEmail Cron Job");
     logger.error(err);
   } finally {
-    // Clean up temp files
-    for (const [, tempPath] of eqslTemplateImgs) {
+    // 6. Final cleanup of base event templates
+    for (const [id, tempPath] of eqslTemplateImgs) {
       try {
         await unlink(tempPath);
-        logger.debug(`Deleted temp eQSL template image: ${tempPath}`);
-      } catch (err) {
-        logger.error(`Error deleting temp eQSL template image: ${tempPath}`);
-        logger.error(err);
+        logger.debug(`Cleaned up template for event ${id}`);
+      } catch (e) {
+        logger.error(
+          `Failed to clean up template at ${tempPath}: ${e instanceof Error ? e.message : String(e)}`,
+        );
       }
     }
   }

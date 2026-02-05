@@ -18,6 +18,16 @@ import { removeTrailingSlash } from "../utils/removeTrailingSlash";
 
 moment.locale("it");
 
+export interface BatchQsoData {
+  callsign: string;
+  date: string;
+  time: string;
+  band: string;
+  mode: string;
+  eventName: string;
+  imageHref: string;
+}
+
 export class EmailService {
   private static transporter: nodemailer.Transporter | null = null;
 
@@ -381,6 +391,48 @@ export class EmailService {
     await EmailService.sendMail(message);
     logger.info(`eQSL mail sent to user ${qso.callsign} at email: ${toEmail}`);
     await unlink(filePath);
+  }
+
+  public static async sendEqslBatchEmail(
+    toEmail: string,
+    qsos: BatchQsoData[],
+    attachments: { filename: string; path: string }[],
+  ) {
+    const html = await EmailService.loadMailFromFile("eqslBatch.ejs", {
+      // biome-ignore lint/suspicious/noExplicitAny: casting to any to pass array to ejs
+      qsos: qsos as any,
+      count: qsos.length.toString(),
+      baseUrl: removeTrailingSlash(envs.FRONTEND_URL),
+    });
+
+    const message: Mail.Options = {
+      from: `"VHF e Superiori" ${process.env.SEND_EMAIL_FROM}`,
+      to: toEmail,
+      subject: `Hai ricevuto ${qsos.length} nuove eQSL!`,
+      html,
+      attachments, // Attachments passed from the job
+    };
+
+    await EmailService.sendMail(message);
+    logger.info(
+      `Batch eQSL mail sent to ${toEmail} containing ${qsos.length} QSOs`,
+    );
+  }
+
+  // biome-ignore lint/suspicious/noExplicitAny: using any to check error properties
+  public static isQuotaError(err: any): boolean {
+    const response = (err?.response || "").toLowerCase();
+    const message = (err?.message || "").toLowerCase();
+    const code = err?.responseCode;
+
+    return (
+      code === 454 ||
+      code === 554 ||
+      ["limit exceeded", "quota exceeded", "limit reached"].some(
+        (str) => message.includes(str) || response.includes(str),
+      ) ||
+      err?.code === "EM_QUOTA_EXCEEDED" // some providers use this code
+    );
   }
 }
 
