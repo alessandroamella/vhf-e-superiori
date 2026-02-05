@@ -90,12 +90,18 @@ export class EmailService {
         logger.error("EmailService.transporter null in sendMail");
         return reject("EmailService.transporter null");
       }
-      EmailService.transporter.sendMail(message, (err) => {
+      EmailService.transporter.sendMail(message, (err, info) => {
         if (err) {
           logger.error("Error while sending email");
           logger.error(err);
           return reject(err);
         }
+        logger.debug(
+          "Email sent successfully to " +
+            message.to +
+            ", info: " +
+            (typeof info === "object" ? JSON.stringify(info) : info),
+        );
         return resolve();
       });
     });

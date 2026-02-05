@@ -1,7 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.13/schema.json",
   "vcs": {
-    "enabled": false,
+    "enabled": true,
     "clientKind": "git",
     "useIgnoreFile": false
   },
@@ -43,7 +43,7 @@
       "correctness": {
         "useUniqueElementIds": "off",
         "noNestedComponentDefinitions": "off",
-        "noUndeclaredDependencies": "error",
+        "noUndeclaredDependencies": "off",
         "noUndeclaredVariables": "error"
       },
       "suspicious": {

@@ -3,7 +3,13 @@
   "extends": "//",
   "files": {
     "includes": [
-      "!node_modules/**"
+      "!node_modules",
+      "src/**",
+      "*.js",
+      "*.json",
+      "scripts/**",
+      "documents/**",
+      "emails/**/*.html"
     ]
   }
 }

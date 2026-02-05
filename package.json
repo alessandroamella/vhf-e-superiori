@@ -11,7 +11,7 @@
     "build:frontend": "pnpm --filter @vhf-e-superiori/frontend build",
     "build:backend": "pnpm --filter @vhf-e-superiori/backend build",
     "check": "pnpm biome check --fix",
-    "check-only": "pnpm biome check",
+    "check:staged": "pnpm biome check --staged",
     "clean": "pnpm run --parallel clean",
     "start:backend": "pnpm --filter @vhf-e-superiori/backend start",
     "start:frontend-server": "pnpm --filter @vhf-e-superiori/frontend-server start",
