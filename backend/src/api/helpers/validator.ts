@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { type FieldValidationError, validationResult } from "express-validator";
 import { BAD_REQUEST } from "http-status";
-import { pick, uniqWith } from "lodash";
+import { pick, uniqWith } from "lodash-es";
 import { logger } from "../../shared";
 import { Errors } from "../errors";
 import { createError } from ".";

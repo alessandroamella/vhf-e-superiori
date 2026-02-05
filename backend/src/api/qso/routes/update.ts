@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { checkSchema, param } from "express-validator";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "http-status";
-import { pick } from "lodash";
+import { pick } from "lodash-es";
 import { logger } from "../../../shared";
 import { User } from "../../auth/models";
 import { Errors } from "../../errors";

@@ -1,5 +1,5 @@
 import { convert } from "html-to-text";
-import { last } from "lodash";
+import { last } from "lodash-es";
 import NodeCache from "node-cache";
 import { logger } from "../../shared/logger";
 import { telegramService } from "../telegram/telegram.service";

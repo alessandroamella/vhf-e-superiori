@@ -12,10 +12,17 @@ overrides:
 importers:
 
   .:
+    dependencies:
+      lodash-es:
+        specifier: ^4.17.23
+        version: 4.17.23
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.3.13
         version: 2.3.13
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -109,9 +116,6 @@ importers:
       libphonenumber-js:
         specifier: ^1.12.35
         version: 1.12.35
-      lodash:
-        specifier: ^4.17.23
-        version: 4.17.23
       mime-types:
         specifier: ^2.1.35
         version: 2.1.35
@@ -338,9 +342,6 @@ importers:
       leaflet-easyprint:
         specifier: ^2.1.9
         version: 2.1.9
-      lodash:
-        specifier: ^4.17.23
-        version: 4.17.23
       prop-types:
         specifier: ^15.8.1
         version: 15.8.1
@@ -2685,6 +2686,9 @@ packages:
   '@types/jsonwebtoken@9.0.10':
     resolution: {integrity: sha512-asx5hIG9Qmf/1oStypjanR7iKTv0gXQ1Ov/jfrX6kS/EO0OFni8orbmGCn0672NHR3kXHwpAwR+B368ZGN/2rA==}
 
+  '@types/lodash-es@4.17.12':
+    resolution: {integrity: sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==}
+
   '@types/lodash@4.17.23':
     resolution: {integrity: sha512-RDvF6wTulMPjrNdCoYRC8gNR880JNGT8uB+REUpC2Ns4pRqQJhGz90wh7rgdXDPpCczF3VGktDuFGVnz8zP7HA==}
 
@@ -4463,6 +4467,9 @@ packages:
 
   load-script@1.0.0:
     resolution: {integrity: sha512-kPEjMFtZvwL9TaZo0uZ2ml+Ye9HUMmPwbYRJ324qF9tqMejwykJ5ggTyvzmrbBeapCAbk98BSbTeovHEEP1uCA==}
+
+  lodash-es@4.17.23:
+    resolution: {integrity: sha512-kVI48u3PZr38HdYz98UmfPnXl2DXrpdctLrFLCd3kOx1xUkOmpFPx7gCWWM5MPkL/fD8zb+Ph0QzjGFs4+hHWg==}
 
   lodash.debounce@4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
@@ -9289,6 +9296,10 @@ snapshots:
       '@types/ms': 2.1.0
       '@types/node': 22.19.7
 
+  '@types/lodash-es@4.17.12':
+    dependencies:
+      '@types/lodash': 4.17.23
+
   '@types/lodash@4.17.23': {}
 
   '@types/luxon@3.4.2': {}
@@ -11186,6 +11197,8 @@ snapshots:
   lines-and-columns@1.2.4: {}
 
   load-script@1.0.0: {}
+
+  lodash-es@4.17.23: {}
 
   lodash.debounce@4.0.8: {}
 

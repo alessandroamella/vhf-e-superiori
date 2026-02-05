@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Alert, Button, Spinner, TextInput } from "flowbite-react";
-import { orderBy, uniqBy } from "lodash";
+import { orderBy, uniqBy } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
@@ -32,35 +32,31 @@ const Social = () => {
       console.log(
         `fetching posts from ${cursor} to ${cursor + cursorLimit}`,
         " fromDate: ",
-        fromDate,
+        fromDate
       );
       const { data } = await axios.get("/api/post", {
         params: {
           limit: cursorLimit,
           offset: cursor,
-          ...(fromDate && { fromDate }),
-        },
+          ...(fromDate && { fromDate })
+        }
       });
       console.log("new posts", data, "\nall posts", [...posts, ...data.posts]);
       if (data.posts.length > 0) {
         console.log("setting posts");
         setPosts(
-          orderBy(
-            uniqBy([...data.posts, ...posts], "_id"),
-            "createdAt",
-            "desc",
-          ),
+          orderBy(uniqBy([...data.posts, ...posts], "_id"), "createdAt", "desc")
         );
       } else {
         console.log("no new posts");
       }
       if (data.pp.length) {
         setProfilePictures(
-          uniqBy([...profilePictures, ...data.pp], "callsign"),
+          uniqBy([...profilePictures, ...data.pp], "callsign")
         );
         console.log("new pps", profilePictures, "\nall pps", [
           ...profilePictures,
-          ...data.pp,
+          ...data.pp
         ]);
       } else {
         console.log("no new profile pictures");
@@ -74,7 +70,7 @@ const Social = () => {
         setSearchParams(searchParams);
       }
     },
-    [cursor, posts, profilePictures, searchParams, setSearchParams],
+    [cursor, posts, profilePictures, searchParams, setSearchParams]
   );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: this is a callback that should not change
@@ -101,7 +97,7 @@ const Social = () => {
         fetchPosts(firstDate);
         // every 10 sec
       },
-      (hasCreated ? 5 : 15) * 1000,
+      (hasCreated ? 5 : 15) * 1000
     );
 
     return () => clearInterval(fetchPostsInterval);
@@ -131,8 +127,8 @@ const Social = () => {
           filterCallsign
             ?.replace(/[^a-zA-Z0-9/]/g, "")
             ?.trim()
-            .toUpperCase(),
-        ),
+            .toUpperCase()
+        )
     );
   }, [filterCallsign, posts]);
 
@@ -143,7 +139,7 @@ const Social = () => {
       <Helmet>
         <title>
           {t("social", {
-            defaultValue: "Social",
+            defaultValue: "Social"
           })}{" "}
           - VHF e Superiori
         </title>
