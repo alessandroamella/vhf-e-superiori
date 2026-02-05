@@ -19,13 +19,10 @@ const LogViewer = () => {
     try {
       const { data } = await axios.get("/api/logs");
       setFiles(data);
-      if (data.length > 0 && !selectedFile) {
-        setSelectedFile(data[0]);
-      }
     } catch (err) {
       setError(getErrorStr(err?.response?.data?.err));
     }
-  }, [selectedFile]);
+  }, []);
 
   const fetchContent = useCallback(async () => {
     if (!selectedFile) return;
@@ -39,7 +36,7 @@ const LogViewer = () => {
       // but logs are usually line-delimited JSON or raw text.
       // We want string representation.
       setLogContent(
-        typeof data === "object" ? JSON.stringify(data, null, 2) : data,
+        typeof data === "object" ? JSON.stringify(data, null, 2) : data
       );
     } catch (err) {
       setError(getErrorStr(err?.response?.data?.err));
@@ -52,7 +49,7 @@ const LogViewer = () => {
     if (!selectedFile) return;
     try {
       const response = await axios.get(`/api/logs/${selectedFile}/export`, {
-        responseType: "blob",
+        responseType: "blob"
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
@@ -75,12 +72,16 @@ const LogViewer = () => {
     if (logContent && logContainerRef.current) {
       logContainerRef.current.scrollTo({
         top: logContainerRef.current.scrollHeight,
-        behavior: "smooth",
+        behavior: "smooth"
       });
     }
   }, [logContent]);
 
-  // Removed automatic fetchContent on selectedFile change
+  useEffect(() => {
+    if (selectedFile) {
+      fetchContent();
+    }
+  }, [selectedFile, fetchContent]);
 
   // Filter content based on search term
   const getFilteredContent = () => {
@@ -89,7 +90,7 @@ const LogViewer = () => {
     if (!searchTerm) return lines;
 
     return lines.filter((line) =>
-      line.toLowerCase().includes(searchTerm.toLowerCase()),
+      line.toLowerCase().includes(searchTerm.toLowerCase())
     );
   };
 
@@ -105,6 +106,7 @@ const LogViewer = () => {
           onChange={(e) => setSelectedFile(e.target.value)}
           className="w-full md:w-1/3"
         >
+          <option value="">Seleziona un file</option>
           {files.map((f) => (
             <option key={f} value={f}>
               {f}
@@ -119,7 +121,11 @@ const LogViewer = () => {
           className="w-full md:w-1/3"
         />
 
-        <Button color="light" onClick={fetchContent} disabled={loading}>
+        <Button
+          color="light"
+          onClick={fetchContent}
+          disabled={loading || !selectedFile}
+        >
           <FaSync className={loading ? "animate-spin" : ""} />
         </Button>
 
