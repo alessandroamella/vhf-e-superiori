@@ -8,7 +8,7 @@ import {
   Modal,
   Spinner,
   Table,
-  Tabs
+  Tabs,
 } from "flowbite-react";
 import { orderBy } from "lodash-es";
 import { useEffect, useMemo, useState } from "react";
@@ -21,7 +21,7 @@ import {
   useLocation,
   useNavigate,
   useParams,
-  useSearchParams
+  useSearchParams,
 } from "react-router";
 import {
   EmailIcon,
@@ -33,7 +33,7 @@ import {
   TwitterIcon,
   TwitterShareButton,
   WhatsappIcon,
-  WhatsappShareButton
+  WhatsappShareButton,
 } from "react-share";
 import { getErrorStr } from "../shared";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
@@ -59,16 +59,16 @@ const EventList = () => {
             data.filter(
               (e) =>
                 isBefore(new Date(e.date), new Date()) &&
-                isAfter(new Date(e.date), new Date("2024-01-01"))
+                isAfter(new Date(e.date), new Date("2024-01-01")),
             ),
             ["date"],
-            ["desc"]
-          )
+            ["desc"],
+          ),
         );
       } catch (err) {
         setAlertEvents({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setLoadingEvents(false);
@@ -101,7 +101,7 @@ const EventList = () => {
       <ListGroup className="max-h-56 overflow-auto">
         {Array.from(
           { length: new Date().getFullYear() - 2024 + 1 },
-          (_, i) => new Date().getFullYear() - i
+          (_, i) => new Date().getFullYear() - i,
         ).map((year) => (
           <ListGroup.Item
             key={year}
@@ -109,7 +109,7 @@ const EventList = () => {
               navigate(
                 year === new Date().getFullYear()
                   ? "/rankings"
-                  : `/rankings?year=${year}`
+                  : `/rankings?year=${year}`,
               )
             }
             className="uppercase font-bold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-700 text-red-500 dark:text-red-400"
@@ -129,7 +129,7 @@ const EventList = () => {
             {formatInTimeZone(
               new Date(event.date),
               "Europe/Rome",
-              "dd/MM/yyyy"
+              "dd/MM/yyyy",
             )}
           </ListGroup.Item>
         ))}
@@ -175,7 +175,7 @@ const Rankings = () => {
       } catch (err) {
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
       } finally {
         setLoading(false);
@@ -191,7 +191,7 @@ const Rankings = () => {
   const socialTitle = t("rankings.social.title", {
     context: event ? "event" : "year",
     name: event?.name,
-    year
+    year,
   });
   const socialBody = event
     ? t("rankings.social.bodyEvent", {
@@ -200,8 +200,8 @@ const Rankings = () => {
           new Date(event.date),
           "Europe/Rome",
           "dd MMMM yyyy",
-          { locale: it }
-        )
+          { locale: it },
+        ),
       })
     : t("rankings.social.bodyYear", { year });
 
@@ -218,8 +218,8 @@ const Rankings = () => {
         const { data } = await axios.get("/api/qso", {
           params: {
             event: event._id,
-            callsignAnywhere: user.callsign
-          }
+            callsignAnywhere: user.callsign,
+          },
         });
         console.log("QSOs", data);
         data.sort((b, a) => new Date(a.qsoDate) - new Date(b.qsoDate));
@@ -228,7 +228,7 @@ const Rankings = () => {
         console.log(t("rankings.qsoLoadError"), err);
         setAlert({
           color: "failure",
-          msg: getErrorStr(err?.response?.data?.err)
+          msg: getErrorStr(err?.response?.data?.err),
         });
 
         setQsos(null);
@@ -250,7 +250,7 @@ const Rankings = () => {
     ReactGA.event({
       category: "Social",
       action: "Share",
-      label: `${platform} - ${event ? event.name : year} Rankings`
+      label: `${platform} - ${event ? event.name : year} Rankings`,
     });
   };
 
@@ -277,7 +277,7 @@ const Rankings = () => {
                   (r) =>
                     r.callsign === showRankings ||
                     (r.fromStationCallsignOverride ||
-                      r.fromStation?.callsign) === showRankings
+                      r.fromStation?.callsign) === showRankings,
                 )
                 .map((r) => (
                   <Table striped key={r.callsign}>
@@ -322,7 +322,7 @@ const Rankings = () => {
                             {formatInTimeZone(
                               new Date(qso.qsoDate),
                               "Europe/Rome",
-                              "dd/MM/yyyy HH:mm"
+                              "dd/MM/yyyy HH:mm",
                             )}
                           </Table.Cell>
                           <Table.Cell>
@@ -377,7 +377,7 @@ const Rankings = () => {
               <div className="w-full flex flex-col gap-4">
                 <h1 className="text-3xl md:text-4xl">
                   {t("rankings.mainTitle", {
-                    context: event ? "event" : "year"
+                    context: event ? "event" : "year",
                   })}{" "}
                   <span className="font-bold">{event ? event.name : year}</span>
                   {event && (
@@ -386,7 +386,7 @@ const Rankings = () => {
                       {formatInTimeZone(
                         new Date(event.date),
                         "Europe/Rome",
-                        "dd/MM/yyyy"
+                        "dd/MM/yyyy",
                       )}
                     </>
                   )}
@@ -404,7 +404,7 @@ const Rankings = () => {
                 {/* <Tabs.Group> */}
                 {[
                   t("rankings.tabs.hunters"),
-                  t("rankings.tabs.activators")
+                  t("rankings.tabs.activators"),
                 ].map((tab, i) => (
                   <Tabs.Item title={tab} key={tab}>
                     <h1 className="text-4xl md:text-5xl uppercase text-red-500 font-bold text-center mt-8 mb-8 animate-pulse">
@@ -441,7 +441,7 @@ const Rankings = () => {
                                   </Table.Cell>
                                   <Table.Cell>{r.points}</Table.Cell>
                                 </Table.Row>
-                              )
+                              ),
                             )}
                           </Table.Body>
                         </Table>

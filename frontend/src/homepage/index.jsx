@@ -6,7 +6,7 @@ import {
   differenceInDays,
   isAfter,
   isBefore,
-  subDays
+  subDays,
 } from "date-fns";
 import { it } from "date-fns/locale";
 import { Accordion, Alert, Card, Spinner, Table } from "flowbite-react";
@@ -22,7 +22,7 @@ import {
   createSearchParams,
   Link,
   useNavigate,
-  useSearchParams
+  useSearchParams,
 } from "react-router";
 import { EventsContext, JoinOpenContext } from "../App";
 import JoinRequestModal from "./JoinRequestModal";
@@ -62,7 +62,7 @@ const Homepage = () => {
 
   const getNumbersFromString = useCallback(
     (str) => str.match(/\d+/g)?.map(Number) || [],
-    []
+    [],
   );
 
   const toConfirm = searchParams.get("toconfirm");
@@ -73,19 +73,19 @@ const Homepage = () => {
       console.log("showing toconfirm alert");
       setAlert({
         color: "info",
-        msg: "Grazie per esserti registrato! Per favore verifica il tuo account cliccando il link presente all'interno della mail"
+        msg: "Grazie per esserti registrato! Per favore verifica il tuo account cliccando il link presente all'interno della mail",
       });
       setTimeout(() => {
         window.scrollTo({
           top: 0,
-          behavior: "smooth"
+          behavior: "smooth",
         });
       }, 100);
     } else if (confirmed) {
       console.log("showing confirmed alert");
       setAlert({
         color: "success",
-        msg: "Email confermata con successo! Ora puoi prenotarti come stazione attivatrice, inviare foto e video e altro."
+        msg: "Email confermata con successo! Ora puoi prenotarti come stazione attivatrice, inviare foto e video e altro.",
       });
       searchParams.delete("confirmed");
       setSearchParams(searchParams);
@@ -102,7 +102,7 @@ const Homepage = () => {
     _events.sort(
       (a, b) =>
         differenceInDays(now, new Date(b.date)) -
-        differenceInDays(now, new Date(a.date))
+        differenceInDays(now, new Date(a.date)),
     );
     if (_events.length > 0) setEventJoining(_events[0]);
     for (const e of events) {
@@ -141,7 +141,7 @@ const Homepage = () => {
               className="object-contain w-full h-full"
             />
           </ControlledZoom>
-        )
+        ),
       }));
   }, [events, zoomedImg]);
 
@@ -188,7 +188,7 @@ const Homepage = () => {
       } catch (err) {
         console.log(
           "join request error",
-          getErrorStr(err?.response?.data?.err || err?.response?.data || err)
+          getErrorStr(err?.response?.data?.err || err?.response?.data || err),
         );
       }
     }
@@ -213,7 +213,7 @@ const Homepage = () => {
     _events.sort(
       (a, b) =>
         differenceInDays(now, new Date(b.date)) -
-        differenceInDays(now, new Date(a.date))
+        differenceInDays(now, new Date(a.date)),
     );
     return _events[_events.length - 1] ?? null;
   }, [events]);
@@ -259,7 +259,7 @@ const Homepage = () => {
       } catch (err) {
         console.error(
           "error while fetching admins",
-          err?.response?.data || err
+          err?.response?.data || err,
         );
       }
     }
@@ -268,7 +268,7 @@ const Homepage = () => {
 
   const cardEvent = useMemo(
     () => stationEventToShow || eqslEventToShow,
-    [eqslEventToShow, stationEventToShow]
+    [eqslEventToShow, stationEventToShow],
   );
 
   const scoringItems = t("scoring", { returnObjects: true });
@@ -278,7 +278,7 @@ const Homepage = () => {
       <Helmet>
         <title>
           {t("mainTitle", {
-            defaultValue: "VHF e Superiori - Flash Mob Radioamatoriale"
+            defaultValue: "VHF e Superiori - Flash Mob Radioamatoriale",
           })}
         </title>
       </Helmet>
@@ -353,7 +353,7 @@ const Homepage = () => {
                           className="text-center underline decoration-dotted hover:text-black hover:dark:text-white transition-colors"
                         >
                           <strong />
-                        </a>
+                        </a>,
                       ]}
                     />
                   </p>
@@ -416,7 +416,7 @@ const Homepage = () => {
                           ) : (
                             events
                               .filter((e) =>
-                                isAfter(new Date(e.date), new Date())
+                                isAfter(new Date(e.date), new Date()),
                               )
                               .map((e) => (
                                 <Table.Row
@@ -440,8 +440,8 @@ const Homepage = () => {
                                         "Europe/Rome",
                                         "dd/MM",
                                         {
-                                          locale: it
-                                        }
+                                          locale: it,
+                                        },
                                       )}
                                     </span>
                                     <span className="hidden xl:block">
@@ -450,8 +450,8 @@ const Homepage = () => {
                                         "Europe/Rome",
                                         "dd/MM/yyyy",
                                         {
-                                          locale: it
-                                        }
+                                          locale: it,
+                                        },
                                       )}
                                     </span>
                                   </Table.Cell>
@@ -490,7 +490,7 @@ const Homepage = () => {
                     if (e.target.dataset.rmizContent) {
                       const img =
                         e.target?.parentNode?.parentNode?.parentNode?.querySelector(
-                          "img"
+                          "img",
                         )?.src;
                       console.log("setto zoomed img", img);
                       if (img) setZoomedImg(img);
@@ -499,7 +499,7 @@ const Homepage = () => {
                   onMouseEnter={(e) => {
                     if (
                       [...e.target.classList].includes(
-                        "carousel__control--prev"
+                        "carousel__control--prev",
                       )
                     ) {
                       document
@@ -507,7 +507,7 @@ const Homepage = () => {
                         ?.click();
                     } else if (
                       [...e.target.classList].includes(
-                        "carousel__control--next"
+                        "carousel__control--next",
                       )
                     ) {
                       document
@@ -541,8 +541,8 @@ const Homepage = () => {
                         : navigate({
                             pathname: "/login",
                             search: createSearchParams({
-                              to: "/#eventi"
-                            }).toString()
+                              to: "/#eventi",
+                            }).toString(),
                           })
                     }
                   >
@@ -601,7 +601,7 @@ const Homepage = () => {
                                 rel="noopener noreferrer"
                                 className="underline decoration-dotted text-center hover:text-black hover:dark:text-white transition-colors"
                               />
-                            )
+                            ),
                           }}
                         />
                       </p>

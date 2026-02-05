@@ -1,16 +1,7 @@
 {
-  "[typescript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
-  },
-   "emmet.includeLanguages": {
-    "ejs": "html",
-  },
- "[html]": {
-    "editor.defaultFormatter": "j69.ejs-beautify",
-    "editor.tabSize": 2
+  "editor.defaultFormatter": "biomejs.biome",
+  "emmet.includeLanguages": {
+    "ejs": "html"
   },
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {

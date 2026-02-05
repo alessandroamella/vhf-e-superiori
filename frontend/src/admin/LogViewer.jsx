@@ -5,7 +5,7 @@ import {
   Select,
   Spinner,
   Tabs,
-  TextInput
+  TextInput,
 } from "flowbite-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaDownload, FaSync } from "react-icons/fa";
@@ -59,7 +59,7 @@ const LogViewer = () => {
       // but logs are usually line-delimited JSON or raw text.
       // We want string representation.
       setLogContent(
-        typeof data === "object" ? JSON.stringify(data, null, 2) : data
+        typeof data === "object" ? JSON.stringify(data, null, 2) : data,
       );
     } catch (err) {
       setError(getErrorStr(err?.response?.data?.err));
@@ -72,7 +72,7 @@ const LogViewer = () => {
     if (!selectedFile) return;
     try {
       const response = await axios.get(`/api/logs/${selectedFile}/export`, {
-        responseType: "blob"
+        responseType: "blob",
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
@@ -96,13 +96,13 @@ const LogViewer = () => {
       if (logContainerRef.current) {
         logContainerRef.current.scrollTo({
           top: logContainerRef.current.scrollHeight,
-          behavior: "smooth"
+          behavior: "smooth",
         });
       }
       if (structuredContainerRef.current) {
         structuredContainerRef.current.scrollTo({
           top: structuredContainerRef.current.scrollHeight,
-          behavior: "smooth"
+          behavior: "smooth",
         });
       }
     }
@@ -121,7 +121,7 @@ const LogViewer = () => {
     if (!searchTerm) return lines;
 
     return lines.filter((line) =>
-      line.toLowerCase().includes(searchTerm.toLowerCase())
+      line.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   };
 
@@ -137,7 +137,7 @@ const LogViewer = () => {
           timestamp: "",
           level: "",
           label: "",
-          message: line
+          message: line,
         };
       }
     });
@@ -151,7 +151,7 @@ const LogViewer = () => {
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
         (log.level || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (log.label || "").toLowerCase().includes(searchTerm.toLowerCase())
+        (log.label || "").toLowerCase().includes(searchTerm.toLowerCase()),
     );
   };
 

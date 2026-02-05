@@ -6,22 +6,7 @@
     "useIgnoreFile": false
   },
   "files": {
-    "ignoreUnknown": false,
-    "includes": [
-      "frontend/src/**",
-      "frontend/*.json",
-      "frontend/*.ts",
-      "frontend/*.tsx",
-      "frontend/dist",
-      "backend/src/**",
-      "backend/emails/**/*.html",
-      "backend/*.json",
-      "backend/*.ts",
-      "backend/public",
-      "*.json",
-      "*.js",
-      "*.ts"
-    ]
+    "ignoreUnknown": false
   },
   "formatter": {
     "enabled": true,
