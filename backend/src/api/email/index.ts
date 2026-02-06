@@ -11,6 +11,7 @@ import type { CommentDoc } from "../comment/models";
 import EqslPic from "../eqsl/eqsl";
 import type { EventDoc } from "../event/models";
 import type { JoinRequestDoc } from "../joinRequest/models";
+import { mailjet } from "../mailjet";
 import type { BasePostDoc } from "../post/models";
 import { qrz } from "../qrz";
 import type { QsoDoc } from "../qso/models";
@@ -26,6 +27,96 @@ export interface BatchQsoData {
   mode: string;
   eventName: string;
   imageHref: string;
+}
+
+// Mailjet API v3.1 types
+interface MailjetEmailAddress {
+  Email: string;
+  Name?: string;
+}
+
+interface MailjetAttachment {
+  Filename: string;
+  ContentType: string;
+  Base64Content: string;
+}
+
+interface MailjetInlineAttachment extends MailjetAttachment {
+  ContentID: string;
+}
+
+interface MailjetMessage {
+  From?: MailjetEmailAddress;
+  Sender?: MailjetEmailAddress;
+  To: MailjetEmailAddress[];
+  Cc?: MailjetEmailAddress[];
+  Bcc?: MailjetEmailAddress[];
+  ReplyTo?: MailjetEmailAddress;
+  Subject?: string;
+  TextPart?: string;
+  HTMLPart?: string;
+  TemplateID?: number;
+  TemplateLanguage?: boolean;
+  TemplateErrorReporting?: {
+    Email: string;
+    Name?: string;
+  };
+  TemplateErrorDeliver?: boolean;
+  Attachments?: MailjetAttachment[];
+  InlineAttachments?: MailjetInlineAttachment[];
+  Priority?: number;
+  CustomCampaign?: string;
+  DeduplicateCampaign?: boolean;
+  TrackOpens?: "account_default" | "disabled" | "enabled";
+  TrackClicks?: "account_default" | "disabled" | "enabled";
+  CustomID?: string;
+  EventPayload?: string;
+  URLTags?: string;
+  Headers?: Record<string, string>;
+  Variables?: Record<string, string>;
+}
+
+interface MailjetSendRequest {
+  SandboxMode?: boolean;
+  AdvanceErrorHandling?: boolean;
+  Globals?: Partial<MailjetMessage>;
+  Messages: MailjetMessage[];
+  // Index signature for Mailjet library compatibility
+  [key: string]: unknown;
+}
+
+interface MailjetMessageResponse {
+  Status: "success" | "error";
+  Errors?: Array<{
+    ErrorIdentifier: string;
+    ErrorCode: string;
+    StatusCode: number;
+    ErrorMessage: string;
+    ErrorRelatedTo?: string;
+  }>;
+  CustomID?: string;
+  To?: Array<{
+    Email: string;
+    MessageUUID: string;
+    MessageID: number;
+    MessageHref: string;
+  }>;
+  Cc?: Array<{
+    Email: string;
+    MessageUUID: string;
+    MessageID: number;
+    MessageHref: string;
+  }>;
+  Bcc?: Array<{
+    Email: string;
+    MessageUUID: string;
+    MessageID: number;
+    MessageHref: string;
+  }>;
+}
+
+interface MailjetSendResponse {
+  Messages: MailjetMessageResponse[];
 }
 
 export class EmailService {
@@ -79,6 +170,206 @@ export class EmailService {
         }
       });
     });
+  }
+
+  /**
+   * Parse email string in formats: "Name" email@example.com or "Name" <email@example.com> or email@example.com
+   */
+  private static parseEmailString(emailStr: string): {
+    email: string;
+    name?: string;
+  } {
+    // Try to match format with angle brackets: "Name" <email@example.com>
+    let match = emailStr.match(/^"?([^"<]*?)"?\s*<(.+?)>/);
+    if (match) {
+      const name = match[1].trim();
+      const email = match[2];
+      return {
+        email,
+        ...(name && { name }),
+      };
+    }
+
+    // Try to match format without brackets: "Name" email@example.com
+    match = emailStr.match(/^"?([^"<]+?)"?\s+([^"<>\s]+@[^"<>\s]+)/);
+    if (match) {
+      const name = match[1].trim();
+      const email = match[2];
+      return {
+        email,
+        ...(name && { name }),
+      };
+    }
+
+    // Fall back to plain email
+    const plainEmail = emailStr.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+)/);
+    if (plainEmail) {
+      return { email: plainEmail[1] };
+    }
+
+    return { email: emailStr };
+  }
+
+  /**
+   * Convert nodemailer Mail.Options to Mailjet API v3.1 format
+   * Handles attachments by reading files and converting to base64
+   */
+  private static async convertToMailjetMessage(
+    message: Mail.Options,
+  ): Promise<MailjetMessage> {
+    const mailjetMsg: MailjetMessage = {
+      Subject: message.subject || "",
+      TextPart: typeof message.text === "string" ? message.text : undefined,
+      HTMLPart: typeof message.html === "string" ? message.html : undefined,
+      To: [],
+    };
+
+    // Parse From field
+    if (message.from) {
+      const parsed = EmailService.parseEmailString(message.from.toString());
+      mailjetMsg.From = {
+        Email: parsed.email,
+        ...(parsed.name && { Name: parsed.name }),
+      };
+    }
+
+    // Parse To field
+    if (message.to) {
+      const toAddresses = Array.isArray(message.to) ? message.to : [message.to];
+      for (const to of toAddresses) {
+        const parsed = EmailService.parseEmailString(to.toString());
+        mailjetMsg.To.push({
+          Email: parsed.email,
+          ...(parsed.name && { Name: parsed.name }),
+        });
+      }
+    }
+
+    // Parse Cc field
+    if (message.cc) {
+      const ccAddresses = Array.isArray(message.cc) ? message.cc : [message.cc];
+      mailjetMsg.Cc = [];
+      for (const cc of ccAddresses) {
+        const parsed = EmailService.parseEmailString(cc.toString());
+        mailjetMsg.Cc.push({
+          Email: parsed.email,
+          ...(parsed.name && { Name: parsed.name }),
+        });
+      }
+    }
+
+    // Parse Bcc field
+    if (message.bcc) {
+      const bccAddresses = Array.isArray(message.bcc)
+        ? message.bcc
+        : [message.bcc];
+      mailjetMsg.Bcc = [];
+      for (const bcc of bccAddresses) {
+        const parsed = EmailService.parseEmailString(bcc.toString());
+        mailjetMsg.Bcc.push({
+          Email: parsed.email,
+          ...(parsed.name && { Name: parsed.name }),
+        });
+      }
+    }
+
+    // Parse ReplyTo field
+    if (message.replyTo) {
+      const parsed = EmailService.parseEmailString(message.replyTo.toString());
+      mailjetMsg.ReplyTo = {
+        Email: parsed.email,
+        ...(parsed.name && { Name: parsed.name }),
+      };
+    }
+
+    // Handle attachments
+    if (message.attachments && message.attachments.length > 0) {
+      mailjetMsg.Attachments = [];
+
+      for (const attachment of message.attachments) {
+        let base64Content = "";
+
+        if (typeof attachment.content === "string") {
+          // If content is already a string, check if it's base64 or path
+          if (attachment.encoding === "base64") {
+            base64Content = attachment.content;
+          } else {
+            // Assume it's a file path
+            const fileContent = await readFile(attachment.content);
+            base64Content = fileContent.toString("base64");
+          }
+        } else if (Buffer.isBuffer(attachment.content)) {
+          // If content is a Buffer
+          base64Content = attachment.content.toString("base64");
+        } else if (attachment.path) {
+          // If path is provided
+          const fileContent = await readFile(String(attachment.path));
+          base64Content = fileContent.toString("base64");
+        }
+
+        mailjetMsg.Attachments.push({
+          Filename: attachment.filename || "attachment",
+          ContentType: attachment.contentType || "application/octet-stream",
+          Base64Content: base64Content,
+        });
+      }
+    }
+
+    return mailjetMsg;
+  }
+
+  /**
+   * Send email via Mailjet API v3.1
+   * Provides better reliability and detailed error information
+   */
+  public static async sendMailViaMailjet(
+    message: Mail.Options,
+    sandboxMode: boolean = false,
+  ): Promise<MailjetSendResponse> {
+    try {
+      const mailjetMessage =
+        await EmailService.convertToMailjetMessage(message);
+
+      const request: MailjetSendRequest = {
+        SandboxMode: sandboxMode,
+        Messages: [mailjetMessage],
+      };
+
+      const response = await (mailjet
+        .post("send", { version: "v3.1" })
+        .request(request) as unknown as Promise<{ body: MailjetSendResponse }>);
+
+      console.log(
+        "\n\n\nDEBUG Mailjet response body:",
+        response.body,
+        "TYPEEE",
+        typeof response.body,
+        "\n\n\n",
+      );
+
+      // Check for errors in the response
+      if (
+        response.body.Messages &&
+        response.body.Messages.length > 0 &&
+        response.body.Messages[0].Status === "error"
+      ) {
+        const errors = response.body.Messages[0].Errors;
+        logger.error(`Mailjet API error: ${JSON.stringify(errors, null, 2)}`);
+        throw new Error(
+          `Mailjet error: ${errors?.[0]?.ErrorMessage || "Unknown error"}`,
+        );
+      }
+
+      logger.debug(
+        `Email sent successfully via Mailjet to ${message.to}, response: ${JSON.stringify(response.body)}`,
+      );
+
+      return response.body as MailjetSendResponse;
+    } catch (error) {
+      logger.error("Error while sending email via Mailjet");
+      logger.error(error);
+      throw error;
+    }
   }
 
   public static async sendMail(message: Mail.Options): Promise<void> {
@@ -396,6 +687,90 @@ export class EmailService {
 
     await EmailService.sendMail(message);
     logger.info(`eQSL mail sent to user ${qso.callsign} at email: ${toEmail}`);
+    await unlink(filePath);
+  }
+
+  // allega immagine in qso.imageHref
+  public static async sendEqslEmailViaMailjet(
+    qso: QsoDoc,
+    fromStation: UserDoc,
+    toEmail: string,
+    event: EventDoc,
+    eqslBuffer?: Buffer,
+  ) {
+    if (!qso.imageHref) {
+      throw new Error("Qso has no imageHref");
+    }
+    logger.debug(
+      `Sending eQSL email via Mailjet to ${toEmail} with imageHref: ${qso.imageHref}`,
+    );
+    const eqslPic = new EqslPic(qso.imageHref);
+    await eqslPic.fetchImage(eqslBuffer);
+    const filePath = await eqslPic.saveImageToFile(
+      path.join(
+        envs.BASE_TEMP_DIR,
+        envs.QSL_CARD_TMP_FOLDER,
+        `eqsl-email-mailjet-${qso._id}-${moment().unix()}.jpg`,
+      ),
+      "jpeg", // Force JPEG format for smaller file sizes
+    );
+    const callsignAlphanum = qso.callsign
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .toLowerCase();
+
+    const distance =
+      qso.fromStationLat &&
+      qso.fromStationLon &&
+      qso.toStationLat &&
+      qso.toStationLon
+        ? getDistance(
+            {
+              latitude: qso.fromStationLat,
+              longitude: qso.fromStationLon,
+            },
+            {
+              latitude: qso.toStationLat,
+              longitude: qso.toStationLon,
+            },
+          )
+        : null;
+
+    logger.debug(
+      `Distance between (${qso.fromStationLat}, ${qso.fromStationLon}) and (${qso.toStationLat}, ${qso.toStationLon}) is ${distance} meters`,
+    );
+
+    const html = await EmailService.loadMailFromFile("eqsl.html", {
+      "{NOMINATIVO}": qso.callsign,
+      "{STAZIONE}": qso.fromStationCallsignOverride || fromStation.callsign,
+      "{QSOID}": qso._id.toString(),
+      "{EVENTO}": event.name,
+      "{EVENTID}": event._id.toString(),
+      "{DATA}": moment(qso.qsoDate).tz("Europe/Rome").format("DD/MM/YYYY"),
+      "{ORA}": moment(qso.qsoDate).format("HH:mm"), // in UTC, not timezone
+      "{BANDA}": qso.band,
+      "{LOCATORE}": qso.locator || "N/D",
+      "{DISTANZA}": distance ? Math.round(distance / 1000).toString() : "N/D",
+    });
+
+    const message: Mail.Options = {
+      from: `"VHF e Superiori" ${process.env.SEND_EMAIL_FROM}`,
+      to: toEmail,
+      subject:
+        "eQSL per il QSO con " +
+        (qso.fromStationCallsignOverride || fromStation.callsign),
+      html,
+      attachments: [
+        {
+          filename: `eqsl_${callsignAlphanum}.jpg`,
+          path: filePath,
+        },
+      ],
+    };
+
+    await EmailService.sendMailViaMailjet(message);
+    logger.info(
+      `eQSL mail sent via Mailjet to user ${qso.callsign} at email: ${toEmail}`,
+    );
     await unlink(filePath);
   }
 

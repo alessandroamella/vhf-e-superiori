@@ -2,6 +2,7 @@ import "../shared";
 import "./db";
 import "./auth";
 import "./config";
+import "./mailjet";
 import { logger } from "../shared/logger";
 import { createServer } from "./utils";
 

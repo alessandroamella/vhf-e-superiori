@@ -305,6 +305,7 @@ export class QsoClass {
     event: EventDoc,
     eqslTemplateImgUrl: string,
     eqslTemplateImgPath?: string,
+    useMailjet = false,
   ): Promise<string> {
     if (!this.email) {
       throw new Error(`No email found in sendEqsl for QSO ${this._id}`);
@@ -321,13 +322,23 @@ export class QsoClass {
     await eqslPic.fetchImage();
 
     // 3. Send Email
-    await EmailService.sendEqslEmail(
-      this,
-      fromStation,
-      this.email,
-      event,
-      eqslPic.getImage() ?? undefined,
-    );
+    if (useMailjet) {
+      await EmailService.sendEqslEmailViaMailjet(
+        this,
+        fromStation,
+        this.email,
+        event,
+        eqslPic.getImage() ?? undefined,
+      );
+    } else {
+      await EmailService.sendEqslEmail(
+        this,
+        fromStation,
+        this.email,
+        event,
+        eqslPic.getImage() ?? undefined,
+      );
+    }
 
     this.emailSent = true;
     this.emailSentDate = new Date();
