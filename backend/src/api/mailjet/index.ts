@@ -1,7 +1,8 @@
-import { Client } from "node-mailjet";
-import { envs } from "../../shared";
+import { logger } from "../../shared";
+import { scheduleWeeklyContactDeletion } from "./delete-contacts";
 
-export const mailjet = new Client({
-  apiKey: envs.MAIL_USERNAME,
-  apiSecret: envs.MAIL_PASSWORD,
-});
+export { mailjet } from "./client";
+
+logger.info("Mailjet client initialized");
+
+scheduleWeeklyContactDeletion();
