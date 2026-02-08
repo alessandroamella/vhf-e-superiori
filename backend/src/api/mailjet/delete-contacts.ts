@@ -20,7 +20,32 @@ interface ContactData {
   UnsubscribedBy: string;
 }
 
+// Track deletion state to prevent concurrent executions
+let isDeletionInProgress = false;
+let lastDeletionTime: number | null = null;
+const MIN_TIME_BETWEEN_DELETIONS_MS = 30 * 60 * 1000; // 30 minutes
+
 async function deleteAllContacts() {
+  // Prevent concurrent executions
+  if (isDeletionInProgress) {
+    logger.warn("Deletion already in progress, skipping this execution");
+    return;
+  }
+
+  // Check if enough time has passed since last deletion
+  if (lastDeletionTime) {
+    const timeSinceLastDeletion = Date.now() - lastDeletionTime;
+    if (timeSinceLastDeletion < MIN_TIME_BETWEEN_DELETIONS_MS) {
+      logger.info(
+        `Last deletion was ${Math.round(timeSinceLastDeletion / 60000)} minutes ago. Skipping (minimum ${MIN_TIME_BETWEEN_DELETIONS_MS / 60000} minutes required)`,
+      );
+      return;
+    }
+  }
+
+  isDeletionInProgress = true;
+  logger.info("Starting deleteAllContacts process");
+
   try {
     // Create axios instance with Basic auth for HTTP API
     const axiosInstance = axios.create({
@@ -88,12 +113,61 @@ async function deleteAllContacts() {
     }
 
     logger.info("Finished deletion process");
+    lastDeletionTime = Date.now();
   } catch (err) {
     const error = (err as Error)?.message || err;
     logger.error(
       `Error in deleteAllContacts: ${typeof error === "object" ? JSON.stringify(error) : error}`,
     );
+  } finally {
+    isDeletionInProgress = false;
   }
+}
+
+async function checkContactsAndDeleteIfNeeded() {
+  try {
+    // Don't check if deletion is already in progress
+    if (isDeletionInProgress) {
+      logger.info("Deletion in progress, skipping hourly contact count check");
+      return;
+    }
+
+    logger.info("Running hourly contact count check");
+
+    // Get contact count with limit 510 to be safe
+    const listResponse = await mailjet
+      .get("contact")
+      .request(undefined, { Limit: 510 });
+
+    const { Count: totalCount, Data: contacts } = listResponse.body as {
+      Count: number;
+      Data: ContactData[];
+    };
+
+    logger.info(
+      `Current contact count: ${contacts.length} (Total: ${totalCount})`,
+    );
+
+    if (contacts.length > 500) {
+      logger.warn(
+        `Contact count (${contacts.length}) exceeds 500 threshold. Triggering deletion process.`,
+      );
+      await deleteAllContacts();
+    } else {
+      logger.info(`Contact count is within limits (${contacts.length}/500)`);
+    }
+  } catch (err) {
+    const error = (err as Error)?.message || err;
+    logger.error(
+      `Error in checkContactsAndDeleteIfNeeded: ${typeof error === "object" ? JSON.stringify(error) : error}`,
+    );
+  }
+}
+
+export function scheduleHourlyContactCheck() {
+  const job = new CronJob("0 * * * *", checkContactsAndDeleteIfNeeded); // Every hour at minute 0
+  job.start();
+  logger.info("Hourly MailJet contact check cron job scheduled");
 }
 
 export function scheduleWeeklyContactDeletion() {
