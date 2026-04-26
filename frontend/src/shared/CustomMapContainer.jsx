@@ -26,8 +26,9 @@ const CustomMapContainer = ({ children, ...props }) => {
     <div ref={mapRef} style={{ height: `${height}px`, width: "100%" }}>
       <LeafletMapContainer style={{ height: "100%", width: "100%" }} {...props}>
         <TileLayer
-          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          referrerPolicy="strict-origin-when-cross-origin"
+          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
         {children}
       </LeafletMapContainer>

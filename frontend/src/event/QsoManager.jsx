@@ -2089,6 +2089,7 @@ const QsoManager = () => {
                     <MapContainer center={[43.110717, 12.390828]} zoom={5}>
                       <TileLayer
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        referrerPolicy="strict-origin-when-cross-origin"
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                       />
 
