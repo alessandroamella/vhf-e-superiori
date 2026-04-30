@@ -103,19 +103,6 @@ const QsoManager = () => {
   const [event, setEvent] = useState(false);
   const [qsos, setQsos] = useState(false);
 
-  const isActivator = useMemo(() => {
-    // Admins always have permission
-    // if (hasAdminRights) return true;
-
-    // Check if user and event data exists
-    if (!user || !event || !Array.isArray(event.joinRequests)) return false;
-
-    // Check if the user is in the approved join requests list
-    return event.joinRequests.some(
-      (req) => req.isApproved && req.fromUser?.callsign === user.callsign,
-    );
-  }, [/* hasAdminRights, */ event, user]);
-
   const [hasPermission, setHasPermission] = useState(false);
 
   const [highlighted, setHighlighted] = useState(null);

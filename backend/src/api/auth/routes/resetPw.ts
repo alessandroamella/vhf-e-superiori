@@ -70,7 +70,7 @@ router.post(
       });
 
       // This check now handles invalid user ID, no token, or expired token
-      if (!user || !user.passwordReset) {
+      if (!user?.passwordReset) {
         logger.debug(
           `User ${req.body.user} not found or token expired in reset pw`,
         );

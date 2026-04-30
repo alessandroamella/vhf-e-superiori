@@ -68,7 +68,7 @@ const Qso = () => {
       try {
         const { data } = await axios.get(`/api/qso/${id}`);
         console.log("qso", data);
-        if (!data || !data?.callsign) {
+        if (!data?.callsign) {
           throw new Error("QSO non trovato");
         }
         setQso(data);

@@ -106,7 +106,7 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       // Validate that ADIF or EDI file was uploaded
-      if (!req.files || !req.files.adif) {
+      if (!req.files?.adif) {
         logger.debug("No ADIF/EDI file uploaded");
         return res.status(BAD_REQUEST).json(createError(Errors.NO_CONTENT));
       }

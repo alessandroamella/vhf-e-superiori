@@ -8,11 +8,7 @@ import { User } from "../models";
 import { AuthOptions } from "../shared";
 
 const cookieExtractor: JwtFromRequestFunction = (req) => {
-  if (
-    !req ||
-    !req.signedCookies ||
-    !req.signedCookies[AuthOptions.AUTH_COOKIE_NAME]
-  ) {
+  if (!req?.signedCookies?.[AuthOptions.AUTH_COOKIE_NAME]) {
     return null;
   }
   // return jwt.verify(
