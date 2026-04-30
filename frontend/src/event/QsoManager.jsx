@@ -668,23 +668,6 @@ const QsoManager = () => {
     async (_adifFile) => {
       if (!_adifFile) return;
 
-      // --- ADD THIS BLOCK ---
-      if (!isActivator) {
-        if (hasAdminRights) {
-          window.alert(
-            "La funzione sarebbe attiva solo se sei ATTIVATORE, ma sei amministratore quindi procedo comunque",
-          );
-        } else {
-          window.alert("La funzione è attiva solo se sei ATTIVATORE");
-
-          // Clear the file input so it doesn't look like a file is selected
-          if (adifInputRef.current) {
-            adifInputRef.current.value = null;
-          }
-          return;
-        }
-      }
-
       setAdifFile(_adifFile);
 
       setHasFile(true);
@@ -723,7 +706,7 @@ const QsoManager = () => {
         setDisabled(false);
       }
     },
-    [id, setAlert, isActivator, hasAdminRights],
+    [id, setAlert],
   );
 
   const [isImportingAdif, setIsImportingAdif] = useState(false);
