@@ -4,7 +4,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import Zoom from "react-medium-image-zoom";
 import ReactPlayer from "react-player";
 import { Link } from "react-router";
-import { Navigation, Pagination as SwiperPagination } from "swiper";
+import { Navigation, Pagination as SwiperPagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { formatInTimeZone } from "../shared/formatInTimeZone";
 

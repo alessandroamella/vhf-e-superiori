@@ -7,7 +7,7 @@ import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Zoom from "react-medium-image-zoom";
 import ReactPlayer from "react-player";
-import { Navigation, Pagination } from "swiper";
+import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 const MediaSwiper = React.memo(({ postPictures, postVideos }) => (
