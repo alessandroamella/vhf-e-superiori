@@ -156,7 +156,7 @@ const ViewBeacon = () => {
           {t("beaconViewer.pageTitle", { callsign: beacon?.callsign || "" })}
         </title>
       </Helmet>
-      <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900">
+      <div className="w-full h-full pb-4 dark:text-white bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           <div className="mb-4 md:-ml-4 md:-mt-4">
             <Link to={"/beacon"}>

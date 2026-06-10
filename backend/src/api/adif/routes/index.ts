@@ -180,23 +180,42 @@ router.post(
           }
         }
 
+        let fromStationLat = parseInt(req.body.fromStationLat, 10);
+        let fromStationLon = parseInt(req.body.fromStationLon, 10);
         let locator: string | null = null;
-        try {
-          locator = location.calculateQth(
-            parseInt(req.body.fromStationLat, 10),
-            parseInt(req.body.fromStationLon, 10),
-          );
-        } catch (err) {
-          logger.debug("Error while calculating locator");
-          logger.debug(err);
+
+        // Prefer the MY_GRIDSQUARE from the ADIF file (the logging
+        // station's own locator) over the form's current locator, which
+        // may belong to whoever is performing the import (e.g. an admin
+        // importing on behalf of another user)
+        if (q.my_gridsquare) {
+          const adifCoords = location.calculateLatLon(q.my_gridsquare);
+          if (adifCoords) {
+            fromStationLat = adifCoords[0];
+            fromStationLon = adifCoords[1];
+            locator = q.my_gridsquare;
+
+            logger.debug(
+              `Using MY_GRIDSQUARE ${q.my_gridsquare} from ADIF for ${q.call} as fromStation locator`,
+            );
+          }
+        }
+
+        if (!locator) {
+          try {
+            locator = location.calculateQth(fromStationLat, fromStationLon);
+          } catch (err) {
+            logger.debug("Error while calculating locator");
+            logger.debug(err);
+          }
         }
 
         const qso = await new Qso({
           fromStation: user._id,
           fromStationCity: req.body.fromStationCity,
           fromStationProvince: req.body.fromStationProvince,
-          fromStationLat: parseInt(req.body.fromStationLat, 10),
-          fromStationLon: parseInt(req.body.fromStationLon, 10),
+          fromStationLat,
+          fromStationLon,
           callsign: q.call,
           mode: q.mode,
           frequency: q.freq,

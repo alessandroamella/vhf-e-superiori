@@ -67,7 +67,7 @@ const BeaconHomepage = () => {
           - VHF e Superiori
         </title>
       </Helmet>
-      <div className="w-full min-h-[60vh] overflow-y-auto h-full pb-4 dark:text-white dark:bg-gray-900">
+      <div className="w-full min-h-[60vh] overflow-y-auto h-full pb-4 dark:text-white bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
         <div className="mx-auto px-4 w-full md:w-11/12 py-12">
           {alert && (
             <Alert

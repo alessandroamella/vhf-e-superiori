@@ -81,11 +81,6 @@ router.post(
         lon,
       } = req.body;
 
-      const existing = await Beacon.findOne({ callsign });
-      if (existing) {
-        return res.status(BAD_REQUEST).json(createError(Errors.BEACON_EXISTS));
-      }
-
       const beaconProps = new BeaconProperties({
         name,
         frequency,

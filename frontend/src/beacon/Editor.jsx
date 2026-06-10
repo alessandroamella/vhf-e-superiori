@@ -83,7 +83,6 @@ const BeaconEditor = () => {
   const id = searchParams.get("id");
 
   const [beacon, setBeacon] = useState(null);
-  const [beaconEdit, setBeaconEdit] = useState(null);
 
   const [loading, setLoading] = useState(true);
 
@@ -108,7 +107,6 @@ const BeaconEditor = () => {
         console.log("properties", properties);
 
         setBeacon(beacon);
-        setBeaconEdit(properties);
 
         setCallsign(beacon.callsign);
 
@@ -146,7 +144,6 @@ const BeaconEditor = () => {
 
   const user = useUserStore((store) => store.user);
   const isEditing = !!id; // true if id is not null (i.e. we are editing a beacon)
-  const canEdit = user?.isAdmin || user?._id === beaconEdit?.editAuthor;
 
   useEffect(() => {
     if (user === null)
@@ -177,7 +174,7 @@ const BeaconEditor = () => {
   const [isPositionSet, setIsPositionSet] = useState(false);
   const [isLocatorFocused, setIsLocatorFocused] = useState(false);
 
-  const [disabled, setDisabled] = useState(!canEdit);
+  const [disabled, setDisabled] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -333,7 +330,7 @@ const BeaconEditor = () => {
           {isEditing ? "Modifica" : "Nuovo"} beacon - VHF e Superiori
         </title>
       </Helmet>
-      <div className="w-full h-full pb-4 dark:text-white dark:bg-gray-900">
+      <div className="w-full h-full pb-4 dark:text-white bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           <div className="mb-4 md:-ml-4 md:-mt-4">
             <Link to={disabled ? "#" : "/beacon"}>

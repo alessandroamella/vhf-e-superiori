@@ -146,7 +146,7 @@ const JoinRequestModal = ({ open, setOpen, event, setEvent }) => {
                 className="dark:text-gray-300"
                 label="Evento per cui fare richiesta"
                 disabled={!joinableEvents || (disabled && !closable)}
-                value={joinableEvents?.[0].name}
+                value={event?.name || joinableEvents?.[0]?.name}
               >
                 {joinableEvents?.map((e) => (
                   <Option key={e._id} onClick={() => setEvent(e)}>
