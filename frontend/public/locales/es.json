@@ -418,6 +418,7 @@
   "profileBeacons": {
     "title": "Mis balizas",
     "addButton": "Añadir baliza",
-    "empty": "Aún no has añadido balizas"
+    "empty": "Aún no has añadido balizas",
+    "editButton": "Editar"
   }
 }

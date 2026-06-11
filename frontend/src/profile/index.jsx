@@ -34,6 +34,7 @@ import {
   FaExclamation,
   FaExternalLinkAlt,
   FaLink,
+  FaPen,
   FaPlus,
   FaTrash,
 } from "react-icons/fa";
@@ -825,23 +826,35 @@ const Profile = () => {
                     <ListGroup className="p-0">
                       {myBeacons.map((b) => (
                         <ListGroup.Item key={b._id}>
-                          <Link
-                            to={`/beacon/${b._id}`}
-                            className="w-full hover:scale-[1.02] transition-transform flex items-center gap-2 p-1"
-                          >
-                            <FaBroadcastTower className="text-gray-500 dark:text-gray-400 shrink-0" />
-                            <span className="font-bold">{b.callsign}</span>
-                            {b.properties?.frequency && (
-                              <span className="text-gray-500 dark:text-gray-400">
-                                {b.properties.frequency} MHz
-                              </span>
-                            )}
-                            {b.properties?.locator && (
-                              <span className="ml-auto text-gray-500 dark:text-gray-400">
-                                {b.properties.locator}
-                              </span>
-                            )}
-                          </Link>
+                          <div className="flex items-center gap-2 w-full">
+                            <Link
+                              to={`/beacon/${b._id}`}
+                              className="hover:scale-[1.02] transition-transform flex items-center gap-2 p-1 grow"
+                            >
+                              <FaBroadcastTower className="text-gray-500 dark:text-gray-400 shrink-0" />
+                              <span className="font-bold">{b.callsign}</span>
+                              {b.properties?.frequency && (
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  {b.properties.frequency} MHz
+                                </span>
+                              )}
+                              {b.properties?.locator && (
+                                <span className="ml-auto text-gray-500 dark:text-gray-400">
+                                  {b.properties.locator}
+                                </span>
+                              )}
+                            </Link>
+                            <Button
+                              size="xs"
+                              color="light"
+                              onClick={() =>
+                                navigate(`/beacon/editor?id=${b._id}`)
+                              }
+                            >
+                              <FaPen className="mr-1" />
+                              {t("profileBeacons.editButton")}
+                            </Button>
+                          </div>
                         </ListGroup.Item>
                       ))}
                     </ListGroup>

@@ -421,6 +421,7 @@
   "profileBeacons": {
     "title": "My beacons",
     "addButton": "Add beacon",
-    "empty": "You have not added any beacons yet"
+    "empty": "You have not added any beacons yet",
+    "editButton": "Edit"
   }
 }

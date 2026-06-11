@@ -418,6 +418,7 @@
   "profileBeacons": {
     "title": "Meine Baken",
     "addButton": "Bake hinzufügen",
-    "empty": "Du hast noch keine Baken hinzugefügt"
+    "empty": "Du hast noch keine Baken hinzugefügt",
+    "editButton": "Bearbeiten"
   }
 }

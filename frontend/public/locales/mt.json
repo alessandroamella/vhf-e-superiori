@@ -417,6 +417,7 @@
   "profileBeacons": {
     "title": "Il-baykons tiegħi",
     "addButton": "Żid baykon",
-    "empty": "Għadek ma żidt l-ebda baykon"
+    "empty": "Għadek ma żidt l-ebda baykon",
+    "editButton": "Editja"
   }
 }
