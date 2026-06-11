@@ -311,7 +311,10 @@
     "locatorLabel": "Locator",
     "altitudeLabel": "Altitude",
     "modeLabel": "Mode",
-    "qtfLabel": "QTF"
+    "qtfLabel": "QTF",
+    "changesByText": "Edited by ",
+    "onDateText": "on",
+    "atTimeText": "at"
   },
   "fileUploader": {
     "toast": {

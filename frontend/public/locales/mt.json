@@ -308,7 +308,10 @@
     "modeLabel": "Mod",
     "qtfLabel": "QTF",
     "dropAdifFile": "Ħalli l-fajl ADIF/EDI tiegħek hawn...",
-    "dragOrClickAdif": "Drag il-fajl tiegħek .adif, .adi jew .edi hawn, jew ikklikkja biex tagħżlu."
+    "dragOrClickAdif": "Drag il-fajl tiegħek .adif, .adi jew .edi hawn, jew ikklikkja biex tagħżlu.",
+    "changesByText": "Editjat minn ",
+    "onDateText": "fl-",
+    "atTimeText": "fis-"
   },
   "fileUploader": {
     "toast": {

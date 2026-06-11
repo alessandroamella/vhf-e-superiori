@@ -5,11 +5,12 @@ import L from "leaflet";
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
-import { FaBackward, FaPen, FaTrash } from "react-icons/fa";
+import { FaBackward, FaInfoCircle, FaPen, FaTrash } from "react-icons/fa";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import ReactPlaceholder from "react-placeholder";
 import { Link, useNavigate, useParams } from "react-router";
 import { getErrorStr } from "../shared";
+import { formatInTimeZone } from "../shared/formatInTimeZone";
 import MapWatermark from "../shared/MapWatermark";
 import useUserStore from "../stores/userStore";
 
@@ -212,6 +213,27 @@ const ViewBeacon = () => {
                         {beacon.owner.callsign}
                       </Link>
                     </p>
+                  )}
+
+                  {properties.editAuthor?.callsign && properties.editDate && (
+                    <Alert className="w-fit" color="warning">
+                      <div>
+                        <FaInfoCircle className="inline mr-2 mb-[2px]" />
+                        {t("beaconViewer.changesByText")}
+                        <Link
+                          className="font-bold"
+                          to={`/u/${properties.editAuthor.callsign}`}
+                        >
+                          {properties.editAuthor.callsign}
+                        </Link>{" "}
+                        {t("beaconViewer.onDateText")}{" "}
+                        {formatInTimeZone(
+                          new Date(properties.editDate),
+                          "Europe/Rome",
+                          `dd/MM/yyyy '${t("beaconViewer.atTimeText")}' HH:mm`,
+                        )}
+                      </div>
+                    </Alert>
                   )}
                 </Card>
 
