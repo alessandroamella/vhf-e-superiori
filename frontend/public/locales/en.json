@@ -432,5 +432,53 @@
     "addButton": "Add beacon",
     "empty": "You have not added any beacons yet",
     "editButton": "Edit"
+  },
+  "beaconEditor": {
+    "pageTitle": {
+      "new": "New beacon",
+      "edit": "Edit beacon"
+    },
+    "heading": {
+      "new": "New Beacon",
+      "edit": "Edit Beacon"
+    },
+    "form": {
+      "callsign": "Callsign",
+      "frequency": "Frequency in MHz",
+      "qth": "QTH",
+      "locator": "Locator",
+      "hamsl": "Height above sea level",
+      "antenna": "Antenna",
+      "mode": "Mode",
+      "qtf": "QTF",
+      "power": "Power in Watts",
+      "name": "Beacon nickname (optional)",
+      "namePlaceholder": "E.g. Mount Cimone Beacon"
+    },
+    "owner": {
+      "label": "Maintainer (admins only)",
+      "description": "Search for a registered user by callsign or name. Every beacon must have a maintainer.",
+      "placeholder": "Search callsign...",
+      "selected": "Maintainer selected: {{callsign}}",
+      "required": "Select a maintainer from the list"
+    },
+    "position": {
+      "title": "Position",
+      "description": "Click on the map to select the beacon position",
+      "geolocalize": "Geolocate"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "create": "Create",
+      "save": "Save"
+    },
+    "validation": {
+      "positionRequired": "Select the beacon position on the map",
+      "ownerRequired": "Select a maintainer for the beacon"
+    },
+    "alerts": {
+      "cannotEdit": "Only the maintainer of this beacon or an administrator can edit it.",
+      "geolocalizationError": "Geolocation error"
+    }
   }
 }

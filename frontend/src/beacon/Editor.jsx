@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import { FaBackward, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import {
   MapContainer,
@@ -77,6 +78,7 @@ const CustomMarker = ({
 };
 
 const BeaconEditor = () => {
+  const { t } = useTranslation();
   const [alert, setAlert] = useState(null);
 
   const [searchParams] = useSearchParams();
@@ -230,7 +232,7 @@ const BeaconEditor = () => {
     if (!lat || !lon || !isPositionSet) {
       setAlert({
         color: "failure",
-        msg: "Seleziona la posizione del beacon sulla mappa",
+        msg: t("beaconEditor.validation.positionRequired"),
       });
       window.scrollTo(0, 0);
       return;
@@ -240,7 +242,7 @@ const BeaconEditor = () => {
     if (isEditing && user?.isAdmin && !ownerId) {
       setAlert({
         color: "failure",
-        msg: "Seleziona un manutentore per il beacon",
+        msg: t("beaconEditor.validation.ownerRequired"),
       });
       window.scrollTo(0, 0);
       return;
@@ -379,7 +381,7 @@ const BeaconEditor = () => {
         console.log("Errore nella geolocalizzazione", err);
         setAlert({
           color: "failure",
-          msg: "Errore nella geolocalizzazione",
+          msg: t("beaconEditor.alerts.geolocalizationError"),
         });
       },
     );
@@ -389,7 +391,12 @@ const BeaconEditor = () => {
     <>
       <Helmet>
         <title>
-          {isEditing ? "Modifica" : "Nuovo"} beacon - VHF e Superiori
+          {t(
+            isEditing
+              ? "beaconEditor.pageTitle.edit"
+              : "beaconEditor.pageTitle.new",
+          )}{" "}
+          - VHF e Superiori
         </title>
       </Helmet>
       <div className="w-full h-full pb-4 dark:text-white bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
@@ -414,10 +421,7 @@ const BeaconEditor = () => {
 
           {!loading && isEditing && !canEdit && (
             <Alert className="mb-6 dark:text-black" color="warning">
-              <span>
-                Solo il manutentore di questo beacon o un amministratore possono
-                modificarlo.
-              </span>
+              <span>{t("beaconEditor.alerts.cannotEdit")}</span>
             </Alert>
           )}
 
@@ -429,14 +433,21 @@ const BeaconEditor = () => {
           >
             <form onSubmit={handleSubmit}>
               <h1 className="text-4xl font-bold mb-4">
-                {isEditing ? "Modifica" : "Nuovo"} Beacon{" "}
-                {isEditing && callsign}
+                {t(
+                  isEditing
+                    ? "beaconEditor.heading.edit"
+                    : "beaconEditor.heading.new",
+                )}{" "}
+                Beacon {isEditing && callsign}
               </h1>
               {!isEditing && (
                 <div className="mb-4">
                   <div>
                     <div className="mb-2 block">
-                      <Label htmlFor="username" value="Nominativo" />
+                      <Label
+                        htmlFor="username"
+                        value={t("beaconEditor.form.callsign")}
+                      />
                     </div>
                     <TextInput
                       type="text"
@@ -461,7 +472,10 @@ const BeaconEditor = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4">
                 <div>
                   <div className="mb-2 block">
-                    <Label htmlFor="event-band" value="Frequenza in MHz" />
+                    <Label
+                      htmlFor="event-band"
+                      value={t("beaconEditor.form.frequency")}
+                    />
                   </div>
                   <TextInput
                     id="frequency"
@@ -476,7 +490,10 @@ const BeaconEditor = () => {
 
                 <div>
                   <div className="mb-2 block">
-                    <Label htmlFor="qthStr" value="QTH" />
+                    <Label
+                      htmlFor="qthStr"
+                      value={t("beaconEditor.form.qth")}
+                    />
                   </div>
                   <TextInput
                     id="qthStr"
@@ -491,7 +508,10 @@ const BeaconEditor = () => {
 
                 <div>
                   <div className="mb-2 block">
-                    <Label htmlFor="locator" value="Locatore" />
+                    <Label
+                      htmlFor="locator"
+                      value={t("beaconEditor.form.locator")}
+                    />
                   </div>
                   <TextInput
                     id="locator"
@@ -510,7 +530,7 @@ const BeaconEditor = () => {
                   <div className="mb-2 block">
                     <Label
                       htmlFor="hamsl"
-                      value="Altezza dal livello del mare"
+                      value={t("beaconEditor.form.hamsl")}
                     />
                   </div>
                   <TextInput
@@ -526,7 +546,10 @@ const BeaconEditor = () => {
 
                 <div>
                   <div className="mb-2 block">
-                    <Label htmlFor="antenna" value="Antenna" />
+                    <Label
+                      htmlFor="antenna"
+                      value={t("beaconEditor.form.antenna")}
+                    />
                   </div>
                   <TextInput
                     id="antenna"
@@ -541,7 +564,7 @@ const BeaconEditor = () => {
 
                 <div>
                   <div className="mb-2 block">
-                    <Label htmlFor="mode" value="Modo" />
+                    <Label htmlFor="mode" value={t("beaconEditor.form.mode")} />
                   </div>
                   <TextInput
                     id="mode"
@@ -556,7 +579,7 @@ const BeaconEditor = () => {
 
                 <div>
                   <div className="mb-2 block">
-                    <Label htmlFor="qtf" value="QTF" />
+                    <Label htmlFor="qtf" value={t("beaconEditor.form.qtf")} />
                   </div>
                   <TextInput
                     id="qtf"
@@ -571,7 +594,10 @@ const BeaconEditor = () => {
 
                 <div>
                   <div className="mb-2 block">
-                    <Label htmlFor="power" value="Potenza in Watt" />
+                    <Label
+                      htmlFor="power"
+                      value={t("beaconEditor.form.power")}
+                    />
                   </div>
                   <TextInput
                     id="power"
@@ -586,15 +612,12 @@ const BeaconEditor = () => {
 
                 <div>
                   <div className="mb-2 block">
-                    <Label
-                      htmlFor="name"
-                      value="Soprannome del beacon (opzionale)"
-                    />
+                    <Label htmlFor="name" value={t("beaconEditor.form.name")} />
                   </div>
                   <TextInput
                     id="name"
                     type="text"
-                    placeholder="Es. Beacon di Monte Cimone"
+                    placeholder={t("beaconEditor.form.namePlaceholder")}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     disabled={formDisabled}
@@ -608,12 +631,11 @@ const BeaconEditor = () => {
                     <FaUser className="text-gray-500 dark:text-gray-400" />
                     <Label
                       htmlFor="owner"
-                      value="Manutentore (solo amministratori)"
+                      value={t("beaconEditor.owner.label")}
                     />
                   </div>
                   <p className="mb-2 text-sm text-gray-600 dark:text-gray-400">
-                    Cerca un utente registrato per nominativo o nome. Ogni
-                    beacon deve avere un manutentore.
+                    {t("beaconEditor.owner.description")}
                   </p>
                   <div className="relative">
                     <div className="flex items-center gap-2">
@@ -621,7 +643,7 @@ const BeaconEditor = () => {
                         id="owner"
                         className="grow"
                         type="text"
-                        placeholder="Cerca nominativo..."
+                        placeholder={t("beaconEditor.owner.placeholder")}
                         autoComplete="off"
                         value={ownerQuery}
                         onChange={(e) => {
@@ -663,11 +685,13 @@ const BeaconEditor = () => {
                   <p className="mt-2 text-sm">
                     {ownerId ? (
                       <span className="text-green-700 dark:text-green-400">
-                        Manutentore selezionato: <strong>{ownerQuery}</strong>
+                        {t("beaconEditor.owner.selected", {
+                          callsign: ownerQuery,
+                        })}
                       </span>
                     ) : (
                       <span className="text-red-600 dark:text-red-400">
-                        Seleziona un manutentore dalla lista
+                        {t("beaconEditor.owner.required")}
                       </span>
                     )}
                   </p>
@@ -679,9 +703,11 @@ const BeaconEditor = () => {
               <div className="flex flex-col w-full items-center mt-4">
                 <div className="flex flex-col md:flex-row justify-center gap-2 md:gap-8 items-center mb-2">
                   <div>
-                    <h2 className="text-2xl font-bold">Posizione</h2>
+                    <h2 className="text-2xl font-bold">
+                      {t("beaconEditor.position.title")}
+                    </h2>
                     <span className="text-gray-600 dark:text-gray-400">
-                      Clicca sulla mappa per selezionare la posizione del beacon
+                      {t("beaconEditor.position.description")}
                     </span>
                   </div>
                   <Button
@@ -690,7 +716,7 @@ const BeaconEditor = () => {
                     disabled={formDisabled}
                   >
                     <FaMapMarkerAlt className="text-lg" />
-                    Geolocalizza
+                    {t("beaconEditor.position.geolocalize")}
                   </Button>
                 </div>
                 <div className="drop-shadow-lg flex justify-center relative mt-2 w-full">
@@ -727,7 +753,7 @@ const BeaconEditor = () => {
                     disabled={disabled}
                     className="w-full"
                   >
-                    Annulla
+                    {t("beaconEditor.buttons.cancel")}
                   </Button>
                 </Link>
                 <div>
@@ -738,7 +764,11 @@ const BeaconEditor = () => {
                     disabled={formDisabled}
                     className="w-full"
                   >
-                    {isEditing ? "Salva" : "Crea"}
+                    {t(
+                      isEditing
+                        ? "beaconEditor.buttons.save"
+                        : "beaconEditor.buttons.create",
+                    )}
                   </Button>
                 </div>
               </div>

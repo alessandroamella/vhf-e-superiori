@@ -429,5 +429,53 @@
     "addButton": "Ajouter une balise",
     "empty": "Vous n avez pas encore ajouté de balise",
     "editButton": "Modifier"
+  },
+  "beaconEditor": {
+    "pageTitle": {
+      "new": "Nouveau balise",
+      "edit": "Modifier la balise"
+    },
+    "heading": {
+      "new": "Nouveau Balise",
+      "edit": "Modifier Balise"
+    },
+    "form": {
+      "callsign": "Indicatif",
+      "frequency": "Fréquence en MHz",
+      "qth": "QTH",
+      "locator": "Localisateur",
+      "hamsl": "Altitude au-dessus du niveau de la mer",
+      "antenna": "Antenne",
+      "mode": "Mode",
+      "qtf": "QTF",
+      "power": "Puissance en Watts",
+      "name": "Surnom de la balise (optionnel)",
+      "namePlaceholder": "Ex. Balise du Mont Cimone"
+    },
+    "owner": {
+      "label": "Mainteneur (administrateurs uniquement)",
+      "description": "Recherchez un utilisateur enregistré par indicatif ou par nom. Chaque balise doit avoir un mainteneur.",
+      "placeholder": "Rechercher l'indicatif...",
+      "selected": "Mainteneur sélectionné: {{callsign}}",
+      "required": "Sélectionnez un mainteneur dans la liste"
+    },
+    "position": {
+      "title": "Position",
+      "description": "Cliquez sur la carte pour sélectionner la position de la balise",
+      "geolocalize": "Géolocaliser"
+    },
+    "buttons": {
+      "cancel": "Annuler",
+      "create": "Créer",
+      "save": "Enregistrer"
+    },
+    "validation": {
+      "positionRequired": "Sélectionnez la position de la balise sur la carte",
+      "ownerRequired": "Sélectionnez un mainteneur pour la balise"
+    },
+    "alerts": {
+      "cannotEdit": "Seul le mainteneur de cette balise ou un administrateur peut la modifier.",
+      "geolocalizationError": "Erreur de géolocalisation"
+    }
   }
 }

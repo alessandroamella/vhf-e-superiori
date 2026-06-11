@@ -429,5 +429,53 @@
     "addButton": "Añadir baliza",
     "empty": "Aún no has añadido balizas",
     "editButton": "Editar"
+  },
+  "beaconEditor": {
+    "pageTitle": {
+      "new": "Nuevo faro",
+      "edit": "Editar faro"
+    },
+    "heading": {
+      "new": "Nuevo Faro",
+      "edit": "Editar Faro"
+    },
+    "form": {
+      "callsign": "Indicativo",
+      "frequency": "Frecuencia en MHz",
+      "qth": "QTH",
+      "locator": "Localizador",
+      "hamsl": "Altura sobre el nivel del mar",
+      "antenna": "Antena",
+      "mode": "Modo",
+      "qtf": "QTF",
+      "power": "Potencia en Vatios",
+      "name": "Apodo del faro (opcional)",
+      "namePlaceholder": "Ej. Faro del Monte Cimone"
+    },
+    "owner": {
+      "label": "Mantenedor (solo administradores)",
+      "description": "Busca un usuario registrado por indicativo o nombre. Cada faro debe tener un mantenedor.",
+      "placeholder": "Buscar indicativo...",
+      "selected": "Mantenedor seleccionado: {{callsign}}",
+      "required": "Selecciona un mantenedor de la lista"
+    },
+    "position": {
+      "title": "Posición",
+      "description": "Haz clic en el mapa para seleccionar la posición del faro",
+      "geolocalize": "Geolocalizar"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "create": "Crear",
+      "save": "Guardar"
+    },
+    "validation": {
+      "positionRequired": "Selecciona la posición del faro en el mapa",
+      "ownerRequired": "Selecciona un mantenedor para el faro"
+    },
+    "alerts": {
+      "cannotEdit": "Solo el mantenedor de este faro o un administrador pueden editarlo.",
+      "geolocalizationError": "Error de geolocalización"
+    }
   }
 }

@@ -428,5 +428,53 @@
     "addButton": "Żid baykon",
     "empty": "Għadek ma żidt l-ebda baykon",
     "editButton": "Editja"
+  },
+  "beaconEditor": {
+    "pageTitle": {
+      "new": "Beacon ġdid",
+      "edit": "Immodifika beacon"
+    },
+    "heading": {
+      "new": "Beacon Ġdid",
+      "edit": "Immodifika Beacon"
+    },
+    "form": {
+      "callsign": "Sinjal ta' sejħa",
+      "frequency": "Frekwenza f'MHz",
+      "qth": "QTH",
+      "locator": "Locator",
+      "hamsl": "Għoli fuq is-sewwa tal-baħar",
+      "antenna": "Antenna",
+      "mode": "Modalità",
+      "qtf": "QTF",
+      "power": "Enerġija f'Watts",
+      "name": "Soprannome tal-beacon (fakultattiv)",
+      "namePlaceholder": "Es. Beacon ta' Monte Cimone"
+    },
+    "owner": {
+      "label": "Mantenju (amministraturi biss)",
+      "description": "Fittex utent irreġistrat bil-sinjal ta' sejħa jew l-isem. Kull beacon għandu jkollu mantenju.",
+      "placeholder": "Fittex sinjal ta' sejħa...",
+      "selected": "Mantenju magħżul: {{callsign}}",
+      "required": "Agħżel mantenju mill-lista"
+    },
+    "position": {
+      "title": "Pożizzjoni",
+      "description": "Ikklikkja fuq il-mappa biex tagħżel il-pożizzjoni tal-beacon",
+      "geolocalize": "Ġeolokazzjoni"
+    },
+    "buttons": {
+      "cancel": "Annulla",
+      "create": "Oħloq",
+      "save": "Salva"
+    },
+    "validation": {
+      "positionRequired": "Agħżel il-pożizzjoni tal-beacon fuq il-mappa",
+      "ownerRequired": "Agħżel mantenju għal-beacon"
+    },
+    "alerts": {
+      "cannotEdit": "Biss il-mantenju ta' dan beacon jew amministratur jista' jimmodifikahu.",
+      "geolocalizationError": "Żball ta' ġeolokazzjoni"
+    }
   }
 }

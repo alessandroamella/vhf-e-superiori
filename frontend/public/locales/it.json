@@ -432,5 +432,53 @@
     "addButton": "Aggiungi beacon",
     "empty": "Non hai ancora inserito beacon",
     "editButton": "Modifica"
+  },
+  "beaconEditor": {
+    "pageTitle": {
+      "new": "Nuovo beacon",
+      "edit": "Modifica beacon"
+    },
+    "heading": {
+      "new": "Nuovo Beacon",
+      "edit": "Modifica Beacon"
+    },
+    "form": {
+      "callsign": "Nominativo",
+      "frequency": "Frequenza in MHz",
+      "qth": "QTH",
+      "locator": "Locatore",
+      "hamsl": "Altezza dal livello del mare",
+      "antenna": "Antenna",
+      "mode": "Modo",
+      "qtf": "QTF",
+      "power": "Potenza in Watt",
+      "name": "Soprannome del beacon (opzionale)",
+      "namePlaceholder": "Es. Beacon di Monte Cimone"
+    },
+    "owner": {
+      "label": "Manutentore (solo amministratori)",
+      "description": "Cerca un utente registrato per nominativo o nome. Ogni beacon deve avere un manutentore.",
+      "placeholder": "Cerca nominativo...",
+      "selected": "Manutentore selezionato: {{callsign}}",
+      "required": "Seleziona un manutentore dalla lista"
+    },
+    "position": {
+      "title": "Posizione",
+      "description": "Clicca sulla mappa per selezionare la posizione del beacon",
+      "geolocalize": "Geolocalizza"
+    },
+    "buttons": {
+      "cancel": "Annulla",
+      "create": "Crea",
+      "save": "Salva"
+    },
+    "validation": {
+      "positionRequired": "Seleziona la posizione del beacon sulla mappa",
+      "ownerRequired": "Seleziona un manutentore per il beacon"
+    },
+    "alerts": {
+      "cannotEdit": "Solo il manutentore di questo beacon o un amministratore possono modificarlo.",
+      "geolocalizationError": "Errore nella geolocalizzazione"
+    }
   }
 }

@@ -429,5 +429,53 @@
     "addButton": "Bake hinzufügen",
     "empty": "Du hast noch keine Baken hinzugefügt",
     "editButton": "Bearbeiten"
+  },
+  "beaconEditor": {
+    "pageTitle": {
+      "new": "Neuer Beacon",
+      "edit": "Beacon bearbeiten"
+    },
+    "heading": {
+      "new": "Neuer Beacon",
+      "edit": "Beacon bearbeiten"
+    },
+    "form": {
+      "callsign": "Rufzeichen",
+      "frequency": "Frequenz in MHz",
+      "qth": "QTH",
+      "locator": "Locator",
+      "hamsl": "Höhe über Meeresspiegel",
+      "antenna": "Antenne",
+      "mode": "Modus",
+      "qtf": "QTF",
+      "power": "Leistung in Watt",
+      "name": "Beacon-Spitzname (optional)",
+      "namePlaceholder": "Z.B. Beacon Mount Cimone"
+    },
+    "owner": {
+      "label": "Betreuer (nur Administratoren)",
+      "description": "Suche nach einem registrierten Benutzer nach Rufzeichen oder Namen. Jeder Beacon muss einen Betreuer haben.",
+      "placeholder": "Rufzeichen suchen...",
+      "selected": "Betreuer ausgewählt: {{callsign}}",
+      "required": "Wählen Sie einen Betreuer aus der Liste"
+    },
+    "position": {
+      "title": "Position",
+      "description": "Klicken Sie auf die Karte, um die Beacon-Position auszuwählen",
+      "geolocalize": "Geolokalisieren"
+    },
+    "buttons": {
+      "cancel": "Abbrechen",
+      "create": "Erstellen",
+      "save": "Speichern"
+    },
+    "validation": {
+      "positionRequired": "Wählen Sie die Beacon-Position auf der Karte aus",
+      "ownerRequired": "Wählen Sie einen Betreuer für den Beacon"
+    },
+    "alerts": {
+      "cannotEdit": "Nur der Betreuer dieses Beacons oder ein Administrator kann ihn bearbeiten.",
+      "geolocalizationError": "Geolokalisierungsfehler"
+    }
   }
 }
