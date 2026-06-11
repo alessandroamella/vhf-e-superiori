@@ -119,9 +119,6 @@ const BeaconHomepage = () => {
                         <Table.HeadCell>
                           {t("beacons.table.callsign")}
                         </Table.HeadCell>
-                        <Table.HeadCell className="hidden md:table-cell">
-                          {t("beacons.table.name")}
-                        </Table.HeadCell>
                         <Table.HeadCell>
                           {t("beacons.table.frequency")}
                         </Table.HeadCell>
@@ -175,9 +172,11 @@ const BeaconHomepage = () => {
                                 >
                                   {beacon.callsign}
                                 </Link>
-                              </Table.Cell>
-                              <Table.Cell className="hidden md:table-cell">
-                                {beacon.properties?.name}
+                                {beacon.properties?.name && (
+                                  <span className="block text-sm font-normal text-gray-500 dark:text-gray-400">
+                                    {beacon.properties.name}
+                                  </span>
+                                )}
                               </Table.Cell>
                               <Table.Cell>
                                 {beacon.properties?.frequency?.toFixed(3)}

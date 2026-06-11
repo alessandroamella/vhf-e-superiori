@@ -50,10 +50,12 @@ async function main() {
       forBeacon: beacon._id,
     }).sort({ editDate: -1 });
 
-    if (
-      props?.name &&
-      props.name.trim().toUpperCase() === beacon.callsign.toUpperCase()
-    ) {
+    const cleanedName = props?.name
+      ?.trim()
+      .split("/")
+      .reduce((a, b) => (b.length > a.length ? b : a), "");
+
+    if (props && cleanedName?.toUpperCase() === beacon.callsign.toUpperCase()) {
       props.name = undefined;
       await props.save();
       nameCleared++;

@@ -119,9 +119,14 @@ const ViewBeacon = () => {
           >
             {beacon && properties && (
               <>
-                <h1 className="text-3xl md:text-4xl text-center font-bold mb-4">
+                <h1 className="text-3xl md:text-4xl text-center font-bold mb-1">
                   {t("beaconViewer.header", { callsign: beacon.callsign })}
                 </h1>
+                {properties.name && (
+                  <p className="text-center text-lg text-gray-500 dark:text-gray-400 mb-4">
+                    {properties.name}
+                  </p>
+                )}
 
                 <div className="flex flex-col md:flex-row md:justify-between mb-4">
                   <div className="flex gap-1">
