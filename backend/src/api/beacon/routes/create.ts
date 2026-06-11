@@ -102,6 +102,7 @@ router.post(
       const beacon = new Beacon({
         callsign,
         properties: beaconProps._id,
+        owner: user._id,
       });
 
       beaconProps.forBeacon = beacon._id;

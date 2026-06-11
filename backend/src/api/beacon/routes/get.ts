@@ -53,7 +53,12 @@ router.get("/:id", param("id").isMongoId(), validate, async (req, res) => {
     }
 
     // lean so we can add properties to the object
-    const _beacon = await Beacon.findOne({ _id: req.params.id }).lean();
+    const _beacon = await Beacon.findOne({ _id: req.params.id })
+      .populate({
+        path: "owner",
+        select: "callsign isDev isAdmin",
+      })
+      .lean();
     if (!_beacon) {
       return res.status(BAD_REQUEST).json(createError());
     }
@@ -69,6 +74,7 @@ router.get("/:id", param("id").isMongoId(), validate, async (req, res) => {
         path: "verifiedBy",
         select: "callsign isDev isAdmin",
       })
+      .sort({ editDate: 1 })
       .lean();
     if (props.length === 0) {
       logger.error(`Beacon ${_beacon._id} has no properties`);
@@ -78,6 +84,13 @@ router.get("/:id", param("id").isMongoId(), validate, async (req, res) => {
     const beacon = _beacon as BeaconDocWithProps;
     // biome-ignore lint/suspicious/noExplicitAny: dont want to type
     (beacon as any).properties = props;
+
+    // Legacy beacons created before the ownership system existed have no
+    // explicit owner: fall back to whoever made the oldest edit
+    if (!beacon.owner) {
+      // biome-ignore lint/suspicious/noExplicitAny: dont want to type
+      (beacon as any).owner = props[0].editAuthor;
+    }
 
     // Cache the result
     BeaconCache.setBeacon(req.params.id, beacon);

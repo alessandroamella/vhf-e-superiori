@@ -68,8 +68,8 @@ router.post(
   async (req, res, next) => {
     passport.authenticate(
       "login",
-      // biome-ignore lint/suspicious/noExplicitAny: we know user is an any type here
-      async (_err: unknown, user: any) => {
+      // biome-ignore lint/suspicious/noExplicitAny: we know user/info are any type here
+      async (_err: unknown, user: any, info: any) => {
         logger.debug(`Logging in callsign ${user?.callsign}`);
         try {
           if (_err || !user) {
@@ -77,7 +77,9 @@ router.post(
               logger.error("Error while logging in");
               logger.error(_err);
             }
-            return next(_err || new Error(Errors.USER_NOT_FOUND));
+            return next(
+              _err || new Error(info?.message || Errors.USER_NOT_FOUND),
+            );
           }
 
           req.login(user, { session: false }, async (err) => {

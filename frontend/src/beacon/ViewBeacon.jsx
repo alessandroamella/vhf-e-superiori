@@ -1,7 +1,8 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Alert, Button, Card, Pagination, Tooltip } from "flowbite-react";
 import L from "leaflet";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import {
@@ -21,17 +22,38 @@ import useUserStore from "../stores/userStore";
 
 const ViewBeacon = () => {
   const [alert, setAlert] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   const { t } = useTranslation();
 
-  const [beacon, setBeacon] = useState(null);
-  const [_properties, setProperties] = useState(null);
+  const { id } = useParams();
+
+  const queryClient = useQueryClient();
+
+  const {
+    data: beacon,
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: ["beacon", id],
+    queryFn: async () => {
+      const { data } = await axios.get(`/api/beacon/${id}`);
+      console.log("beacon", data);
+      return data;
+    },
+  });
+
+  const _properties = beacon?.properties || null;
   const [propIndex, setPropIndex] = useState(0);
 
   const properties = _properties ? _properties[propIndex] : null;
 
-  const { id } = useParams();
+  const initializedRef = useRef(false);
+  useEffect(() => {
+    if (_properties && !initializedRef.current) {
+      setPropIndex(_properties.length - 1);
+      initializedRef.current = true;
+    }
+  }, [_properties]);
 
   const icon = useMemo(
     () =>
@@ -46,27 +68,13 @@ const ViewBeacon = () => {
   );
 
   useEffect(() => {
-    if (beacon) return;
-
-    async function getBeacon() {
-      try {
-        const { data } = await axios.get(`/api/beacon/${id}`);
-        console.log("beacon", data);
-        setBeacon(data);
-        setProperties(data.properties);
-        setPropIndex(data.properties.length - 1);
-      } catch (err) {
-        console.log("Errore nel caricamento del beacon", err);
-        setAlert({
-          color: "failure",
-          msg: getErrorStr(err?.response?.data?.err),
-        });
-      } finally {
-        setLoading(false);
-      }
-    }
-    getBeacon();
-  }, [beacon, id]);
+    if (!error) return;
+    console.log("Errore nel caricamento del beacon", error);
+    setAlert({
+      color: "failure",
+      msg: getErrorStr(error?.response?.data?.err),
+    });
+  }, [error]);
 
   const user = useUserStore((store) => store.user);
 
@@ -87,6 +95,7 @@ const ViewBeacon = () => {
 
     try {
       await axios.delete(`/api/beacon/${id}`);
+      queryClient.invalidateQueries({ queryKey: ["beacons"] });
       navigate("/beacon");
     } catch (err) {
       setAlert({
@@ -111,7 +120,8 @@ const ViewBeacon = () => {
 
     try {
       await axios.delete(`/api/beacon/property/${_id}`);
-      setProperties(_properties.filter((p) => p._id !== _id));
+      await queryClient.invalidateQueries({ queryKey: ["beacon", id] });
+      queryClient.invalidateQueries({ queryKey: ["beacons"] });
       setPropIndex(0);
     } catch (err) {
       setAlert({
@@ -136,8 +146,14 @@ const ViewBeacon = () => {
 
     try {
       await axios.put(`/api/beacon/approve/${_id}`);
-      const { data } = await axios.get(`/api/beacon/${id}`);
-      setProperties(data.properties);
+      const data = await queryClient.fetchQuery({
+        queryKey: ["beacon", id],
+        queryFn: async () => {
+          const { data } = await axios.get(`/api/beacon/${id}`);
+          return data;
+        },
+      });
+      queryClient.invalidateQueries({ queryKey: ["beacons"] });
       setPropIndex(data.properties.length - 1);
     } catch (err) {
       setAlert({
@@ -190,12 +206,17 @@ const ViewBeacon = () => {
 
                 <div className="flex flex-col md:flex-row md:justify-between mb-4">
                   <div className="flex gap-1">
-                    <Link to={`/beacon/editor?id=${beacon._id}`}>
-                      <Button color="light">
-                        <FaPen className="inline mr-2" />
-                        {t("beaconViewer.editButton")}
-                      </Button>
-                    </Link>
+                    {(user?.isAdmin ||
+                      (beacon.owner?._id &&
+                        user?._id &&
+                        beacon.owner._id === user._id)) && (
+                      <Link to={`/beacon/editor?id=${beacon._id}`}>
+                        <Button color="light">
+                          <FaPen className="inline mr-2" />
+                          {t("beaconViewer.editButton")}
+                        </Button>
+                      </Link>
+                    )}
                     {user?.isAdmin && (
                       <Tooltip content={t("beaconViewer.adminTooltip")}>
                         <Button

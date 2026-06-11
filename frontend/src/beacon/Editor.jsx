@@ -145,6 +145,16 @@ const BeaconEditor = () => {
   const user = useUserStore((store) => store.user);
   const isEditing = !!id; // true if id is not null (i.e. we are editing a beacon)
 
+  // any logged in user can create a new beacon; editing an existing one is
+  // restricted to its maintainer (owner) or an admin
+  const canEdit = useMemo(() => {
+    if (!isEditing) return true;
+    if (!beacon || !user) return false;
+    if (user.isAdmin) return true;
+    const ownerId = beacon.owner?._id || beacon.owner;
+    return !!ownerId && ownerId === user._id;
+  }, [isEditing, beacon, user]);
+
   useEffect(() => {
     if (user === null)
       navigate({
@@ -175,6 +185,8 @@ const BeaconEditor = () => {
   const [isLocatorFocused, setIsLocatorFocused] = useState(false);
 
   const [disabled, setDisabled] = useState(false);
+
+  const formDisabled = disabled || !canEdit;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -350,6 +362,15 @@ const BeaconEditor = () => {
             </Alert>
           )}
 
+          {!loading && isEditing && !canEdit && (
+            <Alert className="mb-6 dark:text-black" color="warning">
+              <span>
+                Solo il manutentore di questo beacon o un amministratore possono
+                modificarlo.
+              </span>
+            </Alert>
+          )}
+
           <ReactPlaceholder
             showLoadingAnimation
             type="text"
@@ -390,7 +411,7 @@ const BeaconEditor = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4">
                 <div>
                   <div className="mb-2 block">
-                    <Label htmlFor="name" value="Nome" />
+                    <Label htmlFor="name" value="Nominativo del manutentore" />
                   </div>
                   <TextInput
                     id="name"
@@ -399,7 +420,7 @@ const BeaconEditor = () => {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    disabled={disabled}
+                    disabled={formDisabled}
                   />
                 </div>
 
@@ -414,7 +435,7 @@ const BeaconEditor = () => {
                     required
                     value={frequency}
                     onChange={(e) => setFrequency(e.target.value)}
-                    disabled={disabled}
+                    disabled={formDisabled}
                   />
                 </div>
 
@@ -429,7 +450,7 @@ const BeaconEditor = () => {
                     required
                     value={qthStr}
                     onChange={(e) => setQthStr(e.target.value)}
-                    disabled={disabled}
+                    disabled={formDisabled}
                   />
                 </div>
 
@@ -444,7 +465,7 @@ const BeaconEditor = () => {
                     required
                     value={locator}
                     onChange={(e) => setLocator(e.target.value)}
-                    disabled={disabled}
+                    disabled={formDisabled}
                     onFocus={() => setIsLocatorFocused(true)}
                     onBlur={() => setIsLocatorFocused(false)}
                   />
@@ -464,7 +485,7 @@ const BeaconEditor = () => {
                     required
                     value={hamsl}
                     onChange={(e) => setHamsl(e.target.value)}
-                    disabled={disabled}
+                    disabled={formDisabled}
                   />
                 </div>
 
@@ -479,7 +500,7 @@ const BeaconEditor = () => {
                     required
                     value={antenna}
                     onChange={(e) => setAntenna(e.target.value)}
-                    disabled={disabled}
+                    disabled={formDisabled}
                   />
                 </div>
 
@@ -494,7 +515,7 @@ const BeaconEditor = () => {
                     required
                     value={mode}
                     onChange={(e) => setMode(e.target.value)}
-                    disabled={disabled}
+                    disabled={formDisabled}
                   />
                 </div>
 
@@ -509,7 +530,7 @@ const BeaconEditor = () => {
                     required
                     value={qtf}
                     onChange={(e) => setQtf(e.target.value)}
-                    disabled={disabled}
+                    disabled={formDisabled}
                   />
                 </div>
 
@@ -524,7 +545,7 @@ const BeaconEditor = () => {
                     required
                     value={power}
                     onChange={(e) => setPower(e.target.value)}
-                    disabled={disabled}
+                    disabled={formDisabled}
                   />
                 </div>
               </div>
@@ -542,7 +563,7 @@ const BeaconEditor = () => {
                   <Button
                     color="info"
                     onClick={geolocalize}
-                    disabled={disabled}
+                    disabled={formDisabled}
                   >
                     <FaMapMarkerAlt className="text-lg" />
                     Geolocalizza
@@ -590,7 +611,7 @@ const BeaconEditor = () => {
                     type="submit"
                     color="info"
                     size="lg"
-                    disabled={disabled}
+                    disabled={formDisabled}
                     className="w-full"
                   >
                     {isEditing ? "Salva" : "Crea"}

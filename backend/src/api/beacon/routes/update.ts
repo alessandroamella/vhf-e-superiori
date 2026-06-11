@@ -1,12 +1,18 @@
 import { Request, Response, Router } from "express";
 import { checkSchema, param } from "express-validator";
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status";
+import {
+  BAD_REQUEST,
+  INTERNAL_SERVER_ERROR,
+  OK,
+  UNAUTHORIZED,
+} from "http-status";
 import { logger } from "../../../shared";
 import { User } from "../../auth/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import { BeaconCache } from "../cache";
 import { Beacon, BeaconProperties } from "../models";
+import { canEditBeacon, resolveBeaconOwnerId } from "../permissions";
 import updateSchema from "../schemas/updateSchema";
 
 const router = Router();
@@ -76,6 +82,12 @@ router.put(
     });
     if (!beacon) {
       res.status(BAD_REQUEST).json(createError(Errors.BEACON_NOT_FOUND));
+      return;
+    }
+
+    const ownerId = await resolveBeaconOwnerId(beacon);
+    if (!canEditBeacon(ownerId, user)) {
+      res.status(UNAUTHORIZED).json(createError(Errors.BEACON_NOT_OWNER));
       return;
     }
 

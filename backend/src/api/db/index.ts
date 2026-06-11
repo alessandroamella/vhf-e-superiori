@@ -28,7 +28,6 @@ mongoose.connection.on("disconnected", () => {
   try {
     logger.debug(`Connecting to MongoDB at ${envs.MONGODB_URI}`);
     await mongoose.connect(envs.MONGODB_URI, { timeoutMS: 10000 });
-    logger.info("Connected to MongoDB");
   } catch (err) {
     logger.error("Error while connecting to MongoDB");
     logger.error(err);

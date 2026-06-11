@@ -1,7 +1,8 @@
 import { Card, Typography } from "@material-tailwind/react";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Alert, Button, Table } from "flowbite-react";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { FaPlus } from "react-icons/fa";
@@ -12,48 +13,43 @@ import { inRange } from "../shared/inRange";
 import useUserStore from "../stores/userStore";
 
 const BeaconHomepage = () => {
-  const [alert, setAlert] = useState(null);
-  const [beacons, setBeacons] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: beacons,
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: ["beacons"],
+    queryFn: async () => {
+      const { data } = await axios.get("/api/beacon");
+      console.log("beacons", data);
+      return data;
+    },
+  });
 
-  const [bands, setBands] = useState([]);
+  const alert = error
+    ? { color: "failure", msg: getErrorStr(error?.response?.data?.err) }
+    : null;
+
+  const bands = useMemo(() => {
+    if (!Array.isArray(beacons)) return [];
+
+    const bandsSet = new Set();
+    beacons
+      .filter((beacon) => beacon.properties?.frequency)
+      .forEach((beacon) => {
+        let band = Math.floor(beacon.properties.frequency);
+        if (band === 1297) {
+          // doesnt exist
+          band = 1296;
+        }
+        bandsSet.add(band);
+      });
+    return Array.from(bandsSet).sort((a, b) => a - b);
+  }, [beacons]);
 
   const user = useUserStore((store) => store.user);
 
   const { t } = useTranslation();
-
-  useEffect(() => {
-    async function getBeacons() {
-      try {
-        const { data } = await axios.get("/api/beacon");
-        setBeacons(data);
-        console.log("beacons", data);
-
-        const bands = new Set();
-        data
-          .filter((beacon) => beacon.properties?.frequency)
-          .forEach((beacon) => {
-            let band = Math.floor(beacon.properties.frequency);
-            if (band === 1297) {
-              // doesnt exist
-              band = 1296;
-            }
-            bands.add(band);
-          });
-        setBands(Array.from(bands).sort((a, b) => a - b));
-      } catch (err) {
-        console.log("Errore nel caricamento dei beacon", err);
-        setAlert({
-          color: "failure",
-          msg: getErrorStr(err?.response?.data?.err),
-        });
-        setBeacons(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-    getBeacons();
-  }, []);
 
   const navigate = useNavigate();
 
@@ -70,11 +66,7 @@ const BeaconHomepage = () => {
       <div className="w-full min-h-[60vh] overflow-y-auto h-full pb-4 dark:text-white bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
         <div className="mx-auto px-4 w-full md:w-11/12 py-12">
           {alert && (
-            <Alert
-              className="mb-6 dark:text-black"
-              color={alert.color}
-              onDismiss={() => setAlert(null)}
-            >
+            <Alert className="mb-6 dark:text-black" color={alert.color}>
               <span>{alert.msg}</span>
             </Alert>
           )}

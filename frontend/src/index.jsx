@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@material-tailwind/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import axios, { isAxiosError } from "axios";
 import { useEffect, useRef, useState } from "react";
 import AdminManager from "./admin";
@@ -46,6 +47,8 @@ import Layout from "./Layout";
 import NotFoundPage from "./NotFound";
 import SplashLoader, { SplashWrapper } from "./SplashLoader";
 import useUserStore from "./stores/userStore";
+
+const queryClient = new QueryClient();
 
 // Prima della definizione del componente App o nell'useEffect iniziale
 axios.interceptors.request.use((config) => {
@@ -202,30 +205,32 @@ export const App = () => {
   }, [ip]);
 
   return (
-    <ThemeProvider>
-      <ErrorBoundary fallback={<FallbackView />}>
-        <CookiesProvider /*  defaultSetOptions={{ path: "/" }} */>
-          <EventsContext.Provider value={{ events, setEvents }}>
-            <JoinOpenContext.Provider
-              value={{
-                joinOpen,
-                setJoinOpen,
-              }}
-            >
-              <ViewsContext.Provider value={{ views }}>
-                <SidebarOpenContext.Provider
-                  value={{ sidebarOpen, setSidebarOpen }}
-                >
-                  <BrowserRouter>
-                    <AppRoutes />
-                  </BrowserRouter>
-                </SidebarOpenContext.Provider>
-              </ViewsContext.Provider>
-            </JoinOpenContext.Provider>
-          </EventsContext.Provider>
-        </CookiesProvider>
-      </ErrorBoundary>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <ErrorBoundary fallback={<FallbackView />}>
+          <CookiesProvider /*  defaultSetOptions={{ path: "/" }} */>
+            <EventsContext.Provider value={{ events, setEvents }}>
+              <JoinOpenContext.Provider
+                value={{
+                  joinOpen,
+                  setJoinOpen,
+                }}
+              >
+                <ViewsContext.Provider value={{ views }}>
+                  <SidebarOpenContext.Provider
+                    value={{ sidebarOpen, setSidebarOpen }}
+                  >
+                    <BrowserRouter>
+                      <AppRoutes />
+                    </BrowserRouter>
+                  </SidebarOpenContext.Provider>
+                </ViewsContext.Provider>
+              </JoinOpenContext.Provider>
+            </EventsContext.Provider>
+          </CookiesProvider>
+        </ErrorBoundary>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 
