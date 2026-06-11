@@ -57,10 +57,17 @@ async function main() {
       continue;
     }
 
+    // togli pre/suffissi separati da "/" (es. "IZ6WLW/B" -> "IZ6WLW"),
+    // tenendo la parte alfanumerica più lunga: gli utenti salvano il callsign
+    // senza pre/suffissi
+    const searchCallsign = maintainer
+      .split("/")
+      .reduce((a, b) => (b.length > a.length ? b : a), "");
+
     // match case-insensitive sul callsign utente
     const user = await User.findOne({
       callsign: new RegExp(
-        `^${maintainer.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+        `^${searchCallsign.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
         "i",
       ),
     });
