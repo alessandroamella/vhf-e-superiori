@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
-import { FaBackward, FaMapMarkerAlt } from "react-icons/fa";
+import { FaBackward, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import {
   MapContainer,
   Marker,
@@ -108,6 +108,9 @@ const BeaconEditor = () => {
 
         setBeacon(beacon);
 
+        setOwnerId(beacon.owner?._id || beacon.owner || "");
+        setOwnerQuery(beacon.owner?.callsign || "");
+
         setCallsign(beacon.callsign);
 
         setName(properties.name);
@@ -186,6 +189,39 @@ const BeaconEditor = () => {
 
   const [disabled, setDisabled] = useState(false);
 
+  // owner (maintainer) reassignment — admins only
+  const [users, setUsers] = useState([]);
+  const [ownerId, setOwnerId] = useState("");
+  const [ownerQuery, setOwnerQuery] = useState("");
+  const [showOwnerDropdown, setShowOwnerDropdown] = useState(false);
+
+  useEffect(() => {
+    if (!user?.isAdmin) return;
+    async function getUsers() {
+      try {
+        const { data } = await axios.get("/api/auth/all", {
+          params: { sortByCallsign: true },
+        });
+        setUsers(data);
+      } catch (err) {
+        console.log("Errore nel caricamento degli utenti", err);
+      }
+    }
+    getUsers();
+  }, [user?.isAdmin]);
+
+  const ownerMatches = useMemo(() => {
+    const q = ownerQuery.trim().toLowerCase();
+    if (!q) return users.slice(0, 8);
+    return users
+      .filter(
+        (u) =>
+          u.callsign?.toLowerCase().includes(q) ||
+          u.name?.toLowerCase().includes(q),
+      )
+      .slice(0, 8);
+  }, [users, ownerQuery]);
+
   const formDisabled = disabled || !canEdit;
 
   async function handleSubmit(e) {
@@ -195,6 +231,16 @@ const BeaconEditor = () => {
       setAlert({
         color: "failure",
         msg: "Seleziona la posizione del beacon sulla mappa",
+      });
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    // admins editing must keep a maintainer (owner is mandatory)
+    if (isEditing && user?.isAdmin && !ownerId) {
+      setAlert({
+        color: "failure",
+        msg: "Seleziona un manutentore per il beacon",
       });
       window.scrollTo(0, 0);
       return;
@@ -218,6 +264,10 @@ const BeaconEditor = () => {
         lat,
         lon,
       };
+      // admins can reassign the maintainer (owner) when editing
+      if (isEditing && user?.isAdmin) {
+        data.owner = ownerId;
+      }
       // let res;
       let _id;
       if (isEditing) {
@@ -411,21 +461,6 @@ const BeaconEditor = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4">
                 <div>
                   <div className="mb-2 block">
-                    <Label htmlFor="name" value="Nominativo del manutentore" />
-                  </div>
-                  <TextInput
-                    id="name"
-                    type="text"
-                    placeholder="Beacon"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    disabled={formDisabled}
-                  />
-                </div>
-
-                <div>
-                  <div className="mb-2 block">
                     <Label htmlFor="event-band" value="Frequenza in MHz" />
                   </div>
                   <TextInput
@@ -548,7 +583,96 @@ const BeaconEditor = () => {
                     disabled={formDisabled}
                   />
                 </div>
+
+                <div>
+                  <div className="mb-2 block">
+                    <Label
+                      htmlFor="name"
+                      value="Soprannome del beacon (opzionale)"
+                    />
+                  </div>
+                  <TextInput
+                    id="name"
+                    type="text"
+                    placeholder="Es. Beacon di Monte Cimone"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    disabled={formDisabled}
+                  />
+                </div>
               </div>
+
+              {isEditing && user?.isAdmin && (
+                <div className="mt-6 rounded-lg border border-gray-300 dark:border-gray-600 p-4 bg-white/60 dark:bg-gray-800/60">
+                  <div className="mb-2 flex items-center gap-2">
+                    <FaUser className="text-gray-500 dark:text-gray-400" />
+                    <Label
+                      htmlFor="owner"
+                      value="Manutentore (solo amministratori)"
+                    />
+                  </div>
+                  <p className="mb-2 text-sm text-gray-600 dark:text-gray-400">
+                    Cerca un utente registrato per nominativo o nome. Ogni
+                    beacon deve avere un manutentore.
+                  </p>
+                  <div className="relative">
+                    <div className="flex items-center gap-2">
+                      <TextInput
+                        id="owner"
+                        className="grow"
+                        type="text"
+                        placeholder="Cerca nominativo..."
+                        autoComplete="off"
+                        value={ownerQuery}
+                        onChange={(e) => {
+                          setOwnerQuery(e.target.value);
+                          setOwnerId("");
+                          setShowOwnerDropdown(true);
+                        }}
+                        onFocus={() => setShowOwnerDropdown(true)}
+                        onBlur={() =>
+                          setTimeout(() => setShowOwnerDropdown(false), 150)
+                        }
+                      />
+                    </div>
+                    {showOwnerDropdown && ownerMatches.length > 0 && (
+                      <ul className="absolute z-[1000] mt-1 w-full max-h-60 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg">
+                        {ownerMatches.map((u) => (
+                          <li key={u._id}>
+                            <button
+                              type="button"
+                              className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                              onClick={() => {
+                                setOwnerId(u._id);
+                                setOwnerQuery(u.callsign);
+                                setShowOwnerDropdown(false);
+                              }}
+                            >
+                              <span className="font-bold">{u.callsign}</span>
+                              {u.name && (
+                                <span className="text-gray-500 dark:text-gray-400 text-sm">
+                                  {u.name}
+                                </span>
+                              )}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                  <p className="mt-2 text-sm">
+                    {ownerId ? (
+                      <span className="text-green-700 dark:text-green-400">
+                        Manutentore selezionato: <strong>{ownerQuery}</strong>
+                      </span>
+                    ) : (
+                      <span className="text-red-600 dark:text-red-400">
+                        Seleziona un manutentore dalla lista
+                      </span>
+                    )}
+                  </p>
+                </div>
+              )}
 
               <hr className="my-6 bg-gray-500 dark:bg-gray-400" />
 

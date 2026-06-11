@@ -238,7 +238,7 @@
     "bandTitle": "Banda {{band}} MHz",
     "table": {
       "callsign": "Sinjal tas-sejħa",
-      "name": "Sinjal tas-sejħa tal-manutentur",
+      "name": "Laqab tal-baykon",
       "frequency": "Frekwenza",
       "qth": "QTH",
       "locator": "Locator",
@@ -249,7 +249,13 @@
       "power": "Qawwa"
     },
     "loadError": "Żball fit-tagħbija tal-beacons: {{error}}",
-    "noBeacons": "L-ebda beacon misjub"
+    "noBeacons": "L-ebda beacon misjub",
+    "mapButton": "Mappa tal-baykons",
+    "map": {
+      "pageTitle": "Mappa tal-baykons",
+      "title": "Mappa tal-baykons",
+      "empty": "Ebda baykon b'pożizzjoni disponibbli"
+    }
   },
   "generateMap": {
     "generateYourMap": "Iġġenera l-mappa tiegħek",
@@ -291,7 +297,7 @@
       "single": "Inti żgur li trid tħassar dan il-beacon flimkien mal-unika modifika tiegħu? Din l-azzjoni ma tistax titreġġa' lura. Trid tkompli?"
     },
     "callsignLabel": "Callsign",
-    "nameLabel": "Sinjal tas-sejħa tal-manutentur",
+    "nameLabel": "Laqab tal-baykon",
     "maintainerLabel": "Manutentur",
     "frequencyLabel": "Frekwenza",
     "antennaLabel": "Antenna",

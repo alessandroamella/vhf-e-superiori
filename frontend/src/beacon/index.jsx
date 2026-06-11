@@ -5,7 +5,7 @@ import { Alert, Button, Table } from "flowbite-react";
 import { useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
-import { FaPlus } from "react-icons/fa";
+import { FaMapMarkedAlt, FaPlus } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
 import { createSearchParams, Link, useNavigate } from "react-router";
 import { getErrorStr } from "../shared";
@@ -94,6 +94,10 @@ const BeaconHomepage = () => {
                   >
                     <FaPlus className="inline mr-2 mt-[2.5px]" />
                     {t("beacons.add")}
+                  </Button>
+                  <Button color="light" onClick={() => navigate("/beacon/map")}>
+                    <FaMapMarkedAlt className="inline mr-2 mt-[2.5px]" />
+                    {t("beacons.mapButton")}
                   </Button>
                 </div>
               </ReactPlaceholder>

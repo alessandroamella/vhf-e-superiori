@@ -273,7 +273,7 @@
     "bandTitle": "Banda {{band}} MHz",
     "table": {
       "callsign": "Nominativo",
-      "name": "Nominativo del manutentore",
+      "name": "Soprannome del beacon",
       "frequency": "Frequenza",
       "qth": "QTH",
       "locator": "Locatore",
@@ -284,7 +284,13 @@
       "power": "Potenza"
     },
     "loadError": "Errore nel caricamento dei beacon: {{error}}",
-    "noBeacons": "Nessun beacon presente"
+    "noBeacons": "Nessun beacon presente",
+    "mapButton": "Mappa beacon",
+    "map": {
+      "pageTitle": "Mappa beacon",
+      "title": "Mappa dei beacon",
+      "empty": "Nessun beacon con posizione disponibile"
+    }
   },
   "beaconViewer": {
     "pageTitle": "Beacon {{callsign}} - VHF e Superiori",
@@ -296,7 +302,7 @@
       "single": "Sei sicuro di voler eliminare questo beacon? Questa azione è irreversibile. Continuare?"
     },
     "callsignLabel": "Nominativo",
-    "nameLabel": "Nominativo del manutentore",
+    "nameLabel": "Soprannome del beacon",
     "maintainerLabel": "Manutentore",
     "frequencyLabel": "Frequenza",
     "antennaLabel": "Antenna",

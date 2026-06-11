@@ -6,6 +6,7 @@ import {
   OK,
   UNAUTHORIZED,
 } from "http-status";
+import { isValidObjectId } from "mongoose";
 import { logger } from "../../../shared";
 import { User } from "../../auth/models";
 import { Errors } from "../../errors";
@@ -148,6 +149,25 @@ router.put(
       }
 
       await beaconProps.save();
+
+      // Only admins can (re)assign the beacon's maintainer (owner). The owner
+      // is mandatory, so it must be a valid existing user (cannot be cleared).
+      if (user.isAdmin && "owner" in req.body) {
+        const ownerVal = req.body.owner;
+        if (!ownerVal || !isValidObjectId(ownerVal)) {
+          return res
+            .status(BAD_REQUEST)
+            .json(createError(Errors.USER_NOT_FOUND));
+        }
+        const newOwner = await User.findById(ownerVal);
+        if (!newOwner) {
+          return res
+            .status(BAD_REQUEST)
+            .json(createError(Errors.USER_NOT_FOUND));
+        }
+        beacon.owner = newOwner._id;
+        await beacon.save();
+      }
 
       // Invalidate cache since beacon properties changed
       BeaconCache.invalidateBeacon(req.params._id);

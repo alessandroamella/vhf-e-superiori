@@ -154,10 +154,12 @@ const ViewBeacon = () => {
                         <strong>{t("beaconViewer.callsignLabel")}:</strong>{" "}
                         {beacon.callsign}
                       </p>
-                      <p>
-                        <strong>{t("beaconViewer.nameLabel")}:</strong>{" "}
-                        {properties.name}
-                      </p>
+                      {properties.name && (
+                        <p>
+                          <strong>{t("beaconViewer.nameLabel")}:</strong>{" "}
+                          {properties.name}
+                        </p>
+                      )}
                       <p>
                         <strong>{t("beaconViewer.frequencyLabel")}:</strong>{" "}
                         {properties.frequency.toFixed(3)} MHz

@@ -239,7 +239,7 @@
     "bandTitle": "Bande {{band}} MHz",
     "table": {
       "callsign": "Indicatif",
-      "name": "Indicatif du gestionnaire",
+      "name": "Surnom de la balise",
       "frequency": "Fréquence",
       "qth": "QTH",
       "locator": "Locator",
@@ -250,7 +250,13 @@
       "power": "Puissance"
     },
     "loadError": "Erreur lors du chargement des balises : {{error}}",
-    "noBeacons": "Aucune balise trouvée"
+    "noBeacons": "Aucune balise trouvée",
+    "mapButton": "Carte des balises",
+    "map": {
+      "pageTitle": "Carte des balises",
+      "title": "Carte des balises",
+      "empty": "Aucune balise avec une position disponible"
+    }
   },
   "generateMap": {
     "generateYourMap": "Générez votre carte",
@@ -294,7 +300,7 @@
       "single": "Êtes-vous sûr de vouloir supprimer cette balise ainsi que sa seule modification ? Cette action est irréversible. Continuer ?"
     },
     "callsignLabel": "Indicatif",
-    "nameLabel": "Indicatif du gestionnaire",
+    "nameLabel": "Surnom de la balise",
     "maintainerLabel": "Gestionnaire",
     "frequencyLabel": "Fréquence",
     "antennaLabel": "Antenne",

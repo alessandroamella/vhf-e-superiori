@@ -2,6 +2,7 @@ import { Router } from "express";
 import { INTERNAL_SERVER_ERROR } from "http-status";
 import { logger } from "../../../shared/logger";
 import { createError, validate } from "../../helpers";
+import { location } from "../../location";
 import { BeaconCache } from "../cache";
 import {
   Beacon,
@@ -74,6 +75,15 @@ router.get("/", validate, async (_req, res) => {
         logger.error(`Beacon ${beacon._id} has no properties`);
         logger.error(beacon);
         return res.status(INTERNAL_SERVER_ERROR).json(createError());
+      }
+      // Populate lat/lon from the Maidenhead locator when missing, so the
+      // frontend beacon map can place every beacon without a separate geocode.
+      if ((props.lat == null || props.lon == null) && props.locator) {
+        const computed = location.calculateLatLon(props.locator);
+        if (computed) {
+          props.lat = computed[0];
+          props.lon = computed[1];
+        }
       }
       const beaconWithProps: BeaconLeanWithProp = {
         ...beacon,

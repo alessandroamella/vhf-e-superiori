@@ -8,6 +8,7 @@ import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
  *        type: object
  *        required:
  *          - callsign
+ *          - owner
  *        properties:
  *          callsign:
  *            type: string
@@ -29,6 +30,6 @@ export class BeaconClass {
   @prop({ required: true, minlength: 1, maxlength: 10, uppercase: true })
   public callsign!: string;
 
-  @prop({ required: false, ref: "User" })
-  public owner?: Ref<"User">;
+  @prop({ required: true, ref: "User" })
+  public owner!: Ref<"User">;
 }

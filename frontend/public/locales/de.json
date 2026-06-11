@@ -239,7 +239,7 @@
     "bandTitle": "Band {{band}} MHz",
     "table": {
       "callsign": "Rufzeichen",
-      "name": "Rufzeichen des Betreuers",
+      "name": "Beacon-Spitzname",
       "frequency": "Frequenz",
       "qth": "QTH",
       "locator": "Locator",
@@ -250,7 +250,13 @@
       "power": "Leistung"
     },
     "loadError": "Fehler beim Laden der Baken: {{error}}",
-    "noBeacons": "Keine Baken gefunden"
+    "noBeacons": "Keine Baken gefunden",
+    "mapButton": "Bakenkarte",
+    "map": {
+      "pageTitle": "Bakenkarte",
+      "title": "Bakenkarte",
+      "empty": "Keine Bake mit verfügbarem Standort"
+    }
   },
   "generateMap": {
     "generateYourMap": "Erstellen Sie Ihre Karte",
@@ -294,7 +300,7 @@
       "single": "Sind Sie sicher, dass Sie diese Bake zusammen mit ihrer einzigen Änderung löschen möchten? Diese Aktion ist unumkehrbar. Fortfahren?"
     },
     "callsignLabel": "Rufzeichen",
-    "nameLabel": "Rufzeichen des Betreuers",
+    "nameLabel": "Beacon-Spitzname",
     "maintainerLabel": "Betreuer",
     "frequencyLabel": "Frequenz",
     "antennaLabel": "Antenne",

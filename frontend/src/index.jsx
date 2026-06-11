@@ -11,6 +11,7 @@ import "./index.css";
 import { ErrorBoundary } from "react-error-boundary";
 import AntenneGianni from "./antenna/AntenneGianni";
 import BeaconHomepage from "./beacon";
+import BeaconMap from "./beacon/BeaconMap";
 import BeaconEditor from "./beacon/Editor";
 import ViewBeacon from "./beacon/ViewBeacon";
 import Blog from "./blog";
@@ -93,6 +94,7 @@ const AppRoutes = () => {
             <Route path="/event/:id" element={<ViewEvent />} />
             <Route path="/document/:name" element={<MdViewer />} />
             <Route path="/beacon" element={<BeaconHomepage />} />
+            <Route path="/beacon/map" element={<BeaconMap />} />
             <Route path="/beacon/editor" element={<BeaconEditor />} />
             <Route path="/beacon/:id" element={<ViewBeacon />} />
             <Route path="/blog" element={<Blog />} />

@@ -239,7 +239,7 @@
     "bandTitle": "Banda {{band}} MHz",
     "table": {
       "callsign": "Indicativo",
-      "name": "Indicativo del responsable",
+      "name": "Apodo de la baliza",
       "frequency": "Frecuencia",
       "qth": "QTH",
       "locator": "Localizador",
@@ -250,7 +250,13 @@
       "power": "Potencia"
     },
     "loadError": "Error al cargar las balizas: {{error}}",
-    "noBeacons": "No se encontraron balizas"
+    "noBeacons": "No se encontraron balizas",
+    "mapButton": "Mapa de balizas",
+    "map": {
+      "pageTitle": "Mapa de balizas",
+      "title": "Mapa de balizas",
+      "empty": "Ninguna baliza con ubicación disponible"
+    }
   },
   "generateMap": {
     "generateYourMap": "Genera tu mapa",
@@ -294,7 +300,7 @@
       "single": "¿Estás seguro de que quieres eliminar esta baliza junto con su única edición? Esta acción es irreversible. ¿Continuar?"
     },
     "callsignLabel": "Indicativo",
-    "nameLabel": "Indicativo del responsable",
+    "nameLabel": "Apodo de la baliza",
     "maintainerLabel": "Responsable",
     "frequencyLabel": "Frecuencia",
     "antennaLabel": "Antena",
