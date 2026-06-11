@@ -15,13 +15,6 @@ export type BeaconPropertiesLean = BeaconPropertiesClass & {
   _id: Types.ObjectId;
 };
 
-export type BeaconDocWithProp = BeaconDoc & {
-  properties: BeaconPropertiesDoc;
-};
-export type BeaconDocWithProps = BeaconDoc & {
-  properties: BeaconPropertiesDoc[];
-};
-
 export type BeaconLeanWithProp = BeaconLean & {
   properties: BeaconPropertiesLean;
 };

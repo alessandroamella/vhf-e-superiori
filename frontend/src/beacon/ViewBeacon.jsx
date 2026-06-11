@@ -1,22 +1,15 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Alert, Button, Card, Pagination, Tooltip } from "flowbite-react";
+import { Alert, Button, Card, Tooltip } from "flowbite-react";
 import L from "leaflet";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
-import {
-  FaBackward,
-  FaCheckCircle,
-  FaInfoCircle,
-  FaPen,
-  FaTrash,
-} from "react-icons/fa";
+import { FaBackward, FaPen, FaTrash } from "react-icons/fa";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import ReactPlaceholder from "react-placeholder";
 import { Link, useNavigate, useParams } from "react-router";
 import { getErrorStr } from "../shared";
-import { formatInTimeZone } from "../shared/formatInTimeZone";
 import MapWatermark from "../shared/MapWatermark";
 import useUserStore from "../stores/userStore";
 
@@ -42,18 +35,7 @@ const ViewBeacon = () => {
     },
   });
 
-  const _properties = beacon?.properties || null;
-  const [propIndex, setPropIndex] = useState(0);
-
-  const properties = _properties ? _properties[propIndex] : null;
-
-  const initializedRef = useRef(false);
-  useEffect(() => {
-    if (_properties && !initializedRef.current) {
-      setPropIndex(_properties.length - 1);
-      initializedRef.current = true;
-    }
-  }, [_properties]);
+  const properties = beacon?.properties || null;
 
   const icon = useMemo(
     () =>
@@ -80,17 +62,14 @@ const ViewBeacon = () => {
 
   const navigate = useNavigate();
 
-  async function deleteBeacon(id) {
-    const confirmText =
-      _properties.length === 1
-        ? t("beaconViewer.deleteConfirmation.single", {
-            count: _properties.length,
-          })
-        : t("beaconViewer.deleteConfirmation.plural", {
-            count: _properties.length || "-",
-          });
+  const ownerId = beacon?.owner?._id || beacon?.owner;
+  const canEdit =
+    user?.isAdmin || (!!ownerId && !!user?._id && ownerId === user._id);
 
-    const confirm = window.confirm(confirmText);
+  async function deleteBeacon(id) {
+    const confirm = window.confirm(
+      t("beaconViewer.deleteConfirmation.single", { count: 1 }),
+    );
     if (!confirm) return;
 
     try {
@@ -102,66 +81,6 @@ const ViewBeacon = () => {
         color: "failure",
         msg: getErrorStr(err?.response?.data?.err),
       });
-    }
-  }
-
-  const [disabled, setDisabled] = useState(false);
-
-  async function deleteEdit(properties) {
-    const { _id, editAuthor } = properties;
-    const confirm = window.confirm(
-      t("beaconViewer.deleteEditConfirmation", {
-        author: editAuthor?.callsign,
-      }),
-    );
-    if (!confirm) return;
-
-    setDisabled(true);
-
-    try {
-      await axios.delete(`/api/beacon/property/${_id}`);
-      await queryClient.invalidateQueries({ queryKey: ["beacon", id] });
-      queryClient.invalidateQueries({ queryKey: ["beacons"] });
-      setPropIndex(0);
-    } catch (err) {
-      setAlert({
-        color: "failure",
-        msg: getErrorStr(err?.response?.data?.err),
-      });
-    } finally {
-      setDisabled(false);
-    }
-  }
-
-  async function approveEdit(properties) {
-    const { _id, editAuthor } = properties;
-    const confirm = window.confirm(
-      t("beaconViewer.approveEditConfirmation", {
-        author: editAuthor?.callsign,
-      }),
-    );
-    if (!confirm) return;
-
-    setDisabled(true);
-
-    try {
-      await axios.put(`/api/beacon/approve/${_id}`);
-      const data = await queryClient.fetchQuery({
-        queryKey: ["beacon", id],
-        queryFn: async () => {
-          const { data } = await axios.get(`/api/beacon/${id}`);
-          return data;
-        },
-      });
-      queryClient.invalidateQueries({ queryKey: ["beacons"] });
-      setPropIndex(data.properties.length - 1);
-    } catch (err) {
-      setAlert({
-        color: "failure",
-        msg: getErrorStr(err?.response?.data?.err),
-      });
-    } finally {
-      setDisabled(false);
     }
   }
 
@@ -206,10 +125,7 @@ const ViewBeacon = () => {
 
                 <div className="flex flex-col md:flex-row md:justify-between mb-4">
                   <div className="flex gap-1">
-                    {(user?.isAdmin ||
-                      (beacon.owner?._id &&
-                        user?._id &&
-                        beacon.owner._id === user._id)) && (
+                    {canEdit && (
                       <Link to={`/beacon/editor?id=${beacon._id}`}>
                         <Button color="light">
                           <FaPen className="inline mr-2" />
@@ -229,18 +145,6 @@ const ViewBeacon = () => {
                       </Tooltip>
                     )}
                   </div>
-                  {_properties.length !== 1 && (
-                    <div className="flex gap-1 justify-center items-center">
-                      <p className="text-gray-600 dark:text-gray-200 -mr-8 mb-2">
-                        {t("beaconViewer.historyLabel")}
-                      </p>
-                      <Pagination
-                        currentPage={propIndex + 1}
-                        totalPages={_properties.length}
-                        onPageChange={(p) => setPropIndex(p - 1)}
-                      />
-                    </div>
-                  )}
                 </div>
 
                 <Card className="mb-6">
@@ -291,67 +195,17 @@ const ViewBeacon = () => {
                     </div>
                   </div>
 
-                  <div className="flex flex-col md:flex-row gap-2 md:justify-between">
-                    <Alert
-                      className="w-fit"
-                      color={properties.verifiedBy ? "success" : "warning"}
-                    >
-                      <div className="flex flex-col md:flex-row md:justify-around">
-                        <div>
-                          {properties.verifiedBy ? (
-                            <span>✅ </span>
-                          ) : (
-                            <FaInfoCircle className="inline mr-2 mb-[2px]" />
-                          )}
-                          {t("beaconViewer.changesByText")}
-                          <Link
-                            className="font-bold"
-                            to={`/u/${properties.editAuthor.callsign}`}
-                          >
-                            {properties.editAuthor.callsign}
-                          </Link>{" "}
-                          {t("beaconViewer.onDateText")}{" "}
-                          {formatInTimeZone(
-                            new Date(properties.editDate),
-                            "Europe/Rome",
-                            `dd/MM/yyyy '${t("beaconViewer.atTimeText")}' HH:mm`,
-                          )}
-                        </div>
-                      </div>
-                    </Alert>
-                    {user?.isAdmin && (
-                      <div className="flex gap-2 items-center">
-                        {!properties.verifiedBy && (
-                          <Tooltip content={t("beaconViewer.adminTooltip")}>
-                            <Button
-                              color="warning"
-                              disabled={disabled}
-                              onClick={() => approveEdit(properties)}
-                            >
-                              <FaCheckCircle className="inline mr-2" />
-                              {t("beaconViewer.approveButton")}
-                            </Button>
-                          </Tooltip>
-                        )}
-                        <Tooltip
-                          content={
-                            _properties?.length === 1
-                              ? t("beaconViewer.deleteSingleEditTooltip")
-                              : t("beaconViewer.adminTooltip")
-                          }
-                        >
-                          <Button
-                            color="failure"
-                            disabled={_properties?.length === 1 || disabled}
-                            onClick={() => deleteEdit(properties)}
-                          >
-                            <FaTrash className="inline mr-2" />
-                            {t("beaconViewer.deleteEditButton")}
-                          </Button>
-                        </Tooltip>
-                      </div>
-                    )}
-                  </div>
+                  {beacon.owner?.callsign && (
+                    <p className="text-gray-600 dark:text-gray-300">
+                      <strong>{t("beaconViewer.maintainerLabel")}:</strong>{" "}
+                      <Link
+                        className="font-bold"
+                        to={`/u/${beacon.owner.callsign}`}
+                      >
+                        {beacon.owner.callsign}
+                      </Link>
+                    </p>
+                  )}
                 </Card>
 
                 {properties.lat && properties.lon && (

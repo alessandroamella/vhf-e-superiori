@@ -4,6 +4,7 @@ import {
   AccordionHeader,
   Typography,
 } from "@material-tailwind/react";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import classNames from "classnames";
 import { getDate, isAfter } from "date-fns";
@@ -27,11 +28,13 @@ import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import {
   FaArrowAltCircleRight,
+  FaBroadcastTower,
   FaCaretDown,
   FaCheck,
   FaExclamation,
   FaExternalLinkAlt,
   FaLink,
+  FaPlus,
   FaTrash,
 } from "react-icons/fa";
 import ReactPlaceholder from "react-placeholder";
@@ -271,6 +274,22 @@ const Profile = () => {
   }
 
   const navigate = useNavigate();
+
+  const { data: allBeacons, isLoading: beaconsLoading } = useQuery({
+    queryKey: ["beacons"],
+    queryFn: async () => {
+      const { data } = await axios.get("/api/beacon");
+      return data;
+    },
+  });
+
+  const myBeacons =
+    user && Array.isArray(allBeacons)
+      ? allBeacons.filter((b) => {
+          const ownerId = typeof b.owner === "object" ? b.owner?._id : b.owner;
+          return ownerId && String(ownerId) === String(user._id);
+        })
+      : [];
 
   useEffect(() => {
     console.log("check user", user);
@@ -762,7 +781,7 @@ const Profile = () => {
                   </p>
                   <ul className="list-disc mt-1">
                     <li>
-                      <strong>Alessandro IZ5RNF:</strong>
+                      <strong>Pietro IU4JJJ:</strong>
                       <a
                         href="mailto:iu4jjj@gmail.com"
                         target="_blank"
@@ -785,6 +804,51 @@ const Profile = () => {
                     </Link>
                   </div>
                 )}
+
+                <div className="mt-10">
+                  <div className="flex flex-wrap items-center justify-between gap-2 my-4">
+                    <Typography variant="h3" className="dark:text-white">
+                      {t("profileBeacons.title")}
+                    </Typography>
+                    <Button
+                      size="sm"
+                      onClick={() => navigate("/beacon/editor")}
+                    >
+                      <FaPlus className="inline mr-2 mt-[2.5px]" />
+                      {t("profileBeacons.addButton")}
+                    </Button>
+                  </div>
+
+                  {beaconsLoading ? (
+                    <Spinner />
+                  ) : myBeacons.length > 0 ? (
+                    <ListGroup className="p-0">
+                      {myBeacons.map((b) => (
+                        <ListGroup.Item key={b._id}>
+                          <Link
+                            to={`/beacon/${b._id}`}
+                            className="w-full hover:scale-[1.02] transition-transform flex items-center gap-2 p-1"
+                          >
+                            <FaBroadcastTower className="text-gray-500 dark:text-gray-400 shrink-0" />
+                            <span className="font-bold">{b.callsign}</span>
+                            {b.properties?.frequency && (
+                              <span className="text-gray-500 dark:text-gray-400">
+                                {b.properties.frequency} MHz
+                              </span>
+                            )}
+                            {b.properties?.locator && (
+                              <span className="ml-auto text-gray-500 dark:text-gray-400">
+                                {b.properties.locator}
+                              </span>
+                            )}
+                          </Link>
+                        </ListGroup.Item>
+                      ))}
+                    </ListGroup>
+                  ) : (
+                    <p>{t("profileBeacons.empty")}</p>
+                  )}
+                </div>
               </>
             )}
           </div>

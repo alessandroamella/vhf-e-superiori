@@ -1,9 +1,8 @@
 import { convert } from "html-to-text";
-import { last } from "lodash-es";
 import NodeCache from "node-cache";
 import { logger } from "../../shared/logger";
 import { telegramService } from "../telegram/telegram.service";
-import { BeaconDocWithProps, BeaconLeanWithProp } from "./models";
+import { BeaconLeanWithProp } from "./models";
 
 // Cache for 15 minutes
 const beaconCache = new NodeCache({ stdTTL: 60 * 15 });
@@ -32,7 +31,7 @@ export class BeaconCache {
     }
   }
 
-  static getBeacon(id: string): BeaconDocWithProps | undefined {
+  static getBeacon(id: string): BeaconLeanWithProp | undefined {
     try {
       return beaconCache.get(`${CACHE_KEYS.BEACON_PREFIX}${id}`);
     } catch (err) {
@@ -41,7 +40,7 @@ export class BeaconCache {
     }
   }
 
-  static setBeacon(id: string, beacon: BeaconDocWithProps) {
+  static setBeacon(id: string, beacon: BeaconLeanWithProp) {
     try {
       beaconCache.set(`${CACHE_KEYS.BEACON_PREFIX}${id}`, beacon);
       logger.debug(`Cached beacon ${id}`);
@@ -49,7 +48,7 @@ export class BeaconCache {
       logger.error(`Error setting beacon ${id} in cache:`, err);
       telegramService.sendAdminNotification(
         `❗️ <b>Error setting beacon ${id} (${
-          last(beacon.properties)?.name
+          beacon.properties?.name
         }) in cache</b>\n\n${
           err instanceof Error ? convert(err.message) : "Unknown error"
         }`,

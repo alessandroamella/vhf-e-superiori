@@ -289,16 +289,13 @@
     "header": "Bake {{callsign}}",
     "editButton": "Bearbeiten",
     "deleteBeaconButton": "Bake löschen",
-    "historyLabel": "Änderungen",
     "adminTooltip": "Sie sehen dies, da Sie ein Administrator sind",
     "deleteConfirmation": {
-      "single": "Sind Sie sicher, dass Sie diese Bake zusammen mit ihrer einzigen Änderung löschen möchten? Diese Aktion ist unumkehrbar. Fortfahren?",
-      "plural": "Sind Sie sicher, dass Sie diese Bake zusammen mit all ihren {{count}} Änderungen löschen möchten? Diese Aktion ist unumkehrbar. Fortfahren?"
+      "single": "Sind Sie sicher, dass Sie diese Bake zusammen mit ihrer einzigen Änderung löschen möchten? Diese Aktion ist unumkehrbar. Fortfahren?"
     },
-    "deleteEditConfirmation": "Sind Sie sicher, dass Sie diese Änderungen von {{author}} löschen möchten? Diese Aktion ist unumkehrbar. Fortfahren?",
-    "approveEditConfirmation": "Sind Sie sicher, dass Sie diese Änderungen von {{author}} genehmigen möchten? Diese Aktion ist unumkehrbar. Fortfahren?",
     "callsignLabel": "Rufzeichen",
     "nameLabel": "Rufzeichen des Betreuers",
+    "maintainerLabel": "Betreuer",
     "frequencyLabel": "Frequenz",
     "antennaLabel": "Antenne",
     "powerLabel": "Leistung",
@@ -306,13 +303,7 @@
     "locatorLabel": "Locator",
     "altitudeLabel": "Höhe",
     "modeLabel": "Modus",
-    "qtfLabel": "QTF",
-    "changesByText": "Änderungen von ",
-    "onDateText": "am",
-    "atTimeText": "um",
-    "approveButton": "Änderungen genehmigen",
-    "deleteEditButton": "Änderungen löschen",
-    "deleteSingleEditTooltip": "Sie können diese Änderungen nicht löschen, da es die bisher einzigen für die Bake sind. Erstellen Sie neue und löschen Sie dann diese, oder löschen Sie die gesamte Bake mit der Schaltfläche oben."
+    "qtfLabel": "QTF"
   },
   "fileUploader": {
     "toast": {
@@ -423,5 +414,10 @@
     "INVALID_TAGS": "Ungültige Tags",
     "INVALID_IMAGE": "Ungültiges Bild",
     "MUST_BE_DEV": "Sie müssen ein Site-Entwickler sein, um diese Aktion abzuschließen"
+  },
+  "profileBeacons": {
+    "title": "Meine Baken",
+    "addButton": "Bake hinzufügen",
+    "empty": "Du hast noch keine Baken hinzugefügt"
   }
 }

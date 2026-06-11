@@ -100,7 +100,7 @@ const BeaconEditor = () => {
         const { data } = await axios.get(`/api/beacon/${id}`);
 
         const beacon = { ...data };
-        const properties = { ...data.properties }[data.properties.length - 1];
+        const properties = data.properties;
         delete beacon.properties;
 
         console.log("beacon", beacon);
@@ -345,7 +345,7 @@ const BeaconEditor = () => {
       <div className="w-full h-full pb-4 dark:text-white bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
         <div className="mx-auto px-4 w-full md:w-5/6 py-12">
           <div className="mb-4 md:-ml-4 md:-mt-4">
-            <Link to={disabled ? "#" : "/beacon"}>
+            <Link to={disabled ? "#" : isEditing ? `/beacon/${id}` : "/beacon"}>
               <Button color="info" disabled={disabled}>
                 <FaBackward />
               </Button>
@@ -596,7 +596,7 @@ const BeaconEditor = () => {
               </div>
 
               <div className="mt-6 flex justify-center gap-2 items-center">
-                <Link to="/beacon">
+                <Link to={isEditing ? `/beacon/${id}` : "/beacon"}>
                   <Button
                     type="submit"
                     color="light"

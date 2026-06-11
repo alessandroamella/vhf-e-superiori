@@ -106,9 +106,27 @@ router.put(
         lon,
       } = req.body;
 
-      const beaconProps = new BeaconProperties({
-        name,
+      // Beacons now have a single set of properties (no edit history). Keep the
+      // original properties document (preserving editAuthor/editDate of whoever
+      // created the beacon) and update its fields in place; drop any leftover
+      // legacy history documents so there is exactly one per beacon.
+      const beaconProps =
+        (await BeaconProperties.findOne({ forBeacon: beacon._id }).sort({
+          editDate: 1,
+        })) ??
+        new BeaconProperties({
+          forBeacon: beacon._id,
+          editAuthor: user._id,
+          editDate: new Date(),
+        });
+
+      await BeaconProperties.deleteMany({
         forBeacon: beacon._id,
+        _id: { $ne: beaconProps._id },
+      });
+
+      beaconProps.set({
+        name,
         frequency,
         qthStr,
         locator,
@@ -119,10 +137,6 @@ router.put(
         power,
         lat,
         lon,
-        editAuthor: user._id,
-        editDate: new Date(),
-        verifiedBy: user.isAdmin ? user._id : undefined,
-        verifyDate: user.isAdmin ? new Date() : undefined,
       });
 
       try {

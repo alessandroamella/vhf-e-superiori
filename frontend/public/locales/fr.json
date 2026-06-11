@@ -289,16 +289,13 @@
     "header": "Balise {{callsign}}",
     "editButton": "Modifier",
     "deleteBeaconButton": "Supprimer la balise",
-    "historyLabel": "Modifications",
     "adminTooltip": "Vous voyez ceci car vous êtes un administrateur",
     "deleteConfirmation": {
-      "single": "Êtes-vous sûr de vouloir supprimer cette balise ainsi que sa seule modification ? Cette action est irréversible. Continuer ?",
-      "plural": "Êtes-vous sûr de vouloir supprimer cette balise ainsi que toutes ses {{count}} modifications ? Cette action est irréversible. Continuer ?"
+      "single": "Êtes-vous sûr de vouloir supprimer cette balise ainsi que sa seule modification ? Cette action est irréversible. Continuer ?"
     },
-    "deleteEditConfirmation": "Êtes-vous sûr de vouloir supprimer ces modifications de {{author}} ? Cette action est irréversible. Continuer ?",
-    "approveEditConfirmation": "Êtes-vous sûr de vouloir approuver ces modifications de {{author}} ? Cette action est irréversible. Continuer ?",
     "callsignLabel": "Indicatif",
     "nameLabel": "Indicatif du gestionnaire",
+    "maintainerLabel": "Gestionnaire",
     "frequencyLabel": "Fréquence",
     "antennaLabel": "Antenne",
     "powerLabel": "Puissance",
@@ -306,13 +303,7 @@
     "locatorLabel": "Locator",
     "altitudeLabel": "Altitude",
     "modeLabel": "Mode",
-    "qtfLabel": "QTF",
-    "changesByText": "Modifications par ",
-    "onDateText": "le",
-    "atTimeText": "à",
-    "approveButton": "Approuver les modifications",
-    "deleteEditButton": "Supprimer les modifications",
-    "deleteSingleEditTooltip": "Vous ne pouvez pas supprimer ces modifications car ce sont les seules effectuées jusqu'à présent pour la balise. Créez-en de nouvelles puis supprimez celles-ci, ou supprimez la balise entière avec le bouton ci-dessus."
+    "qtfLabel": "QTF"
   },
   "fileUploader": {
     "toast": {
@@ -423,5 +414,10 @@
     "INVALID_TAGS": "Tags non valides",
     "INVALID_IMAGE": "Immagine non valide",
     "MUST_BE_DEV": "Vous devez être un développeur du site pour effectuer cette action"
+  },
+  "profileBeacons": {
+    "title": "Mes balises",
+    "addButton": "Ajouter une balise",
+    "empty": "Vous n avez pas encore ajouté de balise"
   }
 }

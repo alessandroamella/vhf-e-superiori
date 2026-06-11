@@ -57,14 +57,6 @@ import {
  *          lon:
  *            type: number
  *            description: Longitude (optional)
- *          verifiedBy:
- *            type: string
- *            format: ObjectId
- *            description: Admin that verified the beacon (optional)
- *          verifyDate:
- *            type: string
- *            format: date-time
- *            description: Date when the beacon was verified (optional)
  *          editAuthor:
  *            type: string
  *            format: ObjectId
@@ -115,12 +107,6 @@ export class BeaconPropertiesClass {
 
   @prop({ required: false })
   public lon?: number;
-
-  @prop({ required: false, ref: "User" })
-  public verifiedBy?: Ref<"User">;
-
-  @prop({ required: false })
-  public verifyDate?: Date;
 
   @prop({ required: true, ref: "User" })
   public editAuthor!: Ref<"User">;

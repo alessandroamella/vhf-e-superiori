@@ -286,16 +286,13 @@
     "header": "Beacon {{callsign}}",
     "editButton": "Editja",
     "deleteBeaconButton": "Ħassar il-beacon",
-    "historyLabel": "Modifiki",
     "adminTooltip": "Qed tara dan għax int amministratur",
     "deleteConfirmation": {
-      "single": "Inti żgur li trid tħassar dan il-beacon flimkien mal-unika modifika tiegħu? Din l-azzjoni ma tistax titreġġa' lura. Trid tkompli?",
-      "plural": "Inti żgur li trid tħassar dan il-beacon flimkien mal-{{count}} modifiki kollha tiegħu? Din l-azzjoni ma tistax titreġġa' lura. Trid tkompli?"
+      "single": "Inti żgur li trid tħassar dan il-beacon flimkien mal-unika modifika tiegħu? Din l-azzjoni ma tistax titreġġa' lura. Trid tkompli?"
     },
-    "deleteEditConfirmation": "Inti żgur li trid tħassar dawn il-modifiki minn {{author}}? Din l-azzjoni ma tistax titreġġa' lura. Trid tkompli?",
-    "approveEditConfirmation": "Inti żgur li trid tapprova dawn il-modifiki minn {{author}}? Din l-azzjoni ma tistax titreġġa' lura. Trid tkompli?",
     "callsignLabel": "Callsign",
     "nameLabel": "Sinjal tas-sejħa tal-manutentur",
+    "maintainerLabel": "Manutentur",
     "frequencyLabel": "Frekwenza",
     "antennaLabel": "Antenna",
     "powerLabel": "Qawwa",
@@ -304,12 +301,6 @@
     "altitudeLabel": "Altitudni",
     "modeLabel": "Mod",
     "qtfLabel": "QTF",
-    "changesByText": "Modifiki minn ",
-    "onDateText": "fi",
-    "atTimeText": "fil-",
-    "approveButton": "Approva l-modifiki",
-    "deleteEditButton": "Ħassar il-modifiki",
-    "deleteSingleEditTooltip": "Ma tistax tħassar dawn il-modifiki peress li huma l-uniċi li saru għal dan il-beacon s'issa. Oħloq oħrajn ġodda u mbagħad ħassar dawn, jew ħassar il-beacon kollu bil-buttuna ta' hawn fuq.",
     "dropAdifFile": "Ħalli l-fajl ADIF/EDI tiegħek hawn...",
     "dragOrClickAdif": "Drag il-fajl tiegħek .adif, .adi jew .edi hawn, jew ikklikkja biex tagħżlu."
   },
@@ -422,5 +413,10 @@
     "INVALID_TAGS": "Tags invalidi",
     "INVALID_IMAGE": "Immaġni invalida",
     "MUST_BE_DEV": "Trid tkun żviluppatur tas-sit biex tlesti din l-azzjoni"
+  },
+  "profileBeacons": {
+    "title": "Il-baykons tiegħi",
+    "addButton": "Żid baykon",
+    "empty": "Għadek ma żidt l-ebda baykon"
   }
 }

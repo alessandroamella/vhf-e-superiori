@@ -59,8 +59,6 @@ router.get("/", validate, async (_req, res) => {
           forBeacon: beacon._id,
         },
         {
-          verifiedBy: 0,
-          verifyDate: 0,
           editAuthor: 0,
           editDate: 0,
         },
