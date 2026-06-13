@@ -52,19 +52,14 @@ router.get("/:id", param("id").isMongoId(), validate, async (req, res) => {
       return res.json(cachedBeacon);
     }
 
-    // lean so we can add properties to the object
-    const _beacon = await Beacon.findOne({ _id: req.params.id })
-      .populate({
-        path: "owner",
-        select: "callsign isDev isAdmin",
-      })
-      .lean();
+    // lean so we can add properties to the object. `owner` is a plain callsign
+    // string (not a ref), so there is nothing to populate.
+    const _beacon = await Beacon.findOne({ _id: req.params.id }).lean();
     if (!_beacon) {
       return res.status(BAD_REQUEST).json(createError());
     }
 
-    // Sorted oldest-first: [0] is the original creator (used for the legacy
-    // owner fallback), the last one holds the current properties.
+    // Sorted oldest-first; the last one holds the current properties.
     const props = await BeaconProperties.find({
       forBeacon: _beacon._id,
     })
@@ -82,13 +77,6 @@ router.get("/:id", param("id").isMongoId(), validate, async (req, res) => {
     const beacon = _beacon as unknown as BeaconLeanWithProp;
     // biome-ignore lint/suspicious/noExplicitAny: dont want to type
     (beacon as any).properties = props[props.length - 1];
-
-    // Legacy beacons created before the ownership system existed have no
-    // explicit owner: fall back to whoever made the oldest edit
-    if (!beacon.owner) {
-      // biome-ignore lint/suspicious/noExplicitAny: dont want to type
-      (beacon as any).owner = props[0].editAuthor;
-    }
 
     // Cache the result
     BeaconCache.setBeacon(req.params.id, beacon);

@@ -300,7 +300,7 @@
       "single": "Sind Sie sicher, dass Sie diese Bake zusammen mit ihrer einzigen Änderung löschen möchten? Diese Aktion ist unumkehrbar. Fortfahren?"
     },
     "callsignLabel": "Rufzeichen",
-    "nameLabel": "Beacon-Spitzname",
+    "nameLabel": "Eigentümer",
     "maintainerLabel": "Betreuer",
     "frequencyLabel": "Frequenz",
     "antennaLabel": "Antenne",
@@ -312,7 +312,8 @@
     "qtfLabel": "QTF",
     "changesByText": "Bearbeitet von ",
     "onDateText": "am",
-    "atTimeText": "um"
+    "atTimeText": "um",
+    "maintainerPending": "In Überprüfung"
   },
   "fileUploader": {
     "toast": {
@@ -449,15 +450,16 @@
       "mode": "Modus",
       "qtf": "QTF",
       "power": "Leistung in Watt",
-      "name": "Beacon-Spitzname (optional)",
-      "namePlaceholder": "Z.B. Beacon Mount Cimone"
+      "name": "Eigentümer (optional)",
+      "namePlaceholder": "z. B. Max Mustermann"
     },
     "owner": {
       "label": "Betreuer (nur Administratoren)",
-      "description": "Suche nach einem registrierten Benutzer nach Rufzeichen oder Namen. Jeder Beacon muss einen Betreuer haben.",
-      "placeholder": "Rufzeichen suchen...",
+      "description": "Geben Sie das Rufzeichen des Betreuers ein (auch nicht registriert). Leer lassen, wenn das Beacon in Überprüfung ist.",
+      "placeholder": "Rufzeichen des Betreuers...",
       "selected": "Betreuer ausgewählt: {{callsign}}",
-      "required": "Wählen Sie einen Betreuer aus der Liste"
+      "clear": "Entfernen",
+      "pending": "Kein Betreuer (in Überprüfung)"
     },
     "position": {
       "title": "Position",
@@ -470,8 +472,7 @@
       "save": "Speichern"
     },
     "validation": {
-      "positionRequired": "Wählen Sie die Beacon-Position auf der Karte aus",
-      "ownerRequired": "Wählen Sie einen Betreuer für den Beacon"
+      "positionRequired": "Wählen Sie die Beacon-Position auf der Karte aus"
     },
     "alerts": {
       "cannotEdit": "Nur der Betreuer dieses Beacons oder ein Administrator kann ihn bearbeiten.",

@@ -63,9 +63,12 @@ const ViewBeacon = () => {
 
   const navigate = useNavigate();
 
-  const ownerId = beacon?.owner?._id || beacon?.owner;
+  const ownerCallsign = beacon?.owner || null;
   const canEdit =
-    user?.isAdmin || (!!ownerId && !!user?._id && ownerId === user._id);
+    user?.isAdmin ||
+    (!!ownerCallsign &&
+      !!user?.callsign &&
+      ownerCallsign.toUpperCase() === user.callsign.toUpperCase());
 
   async function deleteBeacon(id) {
     const confirm = window.confirm(
@@ -203,17 +206,18 @@ const ViewBeacon = () => {
                     </div>
                   </div>
 
-                  {beacon.owner?.callsign && (
-                    <p className="text-gray-600 dark:text-gray-300">
-                      <strong>{t("beaconViewer.maintainerLabel")}:</strong>{" "}
-                      <Link
-                        className="font-bold"
-                        to={`/u/${beacon.owner.callsign}`}
-                      >
-                        {beacon.owner.callsign}
+                  <p className="text-gray-600 dark:text-gray-300">
+                    <strong>{t("beaconViewer.maintainerLabel")}:</strong>{" "}
+                    {beacon.owner ? (
+                      <Link className="font-bold" to={`/u/${beacon.owner}`}>
+                        {beacon.owner}
                       </Link>
-                    </p>
-                  )}
+                    ) : (
+                      <span className="italic text-gray-500 dark:text-gray-400">
+                        {t("beaconViewer.maintainerPending")}
+                      </span>
+                    )}
+                  </p>
 
                   {properties.editAuthor?.callsign && properties.editDate && (
                     <Alert className="w-fit" color="warning">

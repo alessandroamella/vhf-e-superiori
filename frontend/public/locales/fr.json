@@ -300,7 +300,7 @@
       "single": "Êtes-vous sûr de vouloir supprimer cette balise ainsi que sa seule modification ? Cette action est irréversible. Continuer ?"
     },
     "callsignLabel": "Indicatif",
-    "nameLabel": "Surnom de la balise",
+    "nameLabel": "Propriétaire",
     "maintainerLabel": "Gestionnaire",
     "frequencyLabel": "Fréquence",
     "antennaLabel": "Antenne",
@@ -312,7 +312,8 @@
     "qtfLabel": "QTF",
     "changesByText": "Modifié par ",
     "onDateText": "le",
-    "atTimeText": "à"
+    "atTimeText": "à",
+    "maintainerPending": "En vérification"
   },
   "fileUploader": {
     "toast": {
@@ -449,15 +450,16 @@
       "mode": "Mode",
       "qtf": "QTF",
       "power": "Puissance en Watts",
-      "name": "Surnom de la balise (optionnel)",
-      "namePlaceholder": "Ex. Balise du Mont Cimone"
+      "name": "Propriétaire (optionnel)",
+      "namePlaceholder": "Ex. Jean Dupont"
     },
     "owner": {
       "label": "Mainteneur (administrateurs uniquement)",
-      "description": "Recherchez un utilisateur enregistré par indicatif ou par nom. Chaque balise doit avoir un mainteneur.",
-      "placeholder": "Rechercher l'indicatif...",
+      "description": "Saisissez l'indicatif du mainteneur (même non inscrit). Laissez vide si la balise est en vérification.",
+      "placeholder": "Indicatif du mainteneur...",
       "selected": "Mainteneur sélectionné: {{callsign}}",
-      "required": "Sélectionnez un mainteneur dans la liste"
+      "clear": "Retirer",
+      "pending": "Aucun mainteneur (en vérification)"
     },
     "position": {
       "title": "Position",
@@ -470,8 +472,7 @@
       "save": "Enregistrer"
     },
     "validation": {
-      "positionRequired": "Sélectionnez la position de la balise sur la carte",
-      "ownerRequired": "Sélectionnez un mainteneur pour la balise"
+      "positionRequired": "Sélectionnez la position de la balise sur la carte"
     },
     "alerts": {
       "cannotEdit": "Seul le mainteneur de cette balise ou un administrateur peut la modifier.",

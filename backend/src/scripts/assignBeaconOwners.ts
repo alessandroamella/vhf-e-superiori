@@ -69,17 +69,15 @@ async function main() {
   let skipped = 0;
 
   for (const beacon of beacons) {
-    const currentOwner = beacon.owner
-      ? await User.findById(beacon.owner)
-      : null;
+    // owner è ora un callsign (stringa), non più un ObjectId utente
+    const currentOwner = (beacon.owner as string | undefined) ?? null;
     const ownerIsValid =
-      !!currentOwner &&
-      currentOwner.callsign?.toUpperCase() !== INVALID_OWNER_CALLSIGN;
+      !!currentOwner && currentOwner.toUpperCase() !== INVALID_OWNER_CALLSIGN;
 
     if (ownerIsValid) {
       skipped++;
       console.log(
-        `- ${beacon.callsign}: owner valido (${currentOwner?.callsign}), salto`,
+        `- ${beacon.callsign}: owner valido (${currentOwner}), salto`,
       );
       continue;
     }
@@ -107,7 +105,7 @@ async function main() {
     }
 
     if (matchedUser) {
-      beacon.owner = matchedUser._id;
+      beacon.owner = matchedUser.callsign;
       await beacon.save();
       byName++;
       console.log(
@@ -125,7 +123,7 @@ async function main() {
     });
 
     if (matchedUser) {
-      beacon.owner = matchedUser._id;
+      beacon.owner = matchedUser.callsign;
       await beacon.save();
       byCallsign++;
       console.log(
@@ -133,7 +131,7 @@ async function main() {
       );
     } else {
       // Step 2: fallback su IU4JJJ
-      beacon.owner = fallbackUser._id;
+      beacon.owner = fallbackUser.callsign;
       await beacon.save();
       byFallback++;
       console.log(

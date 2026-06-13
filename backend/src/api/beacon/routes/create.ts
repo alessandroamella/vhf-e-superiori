@@ -100,7 +100,9 @@ router.post(
       const beacon = new Beacon({
         callsign,
         properties: beaconProps._id,
-        owner: user._id,
+        // The maintainer is now stored as a callsign string; default it to the
+        // creator's callsign (an admin can later reassign or clear it).
+        owner: user.callsign,
       });
 
       beaconProps.forBeacon = beacon._id;

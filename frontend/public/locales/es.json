@@ -300,7 +300,7 @@
       "single": "¿Estás seguro de que quieres eliminar esta baliza junto con su única edición? Esta acción es irreversible. ¿Continuar?"
     },
     "callsignLabel": "Indicativo",
-    "nameLabel": "Apodo de la baliza",
+    "nameLabel": "Propietario",
     "maintainerLabel": "Responsable",
     "frequencyLabel": "Frecuencia",
     "antennaLabel": "Antena",
@@ -312,7 +312,8 @@
     "qtfLabel": "QTF",
     "changesByText": "Editado por ",
     "onDateText": "el",
-    "atTimeText": "a las"
+    "atTimeText": "a las",
+    "maintainerPending": "En verificación"
   },
   "fileUploader": {
     "toast": {
@@ -449,15 +450,16 @@
       "mode": "Modo",
       "qtf": "QTF",
       "power": "Potencia en Vatios",
-      "name": "Apodo del faro (opcional)",
-      "namePlaceholder": "Ej. Faro del Monte Cimone"
+      "name": "Propietario (opcional)",
+      "namePlaceholder": "Ej. Juan Pérez"
     },
     "owner": {
       "label": "Mantenedor (solo administradores)",
-      "description": "Busca un usuario registrado por indicativo o nombre. Cada faro debe tener un mantenedor.",
-      "placeholder": "Buscar indicativo...",
+      "description": "Introduce el indicativo del mantenedor (aunque no esté registrado). Déjalo vacío si el faro está en verificación.",
+      "placeholder": "Indicativo del mantenedor...",
       "selected": "Mantenedor seleccionado: {{callsign}}",
-      "required": "Selecciona un mantenedor de la lista"
+      "clear": "Quitar",
+      "pending": "Sin mantenedor (en verificación)"
     },
     "position": {
       "title": "Posición",
@@ -470,8 +472,7 @@
       "save": "Guardar"
     },
     "validation": {
-      "positionRequired": "Selecciona la posición del faro en el mapa",
-      "ownerRequired": "Selecciona un mantenedor para el faro"
+      "positionRequired": "Selecciona la posición del faro en el mapa"
     },
     "alerts": {
       "cannotEdit": "Solo el mantenedor de este faro o un administrador pueden editarlo.",

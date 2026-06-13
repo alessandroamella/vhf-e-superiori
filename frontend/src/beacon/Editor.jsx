@@ -110,8 +110,7 @@ const BeaconEditor = () => {
 
         setBeacon(beacon);
 
-        setOwnerId(beacon.owner?._id || beacon.owner || "");
-        setOwnerQuery(beacon.owner?.callsign || "");
+        setOwnerQuery(beacon.owner || "");
 
         setCallsign(beacon.callsign);
 
@@ -156,8 +155,12 @@ const BeaconEditor = () => {
     if (!isEditing) return true;
     if (!beacon || !user) return false;
     if (user.isAdmin) return true;
-    const ownerId = beacon.owner?._id || beacon.owner;
-    return !!ownerId && ownerId === user._id;
+    const ownerCallsign = beacon.owner;
+    return (
+      !!ownerCallsign &&
+      !!user.callsign &&
+      ownerCallsign.toUpperCase() === user.callsign.toUpperCase()
+    );
   }, [isEditing, beacon, user]);
 
   useEffect(() => {
@@ -191,9 +194,10 @@ const BeaconEditor = () => {
 
   const [disabled, setDisabled] = useState(false);
 
-  // owner (maintainer) reassignment — admins only
+  // owner (maintainer) reassignment — admins only. The owner is a free-form
+  // callsign string; the autocomplete just helps pick a registered user, but
+  // any value (or none) is allowed.
   const [users, setUsers] = useState([]);
-  const [ownerId, setOwnerId] = useState("");
   const [ownerQuery, setOwnerQuery] = useState("");
   const [showOwnerDropdown, setShowOwnerDropdown] = useState(false);
 
@@ -238,16 +242,6 @@ const BeaconEditor = () => {
       return;
     }
 
-    // admins editing must keep a maintainer (owner is mandatory)
-    if (isEditing && user?.isAdmin && !ownerId) {
-      setAlert({
-        color: "failure",
-        msg: t("beaconEditor.validation.ownerRequired"),
-      });
-      window.scrollTo(0, 0);
-      return;
-    }
-
     setAlert(null);
 
     try {
@@ -266,9 +260,10 @@ const BeaconEditor = () => {
         lat,
         lon,
       };
-      // admins can reassign the maintainer (owner) when editing
+      // admins can reassign (or clear) the maintainer (owner) when editing;
+      // it's a free-form callsign, empty string means "no maintainer".
       if (isEditing && user?.isAdmin) {
-        data.owner = ownerId;
+        data.owner = ownerQuery.trim().toUpperCase();
       }
       // let res;
       let _id;
@@ -647,8 +642,7 @@ const BeaconEditor = () => {
                         autoComplete="off"
                         value={ownerQuery}
                         onChange={(e) => {
-                          setOwnerQuery(e.target.value);
-                          setOwnerId("");
+                          setOwnerQuery(e.target.value.toUpperCase());
                           setShowOwnerDropdown(true);
                         }}
                         onFocus={() => setShowOwnerDropdown(true)}
@@ -656,6 +650,17 @@ const BeaconEditor = () => {
                           setTimeout(() => setShowOwnerDropdown(false), 150)
                         }
                       />
+                      {ownerQuery && (
+                        <Button
+                          color="light"
+                          onClick={() => {
+                            setOwnerQuery("");
+                            setShowOwnerDropdown(false);
+                          }}
+                        >
+                          {t("beaconEditor.owner.clear")}
+                        </Button>
+                      )}
                     </div>
                     {showOwnerDropdown && ownerMatches.length > 0 && (
                       <ul className="absolute z-[1000] mt-1 w-full max-h-60 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg">
@@ -665,7 +670,6 @@ const BeaconEditor = () => {
                               type="button"
                               className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                               onClick={() => {
-                                setOwnerId(u._id);
                                 setOwnerQuery(u.callsign);
                                 setShowOwnerDropdown(false);
                               }}
@@ -683,15 +687,15 @@ const BeaconEditor = () => {
                     )}
                   </div>
                   <p className="mt-2 text-sm">
-                    {ownerId ? (
+                    {ownerQuery.trim() ? (
                       <span className="text-green-700 dark:text-green-400">
                         {t("beaconEditor.owner.selected", {
                           callsign: ownerQuery,
                         })}
                       </span>
                     ) : (
-                      <span className="text-red-600 dark:text-red-400">
-                        {t("beaconEditor.owner.required")}
+                      <span className="text-gray-500 dark:text-gray-400">
+                        {t("beaconEditor.owner.pending")}
                       </span>
                     )}
                   </p>

@@ -28,6 +28,10 @@ mongoose.connection.on("disconnected", () => {
   try {
     logger.debug(`Connecting to MongoDB at ${envs.MONGODB_URI}`);
     await mongoose.connect(envs.MONGODB_URI, { timeoutMS: 10000 });
+
+    // One-time, idempotent data migrations that need an open connection.
+    const { migrateBeaconOwners } = await import("../beacon/migrateOwners");
+    await migrateBeaconOwners();
   } catch (err) {
     logger.error("Error while connecting to MongoDB");
     logger.error(err);

@@ -6,14 +6,13 @@ import {
   OK,
   UNAUTHORIZED,
 } from "http-status";
-import { isValidObjectId } from "mongoose";
 import { logger } from "../../../shared";
 import { User } from "../../auth/models";
 import { Errors } from "../../errors";
 import { createError, validate } from "../../helpers";
 import { BeaconCache } from "../cache";
 import { Beacon, BeaconProperties } from "../models";
-import { canEditBeacon, resolveBeaconOwnerId } from "../permissions";
+import { canEditBeacon, resolveBeaconOwner } from "../permissions";
 import updateSchema from "../schemas/updateSchema";
 
 const router = Router();
@@ -86,8 +85,8 @@ router.put(
       return;
     }
 
-    const ownerId = await resolveBeaconOwnerId(beacon);
-    if (!canEditBeacon(ownerId, user)) {
+    const ownerCallsign = resolveBeaconOwner(beacon);
+    if (!canEditBeacon(ownerCallsign, user)) {
       res.status(UNAUTHORIZED).json(createError(Errors.BEACON_NOT_OWNER));
       return;
     }
@@ -151,21 +150,21 @@ router.put(
       await beaconProps.save();
 
       // Only admins can (re)assign the beacon's maintainer (owner). The owner
-      // is mandatory, so it must be a valid existing user (cannot be cleared).
+      // is now a free-form callsign (not necessarily a registered user) and is
+      // optional — an empty/missing value clears it ("in verifica").
       if (user.isAdmin && "owner" in req.body) {
-        const ownerVal = req.body.owner;
-        if (!ownerVal || !isValidObjectId(ownerVal)) {
-          return res
-            .status(BAD_REQUEST)
-            .json(createError(Errors.USER_NOT_FOUND));
+        const raw = req.body.owner;
+        if (raw == null || (typeof raw === "string" && raw.trim() === "")) {
+          beacon.owner = undefined;
+        } else if (typeof raw === "string") {
+          const cs = raw.trim().toUpperCase();
+          if (cs.length > 10 || !/^[A-Z0-9/]*$/.test(cs)) {
+            return res
+              .status(BAD_REQUEST)
+              .json(createError(Errors.INVALID_CALLSIGN));
+          }
+          beacon.owner = cs;
         }
-        const newOwner = await User.findById(ownerVal);
-        if (!newOwner) {
-          return res
-            .status(BAD_REQUEST)
-            .json(createError(Errors.USER_NOT_FOUND));
-        }
-        beacon.owner = newOwner._id;
         await beacon.save();
       }
 

@@ -297,7 +297,7 @@
       "single": "Inti żgur li trid tħassar dan il-beacon flimkien mal-unika modifika tiegħu? Din l-azzjoni ma tistax titreġġa' lura. Trid tkompli?"
     },
     "callsignLabel": "Callsign",
-    "nameLabel": "Laqab tal-baykon",
+    "nameLabel": "Sid",
     "maintainerLabel": "Manutentur",
     "frequencyLabel": "Frekwenza",
     "antennaLabel": "Antenna",
@@ -311,7 +311,8 @@
     "dragOrClickAdif": "Drag il-fajl tiegħek .adif, .adi jew .edi hawn, jew ikklikkja biex tagħżlu.",
     "changesByText": "Editjat minn ",
     "onDateText": "fl-",
-    "atTimeText": "fis-"
+    "atTimeText": "fis-",
+    "maintainerPending": "Qed tiġi vverifikata"
   },
   "fileUploader": {
     "toast": {
@@ -448,15 +449,16 @@
       "mode": "Modalità",
       "qtf": "QTF",
       "power": "Enerġija f'Watts",
-      "name": "Soprannome tal-beacon (fakultattiv)",
-      "namePlaceholder": "Es. Beacon ta' Monte Cimone"
+      "name": "Sid (mhux obbligatorju)",
+      "namePlaceholder": "Eż. Mario Rossi"
     },
     "owner": {
       "label": "Mantenju (amministraturi biss)",
-      "description": "Fittex utent irreġistrat bil-sinjal ta' sejħa jew l-isem. Kull beacon għandu jkollu mantenju.",
-      "placeholder": "Fittex sinjal ta' sejħa...",
+      "description": "Daħħal is-sinjal tal-manutentur (anke jekk mhux reġistrat). Ħalli vojt jekk il-beacon qed tiġi vverifikata.",
+      "placeholder": "Sinjal tal-manutentur...",
       "selected": "Mantenju magħżul: {{callsign}}",
-      "required": "Agħżel mantenju mill-lista"
+      "clear": "Neħħi",
+      "pending": "L-ebda manutentur (qed tiġi vverifikata)"
     },
     "position": {
       "title": "Pożizzjoni",
@@ -469,8 +471,7 @@
       "save": "Salva"
     },
     "validation": {
-      "positionRequired": "Agħżel il-pożizzjoni tal-beacon fuq il-mappa",
-      "ownerRequired": "Agħżel mantenju għal-beacon"
+      "positionRequired": "Agħżel il-pożizzjoni tal-beacon fuq il-mappa"
     },
     "alerts": {
       "cannotEdit": "Biss il-mantenju ta' dan beacon jew amministratur jista' jimmodifikahu.",

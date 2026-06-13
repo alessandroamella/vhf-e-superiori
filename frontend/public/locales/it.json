@@ -302,7 +302,7 @@
       "single": "Sei sicuro di voler eliminare questo beacon? Questa azione è irreversibile. Continuare?"
     },
     "callsignLabel": "Nominativo",
-    "nameLabel": "Soprannome del beacon",
+    "nameLabel": "Proprietario",
     "maintainerLabel": "Manutentore",
     "frequencyLabel": "Frequenza",
     "antennaLabel": "Antenna",
@@ -314,7 +314,8 @@
     "qtfLabel": "QTF",
     "changesByText": "Modifiche da ",
     "onDateText": "il",
-    "atTimeText": "alle"
+    "atTimeText": "alle",
+    "maintainerPending": "In verifica"
   },
   "fileUploader": {
     "toast": {
@@ -452,15 +453,16 @@
       "mode": "Modo",
       "qtf": "QTF",
       "power": "Potenza in Watt",
-      "name": "Soprannome del beacon (opzionale)",
-      "namePlaceholder": "Es. Beacon di Monte Cimone"
+      "name": "Proprietario (opzionale)",
+      "namePlaceholder": "Es. Mario Rossi"
     },
     "owner": {
       "label": "Manutentore (solo amministratori)",
-      "description": "Cerca un utente registrato per nominativo o nome. Ogni beacon deve avere un manutentore.",
-      "placeholder": "Cerca nominativo...",
+      "description": "Inserisci il nominativo del manutentore (anche non registrato). Lascia vuoto se il beacon è in verifica.",
+      "placeholder": "Nominativo del manutentore...",
       "selected": "Manutentore selezionato: {{callsign}}",
-      "required": "Seleziona un manutentore dalla lista"
+      "clear": "Rimuovi",
+      "pending": "Nessun manutentore (in verifica)"
     },
     "position": {
       "title": "Posizione",
@@ -473,8 +475,7 @@
       "save": "Salva"
     },
     "validation": {
-      "positionRequired": "Seleziona la posizione del beacon sulla mappa",
-      "ownerRequired": "Seleziona un manutentore per il beacon"
+      "positionRequired": "Seleziona la posizione del beacon sulla mappa"
     },
     "alerts": {
       "cannotEdit": "Solo il manutentore di questo beacon o un amministratore possono modificarlo.",

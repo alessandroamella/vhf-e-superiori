@@ -1,4 +1,4 @@
-import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
+import { modelOptions, prop, Severity } from "@typegoose/typegoose";
 
 /**
  * @swagger
@@ -8,7 +8,6 @@ import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
  *        type: object
  *        required:
  *          - callsign
- *          - owner
  *        properties:
  *          callsign:
  *            type: string
@@ -18,8 +17,12 @@ import { modelOptions, prop, Ref, Severity } from "@typegoose/typegoose";
  *            example: IU4QSG
  *          owner:
  *            type: string
- *            format: ObjectId
- *            description: User who maintains this beacon and can freely edit it
+ *            maxLength: 10
+ *            description: >-
+ *              Callsign of the maintainer of this beacon. May be any callsign
+ *              (even one not registered on the site) and may be absent, in which
+ *              case the beacon is considered "pending verification".
+ *            example: IU4QSG
  */
 
 @modelOptions({
@@ -30,6 +33,8 @@ export class BeaconClass {
   @prop({ required: true, minlength: 1, maxlength: 10, uppercase: true })
   public callsign!: string;
 
-  @prop({ required: true, ref: "User" })
-  public owner!: Ref<"User">;
+  // Maintainer callsign. Free-form (not necessarily a registered user) and
+  // optional — when absent the beacon shows as "in verifica" on the frontend.
+  @prop({ required: false, maxlength: 10, uppercase: true, trim: true })
+  public owner?: string;
 }

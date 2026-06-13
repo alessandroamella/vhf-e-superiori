@@ -302,7 +302,7 @@
       "single": "Are you sure you want to delete this beacon? This action is irreversible. Continue?"
     },
     "callsignLabel": "Callsign",
-    "nameLabel": "Beacon nickname",
+    "nameLabel": "Owner",
     "maintainerLabel": "Maintainer",
     "frequencyLabel": "Frequency",
     "antennaLabel": "Antenna",
@@ -314,7 +314,8 @@
     "qtfLabel": "QTF",
     "changesByText": "Edited by ",
     "onDateText": "on",
-    "atTimeText": "at"
+    "atTimeText": "at",
+    "maintainerPending": "Pending verification"
   },
   "fileUploader": {
     "toast": {
@@ -452,15 +453,16 @@
       "mode": "Mode",
       "qtf": "QTF",
       "power": "Power in Watts",
-      "name": "Beacon nickname (optional)",
-      "namePlaceholder": "E.g. Mount Cimone Beacon"
+      "name": "Owner (optional)",
+      "namePlaceholder": "e.g. John Doe"
     },
     "owner": {
       "label": "Maintainer (admins only)",
-      "description": "Search for a registered user by callsign or name. Every beacon must have a maintainer.",
-      "placeholder": "Search callsign...",
+      "description": "Enter the maintainer's callsign (even if not registered). Leave empty if the beacon is pending verification.",
+      "placeholder": "Maintainer callsign...",
       "selected": "Maintainer selected: {{callsign}}",
-      "required": "Select a maintainer from the list"
+      "clear": "Remove",
+      "pending": "No maintainer (pending verification)"
     },
     "position": {
       "title": "Position",
@@ -473,8 +475,7 @@
       "save": "Save"
     },
     "validation": {
-      "positionRequired": "Select the beacon position on the map",
-      "ownerRequired": "Select a maintainer for the beacon"
+      "positionRequired": "Select the beacon position on the map"
     },
     "alerts": {
       "cannotEdit": "Only the maintainer of this beacon or an administrator can edit it.",
