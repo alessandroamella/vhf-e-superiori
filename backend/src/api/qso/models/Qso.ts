@@ -164,10 +164,15 @@ import { qrz } from "../../qrz";
     });
     if (user) {
       this.toStation = user._id;
-      this.email = user.email;
-      this.toStationLat = user.lat;
-      this.toStationLon = user.lon;
-      if (!this.toStationLat ? user.lat : true) {
+      // Only fill in fields that are still missing, so we never clobber values
+      // that were set explicitly (e.g. an admin manually editing toLocator, which
+      // sets toStationLat/Lon before save even when email happens to be empty).
+      if (!this.email) this.email = user.email;
+      if (!this.toStationLat) this.toStationLat = user.lat;
+      if (!this.toStationLon) this.toStationLon = user.lon;
+      // Done if we now have everything; otherwise fall through to QRZ scraping
+      // to fill whatever is still missing.
+      if (this.email && this.toStationLat && this.toStationLon) {
         return;
       }
     }
@@ -175,9 +180,9 @@ import { qrz } from "../../qrz";
     // last resort: try to scrape email from QRZ
     const scraped = await qrz.getInfo(callsignClean);
     if (scraped) {
-      this.email = scraped.email;
-      this.toStationLat = scraped.lat;
-      this.toStationLon = scraped.lon;
+      if (!this.email) this.email = scraped.email;
+      if (!this.toStationLat) this.toStationLat = scraped.lat;
+      if (!this.toStationLon) this.toStationLon = scraped.lon;
       return;
     }
     logger.warn(

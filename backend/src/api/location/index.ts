@@ -178,12 +178,19 @@ class Location {
     lat += 90; // Locator lat/lon shift.
     lon += 180;
 
-    let qth = Location.str_chr_up.charAt(Math.floor(lon / 20)); // 1st digit: 20deg longitude slot.
-    qth += Location.str_chr_up.charAt(Math.floor(lat / 10)); // 2nd digit: 10deg latitude slot.
-    qth += Location.str_num.charAt(Math.floor((lon % 20) / 2)); // 3rd digit: 2deg longitude slot.
-    qth += Location.str_num.charAt(Math.floor((lat % 10) / 1)); // 4th digit: 1deg latitude slot.
-    qth += Location.str_chr_lo.charAt(Math.floor((lon % 2) * (60 / 5))); // 5th digit: 5min longitude slot.
-    qth += Location.str_chr_lo.charAt(Math.floor((lat % 1) * (60 / 2.5))); // 6th digit: 2.5min latitude slot.
+    // Tiny epsilon to counter floating-point truncation: values that should sit
+    // exactly on a slot boundary (e.g. 22.999999999) would otherwise floor down
+    // to the previous slot, making calculateLatLon -> calculateQth non-idempotent
+    // (a locator edit would snap back to a neighbouring subsquare and appear to
+    // "not update"). EPS is far smaller than any real slot boundary distinction.
+    const EPS = 1e-9;
+
+    let qth = Location.str_chr_up.charAt(Math.floor(lon / 20 + EPS)); // 1st digit: 20deg longitude slot.
+    qth += Location.str_chr_up.charAt(Math.floor(lat / 10 + EPS)); // 2nd digit: 10deg latitude slot.
+    qth += Location.str_num.charAt(Math.floor((lon % 20) / 2 + EPS)); // 3rd digit: 2deg longitude slot.
+    qth += Location.str_num.charAt(Math.floor((lat % 10) / 1 + EPS)); // 4th digit: 1deg latitude slot.
+    qth += Location.str_chr_lo.charAt(Math.floor((lon % 2) * (60 / 5) + EPS)); // 5th digit: 5min longitude slot.
+    qth += Location.str_chr_lo.charAt(Math.floor((lat % 1) * (60 / 2.5) + EPS)); // 6th digit: 2.5min latitude slot.
 
     return qth;
   }
