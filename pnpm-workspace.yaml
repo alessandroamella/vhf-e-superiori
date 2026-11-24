@@ -1,4 +1,23 @@
 packages:
-    - "frontend"
-    - "backend"
-    - "frontend/server"
+  - "frontend"
+  - "backend"
+  - "frontend/server"
+
+allowBuilds:
+  "@ffmpeg-installer/linux-arm64": true
+  "@ffmpeg-installer/linux-x64": true
+  "@parcel/watcher": true
+  "@scarf/scarf": true
+  "aws-sdk": true
+  "bcrypt": true
+  "canvas": true
+  "es5-ext": true
+  "esbuild": true
+  "sharp": true
+
+overrides:
+  "tar@<7.5.7": "^7.5.7"
+  "swiper@>=6.5.1 <12.1.2": "^12.1.2"
+  "nodemailer@<8.0.5": "^8.0.5"
+  "yaml@>=2.0.0 <2.8.3": "^2.8.3"
+  "uuid@<14.0.0": "^14.0.0"

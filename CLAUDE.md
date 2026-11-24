@@ -51,6 +51,7 @@ The backend requires `ffmpeg`, `libvips-dev`, and `imagemagick` system packages 
 ### Feature module pattern (`api/<feature>/`)
 
 Each feature follows the same shape:
+
 - `models/` — Typegoose classes (`@modelOptions`/`@prop` decorators) with embedded `@swagger` JSDoc component schemas
 - `schemas/` — `express-validator` `Schema` objects (`createSchema.ts`, `updateSchema.ts`) used with the shared `validate` helper; sanitization (e.g. DOMPurify via jsdom for HTML fields) happens here
 - `routes/` — one file per HTTP verb/operation (`get.ts`, `all.ts`, `create.ts`, `update.ts`, `delete.ts`, `upload.ts`...), each exporting an Express `Router`, composed in `routes/index.ts` with appropriate middleware (e.g. `isAdmin` for mutating routes)
