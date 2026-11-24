@@ -21,3 +21,16 @@ overrides:
   "nodemailer@<8.0.5": "^8.0.5"
   "yaml@>=2.0.0 <2.8.3": "^2.8.3"
   "uuid@<14.0.0": "^14.0.0"
+
+# pnpm <11 equivalent of allowBuilds (server still runs pnpm 10)
+onlyBuiltDependencies:
+  - "@ffmpeg-installer/linux-arm64"
+  - "@ffmpeg-installer/linux-x64"
+  - "@parcel/watcher"
+  - "@scarf/scarf"
+  - "aws-sdk"
+  - "bcrypt"
+  - "canvas"
+  - "es5-ext"
+  - "esbuild"
+  - "sharp"
